@@ -39,15 +39,15 @@ h1{font:700 34px/1.12 var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-wid
 .v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)}
 a.jump{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}
 a.jump:hover{color:var(--vc)}
-.vtag{display:block;margin-top:0;padding:1rem 0 0;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}
-.vtag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0;vertical-align:0}
+.vtag{display:block;margin-top:0;padding:0.5rem 0 0;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}
+.vtag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}
 tbody.item[data-v=best]{--vc:var(--v-best)} tbody.item[data-v=batt]{--vc:var(--v-batt)} tbody.item[data-v=avoid]{--vc:var(--v-avoid)}
 tbody.item[data-v] tr.main>td.c-cmp{box-shadow:inset 3px 0 0 var(--vc)}
 .controls{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}
 .opts{display:flex;flex-wrap:wrap;gap:1rem}
-.opts label{display:inline-flex;align-items:center;gap:1rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}
+.opts label{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}
 input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
 input[type=range]{accent-color:var(--acc);width:180px;min-height:24px;vertical-align:middle;margin:0}
 .range output{font:600 14px var(--sans);font-variant-numeric:tabular-nums;margin-left:1rem}
@@ -68,7 +68,7 @@ table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .main-t td.num,.main-t th.num{text-align:right}
 td.num{white-space:nowrap}
-.c-cmp{width:2rem;padding-left:0!important;padding-right:0!important}
+.c-cmp{width:2rem;padding-left:0.5rem!important;padding-right:0.5rem!important}
 .c-rec{width:120px}
 .c-model{width:27%}
 .mcell{display:flex;gap:1rem;align-items:flex-start}
@@ -78,16 +78,16 @@ img.ph{filter:var(--imgf)}
 span.ph{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink3);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}
 span.ph-lg{font-size:11px}
 .brand{font-weight:700} .mname{font-weight:400}
-.best{display:block;font-size:13px;color:var(--ink2);margin-top:0;line-height:1.35}
+.best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
 .c-catch{font-size:14px;width:28%}
-.more-w{margin-top:1rem}
+.more-w{margin-top:0.5rem}
 .rec{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}
-.rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:0;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
+.rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
 .rec-yes::before{background:var(--acc)}
 .rec-kit::before{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}
 .rec-no{color:var(--ink2)} .rec-no::before{border-color:var(--ink3)}
 .score b{font-size:15px} .score{color:var(--ink2);font-size:13px;white-space:nowrap}
-.bar{display:block;height:3px;background:var(--rule2);margin:1rem 0 0;width:52px}
+.bar{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}
 .bar i{display:block;height:100%;background:var(--acc)}
 .note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
 .fn{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:none;color:var(--ink3)}
@@ -246,8 +246,8 @@ ol.fns a{color:var(--ink2)}
 <tbody class="item" id="m-ring" data-id="ring" data-v="avoid" data-rec="no" data-recv="0" data-ha="0" data-power="battery wired" data-price="79.99" data-keep3="259.63" data-nosub3="79.99" data-sub3="259.63" data-score="2" data-model="ring battery video doorbell 2k" data-idx="0">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="ring" aria-label="Compare Ring Battery Video Doorbell 2K"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ring-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Ring Battery Video Doorbell 2K"><div><span class="brand">Ring</span> <span class="mname">Battery Video Doorbell 2K</span><span class="vtag v-avoid"> Avoid without a plan</span><span class="best">Best for: Alexa households happy to pay the monthly plan</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-no"> No</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ring-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Ring Battery Video Doorbell 2K"><div><span class="brand">Ring</span> <span class="mname">Battery Video Doorbell 2K</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: Alexa households happy to pay the monthly plan</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-no">No</span></td>
 <td class="c-price num" data-label="Price">£79.99<a class="fn" href="#fn1" title="Ring UK: Battery Doorbell 2K">1</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>2</b>/8</span><span class="bar" aria-hidden="true"><i style="width:25%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£79.99<span class="note">no recordings</span></td>
@@ -277,7 +277,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="nest" aria-label="Compare Google Nest Doorbell (battery)"></td>
 <th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/nest-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Google Nest Doorbell (battery)"><div><span class="brand">Google Nest</span> <span class="mname">Doorbell (battery)</span><span class="best">Best for: Google Home households who want polished smart alerts</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-kit"> Only with extra kit</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-kit">Only with extra kit</span></td>
 <td class="c-price num" data-label="Price">£179.99<a class="fn" href="#fn5" title="Google Store UK: Nest Doorbell">5</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>4</b>/8</span><span class="bar" aria-hidden="true"><i style="width:50%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£179.99<span class="note">3 hrs history</span></td>
@@ -307,7 +307,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="eufy-e340" aria-label="Compare eufy Video Doorbell E340"></td>
 <th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/eufy-e340-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="eufy Video Doorbell E340"><div><span class="brand">eufy</span> <span class="mname">Video Doorbell E340</span><span class="best">Best for: Busy doorsteps with lots of parcels: a second camera looks straight down</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£169.99<a class="fn" href="#fn8" title="eufy UK: E340">8</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£169.99</td>
@@ -336,8 +336,8 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-reo-wifi" data-id="reo-wifi" data-v="best" data-rec="yes" data-recv="2" data-ha="2" data-power="wired" data-price="93.49" data-keep3="103.49" data-nosub3="103.49" data-sub3="219.13" data-score="7" data-model="reolink video doorbell wifi" data-idx="3">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="reo-wifi" aria-label="Compare Reolink Video Doorbell WiFi"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-wifi-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell WiFi"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell WiFi</span><span class="vtag v-best"> Best overall</span><span class="best">Best for: Homes with existing doorbell wiring, plus Home Assistant or NVR users</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-wifi-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell WiFi"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell WiFi</span><span class="vtag v-best">Best overall</span><span class="best">Best for: Homes with existing doorbell wiring, plus Home Assistant or NVR users</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£93.49<a class="fn" href="#fn12" title="Reolink UK store">12</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£103.49</td>
@@ -366,8 +366,8 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-reo-poe" data-id="reo-poe" data-v="best" data-rec="yes" data-recv="2" data-ha="2" data-power="poe" data-price="69.99" data-keep3="79.99" data-nosub3="79.99" data-sub3="195.63" data-score="7" data-model="reolink video doorbell poe" data-idx="4">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="reo-poe" aria-label="Compare Reolink Video Doorbell PoE"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-poe-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell PoE</span><span class="vtag v-best"> Best overall</span><span class="best">Best for: The most reliable, fully local setup, if you can run an Ethernet cable</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-poe-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell PoE</span><span class="vtag v-best">Best overall</span><span class="best">Best for: The most reliable, fully local setup, if you can run an Ethernet cable</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£69.99<a class="fn" href="#fn12" title="Reolink UK store">12</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£79.99</td>
@@ -396,8 +396,8 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-reo-batt" data-id="reo-batt" data-v="best" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="99.99" data-keep3="99.99" data-nosub3="99.99" data-sub3="225.63" data-score="7" data-model="reolink video doorbell (battery)" data-idx="5">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="reo-batt" aria-label="Compare Reolink Video Doorbell (Battery)"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-batt-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell (Battery)"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell (Battery)</span><span class="vtag v-best"> Best overall</span><span class="best">Best for: Battery install with 5 GHz Wi-Fi and no fees</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-batt-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell (Battery)"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell (Battery)</span><span class="vtag v-best">Best overall</span><span class="best">Best for: Battery install with 5 GHz Wi-Fi and no fees</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£99.99<a class="fn" href="#fn15" title="Screwfix: Reolink Battery">15</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£99.99</td>
@@ -426,8 +426,8 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-tapo-d230" data-id="tapo-d230" data-v="batt" data-rec="yes" data-recv="2" data-ha="1" data-power="battery" data-price="84.99" data-keep3="94.99" data-nosub3="94.99" data-sub3="192.63" data-score="6" data-model="tp-link tapo d230s1" data-idx="6">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="tapo-d230" aria-label="Compare TP-Link Tapo D230S1"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/tapo-d230-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="TP-Link Tapo D230S1"><div><span class="brand">TP-Link Tapo</span> <span class="mname">D230S1</span><span class="vtag v-batt"> Battery pick</span><span class="best">Best for: An easy battery doorbell that keeps footage indoors on its chime/hub</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/tapo-d230-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="TP-Link Tapo D230S1"><div><span class="brand">TP-Link Tapo</span> <span class="mname">D230S1</span><span class="vtag v-batt">Battery pick</span><span class="best">Best for: An easy battery doorbell that keeps footage indoors on its chime/hub</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£84.99<a class="fn" href="#fn17" title="Tapo UK: D230S1">17</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£94.99</td>
@@ -457,7 +457,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="tapo-td21" aria-label="Compare TP-Link Tapo TD21"></td>
 <th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/tapo-td21-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="TP-Link Tapo TD21"><div><span class="brand">TP-Link Tapo</span> <span class="mname">TD21</span><span class="best">Best for: The tightest budget</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£44.99<a class="fn" href="#fn21" title="Tapo UK: TD21">21</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="width:62%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£54.99</td>
@@ -486,8 +486,8 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-arlo" data-id="arlo" data-v="avoid" data-rec="kit" data-recv="1" data-ha="0" data-power="battery wired" data-price="169.99" data-keep3="279.73" data-nosub3="279.73" data-sub3="457.63" data-score="3" data-model="arlo essential video doorbell 2k (2nd gen)" data-idx="8">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="arlo" aria-label="Compare Arlo Essential Video Doorbell 2K (2nd gen)"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/arlo-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Arlo Essential Video Doorbell 2K (2nd gen)"><div><span class="brand">Arlo</span> <span class="mname">Essential Video Doorbell 2K (2nd gen)</span><span class="vtag v-avoid"> Avoid without a plan</span><span class="best">Best for: People who already own Arlo cameras</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-kit"> Only with extra kit</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/arlo-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Arlo Essential Video Doorbell 2K (2nd gen)"><div><span class="brand">Arlo</span> <span class="mname">Essential Video Doorbell 2K (2nd gen)</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: People who already own Arlo cameras</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-kit">Only with extra kit</span></td>
 <td class="c-price num" data-label="Price">£169.99<a class="fn" href="#fn22" title="Argos: Arlo doorbell">22</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>3</b>/8</span><span class="bar" aria-hidden="true"><i style="width:38%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£279.73</td>
@@ -517,7 +517,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="aqara-g4" aria-label="Compare Aqara Video Doorbell G4"></td>
 <th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/aqara-g4-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Aqara Video Doorbell G4"><div><span class="brand">Aqara</span> <span class="mname">Video Doorbell G4</span><span class="best">Best for: Apple Home users</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£84.99<a class="fn" href="#fn29" title="Amazon UK: Aqara G4">29</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£94.99</td>
@@ -546,8 +546,8 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-blink" data-id="blink" data-v="avoid" data-rec="kit" data-recv="1" data-ha="0" data-power="battery" data-price="69.99" data-keep3="119.98" data-nosub3="119.98" data-sub3="159.99" data-score="2" data-model="blink battery doorbell 2k+" data-idx="10">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="blink" aria-label="Compare Blink Battery Doorbell 2K+"></td>
-<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/blink-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Blink Battery Doorbell 2K+"><div><span class="brand">Blink</span> <span class="mname">Battery Doorbell 2K+</span><span class="vtag v-avoid"> Avoid without a plan</span><span class="best">Best for: The cheapest way into Amazon&#x27;s ecosystem, if you catch a deal</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-kit"> Only with extra kit</span></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/blink-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Blink Battery Doorbell 2K+"><div><span class="brand">Blink</span> <span class="mname">Battery Doorbell 2K+</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: The cheapest way into Amazon&#x27;s ecosystem, if you catch a deal</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-kit">Only with extra kit</span></td>
 <td class="c-price num" data-label="Price">£69.99<a class="fn" href="#fn32" title="Amazon UK: Blink 2K+">32</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>2</b>/8</span><span class="bar" aria-hidden="true"><i style="width:25%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£119.98</td>
@@ -577,7 +577,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="ezviz-ep3x" aria-label="Compare EZVIZ EP3x Pro"></td>
 <th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ezviz-ep3x-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="EZVIZ EP3x Pro"><div><span class="brand">EZVIZ</span> <span class="mname">EP3x Pro</span><span class="best">Best for: Two cameras on a budget, with storage built in</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£79.99<a class="fn" href="#fn37" title="Amazon UK: EZVIZ EP3x Pro">37</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£79.99</td>
@@ -607,7 +607,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="ezviz-db2" aria-label="Compare EZVIZ DB2 Pro Kit"></td>
 <th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ezviz-db2-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="EZVIZ DB2 Pro Kit"><div><span class="brand">EZVIZ</span> <span class="mname">DB2 Pro Kit</span><span class="best">Best for: Flats and rentals: no wiring, and footage stays indoors in the chime</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£114.99<a class="fn" href="#fn41" title="ER Tech (UK retailer)">41</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="width:62%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£124.99</td>
@@ -637,7 +637,7 @@ ol.fns a{color:var(--ink2)}
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="hik" aria-label="Compare Hikvision DS-KB6003-WIP"></td>
 <th scope="row" class="c-model"><div class="mcell"><span class="ph ph-sm" role="img" aria-label="No photo available for Hikvision DS-KB6003-WIP" style="width:45px;height:60px"><span>No photo</span></span><div><span class="brand">Hikvision</span> <span class="mname">DS-KB6003-WIP</span><span class="best">Best for: Only worth it if an installer is fitting a Hikvision system anyway</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-yes"> Yes</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£295<a class="fn" href="#fn42" title="Eagle Security Solutions">42</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="width:62%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£305</td>
@@ -742,7 +742,7 @@ function tray(){
 function render(){
  var s=sel(),h='<thead><tr><th><span class="vh">Spec</span></th>'+s.map(function(id){
   var d=D[id];
-  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
+  return '<th><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
  }).join('')+'</tr></thead><tbody>';
  ROWS.forEach(function(r){h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){return '<td>'+esc(D[id][r[1]])+'</td>'}).join('')+'</tr>'});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;

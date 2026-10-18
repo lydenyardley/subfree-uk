@@ -348,12 +348,12 @@ for i,r in enumerate(ROWS):
     sc=r["score_total"]
     v=VERDICT.get(r["id"])
     vattr=f' data-v="{v}"' if v else ""
-    vtag=f'<span class="vtag v-{v}"> {V_LABEL[v]}</span>' if v else ""
+    vtag=f'<span class="vtag v-{v}">{V_LABEL[v]}</span>' if v else ""
     rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 999999}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
 <th scope="row" class="c-model"><div class="mcell">{photo(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}"> {REC_LABEL[r['rec']]}</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
 <td class="c-price num" data-label="Price">{gbp(r['price'])}{fn([r['price_src']])}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="width:{sc/8*100:.0f}%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
@@ -435,15 +435,15 @@ h1{{font:700 34px/1.12 var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-wi
 .v-best{{--vc:var(--v-best)}} .v-batt{{--vc:var(--v-batt)}} .v-avoid{{--vc:var(--v-avoid)}}
 a.jump{{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}}
 a.jump:hover{{color:var(--vc)}}
-.vtag{{display:block;margin-top:0;padding:1rem 0 0;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}}
-.vtag::before{{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0;vertical-align:0}}
+.vtag{{display:block;margin-top:0;padding:0.5rem 0 0;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}}
+.vtag::before{{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}}
 tbody.item[data-v=best]{{--vc:var(--v-best)}} tbody.item[data-v=batt]{{--vc:var(--v-batt)}} tbody.item[data-v=avoid]{{--vc:var(--v-avoid)}}
 tbody.item[data-v] tr.main>td.c-cmp{{box-shadow:inset 3px 0 0 var(--vc)}}
 .controls{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}}
 fieldset{{border:0;margin:0;padding:0;min-width:0}}
 legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}}
 .opts{{display:flex;flex-wrap:wrap;gap:1rem}}
-.opts label{{display:inline-flex;align-items:center;gap:1rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}}
+.opts label{{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}}
 input[type=checkbox]{{accent-color:var(--acc);width:15px;height:15px;margin:0}}
 input[type=range]{{accent-color:var(--acc);width:180px;min-height:24px;vertical-align:middle;margin:0}}
 .range output{{font:600 14px var(--sans);font-variant-numeric:tabular-nums;margin-left:1rem}}
@@ -464,7 +464,7 @@ table.cmp-t,table.main-t{{border-collapse:collapse;width:100%}}
 .num{{text-align:right;font-variant-numeric:tabular-nums}}
 .main-t td.num,.main-t th.num{{text-align:right}}
 td.num{{white-space:nowrap}}
-.c-cmp{{width:2rem;padding-left:0!important;padding-right:0!important}}
+.c-cmp{{width:2rem;padding-left:0.5rem!important;padding-right:0.5rem!important}}
 .c-rec{{width:120px}}
 .c-model{{width:27%}}
 .mcell{{display:flex;gap:1rem;align-items:flex-start}}
@@ -474,16 +474,16 @@ img.ph{{filter:var(--imgf)}}
 span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink3);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}}
 span.ph-lg{{font-size:11px}}
 .brand{{font-weight:700}} .mname{{font-weight:400}}
-.best{{display:block;font-size:13px;color:var(--ink2);margin-top:0;line-height:1.35}}
+.best{{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}}
 .c-catch{{font-size:14px;width:28%}}
-.more-w{{margin-top:1rem}}
+.more-w{{margin-top:0.5rem}}
 .rec{{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}}
-.rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:0;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
+.rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
 .rec-yes::before{{background:var(--acc)}}
 .rec-kit::before{{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}}
 .rec-no{{color:var(--ink2)}} .rec-no::before{{border-color:var(--ink3)}}
 .score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
-.bar{{display:block;height:3px;background:var(--rule2);margin:1rem 0 0;width:52px}}
+.bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
 .bar i{{display:block;height:100%;background:var(--acc)}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
 .fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:none;color:var(--ink3)}}
@@ -718,7 +718,7 @@ function tray(){{
 function render(){{
  var s=sel(),h='<thead><tr><th><span class="vh">Spec</span></th>'+s.map(function(id){{
   var d=D[id];
-  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
+  return '<th><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
  }}).join('')+'</tr></thead><tbody>';
  ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
