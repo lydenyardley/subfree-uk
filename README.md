@@ -4,4 +4,4 @@ A hand-checked comparison of UK video doorbells: what's free, what's paywalled, 
 
 Live page: https://lydenyardley.github.io/subfree-uk/
 
-A single static HTML page. No tracking, cookies, external fonts or scripts. Prices change often, so check the linked sources before buying.
+A single static HTML page plus self-hosted product photos in `img/` (sources in `IMAGE_SOURCES.md`). No tracking, cookies, external fonts or scripts. Prices change often, so check the linked sources before buying.

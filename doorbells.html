@@ -2,29 +2,47 @@
 <html lang="en-GB"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
 <title>Video doorbells that work without a subscription (UK) | SubFree UK</title>
 <meta name="description" content="14 UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <style>
-:root{--ink:#1a1a1a;--ink2:#555;--ink3:#8a8a8a;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
+:root{--ink:#1a1a1a;--ink2:#555;--ink3:#767676;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
+--v-best:#17694a;--v-batt:#1f5d96;--v-avoid:#a33b26;--hl:#fff1b8;--tray:#1a1a1a;--tray-ink:#fff;--imgbg:#fff;--imgf:none;
 --serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
---sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
+:root[data-theme=dark]{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#e9e7e2;--tray-ink:#151514;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#e9e7e2;--tray-ink:#151514;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}
 a{color:var(--acc)}
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
-.mast{border-bottom:1px solid var(--ink);padding:10px 0 8px;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.mast{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--ink);padding:8px 0 7px;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .mast span{color:var(--ink3);font-weight:500;margin-left:.6em;letter-spacing:.04em}
-header.intro{padding:22px 0 14px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;border-bottom:1px solid var(--rule)}
+#theme{font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:5px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+#theme:hover{border-color:var(--ink)}
+#theme i{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+header.intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
 h1{font:700 34px/1.12 var(--serif);margin:0 0 10px;letter-spacing:-.01em;max-width:22ch}
 .dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 12px;max-width:60ch}
 .meta{font-size:13px;color:var(--ink2);margin:0}
 .meta b{color:var(--ink)}
-.verdict{border-left:3px solid var(--acc);padding:2px 0 2px 14px;font-size:14px}
-.verdict h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px}
-.verdict p{margin:0 0 6px}
-.controls{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--rule)}
+.verdict{border-left:1px solid var(--rule);padding:2px 0 2px 2rem;font-size:14px}
+.verdict h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
+.verdict p{margin:0 0 10px;padding-left:12px;border-left:3px solid var(--vc)}
+.verdict p b{color:var(--vc)}
+.v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)}
+a.jump{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}
+a.jump:hover{color:var(--vc)}
+.vtag{display:block;margin-top:4px;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}
+.vtag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:5px;vertical-align:0}
+tbody.item[data-v=best]{--vc:var(--v-best)} tbody.item[data-v=batt]{--vc:var(--v-batt)} tbody.item[data-v=avoid]{--vc:var(--v-avoid)}
+tbody.item[data-v] tr.main>td.c-cmp{box-shadow:inset 3px 0 0 var(--vc)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--rule)}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:7px;display:block}
 .opts{display:flex;flex-wrap:wrap;gap:4px 14px}
@@ -32,48 +50,60 @@ legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:
 input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
 input[type=range]{accent-color:var(--acc);width:180px;vertical-align:middle;margin:0}
 .range output{font:600 14px var(--sans);font-variant-numeric:tabular-nums;margin-left:8px}
-select{font:14px var(--sans);padding:5px 6px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:0}
-.count{margin:0 0 0 auto;font-size:13px;color:var(--ink2);align-self:flex-end}
+.sortby{margin-left:auto}
+select{font:14px var(--sans);padding:5px 6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}
+.count{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}
 button.link{background:none;border:0;padding:0;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}
 table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
-.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:10px 10px 8px;border-bottom:2px solid var(--ink);vertical-align:bottom}
+.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:10px 10px 8px;border-bottom:2px solid var(--ink);vertical-align:bottom;white-space:normal}
 .main-t thead th.num{text-align:right}
 .main-t thead sup{text-transform:none;font-size:9px}
 .main-t td,.main-t tbody th{padding:11px 10px;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}
 .main-t tbody.item:hover tr.main{background:var(--tint)}
-.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.c-cmp{width:34px;padding-left:2px!important;padding-right:4px!important}
-.c-rec{width:130px}
-.c-model{width:24%;min-width:220px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num{white-space:nowrap}
+.c-cmp{width:30px;padding-left:6px!important;padding-right:2px!important}
+.c-rec{width:120px}
+.c-model{width:27%}
+.mcell{display:flex;gap:12px;align-items:flex-start}
+.mcell>div{min-width:0}
+.ph{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}
+img.ph{filter:var(--imgf)}
+span.ph{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink3);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+span.ph-lg{font-size:11px}
 .brand{font-weight:700} .mname{font-weight:400}
 .best{display:block;font-size:13px;color:var(--ink2);margin-top:3px;line-height:1.35}
-.c-catch{font-size:14px;width:30%;min-width:260px}
-.rec{font-size:14px;white-space:nowrap}
-.rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;vertical-align:1px;border:1.5px solid var(--acc)}
+.c-catch{font-size:14px;width:28%}
+.more-w{margin-top:7px}
+.rec{font-size:14px;display:inline-block;padding-left:15px;text-indent:-15px}
+.rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
 .rec-yes::before{background:var(--acc)}
 .rec-kit::before{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}
 .rec-no{color:var(--ink2)} .rec-no::before{border-color:var(--ink3)}
-.score b{font-size:15px} .score{color:var(--ink2);font-size:13px}
+.score b{font-size:15px} .score{color:var(--ink2);font-size:13px;white-space:nowrap}
 .bar{display:block;height:3px;background:var(--rule2);margin:6px 0 0;width:52px}
-.c-score{white-space:nowrap}
 .bar i{display:block;height:100%;background:var(--acc)}
-.note{display:block;font-size:12px;color:var(--ink3)}
+.note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
 .fn{font-size:10px;vertical-align:super;line-height:0;margin-left:2px;text-decoration:none;color:var(--ink3)}
 .fn:hover{color:var(--acc);text-decoration:underline}
-button.more{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:4px 8px;cursor:pointer;color:var(--ink);white-space:nowrap}
-button.more[aria-expanded=true]{border-color:var(--ink)}
-tr.detail td{background:var(--tint);padding:14px 16px 12px 48px;border-bottom:1px solid var(--rule)}
-.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
-.dgrid dl{margin:0;display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:14px}
+button.more{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:3px 8px;cursor:pointer;color:var(--ink);white-space:nowrap}
+button.more:hover,button.more[aria-expanded=true]{border-color:var(--ink)}
+tr.detail td{background:var(--tint);padding:16px 16px 12px 40px;border-bottom:1px solid var(--rule)}
+.dgrid{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 28px}
+.dimg{margin:0}
+.dgrid dl{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:6px 14px;font-size:14px;align-content:start}
 .dgrid dt{color:var(--ink2)} .dgrid dd{margin:0}
 .maths{font-variant-numeric:tabular-nums}
 .unverified{font-size:13px;margin:12px 0 2px;color:var(--ink2)}
 .srcs{font-size:12px;color:var(--ink3);margin:2px 0 0}
 .srcs .fn{font-size:12px;vertical-align:baseline;margin-left:5px;color:var(--acc)}
 .empty{padding:30px 0;color:var(--ink2);text-align:center}
+/* jump-to-row highlight */
+@keyframes flash{0%,35%{background-color:var(--hl)}100%{background-color:transparent}}
+tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} tbody.item.flash tr.main>*{animation:none;background:var(--hl)}}
 /* compare */
 #compare{border:1px solid var(--ink);margin:18px 0 6px;padding:0 0 4px}
-#compare[hidden]{display:none}
 .cmp-head{display:flex;justify-content:space-between;align-items:baseline;padding:12px 14px 8px;border-bottom:1px solid var(--rule)}
 .cmp-head h2{font:700 20px/1.2 var(--serif);margin:0}
 .cmp-scroll{overflow-x:auto}
@@ -81,54 +111,80 @@ tr.detail td{background:var(--tint);padding:14px 16px 12px 48px;border-bottom:1p
 .cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}
 .cmp-t tbody th{font:600 11px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.tray{position:sticky;bottom:0;background:var(--ink);color:#fff;padding:10px 20px;display:flex;gap:16px;align-items:center;justify-content:center;font-size:14px;z-index:5}
-.tray[hidden]{display:none}
-.tray button{font:600 14px var(--sans);background:#fff;color:var(--ink);border:0;padding:6px 14px;cursor:pointer}
-.tray button.ghost{background:none;color:#fff;text-decoration:underline;padding:6px 4px}
+.tray{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);padding:10px 20px;display:flex;gap:16px;align-items:center;justify-content:center;font-size:14px;z-index:5}
+.tray button{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:6px 14px;cursor:pointer}
+.tray button:disabled{opacity:.5;cursor:default}
+.tray button.ghost{background:none;color:var(--tray-ink);text-decoration:underline;padding:6px 4px}
 /* footer */
 section.method{display:grid;grid-template-columns:1fr 1fr;gap:32px;border-top:1px solid var(--ink);margin-top:28px;padding:18px 0 40px;font-size:13px;color:var(--ink2)}
 section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 8px}
 section.method p{margin:0 0 8px}
+section.method p a{color:var(--ink2)}
 ol.fns{margin:0;padding-left:22px;columns:2;column-gap:28px}
 ol.fns li{margin:0 0 3px;break-inside:avoid}
 ol.fns a{color:var(--ink2)}
-@media (max-width:980px){
- header.intro{grid-template-columns:1fr;gap:16px}
- .c-catch{max-width:none}
+@media (min-width:821px) and (max-width:1100px){
+ .count{flex:1 1 auto;order:1;align-self:flex-end} .sortby{order:2}
+}
+/* 821-1100px: the full table must fit without sideways scrolling */
+@media (max-width:1100px){
+ .main-t td,.main-t tbody th{padding:10px 7px}
+ .main-t thead th{padding:10px 7px 8px;letter-spacing:.04em}
+ .c-model{width:30%} .c-rec{width:auto} .c-catch{width:24%;font-size:13px}
+ .mcell{gap:9px} .ph-sm{width:36px!important;height:48px!important}
+ .best{font-size:12.5px}
+ .rec{font-size:13px}
+ tr.detail td{padding-left:16px}
+ .dgrid{grid-template-columns:140px minmax(0,1fr) minmax(0,1fr);gap:0 20px}
+ .ph-lg{width:140px!important;height:187px!important}
+ .dgrid dl{grid-template-columns:1fr;gap:0} .dgrid dt{margin-top:8px;font-weight:600;font-size:12px} .dgrid dt:first-child{margin-top:0}
+}
+@media (max-width:900px){
+ h1{font-size:30px}
+ .main-t td,.main-t tbody th{padding:10px 5px}
+ .main-t thead th{padding:10px 5px 8px;font-size:10px}
+ .c-catch{width:22%}
 }
 @media (max-width:820px){
  body{font-size:15px}
  .wrap{padding:0 14px}
+ header.intro{grid-template-columns:1fr;gap:1.25rem;padding:1.5rem 0}
+ .verdict{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}
  h1{font-size:27px} .dek{font-size:16px}
- .controls{gap:12px 20px} .count{margin-left:0;width:100%}
+ .controls{gap:12px 20px}
+ .sortby{margin-left:0}
  input[type=range]{width:150px}
  .main-t thead{display:none}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
  .main-t tbody.item{border-bottom:1px solid var(--rule);padding:12px 0}
+ .main-t tbody.item{padding-left:10px}
+ tbody.item[data-v]{box-shadow:inset 3px 0 0 var(--vc)}
+ tbody.item[data-v] tr.main>td.c-cmp{box-shadow:none}
  .main-t tr.main{display:grid;grid-template-columns:24px repeat(3,minmax(0,1fr));gap:8px 10px;position:relative}
  .main-t tbody.item:hover tr.main{background:none}
  .main-t tr.main>*{padding:0;border:0;width:auto;min-width:0;max-width:none}
  .c-cmp{grid-row:1;grid-column:1;padding-top:3px!important}
  .c-model{grid-column:2 / 5}
+ .ph-sm{width:45px!important;height:60px!important}
  .c-rec{grid-column:2} .c-price{grid-column:3} .c-score{grid-column:4}
  .c-nosub{grid-column:2} .c-sub{grid-column:3 / 5}
- .c-catch{grid-column:2 / 5} .c-more{grid-column:2 / 5}
- .rec{white-space:normal}
+ .c-catch{grid-column:2 / 5;font-size:14px}
  .main-t td[data-label]::before{content:attr(data-label);display:block;font:600 10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:1px}
  .num{text-align:left} .bar{margin-left:0}
  tr.detail td{padding:12px;margin-top:10px}
- .dgrid{grid-template-columns:1fr}
- .dgrid dl{grid-template-columns:1fr;gap:0} .dgrid dt{margin-top:8px;font-weight:600;font-size:12px}
+ .dgrid{grid-template-columns:1fr} .dgrid dl+dl{margin-top:8px}
+ .ph-lg{width:120px!important;height:160px!important;margin-bottom:6px}
  section.method{grid-template-columns:1fr} ol.fns{columns:1}
  .cmp-t th,.cmp-t td{padding:7px 9px;font-size:13px}
  .cmp-t thead th{min-width:140px;font-size:14px}
  .cmp-t tbody th{width:84px;min-width:84px;font-size:10px;position:sticky;left:0;background:var(--paper)}
  .cmp-t thead th:first-child{position:sticky;left:0;background:var(--paper);min-width:84px}
 }
-@media print{.controls,.tray,.c-cmp,.c-more{display:none} tr.detail{display:table-row!important}}
+@media (max-width:520px){.mast>div>span{display:none}}
+@media print{.controls,.tray,.c-cmp,.more-w,#theme{display:none} tr.detail{display:table-row!important}}
 </style></head><body>
 <div class="wrap">
-<div class="mast">SubFree UK <span>Gadgets that work without a subscription</span></div>
+<div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme" aria-pressed="false"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
 <header class="intro">
 <div>
 <h1>Video doorbells that work without a subscription</h1>
@@ -137,9 +193,9 @@ ol.fns a{color:var(--ink2)}
 </div>
 <aside class="verdict">
 <h2>The short answer</h2>
-<p><b>Best overall without fees:</b> Reolink. It records to a card or NVR, nothing is paywalled, and it's the only one here with an official local Home Assistant integration.</p>
-<p><b>Easiest battery pick:</b> Tapo D230S1, which keeps footage on a hub inside the house.</p>
-<p><b>Avoid if you won't pay monthly:</b> Ring records nothing without a plan, and Blink and Arlo need extra hardware.</p>
+<p class="v-best"><b>Best overall without fees:</b> <a class="jump" href="#m-reo-poe" data-ids="reo-poe reo-wifi reo-batt">Reolink</a>. It records to a card or NVR, nothing is paywalled, and it's the only one here with an official local Home Assistant integration.</p>
+<p class="v-batt"><b>Easiest battery pick:</b> <a class="jump" href="#m-tapo-d230" data-ids="tapo-d230">Tapo D230S1</a>, which keeps footage on a hub inside the house.</p>
+<p class="v-avoid"><b>Avoid if you won't pay monthly:</b> <a class="jump" href="#m-ring" data-ids="ring">Ring</a> records nothing without a plan, and <a class="jump" href="#m-blink" data-ids="blink">Blink</a> and <a class="jump" href="#m-arlo" data-ids="arlo">Arlo</a> need extra hardware.</p>
 </aside>
 </header>
 
@@ -154,7 +210,7 @@ ol.fns a{color:var(--ink2)}
 <label><input type="checkbox" class="f-pw" value="poe"> PoE</label>
 </div></fieldset>
 <div class="range"><label class="lab" for="f-max">Max price</label><input type="range" id="f-max" min="40" max="300" step="5" value="300"><output id="f-max-out" for="f-max">£300</output></div>
-<div><label class="lab" for="sort">Sort by</label><select id="sort">
+<div class="sortby"><label class="lab" for="sort">Sort by</label><select id="sort">
 <option value="keep3">3-year cost to keep recordings</option>
 <option value="price">Price, low to high</option>
 <option value="score">Free-feature score, high to low</option>
@@ -171,21 +227,21 @@ ol.fns a{color:var(--ink2)}
 <thead><tr>
 <th class="c-cmp"><span class="vh">Compare</span></th>
 <th>Model</th><th>Records free?</th><th class="num">Price</th><th>Free features</th>
-<th class="num">3 yrs, no plan<sup>a</sup></th><th class="num">3 yrs, with plan<sup>b</sup></th><th>Main catch</th><th></th>
+<th class="num">3 yrs, no plan<sup>a</sup></th><th class="num">3 yrs, with plan<sup>b</sup></th><th>Main catch</th>
 </tr></thead>
-<tbody class="item" id="m-ring" data-id="ring" data-rec="no" data-ha="0" data-power="battery wired" data-price="79.99" data-keep3="259.63" data-score="2" data-idx="0">
+<tbody class="item" id="m-ring" data-id="ring" data-v="avoid" data-rec="no" data-ha="0" data-power="battery wired" data-price="79.99" data-keep3="259.63" data-score="2" data-idx="0">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="ring" aria-label="Compare Ring Battery Video Doorbell 2K"></td>
-<th scope="row" class="c-model"><span class="brand">Ring</span> <span class="mname">Battery Video Doorbell 2K</span><span class="best">Best for: Alexa households happy to pay the monthly plan</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ring-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Ring Battery Video Doorbell 2K"><div><span class="brand">Ring</span> <span class="mname">Battery Video Doorbell 2K</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: Alexa households happy to pay the monthly plan</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-no">No</span></td>
 <td class="c-price num" data-label="Price">£79.99<a class="fn" href="#fn1" title="Ring UK: Battery Doorbell 2K">1</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>2</b>/8</span><span class="bar" aria-hidden="true"><i style="width:25%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£79.99<span class="note">no recordings</span></td>
 <td class="c-sub num" data-label="3 yrs, with plan">£259.63</td>
-<td class="c-catch" data-label="Main catch">Saves no video at all unless you pay £4.99 a month.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-ring">Details</button></td>
+<td class="c-catch" data-label="Main catch">Saves no video at all unless you pay £4.99 a month.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-ring">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-ring" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-ring" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/ring-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Ring Battery Video Doorbell 2K"></figure>
 <dl>
 <dt>Power</dt><dd>Battery / Wired; Wi-Fi: 2.4 GHz only</dd>
 <dt>Storage</dt><dd>None. No on-device or hub storage.</dd>
@@ -205,17 +261,17 @@ ol.fns a{color:var(--ink2)}
 <p class="srcs">Sources <a class="fn" href="#fn1" title="Ring UK: Battery Doorbell 2K">1</a><a class="fn" href="#fn2" title="Ring UK plans">2</a><a class="fn" href="#fn3" title="The Independent, Feb 2026">3</a><a class="fn" href="#fn4" title="Home Assistant: Ring">4</a></p></td></tr>
 </tbody><tbody class="item" id="m-nest" data-id="nest" data-rec="kit" data-ha="0" data-power="battery wired" data-price="179.99" data-keep3="467.99" data-score="4" data-idx="1">
 <tr class="main">
-<td class="c-cmp"><input type="checkbox" class="cmp" value="nest" aria-label="Compare Google Nest Nest Doorbell (battery)"></td>
-<th scope="row" class="c-model"><span class="brand">Google Nest</span> <span class="mname">Nest Doorbell (battery)</span><span class="best">Best for: Google Home households who want polished smart alerts</span></th>
+<td class="c-cmp"><input type="checkbox" class="cmp" value="nest" aria-label="Compare Google Nest Doorbell (battery)"></td>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/nest-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Google Nest Doorbell (battery)"><div><span class="brand">Google Nest</span> <span class="mname">Doorbell (battery)</span><span class="best">Best for: Google Home households who want polished smart alerts</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-kit">Only with extra kit</span></td>
 <td class="c-price num" data-label="Price">£179.99<a class="fn" href="#fn5" title="Google Store UK: Nest Doorbell">5</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>4</b>/8</span><span class="bar" aria-hidden="true"><i style="width:50%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£179.99<span class="note">3 hrs history</span></td>
 <td class="c-sub num" data-label="3 yrs, with plan">£467.99</td>
-<td class="c-catch" data-label="Main catch">Only 3 hours of free history. Anything longer is £8 a month.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-nest">Details</button></td>
+<td class="c-catch" data-label="Main catch">Only 3 hours of free history. Anything longer is £8 a month.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-nest">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-nest" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-nest" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/nest-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Google Nest Doorbell (battery)"></figure>
 <dl>
 <dt>Power</dt><dd>Battery / Wired; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>None</dd>
@@ -236,16 +292,16 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-eufy-e340" data-id="eufy-e340" data-rec="yes" data-ha="1" data-power="battery wired" data-price="169.99" data-keep3="169.99" data-score="7" data-idx="2">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="eufy-e340" aria-label="Compare eufy Video Doorbell E340"></td>
-<th scope="row" class="c-model"><span class="brand">eufy</span> <span class="mname">Video Doorbell E340</span><span class="best">Best for: Busy doorsteps with lots of parcels: a second camera looks straight down</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/eufy-e340-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="eufy Video Doorbell E340"><div><span class="brand">eufy</span> <span class="mname">Video Doorbell E340</span><span class="best">Best for: Busy doorsteps with lots of parcels: a second camera looks straight down</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£169.99<a class="fn" href="#fn8" title="eufy UK: E340">8</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£169.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£313.63</td>
-<td class="c-catch" data-label="Main catch">Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-eufy-e340">Details</button></td>
+<td class="c-catch" data-label="Main catch">Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-eufy-e340">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-eufy-e340" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-eufy-e340" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/eufy-e340-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="eufy Video Doorbell E340"></figure>
 <dl>
 <dt>Power</dt><dd>Battery / Wired; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>8 GB in the doorbell; optional HomeBase S380 (16 GB, expandable)</dd>
@@ -263,19 +319,19 @@ ol.fns a{color:var(--ink2)}
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> Home Assistant details come from a third-party guide and haven&#x27;t been tested.</p>
 <p class="srcs">Sources <a class="fn" href="#fn8" title="eufy UK: E340">8</a><a class="fn" href="#fn9" title="eufy UK cloud plans">9</a><a class="fn" href="#fn10" title="The Verge, Nov 2022">10</a><a class="fn" href="#fn11" title="smarthomeassistant.co.uk guide">11</a></p></td></tr>
-</tbody><tbody class="item" id="m-reo-wifi" data-id="reo-wifi" data-rec="yes" data-ha="2" data-power="wired" data-price="93.49" data-keep3="103.49" data-score="7" data-idx="3">
+</tbody><tbody class="item" id="m-reo-wifi" data-id="reo-wifi" data-v="best" data-rec="yes" data-ha="2" data-power="wired" data-price="93.49" data-keep3="103.49" data-score="7" data-idx="3">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="reo-wifi" aria-label="Compare Reolink Video Doorbell WiFi"></td>
-<th scope="row" class="c-model"><span class="brand">Reolink</span> <span class="mname">Video Doorbell WiFi</span><span class="best">Best for: Homes with existing doorbell wiring, plus Home Assistant or NVR users</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-wifi-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell WiFi"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell WiFi</span><span class="vtag v-best">Best overall</span><span class="best">Best for: Homes with existing doorbell wiring, plus Home Assistant or NVR users</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£93.49<a class="fn" href="#fn12" title="Reolink UK store">12</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£103.49</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£219.13</td>
-<td class="c-catch" data-label="Main catch">Needs doorbell transformer wiring, and the microSD card is sold separately.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-wifi">Details</button></td>
+<td class="c-catch" data-label="Main catch">Needs doorbell transformer wiring, and the microSD card is sold separately.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-wifi">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-reo-wifi" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-reo-wifi" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/reo-wifi-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Reolink Video Doorbell WiFi"></figure>
 <dl>
 <dt>Power</dt><dd>Wired; Wi-Fi: Dual-band (per third-party guide)</dd>
 <dt>Storage</dt><dd>microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF</dd>
@@ -293,19 +349,19 @@ ol.fns a{color:var(--ink2)}
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> Reolink Cloud UK price (£3.49/month is used in the sums; it comes from a third-party post).</p>
 <p class="srcs">Sources <a class="fn" href="#fn12" title="Reolink UK store">12</a><a class="fn" href="#fn13" title="Home Assistant: Reolink">13</a><a class="fn" href="#fn14" title="Reolink Cloud plans (EU)">14</a><a class="fn" href="#fn11" title="smarthomeassistant.co.uk guide">11</a></p></td></tr>
-</tbody><tbody class="item" id="m-reo-poe" data-id="reo-poe" data-rec="yes" data-ha="2" data-power="poe" data-price="69.99" data-keep3="79.99" data-score="7" data-idx="4">
+</tbody><tbody class="item" id="m-reo-poe" data-id="reo-poe" data-v="best" data-rec="yes" data-ha="2" data-power="poe" data-price="69.99" data-keep3="79.99" data-score="7" data-idx="4">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="reo-poe" aria-label="Compare Reolink Video Doorbell PoE"></td>
-<th scope="row" class="c-model"><span class="brand">Reolink</span> <span class="mname">Video Doorbell PoE</span><span class="best">Best for: The most reliable, fully local setup, if you can run an Ethernet cable</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-poe-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell PoE</span><span class="vtag v-best">Best overall</span><span class="best">Best for: The most reliable, fully local setup, if you can run an Ethernet cable</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£69.99<a class="fn" href="#fn12" title="Reolink UK store">12</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£79.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£195.63</td>
-<td class="c-catch" data-label="Main catch">Needs an Ethernet cable to the door and a PoE switch or injector.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-poe">Details</button></td>
+<td class="c-catch" data-label="Main catch">Needs an Ethernet cable to the door and a PoE switch or injector.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-poe">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-reo-poe" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-reo-poe" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/reo-poe-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"></figure>
 <dl>
 <dt>Power</dt><dd>PoE; Wi-Fi: Wired Ethernet</dd>
 <dt>Storage</dt><dd>microSD and/or NVR; RTSP/ONVIF</dd>
@@ -323,19 +379,19 @@ ol.fns a{color:var(--ink2)}
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> Reolink Cloud UK price.</p>
 <p class="srcs">Sources <a class="fn" href="#fn12" title="Reolink UK store">12</a><a class="fn" href="#fn13" title="Home Assistant: Reolink">13</a><a class="fn" href="#fn14" title="Reolink Cloud plans (EU)">14</a></p></td></tr>
-</tbody><tbody class="item" id="m-reo-batt" data-id="reo-batt" data-rec="yes" data-ha="1" data-power="battery wired" data-price="99.99" data-keep3="99.99" data-score="7" data-idx="5">
+</tbody><tbody class="item" id="m-reo-batt" data-id="reo-batt" data-v="best" data-rec="yes" data-ha="1" data-power="battery wired" data-price="99.99" data-keep3="99.99" data-score="7" data-idx="5">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="reo-batt" aria-label="Compare Reolink Video Doorbell (Battery)"></td>
-<th scope="row" class="c-model"><span class="brand">Reolink</span> <span class="mname">Video Doorbell (Battery)</span><span class="best">Best for: Battery install with 5 GHz Wi-Fi and no fees</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/reo-batt-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Reolink Video Doorbell (Battery)"><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell (Battery)</span><span class="vtag v-best">Best overall</span><span class="best">Best for: Battery install with 5 GHz Wi-Fi and no fees</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£99.99<a class="fn" href="#fn15" title="Screwfix: Reolink Battery">15</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="width:88%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£99.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£225.63</td>
-<td class="c-catch" data-label="Main catch">Footage sits on a card in the doorbell itself unless you pay about £50 more for the Home Hub bundle.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-batt">Details</button></td>
+<td class="c-catch" data-label="Main catch">Footage sits on a card in the doorbell itself unless you pay about £50 more for the Home Hub bundle.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-batt">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-reo-batt" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-reo-batt" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/reo-batt-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Reolink Video Doorbell (Battery)"></figure>
 <dl>
 <dt>Power</dt><dd>Battery / Wired; Wi-Fi: Dual-band 2.4/5 GHz</dd>
 <dt>Storage</dt><dd>microSD in the doorbell, or a Home Hub indoors (up to 1 TB)</dd>
@@ -353,19 +409,19 @@ ol.fns a{color:var(--ink2)}
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> Home Assistant support for this exact model through the Home Hub. Hub bundle £149.99 vs £99.99 on its own.</p>
 <p class="srcs">Sources <a class="fn" href="#fn15" title="Screwfix: Reolink Battery">15</a><a class="fn" href="#fn16" title="Reolink UK battery doorbells">16</a><a class="fn" href="#fn13" title="Home Assistant: Reolink">13</a></p></td></tr>
-</tbody><tbody class="item" id="m-tapo-d230" data-id="tapo-d230" data-rec="yes" data-ha="1" data-power="battery" data-price="84.99" data-keep3="94.99" data-score="6" data-idx="6">
+</tbody><tbody class="item" id="m-tapo-d230" data-id="tapo-d230" data-v="batt" data-rec="yes" data-ha="1" data-power="battery" data-price="84.99" data-keep3="94.99" data-score="6" data-idx="6">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="tapo-d230" aria-label="Compare TP-Link Tapo D230S1"></td>
-<th scope="row" class="c-model"><span class="brand">TP-Link Tapo</span> <span class="mname">D230S1</span><span class="best">Best for: An easy battery doorbell that keeps footage indoors on its chime/hub</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/tapo-d230-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="TP-Link Tapo D230S1"><div><span class="brand">TP-Link Tapo</span> <span class="mname">D230S1</span><span class="vtag v-batt">Battery pick</span><span class="best">Best for: An easy battery doorbell that keeps footage indoors on its chime/hub</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£84.99<a class="fn" href="#fn17" title="Tapo UK: D230S1">17</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£94.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£192.63</td>
-<td class="c-catch" data-label="Main catch">The microSD card is extra, and Home Assistant needs an unofficial add-on.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-tapo-d230">Details</button></td>
+<td class="c-catch" data-label="Main catch">The microSD card is extra, and Home Assistant needs an unofficial add-on.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-tapo-d230">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-tapo-d230" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-tapo-d230" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/tapo-d230-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="TP-Link Tapo D230S1"></figure>
 <dl>
 <dt>Power</dt><dd>Battery; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>microSD (up to 512 GB) in the indoor H200 hub</dd>
@@ -386,16 +442,16 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-tapo-td21" data-id="tapo-td21" data-rec="yes" data-ha="0" data-power="battery" data-price="44.99" data-keep3="54.99" data-score="5" data-idx="7">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="tapo-td21" aria-label="Compare TP-Link Tapo TD21"></td>
-<th scope="row" class="c-model"><span class="brand">TP-Link Tapo</span> <span class="mname">TD21</span><span class="best">Best for: The tightest budget</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/tapo-td21-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="TP-Link Tapo TD21"><div><span class="brand">TP-Link Tapo</span> <span class="mname">TD21</span><span class="best">Best for: The tightest budget</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£44.99<a class="fn" href="#fn21" title="Tapo UK: TD21">21</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="width:62%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£54.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£152.63</td>
-<td class="c-catch" data-label="Main catch">Basic, and it isn&#x27;t clear whether the card sits in the doorbell (stealable) or the chime.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-tapo-td21">Details</button></td>
+<td class="c-catch" data-label="Main catch">Basic, and it isn&#x27;t clear whether the card sits in the doorbell (stealable) or the chime.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-tapo-td21">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-tapo-td21" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-tapo-td21" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/tapo-td21-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="TP-Link Tapo TD21"></figure>
 <dl>
 <dt>Power</dt><dd>Battery; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>microSD up to 512 GB</dd>
@@ -413,19 +469,19 @@ ol.fns a{color:var(--ink2)}
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> Where the card goes; Home Assistant support.</p>
 <p class="srcs">Sources <a class="fn" href="#fn21" title="Tapo UK: TD21">21</a><a class="fn" href="#fn18" title="Tapo Care UK">18</a></p></td></tr>
-</tbody><tbody class="item" id="m-arlo" data-id="arlo" data-rec="kit" data-ha="0" data-power="battery wired" data-price="169.99" data-keep3="279.73" data-score="3" data-idx="8">
+</tbody><tbody class="item" id="m-arlo" data-id="arlo" data-v="avoid" data-rec="kit" data-ha="0" data-power="battery wired" data-price="169.99" data-keep3="279.73" data-score="3" data-idx="8">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="arlo" aria-label="Compare Arlo Essential Video Doorbell 2K (2nd gen)"></td>
-<th scope="row" class="c-model"><span class="brand">Arlo</span> <span class="mname">Essential Video Doorbell 2K (2nd gen)</span><span class="best">Best for: People who already own Arlo cameras</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/arlo-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Arlo Essential Video Doorbell 2K (2nd gen)"><div><span class="brand">Arlo</span> <span class="mname">Essential Video Doorbell 2K (2nd gen)</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: People who already own Arlo cameras</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-kit">Only with extra kit</span></td>
 <td class="c-price num" data-label="Price">£169.99<a class="fn" href="#fn22" title="Argos: Arlo doorbell">22</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>3</b>/8</span><span class="bar" aria-hidden="true"><i style="width:38%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£279.73</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£457.63</td>
-<td class="c-catch" data-label="Main catch">Recording needs a £7.99/month plan or a separate hub costing about £100.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-arlo">Details</button></td>
+<td class="c-catch" data-label="Main catch">Recording needs a £7.99/month plan or a separate hub costing about £100.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-arlo">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-arlo" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-arlo" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/arlo-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Arlo Essential Video Doorbell 2K (2nd gen)"></figure>
 <dl>
 <dt>Power</dt><dd>Battery / Wired; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>Only through an Arlo SmartHub (VMB4540, USB) or a Base Station</dd>
@@ -446,16 +502,16 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-aqara-g4" data-id="aqara-g4" data-rec="yes" data-ha="1" data-power="battery wired" data-price="84.99" data-keep3="94.99" data-score="6" data-idx="9">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="aqara-g4" aria-label="Compare Aqara Video Doorbell G4"></td>
-<th scope="row" class="c-model"><span class="brand">Aqara</span> <span class="mname">Video Doorbell G4</span><span class="best">Best for: Apple Home users</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/aqara-g4-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Aqara Video Doorbell G4"><div><span class="brand">Aqara</span> <span class="mname">Video Doorbell G4</span><span class="best">Best for: Apple Home users</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£84.99<a class="fn" href="#fn29" title="Amazon UK: Aqara G4">29</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£94.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">—</td>
-<td class="c-catch" data-label="Main catch">Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-aqara-g4">Details</button></td>
+<td class="c-catch" data-label="Main catch">Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-aqara-g4">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-aqara-g4" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-aqara-g4" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/aqara-g4-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Aqara Video Doorbell G4"></figure>
 <dl>
 <dt>Power</dt><dd>Battery / Wired; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>microSD (up to 512 GB) in the indoor chime</dd>
@@ -473,19 +529,19 @@ ol.fns a{color:var(--ink2)}
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> Amazon price and card limit (from search summaries); Home Assistant support (from user forum posts).</p>
 <p class="srcs">Sources <a class="fn" href="#fn29" title="Amazon UK: Aqara G4">29</a><a class="fn" href="#fn30" title="Aqara EU store">30</a><a class="fn" href="#fn31" title="Home Assistant: HomeKit Device">31</a></p></td></tr>
-</tbody><tbody class="item" id="m-blink" data-id="blink" data-rec="kit" data-ha="0" data-power="battery" data-price="69.99" data-keep3="119.98" data-score="2" data-idx="10">
+</tbody><tbody class="item" id="m-blink" data-id="blink" data-v="avoid" data-rec="kit" data-ha="0" data-power="battery" data-price="69.99" data-keep3="119.98" data-score="2" data-idx="10">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="blink" aria-label="Compare Blink Battery Doorbell 2K+"></td>
-<th scope="row" class="c-model"><span class="brand">Blink</span> <span class="mname">Battery Doorbell 2K+</span><span class="best">Best for: The cheapest way into Amazon&#x27;s ecosystem, if you catch a deal</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/blink-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="Blink Battery Doorbell 2K+"><div><span class="brand">Blink</span> <span class="mname">Battery Doorbell 2K+</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: The cheapest way into Amazon&#x27;s ecosystem, if you catch a deal</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-kit">Only with extra kit</span></td>
 <td class="c-price num" data-label="Price">£69.99<a class="fn" href="#fn32" title="Amazon UK: Blink 2K+">32</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>2</b>/8</span><span class="bar" aria-hidden="true"><i style="width:25%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£119.98</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£159.99</td>
-<td class="c-catch" data-label="Main catch">Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-blink">Details</button></td>
+<td class="c-catch" data-label="Main catch">Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-blink">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-blink" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-blink" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/blink-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="Blink Battery Doorbell 2K+"></figure>
 <dl>
 <dt>Power</dt><dd>Battery; Wi-Fi: 2.4 GHz (Blink requirement)</dd>
 <dt>Storage</dt><dd>Only through a Sync Module 2 + USB stick (1–256 GB); clips aren&#x27;t encrypted</dd>
@@ -506,16 +562,16 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-ezviz-ep3x" data-id="ezviz-ep3x" data-rec="yes" data-ha="0" data-power="battery" data-price="79.99" data-keep3="79.99" data-score="6" data-idx="11">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="ezviz-ep3x" aria-label="Compare EZVIZ EP3x Pro"></td>
-<th scope="row" class="c-model"><span class="brand">EZVIZ</span> <span class="mname">EP3x Pro</span><span class="best">Best for: Two cameras on a budget, with storage built in</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ezviz-ep3x-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="EZVIZ EP3x Pro"><div><span class="brand">EZVIZ</span> <span class="mname">EP3x Pro</span><span class="best">Best for: Two cameras on a budget, with storage built in</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£79.99<a class="fn" href="#fn37" title="Amazon UK: EZVIZ EP3x Pro">37</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£79.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£259.63</td>
-<td class="c-catch" data-label="Main catch">Expert Reviews found its motion detection unreliable and the app confusing.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-ezviz-ep3x">Details</button></td>
+<td class="c-catch" data-label="Main catch">Expert Reviews found its motion detection unreliable and the app confusing.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-ezviz-ep3x">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-ezviz-ep3x" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-ezviz-ep3x" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/ezviz-ep3x-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="EZVIZ EP3x Pro"></figure>
 <dl>
 <dt>Power</dt><dd>Battery; Wi-Fi: 2.4 GHz</dd>
 <dt>Storage</dt><dd>32 GB built in, no card needed</dd>
@@ -536,16 +592,16 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-ezviz-db2" data-id="ezviz-db2" data-rec="yes" data-ha="0" data-power="battery" data-price="114.99" data-keep3="124.99" data-score="5" data-idx="12">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="ezviz-db2" aria-label="Compare EZVIZ DB2 Pro Kit"></td>
-<th scope="row" class="c-model"><span class="brand">EZVIZ</span> <span class="mname">DB2 Pro Kit</span><span class="best">Best for: Flats and rentals: no wiring, and footage stays indoors in the chime</span></th>
+<th scope="row" class="c-model"><div class="mcell"><img class="ph ph-sm" src="img/ezviz-db2-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt="EZVIZ DB2 Pro Kit"><div><span class="brand">EZVIZ</span> <span class="mname">DB2 Pro Kit</span><span class="best">Best for: Flats and rentals: no wiring, and footage stays indoors in the chime</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£114.99<a class="fn" href="#fn41" title="ER Tech (UK retailer)">41</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="width:62%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£124.99</td>
 <td class="c-sub num" data-label="3 yrs, with plan">£294.63</td>
-<td class="c-catch" data-label="Main catch">2.4 GHz Wi-Fi only, and the card is sold separately.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-ezviz-db2">Details</button></td>
+<td class="c-catch" data-label="Main catch">2.4 GHz Wi-Fi only, and the card is sold separately.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-ezviz-db2">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-ezviz-db2" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-ezviz-db2" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><img class="ph ph-lg" src="img/ezviz-db2-lg.webp" width="180" height="240" loading="lazy" decoding="async" alt="EZVIZ DB2 Pro Kit"></figure>
 <dl>
 <dt>Power</dt><dd>Battery; Wi-Fi: 2.4 GHz only</dd>
 <dt>Storage</dt><dd>microSD (up to 256 GB) in the included indoor chime</dd>
@@ -566,16 +622,16 @@ ol.fns a{color:var(--ink2)}
 </tbody><tbody class="item" id="m-hik" data-id="hik" data-rec="yes" data-ha="1" data-power="wired" data-price="295.0" data-keep3="305.0" data-score="5" data-idx="13">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="hik" aria-label="Compare Hikvision DS-KB6003-WIP"></td>
-<th scope="row" class="c-model"><span class="brand">Hikvision</span> <span class="mname">DS-KB6003-WIP</span><span class="best">Best for: Only worth it if an installer is fitting a Hikvision system anyway</span></th>
+<th scope="row" class="c-model"><div class="mcell"><span class="ph ph-sm" role="img" aria-label="No photo available for Hikvision DS-KB6003-WIP" style="width:45px;height:60px"><span>No photo</span></span><div><span class="brand">Hikvision</span> <span class="mname">DS-KB6003-WIP</span><span class="best">Best for: Only worth it if an installer is fitting a Hikvision system anyway</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes">Yes</span></td>
 <td class="c-price num" data-label="Price">£295<a class="fn" href="#fn42" title="Eagle Security Solutions">42</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="width:62%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">£305</td>
 <td class="c-sub num" data-label="3 yrs, with plan">—</td>
-<td class="c-catch" data-label="Main catch">Discontinued trade product; the price includes fitting.</td>
-<td class="c-more"><button type="button" class="more" aria-expanded="false" aria-controls="d-hik">Details</button></td>
+<td class="c-catch" data-label="Main catch">Discontinued trade product; the price includes fitting.<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-hik">Details</button></div></td>
 </tr>
-<tr class="detail" id="d-hik" hidden><td colspan="9"><div class="dgrid">
+<tr class="detail" id="d-hik" hidden><td colspan="8"><div class="dgrid">
+<figure class="dimg"><span class="ph ph-lg" role="img" aria-label="No photo available for Hikvision DS-KB6003-WIP" style="width:180px;height:240px"><span>No photo</span></span></figure>
 <dl>
 <dt>Power</dt><dd>Wired; Wi-Fi: Not checked</dd>
 <dt>Storage</dt><dd>microSD up to 128 GB; RTSP to an NVR</dd>
@@ -604,6 +660,7 @@ ol.fns a{color:var(--ink2)}
 <p><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The Reolink (£3.49) and EZVIZ (£4.99) plan prices aren't confirmed for the UK. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
 <p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything we haven't fully confirmed is listed under <i>Not yet verified</i> in each model's details. Spotted something wrong, or a paywall change? Tell us and we'll fix it.</p>
+<p><b>Product photos</b> are the manufacturers' own, cropped and resized, from their product pages: <a href="https://en-uk.ring.com/products/battery-doorbell-2nd-gen" rel="nofollow noopener noreferrer">Ring Battery Video Doorbell 2K</a>, <a href="https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB" rel="nofollow noopener noreferrer">Google Nest Doorbell (battery)</a>, <a href="https://www.eufy.com/uk/products/T8214311" rel="nofollow noopener noreferrer">eufy Video Doorbell E340</a>, <a href="https://reolink.com/gb/product/reolink-video-doorbell-wifi/" rel="nofollow noopener noreferrer">Reolink Video Doorbell WiFi</a>, <a href="https://reolink.com/gb/product/reolink-video-doorbell-poe/" rel="nofollow noopener noreferrer">Reolink Video Doorbell PoE</a>, <a href="https://reolink.com/gb/product/reolink-doorbell-battery/" rel="nofollow noopener noreferrer">Reolink Video Doorbell (Battery)</a>, <a href="https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell" rel="nofollow noopener noreferrer">TP-Link Tapo D230S1</a>, <a href="https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21" rel="nofollow noopener noreferrer">TP-Link Tapo TD21</a>, <a href="https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell" rel="nofollow noopener noreferrer">Arlo Essential Video Doorbell 2K (2nd gen)</a>, <a href="https://eu.aqara.com/products/aqara-video-doorbell-g4" rel="nofollow noopener noreferrer">Aqara Video Doorbell G4</a>, <a href="https://blinkforhome.com/products" rel="nofollow noopener noreferrer">Blink Battery Doorbell 2K+</a>, <a href="https://www.ezviz.com/uk/product/ep3x-pro/55935" rel="nofollow noopener noreferrer">EZVIZ EP3x Pro</a>, <a href="https://www.ezviz.com/uk/product/db2-pro-kit/42371" rel="nofollow noopener noreferrer">EZVIZ DB2 Pro Kit</a>. No reliable official photo for: Hikvision DS-KB6003-WIP.</p>
 </div>
 <div><h2>Sources</h2><ol class="fns"><li id="fn1"><a href="https://en-uk.ring.com/products/battery-doorbell-2nd-gen" rel="nofollow noopener noreferrer">Ring UK: Battery Doorbell 2K</a></li><li id="fn2"><a href="https://en-uk.ring.com/pages/plans/" rel="nofollow noopener noreferrer">Ring UK plans</a></li><li id="fn3"><a href="https://www.independent.co.uk/home-improvement/ring-video-doorbell-subscription-without-b2915224.html" rel="nofollow noopener noreferrer">The Independent, Feb 2026</a></li><li id="fn4"><a href="https://www.home-assistant.io/integrations/ring/" rel="nofollow noopener noreferrer">Home Assistant: Ring</a></li><li id="fn5"><a href="https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB" rel="nofollow noopener noreferrer">Google Store UK: Nest Doorbell</a></li><li id="fn6"><a href="https://store.google.com/gb/product/google_home_premium?hl=en-GB" rel="nofollow noopener noreferrer">Google Home Premium UK</a></li><li id="fn7"><a href="https://www.home-assistant.io/integrations/nest/" rel="nofollow noopener noreferrer">Home Assistant: Nest</a></li><li id="fn8"><a href="https://www.eufy.com/uk/products/T8214311" rel="nofollow noopener noreferrer">eufy UK: E340</a></li><li id="fn9"><a href="https://www.eufy.com/uk/cloud-storage" rel="nofollow noopener noreferrer">eufy UK cloud plans</a></li><li id="fn10"><a href="https://www.theverge.com/2022/11/30/23486753/anker-eufy-security-camera-cloud-private-encryption-authentication-storage" rel="nofollow noopener noreferrer">The Verge, Nov 2022</a></li><li id="fn11"><a href="https://smarthomeassistant.co.uk/articles/smart-security/best-video-doorbell-no-subscription-uk" rel="nofollow noopener noreferrer">smarthomeassistant.co.uk guide</a></li><li id="fn12"><a href="https://store.reolink.com/gb/video-doorbells/" rel="nofollow noopener noreferrer">Reolink UK store</a></li><li id="fn13"><a href="https://www.home-assistant.io/integrations/reolink/" rel="nofollow noopener noreferrer">Home Assistant: Reolink</a></li><li id="fn14"><a href="https://reolink.com/blog/reolink-cloud-in-europa-und-uk/" rel="nofollow noopener noreferrer">Reolink Cloud plans (EU)</a></li><li id="fn15"><a href="https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak" rel="nofollow noopener noreferrer">Screwfix: Reolink Battery</a></li><li id="fn16"><a href="https://store.reolink.com/gb/wireless-doorbell-camera/" rel="nofollow noopener noreferrer">Reolink UK battery doorbells</a></li><li id="fn17"><a href="https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell" rel="nofollow noopener noreferrer">Tapo UK: D230S1</a></li><li id="fn18"><a href="https://uk.store.tapo.com/pages/tapo-care" rel="nofollow noopener noreferrer">Tapo Care UK</a></li><li id="fn19"><a href="https://community.home-assistant.io/t/tapo-d230-video-stream-in-ha/858436" rel="nofollow noopener noreferrer">HA community forum</a></li><li id="fn20"><a href="https://www.expertreviews.co.uk/technology/home-security/ezviz-ep3x-pro-video-doorbell-review" rel="nofollow noopener noreferrer">Expert Reviews: EZVIZ EP3x Pro review</a></li><li id="fn21"><a href="https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21" rel="nofollow noopener noreferrer">Tapo UK: TD21</a></li><li id="fn22"><a href="https://www.argos.co.uk/product/4379311" rel="nofollow noopener noreferrer">Argos: Arlo doorbell</a></li><li id="fn23"><a href="https://www.arlo.com/en_gb/blog/smart-security/should-you-have-a-video-doorbell-without-a-subscription" rel="nofollow noopener noreferrer">Arlo UK blog</a></li><li id="fn24"><a href="https://www.arlo.com/en_gb/support/faq/subscriptions-and-payments/what-arlo-subscription-plans-and-cloud-recording-options-are-available" rel="nofollow noopener noreferrer">Arlo UK plans FAQ</a></li><li id="fn25"><a href="https://www.arlo.com/en_gb/support/faq/connectivity-and-integrations/arlo-smarthub-and-base-station-compatibility" rel="nofollow noopener noreferrer">Arlo SmartHub compatibility</a></li><li id="fn26"><a href="https://www.amazon.co.uk/Arlo-Certified-Accessory-Designed-Floodlight/dp/B08516SJZ9" rel="nofollow noopener noreferrer">Amazon UK: Arlo SmartHub</a></li><li id="fn27"><a href="https://www.trustedreviews.com/reviews/arlo-essential-3-2k-security-camera" rel="nofollow noopener noreferrer">Trusted Reviews, 2026</a></li><li id="fn28"><a href="https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/" rel="nofollow noopener noreferrer">The Ambient</a></li><li id="fn29"><a href="https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG" rel="nofollow noopener noreferrer">Amazon UK: Aqara G4</a></li><li id="fn30"><a href="https://eu.aqara.com/products/aqara-video-doorbell-g4" rel="nofollow noopener noreferrer">Aqara EU store</a></li><li id="fn31"><a href="https://www.home-assistant.io/integrations/homekit_controller" rel="nofollow noopener noreferrer">Home Assistant: HomeKit Device</a></li><li id="fn32"><a href="https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C" rel="nofollow noopener noreferrer">Amazon UK: Blink 2K+</a></li><li id="fn33"><a href="https://uk.camelcamelcamel.com/product/B08BJ9ZCZC" rel="nofollow noopener noreferrer">camelcamelcamel (Sync Module 2)</a></li><li id="fn34"><a href="https://blinkforhome.com/plans-uk" rel="nofollow noopener noreferrer">Blink UK plans</a></li><li id="fn35"><a href="https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2" rel="nofollow noopener noreferrer">Blink Sync Module 2 FAQ</a></li><li id="fn36"><a href="https://www.home-assistant.io/integrations/blink/" rel="nofollow noopener noreferrer">Home Assistant: Blink</a></li><li id="fn37"><a href="https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD" rel="nofollow noopener noreferrer">Amazon UK: EZVIZ EP3x Pro</a></li><li id="fn38"><a href="https://www.ezviz.com/uk/blog/detail/best-video-doorbells-without-monthly-subscription-fees/2609214160772537" rel="nofollow noopener noreferrer">EZVIZ UK: no-subscription guide</a></li><li id="fn39"><a href="https://www.ezviz.com/page/cloudplay" rel="nofollow noopener noreferrer">EZVIZ CloudPlay (EU prices)</a></li><li id="fn40"><a href="https://www.home-assistant.io/integrations/ezviz/" rel="nofollow noopener noreferrer">Home Assistant: EZVIZ</a></li><li id="fn41"><a href="https://www.ertech.co.uk/product/db2-pro/" rel="nofollow noopener noreferrer">ER Tech (UK retailer)</a></li><li id="fn42"><a href="https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/" rel="nofollow noopener noreferrer">Eagle Security Solutions</a></li><li id="fn43"><a href="https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf" rel="nofollow noopener noreferrer">Hikvision datasheet</a></li></ol></div>
 </section>
@@ -611,8 +668,14 @@ ol.fns a{color:var(--ink2)}
 <div class="tray" id="tray" hidden><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
 <script>
 (function(){
-var D={"ring": {"name": "Ring Battery Video Doorbell 2K", "rec": "No", "price": "£79.99", "score": "2/8", "nosub3": "£79.99", "sub3": "£259.63", "best": "Alexa households happy to pay the monthly plan", "catch": "Saves no video at all unless you pay £4.99 a month.", "power": "Battery / Wired", "storage": "None. No on-device or hub storage.", "live": "Yes", "alerts": "Yes, motion and button-press alerts", "ai": "Paid (person, package and vehicle alerts on Ring's plans page)", "history": "None", "paywalled": "All recording and playback (up to 180 days), smart alerts, Extended Live View; 24/7 recording is £3/month extra per device", "plan": "Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month", "ha": "Official integration, but it goes through Ring's cloud. No local-only option.", "wifi": "2.4 GHz only"}, "nest": {"name": "Google Nest Nest Doorbell (battery)", "rec": "Only with extra kit", "price": "£179.99", "score": "4/8", "nosub3": "£179.99", "sub3": "£467.99", "best": "Google Home households who want polished smart alerts", "catch": "Only 3 hours of free history. Anything longer is £8 a month.", "power": "Battery / Wired", "storage": "None", "live": "Yes", "alerts": "Yes", "ai": "Partly. Google advertises people/parcel/animal/vehicle alerts, but lists 'intelligent alerts' under Premium", "history": "3 hours of event clips", "paywalled": "30 or 60 days of history, intelligent alerts, familiar faces, Gemini search. No 24/7 recording on this model at any price", "plan": "Google Home Premium Standard £8/month (£80/year); Advanced £16/month (£160/year)", "ha": "Official integration, but it goes through Google's cloud (Cloud Push) and needs a one-off US$5 Google developer fee.", "wifi": "Not checked"}, "eufy-e340": {"name": "eufy Video Doorbell E340", "rec": "Yes", "price": "£169.99", "score": "7/8", "nosub3": "£169.99", "sub3": "£313.63", "best": "Busy doorsteps with lots of parcels: a second camera looks straight down", "catch": "Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.", "power": "Battery / Wired", "storage": "8 GB in the doorbell; optional HomeBase S380 (16 GB, expandable)", "live": "Yes", "alerts": "Yes", "ai": "Free: person and package detection on the device", "history": "Yes, event clips kept locally", "paywalled": "Nothing essential; cloud backup is optional", "plan": "Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices", "ha": "Community add-on only (eufy_security), which still logs in through your eufy account.", "wifi": "Not checked"}, "reo-wifi": {"name": "Reolink Video Doorbell WiFi", "rec": "Yes", "price": "£93.49", "score": "7/8", "nosub3": "£103.49", "sub3": "£219.13", "best": "Homes with existing doorbell wiring, plus Home Assistant or NVR users", "catch": "Needs doorbell transformer wiring, and the microSD card is sold separately.", "power": "Wired", "storage": "microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, motion-triggered or 24/7 recording to card or NVR", "paywalled": "Nothing. Reolink Cloud is optional", "plan": "Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)", "ha": "Official, fully local integration (Local Push, top 'Platinum' quality rating); works with no internet connection.", "wifi": "Dual-band (per third-party guide)"}, "reo-poe": {"name": "Reolink Video Doorbell PoE", "rec": "Yes", "price": "£69.99", "score": "7/8", "nosub3": "£79.99", "sub3": "£195.63", "best": "The most reliable, fully local setup, if you can run an Ethernet cable", "catch": "Needs an Ethernet cable to the door and a PoE switch or injector.", "power": "PoE", "storage": "microSD and/or NVR; RTSP/ONVIF", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, motion-triggered or 24/7 recording", "paywalled": "Nothing", "plan": "Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)", "ha": "Official, fully local integration (Local Push, Platinum).", "wifi": "Wired Ethernet"}, "reo-batt": {"name": "Reolink Video Doorbell (Battery)", "rec": "Yes", "price": "£99.99", "score": "7/8", "nosub3": "£99.99", "sub3": "£225.63", "best": "Battery install with 5 GHz Wi-Fi and no fees", "catch": "Footage sits on a card in the doorbell itself unless you pay about £50 more for the Home Hub bundle.", "power": "Battery / Wired", "storage": "microSD in the doorbell, or a Home Hub indoors (up to 1 TB)", "live": "Yes", "alerts": "Yes", "ai": "Free: person, vehicle and package detection", "history": "Yes, on card or hub", "paywalled": "Nothing", "plan": "Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)", "ha": "Official Reolink integration; battery models are best connected through a Reolink Home Hub.", "wifi": "Dual-band 2.4/5 GHz"}, "tapo-d230": {"name": "TP-Link Tapo D230S1", "rec": "Yes", "price": "£84.99", "score": "6/8", "nosub3": "£94.99", "sub3": "£192.63", "best": "An easy battery doorbell that keeps footage indoors on its chime/hub", "catch": "The microSD card is extra, and Home Assistant needs an unofficial add-on.", "power": "Battery", "storage": "microSD (up to 512 GB) in the indoor H200 hub", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, on the hub's card", "paywalled": "30-day cloud history, snapshot notifications, Smart Sort", "plan": "Optional Tapo Care from £2.99/month or £29.49/year", "ha": "Official integration doesn't show video. The community 'Tapo: Cameras Control' add-on reportedly works locally.", "wifi": "Not checked"}, "tapo-td21": {"name": "TP-Link Tapo TD21", "rec": "Yes", "price": "£44.99", "score": "5/8", "nosub3": "£54.99", "sub3": "£152.63", "best": "The tightest budget", "catch": "Basic, and it isn't clear whether the card sits in the doorbell (stealable) or the chime.", "power": "Battery", "storage": "microSD up to 512 GB", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, on card", "paywalled": "30-day cloud history, snapshot notifications, Smart Sort", "plan": "Optional Tapo Care from £2.99/month", "ha": "Unknown", "wifi": "Not checked"}, "arlo": {"name": "Arlo Essential Video Doorbell 2K (2nd gen)", "rec": "Only with extra kit", "price": "£169.99", "score": "3/8", "nosub3": "£279.73", "sub3": "£457.63", "best": "People who already own Arlo cameras", "catch": "Recording needs a £7.99/month plan or a separate hub costing about £100.", "power": "Battery / Wired", "storage": "Only through an Arlo SmartHub (VMB4540, USB) or a Base Station", "live": "Yes", "alerts": "Yes", "ai": "Paid", "history": "None without a hub", "paywalled": "Cloud recording (7, 14 or 30 days depending on plan), object detection, activity zones, theft replacement", "plan": "Arlo Secure £7.99/month (1 camera, 7 days), Multi-Cam £11.99, Secure Plus £19.99, Secure Pro £24.99", "ha": "No official integration; only a community add-on that goes through Arlo's cloud.", "wifi": "Not checked"}, "aqara-g4": {"name": "Aqara Video Doorbell G4", "rec": "Yes", "price": "£84.99", "score": "6/8", "nosub3": "£94.99", "sub3": "—", "best": "Apple Home users", "catch": "Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.", "power": "Battery / Wired", "storage": "microSD (up to 512 GB) in the indoor chime", "live": "Yes", "alerts": "Yes", "ai": "Free: face recognition on the device", "history": "Yes, on the chime's card (24/7 only when wired)", "paywalled": "Nothing essential. HomeKit Secure Video needs Apple's paid iCloud+", "plan": "None needed", "ha": "Reported to work locally through HA's HomeKit Device integration.", "wifi": "Not checked"}, "blink": {"name": "Blink Battery Doorbell 2K+", "rec": "Only with extra kit", "price": "£69.99", "score": "2/8", "nosub3": "£119.98", "sub3": "£159.99", "best": "The cheapest way into Amazon's ecosystem, if you catch a deal", "catch": "Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.", "power": "Battery", "storage": "Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted", "live": "Capped at 5 minutes", "alerts": "Yes", "ai": "Paid (person and vehicle detection)", "history": "None without a Sync Module 2", "paywalled": "Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions", "plan": "Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month", "ha": "Official integration, but it goes through Blink's cloud.", "wifi": "2.4 GHz (Blink requirement)"}, "ezviz-ep3x": {"name": "EZVIZ EP3x Pro", "rec": "Yes", "price": "£79.99", "score": "6/8", "nosub3": "£79.99", "sub3": "£259.63", "best": "Two cameras on a budget, with storage built in", "catch": "Expert Reviews found its motion detection unreliable and the app confusing.", "power": "Battery", "storage": "32 GB built in, no card needed", "live": "Yes", "alerts": "Yes", "ai": "Free: human and package detection", "history": "Yes, on built-in storage", "paywalled": "Nothing essential. CloudPlay is optional", "plan": "Optional CloudPlay: €4.99/month (7 days) on EZVIZ's EU page; UK price only shown in the app", "ha": "Official integration, but it goes through EZVIZ's cloud. Support for battery doorbells unknown.", "wifi": "2.4 GHz"}, "ezviz-db2": {"name": "EZVIZ DB2 Pro Kit", "rec": "Yes", "price": "£114.99", "score": "5/8", "nosub3": "£124.99", "sub3": "£294.63", "best": "Flats and rentals: no wiring, and footage stays indoors in the chime", "catch": "2.4 GHz Wi-Fi only, and the card is sold separately.", "power": "Battery", "storage": "microSD (up to 256 GB) in the included indoor chime", "live": "Yes", "alerts": "Yes", "ai": "Free: PIR plus human-shape detection", "history": "Yes, on the chime's card", "paywalled": "Nothing essential", "plan": "Optional CloudPlay: €4.99/month (7 days) on EZVIZ's EU page; UK price only shown in the app", "ha": "Official integration, but it goes through EZVIZ's cloud.", "wifi": "2.4 GHz only"}, "hik": {"name": "Hikvision DS-KB6003-WIP", "rec": "Yes", "price": "£295", "score": "5/8", "nosub3": "£305", "sub3": "—", "best": "Only worth it if an installer is fitting a Hikvision system anyway", "catch": "Discontinued trade product; the price includes fitting.", "power": "Wired", "storage": "microSD up to 128 GB; RTSP to an NVR", "live": "Yes (Hik-Connect app)", "alerts": "Yes (motion)", "ai": "None", "history": "Yes, on card or NVR", "paywalled": "Nothing", "plan": "None", "ha": "Works as a generic RTSP camera.", "wifi": "Not checked"}};
+var D={"ring": {"name": "Ring Battery Video Doorbell 2K", "rec": "No", "price": "£79.99", "score": "2/8", "nosub3": "£79.99", "sub3": "£259.63", "best": "Alexa households happy to pay the monthly plan", "catch": "Saves no video at all unless you pay £4.99 a month.", "power": "Battery / Wired", "storage": "None. No on-device or hub storage.", "live": "Yes", "alerts": "Yes, motion and button-press alerts", "ai": "Paid (person, package and vehicle alerts on Ring's plans page)", "history": "None", "paywalled": "All recording and playback (up to 180 days), smart alerts, Extended Live View; 24/7 recording is £3/month extra per device", "plan": "Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month", "ha": "Official integration, but it goes through Ring's cloud. No local-only option.", "wifi": "2.4 GHz only"}, "nest": {"name": "Google Nest Doorbell (battery)", "rec": "Only with extra kit", "price": "£179.99", "score": "4/8", "nosub3": "£179.99", "sub3": "£467.99", "best": "Google Home households who want polished smart alerts", "catch": "Only 3 hours of free history. Anything longer is £8 a month.", "power": "Battery / Wired", "storage": "None", "live": "Yes", "alerts": "Yes", "ai": "Partly. Google advertises people/parcel/animal/vehicle alerts, but lists 'intelligent alerts' under Premium", "history": "3 hours of event clips", "paywalled": "30 or 60 days of history, intelligent alerts, familiar faces, Gemini search. No 24/7 recording on this model at any price", "plan": "Google Home Premium Standard £8/month (£80/year); Advanced £16/month (£160/year)", "ha": "Official integration, but it goes through Google's cloud (Cloud Push) and needs a one-off US$5 Google developer fee.", "wifi": "Not checked"}, "eufy-e340": {"name": "eufy Video Doorbell E340", "rec": "Yes", "price": "£169.99", "score": "7/8", "nosub3": "£169.99", "sub3": "£313.63", "best": "Busy doorsteps with lots of parcels: a second camera looks straight down", "catch": "Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.", "power": "Battery / Wired", "storage": "8 GB in the doorbell; optional HomeBase S380 (16 GB, expandable)", "live": "Yes", "alerts": "Yes", "ai": "Free: person and package detection on the device", "history": "Yes, event clips kept locally", "paywalled": "Nothing essential; cloud backup is optional", "plan": "Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices", "ha": "Community add-on only (eufy_security), which still logs in through your eufy account.", "wifi": "Not checked"}, "reo-wifi": {"name": "Reolink Video Doorbell WiFi", "rec": "Yes", "price": "£93.49", "score": "7/8", "nosub3": "£103.49", "sub3": "£219.13", "best": "Homes with existing doorbell wiring, plus Home Assistant or NVR users", "catch": "Needs doorbell transformer wiring, and the microSD card is sold separately.", "power": "Wired", "storage": "microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, motion-triggered or 24/7 recording to card or NVR", "paywalled": "Nothing. Reolink Cloud is optional", "plan": "Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)", "ha": "Official, fully local integration (Local Push, top 'Platinum' quality rating); works with no internet connection.", "wifi": "Dual-band (per third-party guide)"}, "reo-poe": {"name": "Reolink Video Doorbell PoE", "rec": "Yes", "price": "£69.99", "score": "7/8", "nosub3": "£79.99", "sub3": "£195.63", "best": "The most reliable, fully local setup, if you can run an Ethernet cable", "catch": "Needs an Ethernet cable to the door and a PoE switch or injector.", "power": "PoE", "storage": "microSD and/or NVR; RTSP/ONVIF", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, motion-triggered or 24/7 recording", "paywalled": "Nothing", "plan": "Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)", "ha": "Official, fully local integration (Local Push, Platinum).", "wifi": "Wired Ethernet"}, "reo-batt": {"name": "Reolink Video Doorbell (Battery)", "rec": "Yes", "price": "£99.99", "score": "7/8", "nosub3": "£99.99", "sub3": "£225.63", "best": "Battery install with 5 GHz Wi-Fi and no fees", "catch": "Footage sits on a card in the doorbell itself unless you pay about £50 more for the Home Hub bundle.", "power": "Battery / Wired", "storage": "microSD in the doorbell, or a Home Hub indoors (up to 1 TB)", "live": "Yes", "alerts": "Yes", "ai": "Free: person, vehicle and package detection", "history": "Yes, on card or hub", "paywalled": "Nothing", "plan": "Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)", "ha": "Official Reolink integration; battery models are best connected through a Reolink Home Hub.", "wifi": "Dual-band 2.4/5 GHz"}, "tapo-d230": {"name": "TP-Link Tapo D230S1", "rec": "Yes", "price": "£84.99", "score": "6/8", "nosub3": "£94.99", "sub3": "£192.63", "best": "An easy battery doorbell that keeps footage indoors on its chime/hub", "catch": "The microSD card is extra, and Home Assistant needs an unofficial add-on.", "power": "Battery", "storage": "microSD (up to 512 GB) in the indoor H200 hub", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, on the hub's card", "paywalled": "30-day cloud history, snapshot notifications, Smart Sort", "plan": "Optional Tapo Care from £2.99/month or £29.49/year", "ha": "Official integration doesn't show video. The community 'Tapo: Cameras Control' add-on reportedly works locally.", "wifi": "Not checked"}, "tapo-td21": {"name": "TP-Link Tapo TD21", "rec": "Yes", "price": "£44.99", "score": "5/8", "nosub3": "£54.99", "sub3": "£152.63", "best": "The tightest budget", "catch": "Basic, and it isn't clear whether the card sits in the doorbell (stealable) or the chime.", "power": "Battery", "storage": "microSD up to 512 GB", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, on card", "paywalled": "30-day cloud history, snapshot notifications, Smart Sort", "plan": "Optional Tapo Care from £2.99/month", "ha": "Unknown", "wifi": "Not checked"}, "arlo": {"name": "Arlo Essential Video Doorbell 2K (2nd gen)", "rec": "Only with extra kit", "price": "£169.99", "score": "3/8", "nosub3": "£279.73", "sub3": "£457.63", "best": "People who already own Arlo cameras", "catch": "Recording needs a £7.99/month plan or a separate hub costing about £100.", "power": "Battery / Wired", "storage": "Only through an Arlo SmartHub (VMB4540, USB) or a Base Station", "live": "Yes", "alerts": "Yes", "ai": "Paid", "history": "None without a hub", "paywalled": "Cloud recording (7, 14 or 30 days depending on plan), object detection, activity zones, theft replacement", "plan": "Arlo Secure £7.99/month (1 camera, 7 days), Multi-Cam £11.99, Secure Plus £19.99, Secure Pro £24.99", "ha": "No official integration; only a community add-on that goes through Arlo's cloud.", "wifi": "Not checked"}, "aqara-g4": {"name": "Aqara Video Doorbell G4", "rec": "Yes", "price": "£84.99", "score": "6/8", "nosub3": "£94.99", "sub3": "—", "best": "Apple Home users", "catch": "Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.", "power": "Battery / Wired", "storage": "microSD (up to 512 GB) in the indoor chime", "live": "Yes", "alerts": "Yes", "ai": "Free: face recognition on the device", "history": "Yes, on the chime's card (24/7 only when wired)", "paywalled": "Nothing essential. HomeKit Secure Video needs Apple's paid iCloud+", "plan": "None needed", "ha": "Reported to work locally through HA's HomeKit Device integration.", "wifi": "Not checked"}, "blink": {"name": "Blink Battery Doorbell 2K+", "rec": "Only with extra kit", "price": "£69.99", "score": "2/8", "nosub3": "£119.98", "sub3": "£159.99", "best": "The cheapest way into Amazon's ecosystem, if you catch a deal", "catch": "Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.", "power": "Battery", "storage": "Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted", "live": "Capped at 5 minutes", "alerts": "Yes", "ai": "Paid (person and vehicle detection)", "history": "None without a Sync Module 2", "paywalled": "Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions", "plan": "Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month", "ha": "Official integration, but it goes through Blink's cloud.", "wifi": "2.4 GHz (Blink requirement)"}, "ezviz-ep3x": {"name": "EZVIZ EP3x Pro", "rec": "Yes", "price": "£79.99", "score": "6/8", "nosub3": "£79.99", "sub3": "£259.63", "best": "Two cameras on a budget, with storage built in", "catch": "Expert Reviews found its motion detection unreliable and the app confusing.", "power": "Battery", "storage": "32 GB built in, no card needed", "live": "Yes", "alerts": "Yes", "ai": "Free: human and package detection", "history": "Yes, on built-in storage", "paywalled": "Nothing essential. CloudPlay is optional", "plan": "Optional CloudPlay: €4.99/month (7 days) on EZVIZ's EU page; UK price only shown in the app", "ha": "Official integration, but it goes through EZVIZ's cloud. Support for battery doorbells unknown.", "wifi": "2.4 GHz"}, "ezviz-db2": {"name": "EZVIZ DB2 Pro Kit", "rec": "Yes", "price": "£114.99", "score": "5/8", "nosub3": "£124.99", "sub3": "£294.63", "best": "Flats and rentals: no wiring, and footage stays indoors in the chime", "catch": "2.4 GHz Wi-Fi only, and the card is sold separately.", "power": "Battery", "storage": "microSD (up to 256 GB) in the included indoor chime", "live": "Yes", "alerts": "Yes", "ai": "Free: PIR plus human-shape detection", "history": "Yes, on the chime's card", "paywalled": "Nothing essential", "plan": "Optional CloudPlay: €4.99/month (7 days) on EZVIZ's EU page; UK price only shown in the app", "ha": "Official integration, but it goes through EZVIZ's cloud.", "wifi": "2.4 GHz only"}, "hik": {"name": "Hikvision DS-KB6003-WIP", "rec": "Yes", "price": "£295", "score": "5/8", "nosub3": "£305", "sub3": "—", "best": "Only worth it if an installer is fitting a Hikvision system anyway", "catch": "Discontinued trade product; the price includes fitting.", "power": "Wired", "storage": "microSD up to 128 GB; RTSP to an NVR", "live": "Yes (Hik-Connect app)", "alerts": "Yes (motion)", "ai": "None", "history": "Yes, on card or NVR", "paywalled": "Nothing", "plan": "None", "ha": "Works as a generic RTSP camera.", "wifi": "Not checked"}};
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
+function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}
+function syncTheme(){var d=isDark();tb.setAttribute('aria-pressed',d);tb.lastChild.textContent=d?'Light mode':'Dark mode';tb.title=d?'Switch to light mode':'Switch to dark mode'}
+tb.onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n)}catch(e){}syncTheme()};
+if(mq.addEventListener)mq.addEventListener('change',syncTheme);
+syncTheme();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),maxEl=$('#f-max'),out=$('#f-max-out');
 function apply(){
  var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){return x.value}),mx=+maxEl.value,n=0;
@@ -632,6 +695,17 @@ function apply(){
 $$('#controls input,#controls select').forEach(function(el){el.addEventListener('input',apply);el.addEventListener('change',apply)});
 $('#reset').onclick=function(){$$('#controls input[type=checkbox]').forEach(function(c){c.checked=false});maxEl.value=maxEl.max;$('#sort').value='keep3';apply()};
 $$('button.more').forEach(function(b){b.onclick=function(){var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}});
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+$$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
+ var rows=a.dataset.ids.split(' ').map(function(id){return document.getElementById('m-'+id)});
+ if(rows.some(function(r){return r.hidden}))$('#reset').click();
+ rows.sort(function(x,y){return x.compareDocumentPosition(y)&4?-1:1});
+ ev.preventDefault();
+ rows[0].scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'center'});
+ if(history.replaceState)history.replaceState(null,'','#'+rows[0].id);
+ rows.forEach(function(r){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');clearTimeout(r._ft);r._ft=setTimeout(function(){r.classList.remove('flash')},1900)});
+ var cb=rows[0].querySelector('input.cmp'); if(cb)cb.focus({preventScroll:true});
+})});
 var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
@@ -648,7 +722,7 @@ function render(){
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
 }
 $$('input.cmp').forEach(function(c){c.addEventListener('change',tray)});
-$('#tray-go').onclick=function(){render();$('#compare').scrollIntoView({behavior:'smooth',block:'start'})};
+$('#tray-go').onclick=function(){render();$('#compare').scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'})};
 $('#tray-clear').onclick=function(){$$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray()};
 $('#cmp-close').onclick=function(){$('#compare').hidden=true};
 apply();
