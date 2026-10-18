@@ -1,0 +1,19 @@
+name: Commits
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  conventional:
+    name: Commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check every commit in the pull request
+        run: python3 build/check_commits.py "${{ github.event.pull_request.base.sha }}..HEAD"
