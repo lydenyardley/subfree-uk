@@ -333,9 +333,13 @@ def photo(r, size):
     name = f"{r['brand']} {r['model']}"
     w, h = (45, 60) if size == "sm" else (180, 240)
     m = IMG.get(r["id"], {})
+    # The thumbnail sits beside the model name, so it is decorative and must not
+    # repeat that name. The large photo is the only name in the details panel.
     if m.get("placeholder") or not m:
-        return f'<span class="ph ph-{size}" role="img" aria-label="No photo available for {e(name)}" style="width:{w}px;height:{h}px"><span>No photo</span></span>'
-    return f'<img class="ph ph-{size}" src="img/{r["id"]}-{size}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{e(name)}">'
+        attrs = 'aria-hidden="true"' if size == "sm" else f'role="img" aria-label="No photo available for {e(name)}"'
+        return f'<span class="ph ph-{size}" {attrs} style="width:{w}px;height:{h}px"><span>No photo</span></span>'
+    alt = "" if size == "sm" else e(name)
+    return f'<img class="ph ph-{size}" src="img/{r["id"]}-{size}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{alt}">'
 
 # Short-answer verdicts, colour-coded and repeated on the matching rows
 VERDICT = {"reo-wifi":"best","reo-poe":"best","reo-batt":"best","tapo-d230":"batt","ring":"avoid","blink":"avoid","arlo":"avoid"}
@@ -471,7 +475,7 @@ td.num{{white-space:nowrap}}
 .mcell>div{{min-width:0}}
 .ph{{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}}
 img.ph{{filter:var(--imgf)}}
-span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink3);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}}
+span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink2);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}}
 span.ph-lg{{font-size:11px}}
 .brand{{font-weight:700}} .mname{{font-weight:400}}
 .best{{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}}
@@ -486,7 +490,7 @@ span.ph-lg{{font-size:11px}}
 .bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
 .bar i{{display:block;height:100%;background:var(--acc)}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
-.fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:none;color:var(--ink3)}}
+.fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
 .c-price .fn{{display:inline-block;min-width:1rem;text-align:left;white-space:nowrap}}
 button.more{{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}}
@@ -498,7 +502,7 @@ tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1
 .dgrid dt{{color:var(--ink2)}} .dgrid dd{{margin:0}}
 .maths{{font-variant-numeric:tabular-nums}}
 .unverified{{font-size:13px;margin:1rem 0 0;color:var(--ink2)}}
-.srcs{{font-size:12px;color:var(--ink3);margin:1rem 0 0}}
+.srcs{{font-size:12px;color:var(--ink2);margin:1rem 0 0}}
 .srcs .fn{{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}}
 .empty{{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}}
 /* jump-to-row highlight */
@@ -529,7 +533,7 @@ section.method p{{margin:0 0 1rem;max-width:none}}
 section.method p a{{color:var(--ink2)}}
 ol.fns{{margin:0;padding-left:2rem;columns:2;column-gap:2rem}}
 ol.fns li{{margin:0;break-inside:avoid}}
-ol.fns a{{color:var(--ink2)}}
+ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration:underline;color:var(--ink2)}}
 @media (min-width:821px) and (max-width:1100px){{
  .count{{flex:1 1 auto;order:1;align-self:flex-end}} .sortby{{order:2}}
 }}
@@ -605,6 +609,7 @@ ol.fns a{{color:var(--ink2)}}
 </aside>
 </header>
 
+<main>
 <form class="controls" id="controls" onsubmit="return false">
 <fieldset><legend>Show only</legend><div class="opts">
 <label><input type="checkbox" id="f-rec"> Records free, no extra kit</label>
@@ -635,9 +640,9 @@ ol.fns a{{color:var(--ink2)}}
 
 <table class="main-t" id="tbl">
 <thead><tr>
-<th class="c-cmp"><span class="vh">Compare</span></th>
-<th data-sort="model" aria-sort="none"><button type="button">Model</button></th><th data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
-<th class="num" data-sort="nosub3" aria-sort="none"><button type="button">3 yrs, no plan<sup>a</sup></button></th><th class="num" data-sort="sub3" aria-sort="none"><button type="button">3 yrs, with plan<sup>b</sup></button></th><th>Main catch</th>
+<th scope="col" class="c-cmp"><span class="vh">Compare</span></th>
+<th scope="col" data-sort="model" aria-sort="none"><button type="button">Model</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
+<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button">3 yrs, no plan<sup>a</sup></button></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button">3 yrs, with plan<sup>b</sup></button></th><th scope="col">Main catch</th>
 </tr></thead>
 {''.join(rows_html)}
 </table>
@@ -654,6 +659,7 @@ ol.fns a{{color:var(--ink2)}}
 </div>
 <div><h2>Sources</h2><ol class="fns">{fn_list}</ol></div>
 </section>
+</main>
 </div>
 <div class="tray" id="tray" hidden><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
 <script>
@@ -716,9 +722,9 @@ function tray(){{
  if(!$('#compare').hidden){{s.length>=2?render():($('#compare').hidden=true)}}
 }}
 function render(){{
- var s=sel(),h='<thead><tr><th><span class="vh">Spec</span></th>'+s.map(function(id){{
+ var s=sel(),h='<thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){{
   var d=D[id];
-  return '<th><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
+  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
  }}).join('')+'</tr></thead><tbody>';
  ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
