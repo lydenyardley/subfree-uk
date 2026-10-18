@@ -341,6 +341,16 @@ def photo(r, size):
     alt = "" if size == "sm" else e(name)
     return f'<img class="ph ph-{size}" src="img/{r["id"]}-{size}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{alt}">'
 
+def zoom(r, size):
+    # Both sizes are 2x files, so the lightbox shows the large one at its own
+    # width. Placeholders stay plain: there is nothing bigger to open.
+    m = IMG.get(r["id"], {})
+    if m.get("placeholder") or not m:
+        return photo(r, size)
+    name = e(f"{r['brand']} {r['model']}")
+    return (f'<button type="button" class="zoom" data-full="img/{r["id"]}-lg.webp" data-name="{name}" '
+            f'aria-label="View {name} photo full size">{photo(r, size)}</button>')
+
 # Short-answer verdicts, colour-coded and repeated on the matching rows
 VERDICT = {"reo-wifi":"best","reo-poe":"best","reo-batt":"best","tapo-d230":"batt","ring":"avoid","blink":"avoid","arlo":"avoid"}
 V_LABEL = {"best":"Best overall","batt":"Battery pick","avoid":"Avoid without a plan"}
@@ -356,7 +366,7 @@ for i,r in enumerate(ROWS):
     rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 999999}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
-<th scope="row" class="c-model"><div class="mcell">{photo(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
+<th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
 <td class="c-price num" data-label="Price">{gbp(r['price'])}{fn([r['price_src']])}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="width:{sc/8*100:.0f}%"></i></span></td>
@@ -365,7 +375,7 @@ for i,r in enumerate(ROWS):
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
-<figure class="dimg">{photo(r,"lg")}</figure>
+<figure class="dimg">{zoom(r,"lg")}</figure>
 <dl>
 <dt>Power</dt><dd>{" / ".join(POWER_LABEL[p] for p in r['power'])}; Wi-Fi: {e(r['wifi'])}</dd>
 <dt>Storage</dt><dd>{e(r['storage'])}</dd>
@@ -390,7 +400,8 @@ data_js = json.dumps({r["id"]:{
  "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]),"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
- "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp'} for r in ROWS}, ensure_ascii=False)
+ "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
+ "imgLg":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-lg.webp'} for r in ROWS}, ensure_ascii=False)
 
 fn_list="".join(f'<li id="fn{FN[k]}"><a href="{e(S[k][1])}" rel="nofollow noopener noreferrer">{e(S[k][0])}</a></li>' for k in order)
 maxp=int(max(r["price"] for r in ROWS)+5)
@@ -498,6 +509,12 @@ button.more:hover,button.more[aria-expanded=true]{{border-color:var(--ink)}}
 tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}}
 .dgrid{{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}}
 .dimg{{margin:0}}
+.zoom{{display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}}
+.zoom:focus-visible{{outline:2px solid var(--acc);outline-offset:2px}}
+#lightbox{{border:1px solid var(--rule);background:var(--paper);color:var(--ink);padding:1rem;max-width:min(90vw,420px)}}
+#lightbox img{{display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:70vh;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}}
+#lightbox::backdrop{{background:rgb(0 0 0 / .65)}}
+.lb-bar{{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1rem;font:600 13px/1.3 var(--sans)}}
 .dgrid dl{{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:1rem;font-size:14px;align-content:start}}
 .dgrid dt{{color:var(--ink2)}} .dgrid dd{{margin:0}}
 .maths{{font-variant-numeric:tabular-nums}}
@@ -662,6 +679,10 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 </main>
 </div>
 <div class="tray" id="tray" hidden><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
+<dialog id="lightbox" aria-labelledby="lb-name">
+<div id="lb-img"></div>
+<div class="lb-bar"><span id="lb-name"></span><button type="button" class="link" id="lb-close">Close</button></div>
+</dialog>
 <script>
 (function(){{
 var D={data_js};
@@ -724,7 +745,7 @@ function tray(){{
 function render(){{
  var s=sel(),h='<thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){{
   var d=D[id];
-  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
+  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></button></span>':'')+'</th>';
  }}).join('')+'</tr></thead><tbody>';
  ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
@@ -733,6 +754,26 @@ $$('input.cmp').forEach(function(c){{c.addEventListener('change',tray)}});
 $('#tray-go').onclick=function(){{render();$('#compare').scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'start'}})}};
 $('#tray-clear').onclick=function(){{$$('input.cmp').forEach(function(c){{c.checked=false}});$('#compare').hidden=true;tray()}};
 $('#cmp-close').onclick=function(){{$('#compare').hidden=true}};
+var lb=$('#lightbox'),lbBox=$('#lb-img'),lbName=$('#lb-name'),lbImg;
+document.addEventListener('click',function(ev){{
+ var b=ev.target.closest('.zoom');
+ if(!b)return;
+ if(!lbImg){{
+  lbImg=document.createElement('img');
+  lbImg.width=360;lbImg.height=480;lbImg.decoding='async';
+  lbBox.appendChild(lbImg);
+ }}
+ lbImg.src=b.dataset.full;
+ lbImg.alt=b.dataset.name;
+ lbName.textContent=b.dataset.name;
+ if(lb.showModal)lb.showModal();
+}});
+$('#lb-close').onclick=function(){{lb.close()}};
+lb.addEventListener('click',function(ev){{
+ if(ev.target!==lb)return;
+ var r=lb.getBoundingClientRect();
+ if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
+}});
 apply();
 }})();
 </script>
