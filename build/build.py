@@ -277,6 +277,7 @@ for r in ROWS:
     r["maths_free"], r["maths_sub"] = m_free, m_sub
 
 REC_LABEL = {"yes":"Yes", "kit":"Only with extra kit", "no":"No"}
+REC_RANK = {"yes":2, "kit":1, "no":0}
 POWER_LABEL = {"battery":"Battery", "wired":"Wired", "poe":"PoE"}
 HA_LABEL = {2:"Official, local", 1:"Local, unofficial", 0:"Cloud only"}
 SCORE_PARTS = [("rec","Records free",2),("live","Live view free",1),("alerts","Motion alerts free",1),("ai","Smart detection free",1),("storage","Storage in the box",1),("ha","Local / Home Assistant",2)]
@@ -348,7 +349,7 @@ for i,r in enumerate(ROWS):
     v=VERDICT.get(r["id"])
     vattr=f' data-v="{v}"' if v else ""
     vtag=f'<span class="vtag v-{v}"> {V_LABEL[v]}</span>' if v else ""
-    rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-score="{sc}" data-idx="{i}">
+    rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 999999}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
 <th scope="row" class="c-model"><div class="mcell">{photo(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
@@ -384,7 +385,8 @@ data_js = json.dumps({r["id"]:{
  "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"price":gbp(r["price"]),"score":f"{r['score_total']}/8",
  "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]),"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
- "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"]} for r in ROWS}, ensure_ascii=False)
+ "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
+ "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp'} for r in ROWS}, ensure_ascii=False)
 
 fn_list="".join(f'<li id="fn{FN[k]}"><a href="{e(S[k][1])}" rel="nofollow noopener noreferrer">{e(S[k][0])}</a></li>' for k in order)
 maxp=int(max(r["price"] for r in ROWS)+5)
@@ -452,10 +454,15 @@ button.link{{background:none;border:0;padding:0;min-height:24px;font:inherit;col
 table.cmp-t,table.main-t{{border-collapse:collapse;width:100%}}
 .main-t thead th{{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:bottom;white-space:normal}}
 .main-t thead th.num{{text-align:right}}
+.main-t thead th button{{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit}}
+.main-t thead th button:hover{{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}}
+.main-t thead th[aria-sort=ascending] button::after{{content:"\\00a0\\2191"}}
+.main-t thead th[aria-sort=descending] button::after{{content:"\\00a0\\2193"}}
 .main-t thead sup{{text-transform:none;font-size:9px}}
 .main-t td,.main-t tbody th{{padding:1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}}
 .main-t tbody.item:hover tr.main{{background:var(--tint)}}
 .num{{text-align:right;font-variant-numeric:tabular-nums}}
+.main-t td.num,.main-t th.num{{text-align:right}}
 td.num{{white-space:nowrap}}
 .c-cmp{{width:2rem;padding-left:0!important;padding-right:0!important}}
 .c-rec{{width:120px}}
@@ -481,6 +488,7 @@ span.ph-lg{{font-size:11px}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
 .fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:none;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
+.c-price .fn{{display:inline-block;min-width:1rem;text-align:left;white-space:nowrap}}
 button.more{{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}}
 button.more:hover,button.more[aria-expanded=true]{{border-color:var(--ink)}}
 tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}}
@@ -503,7 +511,11 @@ tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
 .cmp-head h2{{font:700 20px/1.2 var(--serif);margin:0}}
 .cmp-scroll{{overflow-x:auto}}
 .cmp-t th,.cmp-t td{{padding:1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
+.cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{{background:var(--tint)}}
 .cmp-t thead th{{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}}
+.cmp-name{{display:block}}
+.cmp-photo{{display:block;margin-top:1rem}}
+.cmp-photo img{{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}}
 .cmp-t tbody th{{font:600 11px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}}
 .vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 .tray{{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}}
@@ -564,7 +576,7 @@ ol.fns a{{color:var(--ink2)}}
  .c-nosub{{grid-column:2}} .c-sub{{grid-column:3 / 5}}
  .c-catch{{grid-column:2 / 5;font-size:14px}}
  .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:0}}
- .num{{text-align:left}} .bar{{margin-left:0}}
+ .main-t td.num,.main-t th.num{{text-align:left}} .bar{{margin-left:0}}
  tr.detail td{{padding:1rem;margin-top:0}}
  .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:1rem}}
  .ph-lg{{width:120px!important;height:160px!important;margin-bottom:1rem}}
@@ -608,6 +620,10 @@ ol.fns a{{color:var(--ink2)}}
 <option value="keep3">3-year cost to keep recordings</option>
 <option value="price">Price, low to high</option>
 <option value="score">Free-feature score, high to low</option>
+<option value="recv">Records free first</option>
+<option value="nosub3">3-year cost, no plan</option>
+<option value="sub3">3-year cost, with plan</option>
+<option value="model">Model, A to Z</option>
 </select></div>
 <p class="count">Tick up to 3 rows to compare. <span id="count">{len(ROWS)}</span> of {len(ROWS)} shown · <button type="button" class="link" id="reset">Reset</button></p>
 </form>
@@ -620,8 +636,8 @@ ol.fns a{{color:var(--ink2)}}
 <table class="main-t" id="tbl">
 <thead><tr>
 <th class="c-cmp"><span class="vh">Compare</span></th>
-<th>Model</th><th>Records free?</th><th class="num">Price</th><th>Free features</th>
-<th class="num">3 yrs, no plan<sup>a</sup></th><th class="num">3 yrs, with plan<sup>b</sup></th><th>Main catch</th>
+<th data-sort="model" aria-sort="none"><button type="button">Model</button></th><th data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
+<th class="num" data-sort="nosub3" aria-sort="none"><button type="button">3 yrs, no plan<sup>a</sup></button></th><th class="num" data-sort="sub3" aria-sort="none"><button type="button">3 yrs, with plan<sup>b</sup></button></th><th>Main catch</th>
 </tr></thead>
 {''.join(rows_html)}
 </table>
@@ -651,6 +667,7 @@ tb.onclick=function(){{var n=isDark()?'light':'dark';root.setAttribute('data-the
 if(mq.addEventListener)mq.addEventListener('change',syncTheme);
 syncTheme();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),maxEl=$('#f-max'),out=$('#f-max-out');
+var skey='keep3',sdir=1,SDEF={{keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1}};
 function apply(){{
  var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){{return x.value}}),mx=+maxEl.value,n=0;
  out.textContent='£'+mx;
@@ -660,14 +677,22 @@ function apply(){{
   t.hidden=!ok; if(ok)n++;
  }});
  $('#count').textContent=n; $('#empty').hidden=n>0;
- var k=$('#sort').value,s=items.slice().sort(function(a,b){{
-  if(k==='score')return (+b.dataset.score-+a.dataset.score)||(+a.dataset.keep3-+b.dataset.keep3);
-  return (+a.dataset[k]-+b.dataset[k])||(+b.dataset.score-+a.dataset.score);
+ var s=items.slice().sort(function(a,b){{
+  var x=skey==='model'?a.dataset.model:+a.dataset[skey],y=skey==='model'?b.dataset.model:+b.dataset[skey];
+  if(x<y)return -sdir;if(x>y)return sdir;return +a.dataset.keep3-+b.dataset.keep3;
  }});
  s.forEach(function(t){{tbl.appendChild(t)}});
+ $$('#tbl thead th[data-sort]').forEach(function(th){{th.setAttribute('aria-sort',th.dataset.sort===skey?(sdir>0?'ascending':'descending'):'none')}});
+ $('#sort').value=skey;
 }}
-$$('#controls input,#controls select').forEach(function(el){{el.addEventListener('input',apply);el.addEventListener('change',apply)}});
-$('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});maxEl.value=maxEl.max;$('#sort').value='keep3';apply()}};
+$$('#controls input').forEach(function(el){{el.addEventListener('input',apply);el.addEventListener('change',apply)}});
+$('#sort').onchange=function(){{skey=this.value;sdir=SDEF[skey];apply()}};
+$$('#tbl thead th[data-sort] button').forEach(function(b){{b.onclick=function(){{
+ var k=b.parentNode.dataset.sort;
+ if(k===skey)sdir=-sdir;else{{skey=k;sdir=SDEF[k]}}
+ apply();
+}}}});
+$('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()}};
 $$('button.more').forEach(function(b){{b.onclick=function(){{var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}}}});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
@@ -691,7 +716,10 @@ function tray(){{
  if(!$('#compare').hidden){{s.length>=2?render():($('#compare').hidden=true)}}
 }}
 function render(){{
- var s=sel(),h='<thead><tr><th></th>'+s.map(function(id){{return '<th scope="col">'+esc(D[id].name)+'</th>'}}).join('')+'</tr></thead><tbody>';
+ var s=sel(),h='<thead><tr><th><span class="vh">Spec</span></th>'+s.map(function(id){{
+  var d=D[id];
+  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></span>':'')+'</th>';
+ }}).join('')+'</tr></thead><tbody>';
  ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
 }}
