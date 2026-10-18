@@ -44,8 +44,18 @@ stands.
 
 ## Before committing
 
-- Run `python build/build.py`.
-- Run `python build/check.py` and fix anything it reports.
+- Run `python build/check.py`. It rebuilds the site, fails if a generated file
+  is stale, then runs the accessibility, anchor, image, target-size and
+  overflow audit. Fix anything it reports.
 - Check the page at desktop and phone widths.
 - Review the diff and fix what that review finds before committing.
 - Keep commits small and logical, one concern each.
+
+## Pull requests
+
+CI runs `build/check_commits.py` over every commit in a pull request. To run it
+locally:
+
+```bash
+python build/check_commits.py origin/main..HEAD
+```

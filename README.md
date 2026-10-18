@@ -15,7 +15,8 @@ IMAGE_SOURCES.md             where every photo came from, generated
 .nojekyll                    serve files as-is
 build/
   build.py                   THE single source: all doorbell data (ROWS), sources (S) and the page template
-  check.py                   accessibility and link audit (Playwright and axe-core)
+  check.py                   rebuild plus structure, accessibility and link audit (Playwright and axe-core)
+  check_commits.py           commit message format check (run by CI on pull requests)
   make_images.py             downloads, crops and converts the official product photos
   images.json                image source URLs (written by make_images.py, read by build.py)
   shots.py, shots2.py        screenshot checks (Playwright), output to screenshots/ (git-ignored)
@@ -40,11 +41,19 @@ python -m playwright install chromium   # needed for screenshots and the audit
 python build/build.py            # rewrites index.html, doorbells.html, data/doorbells.csv, data/doorbells.md
 python build/make_images.py      # only if photos changed: rewrites img/, build/images.json, IMAGE_SOURCES.md
 python build/shots2.py           # optional: screenshots at 1280/1000/900/820/390 + 1280 dark into screenshots/
-python build/check.py            # accessibility and link audit; exits 1 on any issue
+python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
 ```
 
-`check.py` serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes, and checks anchors, image files, labels, target sizes and horizontal overflow at every breakpoint. Add `--external` to request each outbound link over the network.
+`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes, and checks internal anchors, image files, duplicate ids, labels, target sizes, the photo lightbox and horizontal overflow at every breakpoint. Add `--external` to request each outbound link over the network.
 
 Scripts work from any directory. To use an installed Chrome instead of Playwright's Chromium, set `CHROME_PATH` (e.g. `CHROME_PATH=/usr/bin/google-chrome`).
+
+## Pull requests
+
+`.github/workflows/commits.yml` runs `build/check_commits.py` over every commit in a pull request, so a message that breaks the format in [CONTRIBUTING.md](CONTRIBUTING.md) fails the check. Run the same command locally before opening one:
+
+```bash
+python build/check_commits.py origin/main..HEAD
+```
 
 To change data: edit `ROWS` / `S` in `build/build.py`, run it, check the page locally, then commit and push `main`. Pages redeploys in about a minute.
