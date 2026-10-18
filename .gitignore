@@ -1,0 +1,19 @@
+# screenshots and scratch output
+screenshots/
+*.png
+# raw image download cache (re-fetched by build/make_images.py)
+build/img_raw/
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+# secrets / local config
+.env
+*.token
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

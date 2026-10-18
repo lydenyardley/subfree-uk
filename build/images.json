@@ -1,0 +1,71 @@
+{
+ "ring": {
+  "src": "https://en-uk.ring.com/cdn/shop/files/1_Slate_Sunray_Front_ad46b95a-0b98-4a7e-8f06-0304b31312eb.jpg?v=1779257638",
+  "page": "https://en-uk.ring.com/products/battery-doorbell-2nd-gen",
+  "cropped": false
+ },
+ "nest": {
+  "src": "https://lh3.googleusercontent.com/7as7cJnLssK4ejvx-4zNQCRmNoupXijD6fkO4orVEB54bB0SRfQn75qzZNnT4Ud4gqOabRfO-8J0YIBRKkMG9yvK5QWKz2FwRQ=rw-rj-sc0xffffffff",
+  "page": "https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB",
+  "cropped": false
+ },
+ "eufy-e340": {
+  "src": "https://cdn.shopify.com/s/files/1/0504/1094/6753/files/T8214321-UK-DTC-RI00-ExpertReviews.png?v=1749789318",
+  "page": "https://www.eufy.com/uk/products/T8214311",
+  "cropped": true
+ },
+ "reo-wifi": {
+  "src": "https://home-cdn.reolink.us/wp-content/uploads/2022/05/170610101652767810.7304.png",
+  "page": "https://reolink.com/gb/product/reolink-video-doorbell-wifi/",
+  "cropped": true
+ },
+ "reo-poe": {
+  "src": "https://home-cdn.reolink.us/wp-content/uploads/2023/07/070730451688715045.0661.png",
+  "page": "https://reolink.com/gb/product/reolink-video-doorbell-poe/",
+  "cropped": true
+ },
+ "reo-batt": {
+  "src": "https://home-cdn.reolink.us/wp-content/uploads/2024/10/doorbell-battery-1pack.png",
+  "page": "https://reolink.com/gb/product/reolink-doorbell-battery/",
+  "cropped": false
+ },
+ "tapo-d230": {
+  "src": "https://uk.store.tapo.com/cdn/shop/files/Tapo_D230S1_Wireless_Battery_Video_Doorbell_Chime_Hub_Included_54898c57-a43f-4e71-bde1-0a5a33cb0bc7.png?v=1757084237&width=2048",
+  "page": "https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell",
+  "cropped": true
+ },
+ "tapo-td21": {
+  "src": "https://uk.store.tapo.com/cdn/shop/files/0002290-RedesigntheDoorbellMainImage21.png?v=1776441614&width=2048",
+  "page": "https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21",
+  "cropped": true
+ },
+ "arlo": {
+  "src": "https://www.arlo.com/content/dam/arlo/2024-content/products/essential-wd-2k/en/si-compressed/arlo-2k-wireless-video-doorbell-white.png",
+  "page": "https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell",
+  "cropped": false
+ },
+ "aqara-g4": {
+  "src": "https://eu.aqara.com/cdn/shop/files/Aqara-Smart-Video-Doorbell-G4.webp?v=1729063964",
+  "page": "https://eu.aqara.com/products/aqara-video-doorbell-g4",
+  "cropped": true
+ },
+ "blink": {
+  "src": "https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/feb6535d-c34d-48dd-a015-648dd5786bac/Blink_Battery_Doorbell_2K.png?format=1000w",
+  "page": "https://blinkforhome.com/products",
+  "cropped": true
+ },
+ "ezviz-ep3x": {
+  "src": "https://mfs.ezvizlife.com/62d7d264ab031e75591d277638d4c440.png",
+  "page": "https://www.ezviz.com/uk/product/ep3x-pro/55935",
+  "cropped": true
+ },
+ "ezviz-db2": {
+  "src": "https://s3.amazonaws.com/mfs.ezvizlife.com/f6a3b42474eefe13047add4b7b3c89c3.jpg",
+  "page": "https://www.ezviz.com/uk/product/db2-pro-kit/42371",
+  "cropped": true
+ },
+ "hik": {
+  "placeholder": true,
+  "why": "Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image."
+ }
+}
