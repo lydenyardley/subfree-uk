@@ -323,7 +323,7 @@ open(os.path.join(ROOT,"data","doorbells.md"),"w",encoding="utf-8").write("\n".j
 
 # ---------- HTML ----------
 e=html.escape
-def fn(keys): return "".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{FN[k]}</a>' for k in keys)
+def fn(keys): return ", ".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{FN[k]}</a>' for k in keys)
 def gbp(x): return "—" if x is None else f"£{x:,.0f}" if float(x).is_integer() else f"£{x:,.2f}"
 
 # Product photos: manufacturers' own images, processed by make_images.py into img/*.webp; sources in images.json
@@ -347,12 +347,12 @@ for i,r in enumerate(ROWS):
     sc=r["score_total"]
     v=VERDICT.get(r["id"])
     vattr=f' data-v="{v}"' if v else ""
-    vtag=f'<span class="vtag v-{v}">{V_LABEL[v]}</span>' if v else ""
+    vtag=f'<span class="vtag v-{v}"> {V_LABEL[v]}</span>' if v else ""
     rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-score="{sc}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
 <th scope="row" class="c-model"><div class="mcell">{photo(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}"> {REC_LABEL[r['rec']]}</span></td>
 <td class="c-price num" data-label="Price">{gbp(r['price'])}{fn([r['price_src']])}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="width:{sc/8*100:.0f}%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
@@ -406,170 +406,170 @@ page=f'''<!doctype html>
 --serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
 --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}}
 :root[data-theme=dark]{{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
---v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#e9e7e2;--tray-ink:#151514;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}
 @media (prefers-color-scheme:dark){{:root:not([data-theme=light]){{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
---v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#e9e7e2;--tray-ink:#151514;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}}}
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}}}
 *{{box-sizing:border-box}}
 [hidden]{{display:none!important}}
 html{{-webkit-text-size-adjust:100%}}
 body{{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}}
 a{{color:var(--acc)}}
-.wrap{{max-width:1240px;margin:0 auto;padding:0 20px}}
-.mast{{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--ink);padding:8px 0 7px;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}}
-.mast span{{color:var(--ink3);font-weight:500;margin-left:.6em;letter-spacing:.04em}}
-#theme{{font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:5px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}}
+p{{max-width:65ch}}
+.wrap{{max-width:1440px;margin:0 auto;padding:0 1rem}}
+.mast{{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:1rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}}
+.mast span{{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}}
+#theme{{font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:1rem;white-space:nowrap;min-height:24px}}
 #theme:hover{{border-color:var(--ink)}}
 #theme i{{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}}
 header.intro{{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}}
-h1{{font:700 34px/1.12 var(--serif);margin:0 0 10px;letter-spacing:-.01em;max-width:22ch}}
-.dek{{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 12px;max-width:60ch}}
+h1{{font:700 34px/1.12 var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}}
+.dek{{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}}
 .meta{{font-size:13px;color:var(--ink2);margin:0}}
 .meta b{{color:var(--ink)}}
-.verdict{{border-left:1px solid var(--rule);padding:2px 0 2px 2rem;font-size:14px}}
-.verdict h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}}
-.verdict p{{margin:0 0 10px;padding-left:12px;border-left:3px solid var(--vc)}}
+.verdict{{border-left:1px solid var(--rule);padding:0 0 0 2rem;font-size:14px}}
+.verdict h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}}
+.verdict p{{margin:0 0 1rem;padding-left:1rem;border-left:3px solid var(--vc)}}
 .verdict p b{{color:var(--vc)}}
 .v-best{{--vc:var(--v-best)}} .v-batt{{--vc:var(--v-batt)}} .v-avoid{{--vc:var(--v-avoid)}}
 a.jump{{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}}
 a.jump:hover{{color:var(--vc)}}
-.vtag{{display:block;margin-top:4px;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}}
-.vtag::before{{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:5px;vertical-align:0}}
+.vtag{{display:block;margin-top:0;padding:1rem 0 0;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}}
+.vtag::before{{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0;vertical-align:0}}
 tbody.item[data-v=best]{{--vc:var(--v-best)}} tbody.item[data-v=batt]{{--vc:var(--v-batt)}} tbody.item[data-v=avoid]{{--vc:var(--v-avoid)}}
 tbody.item[data-v] tr.main>td.c-cmp{{box-shadow:inset 3px 0 0 var(--vc)}}
-.controls{{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--rule)}}
+.controls{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}}
 fieldset{{border:0;margin:0;padding:0;min-width:0}}
-legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:7px;display:block}}
-.opts{{display:flex;flex-wrap:wrap;gap:4px 14px}}
-.opts label{{display:inline-flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;white-space:nowrap}}
+legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}}
+.opts{{display:flex;flex-wrap:wrap;gap:1rem}}
+.opts label{{display:inline-flex;align-items:center;gap:1rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}}
 input[type=checkbox]{{accent-color:var(--acc);width:15px;height:15px;margin:0}}
-input[type=range]{{accent-color:var(--acc);width:180px;vertical-align:middle;margin:0}}
-.range output{{font:600 14px var(--sans);font-variant-numeric:tabular-nums;margin-left:8px}}
+input[type=range]{{accent-color:var(--acc);width:180px;min-height:24px;vertical-align:middle;margin:0}}
+.range output{{font:600 14px var(--sans);font-variant-numeric:tabular-nums;margin-left:1rem}}
 .sortby{{margin-left:auto}}
-select{{font:14px var(--sans);padding:5px 6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}}
+select{{font:14px var(--sans);padding:0 1rem;min-height:24px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}}
 .count{{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}}
-button.link{{background:none;border:0;padding:0;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}}
+button.link{{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}}
 table.cmp-t,table.main-t{{border-collapse:collapse;width:100%}}
-.main-t thead th{{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:10px 10px 8px;border-bottom:2px solid var(--ink);vertical-align:bottom;white-space:normal}}
+.main-t thead th{{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:bottom;white-space:normal}}
 .main-t thead th.num{{text-align:right}}
 .main-t thead sup{{text-transform:none;font-size:9px}}
-.main-t td,.main-t tbody th{{padding:11px 10px;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}}
+.main-t td,.main-t tbody th{{padding:1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}}
 .main-t tbody.item:hover tr.main{{background:var(--tint)}}
 .num{{text-align:right;font-variant-numeric:tabular-nums}}
 td.num{{white-space:nowrap}}
-.c-cmp{{width:30px;padding-left:6px!important;padding-right:2px!important}}
+.c-cmp{{width:2rem;padding-left:0!important;padding-right:0!important}}
 .c-rec{{width:120px}}
 .c-model{{width:27%}}
-.mcell{{display:flex;gap:12px;align-items:flex-start}}
+.mcell{{display:flex;gap:1rem;align-items:flex-start}}
 .mcell>div{{min-width:0}}
 .ph{{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}}
 img.ph{{filter:var(--imgf)}}
 span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink3);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}}
 span.ph-lg{{font-size:11px}}
 .brand{{font-weight:700}} .mname{{font-weight:400}}
-.best{{display:block;font-size:13px;color:var(--ink2);margin-top:3px;line-height:1.35}}
+.best{{display:block;font-size:13px;color:var(--ink2);margin-top:0;line-height:1.35}}
 .c-catch{{font-size:14px;width:28%}}
-.more-w{{margin-top:7px}}
-.rec{{font-size:14px;display:inline-block;padding-left:15px;text-indent:-15px}}
-.rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
+.more-w{{margin-top:1rem}}
+.rec{{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}}
+.rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:0;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
 .rec-yes::before{{background:var(--acc)}}
 .rec-kit::before{{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}}
 .rec-no{{color:var(--ink2)}} .rec-no::before{{border-color:var(--ink3)}}
 .score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
-.bar{{display:block;height:3px;background:var(--rule2);margin:6px 0 0;width:52px}}
+.bar{{display:block;height:3px;background:var(--rule2);margin:1rem 0 0;width:52px}}
 .bar i{{display:block;height:100%;background:var(--acc)}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
-.fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:2px;text-decoration:none;color:var(--ink3)}}
+.fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:none;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
-button.more{{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:3px 8px;cursor:pointer;color:var(--ink);white-space:nowrap}}
+button.more{{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}}
 button.more:hover,button.more[aria-expanded=true]{{border-color:var(--ink)}}
-tr.detail td{{background:var(--tint);padding:16px 16px 12px 40px;border-bottom:1px solid var(--rule)}}
-.dgrid{{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 28px}}
+tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}}
+.dgrid{{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}}
 .dimg{{margin:0}}
-.dgrid dl{{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:6px 14px;font-size:14px;align-content:start}}
+.dgrid dl{{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:1rem;font-size:14px;align-content:start}}
 .dgrid dt{{color:var(--ink2)}} .dgrid dd{{margin:0}}
 .maths{{font-variant-numeric:tabular-nums}}
-.unverified{{font-size:13px;margin:12px 0 2px;color:var(--ink2)}}
-.srcs{{font-size:12px;color:var(--ink3);margin:2px 0 0}}
-.srcs .fn{{font-size:12px;vertical-align:baseline;margin-left:5px;color:var(--acc)}}
-.empty{{padding:30px 0;color:var(--ink2);text-align:center}}
+.unverified{{font-size:13px;margin:1rem 0 0;color:var(--ink2)}}
+.srcs{{font-size:12px;color:var(--ink3);margin:1rem 0 0}}
+.srcs .fn{{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}}
+.empty{{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}}
 /* jump-to-row highlight */
 @keyframes flash{{0%,35%{{background-color:var(--hl)}}100%{{background-color:transparent}}}}
 tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
 @media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}}}}
 /* compare */
-#compare{{border:1px solid var(--ink);margin:18px 0 6px;padding:0 0 4px}}
-.cmp-head{{display:flex;justify-content:space-between;align-items:baseline;padding:12px 14px 8px;border-bottom:1px solid var(--rule)}}
+#compare{{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}}
+.cmp-head{{display:flex;justify-content:space-between;align-items:baseline;padding:1rem;border-bottom:1px solid var(--rule)}}
 .cmp-head h2{{font:700 20px/1.2 var(--serif);margin:0}}
 .cmp-scroll{{overflow-x:auto}}
-.cmp-t th,.cmp-t td{{padding:8px 14px;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
+.cmp-t th,.cmp-t td{{padding:1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
 .cmp-t thead th{{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}}
 .cmp-t tbody th{{font:600 11px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}}
 .vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
-.tray{{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);padding:10px 20px;display:flex;gap:16px;align-items:center;justify-content:center;font-size:14px;z-index:5}}
-.tray button{{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:6px 14px;cursor:pointer}}
+.tray{{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}}
+.tray button{{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}}
 .tray button:disabled{{opacity:.5;cursor:default}}
-.tray button.ghost{{background:none;color:var(--tray-ink);text-decoration:underline;padding:6px 4px}}
+.tray button.ghost{{background:none;color:var(--tray-ink);text-decoration:underline;padding:0 1rem}}
 /* footer */
-section.method{{display:grid;grid-template-columns:1fr 1fr;gap:32px;border-top:1px solid var(--ink);margin-top:28px;padding:18px 0 40px;font-size:13px;color:var(--ink2)}}
-section.method h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 8px}}
-section.method p{{margin:0 0 8px}}
+section.method{{display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}}
+section.method h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}}
+section.method p{{margin:0 0 1rem;max-width:none}}
 section.method p a{{color:var(--ink2)}}
-ol.fns{{margin:0;padding-left:22px;columns:2;column-gap:28px}}
-ol.fns li{{margin:0 0 3px;break-inside:avoid}}
+ol.fns{{margin:0;padding-left:2rem;columns:2;column-gap:2rem}}
+ol.fns li{{margin:0;break-inside:avoid}}
 ol.fns a{{color:var(--ink2)}}
 @media (min-width:821px) and (max-width:1100px){{
  .count{{flex:1 1 auto;order:1;align-self:flex-end}} .sortby{{order:2}}
 }}
 /* 821-1100px: the full table must fit without sideways scrolling */
 @media (max-width:1100px){{
- .main-t td,.main-t tbody th{{padding:10px 7px}}
- .main-t thead th{{padding:10px 7px 8px;letter-spacing:.04em}}
+ .main-t td,.main-t tbody th{{padding:1rem}}
+ .main-t thead th{{padding:1rem;letter-spacing:.04em}}
  .c-model{{width:30%}} .c-rec{{width:auto}} .c-catch{{width:24%;font-size:13px}}
- .mcell{{gap:9px}} .ph-sm{{width:36px!important;height:48px!important}}
+ .mcell{{gap:1rem}} .ph-sm{{width:36px!important;height:48px!important}}
  .best{{font-size:12.5px}}
  .rec{{font-size:13px}}
- tr.detail td{{padding-left:16px}}
- .dgrid{{grid-template-columns:140px minmax(0,1fr) minmax(0,1fr);gap:0 20px}}
+ tr.detail td{{padding-left:1rem}}
+ .dgrid{{grid-template-columns:140px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}}
  .ph-lg{{width:140px!important;height:187px!important}}
- .dgrid dl{{grid-template-columns:1fr;gap:0}} .dgrid dt{{margin-top:8px;font-weight:600;font-size:12px}} .dgrid dt:first-child{{margin-top:0}}
+ .dgrid dl{{grid-template-columns:1fr;gap:0}} .dgrid dt{{margin-top:1rem;font-weight:600;font-size:12px}} .dgrid dt:first-child{{margin-top:0}}
 }}
 @media (max-width:900px){{
  h1{{font-size:30px}}
- .main-t td,.main-t tbody th{{padding:10px 5px}}
- .main-t thead th{{padding:10px 5px 8px;font-size:10px}}
+ .main-t td,.main-t tbody th{{padding:1rem}}
+ .main-t thead th{{padding:1rem;font-size:10px}}
  .c-catch{{width:22%}}
 }}
 @media (max-width:820px){{
  body{{font-size:15px}}
- .wrap{{padding:0 14px}}
- header.intro{{grid-template-columns:1fr;gap:1.25rem;padding:1.5rem 0}}
+ .wrap{{padding:0 1rem}}
+ header.intro{{grid-template-columns:1fr;gap:1rem;padding:2rem 0}}
  .verdict{{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}}
  h1{{font-size:27px}} .dek{{font-size:16px}}
- .controls{{gap:12px 20px}}
+ .controls{{gap:1rem}}
  .sortby{{margin-left:0}}
  input[type=range]{{width:150px}}
  .main-t thead{{display:none}}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{{display:block}}
- .main-t tbody.item{{border-bottom:1px solid var(--rule);padding:12px 0}}
- .main-t tbody.item{{padding-left:10px}}
+ .main-t tbody.item{{border-bottom:1px solid var(--rule);padding:1rem}}
  tbody.item[data-v]{{box-shadow:inset 3px 0 0 var(--vc)}}
  tbody.item[data-v] tr.main>td.c-cmp{{box-shadow:none}}
- .main-t tr.main{{display:grid;grid-template-columns:24px repeat(3,minmax(0,1fr));gap:8px 10px;position:relative}}
+ .main-t tr.main{{display:grid;grid-template-columns:2rem repeat(3,minmax(0,1fr));gap:1rem;position:relative}}
  .main-t tbody.item:hover tr.main{{background:none}}
  .main-t tr.main>*{{padding:0;border:0;width:auto;min-width:0;max-width:none}}
- .c-cmp{{grid-row:1;grid-column:1;padding-top:3px!important}}
+ .c-cmp{{grid-row:1;grid-column:1;padding-top:0!important}}
  .c-model{{grid-column:2 / 5}}
  .ph-sm{{width:45px!important;height:60px!important}}
  .c-rec{{grid-column:2}} .c-price{{grid-column:3}} .c-score{{grid-column:4}}
  .c-nosub{{grid-column:2}} .c-sub{{grid-column:3 / 5}}
  .c-catch{{grid-column:2 / 5;font-size:14px}}
- .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:1px}}
+ .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:0}}
  .num{{text-align:left}} .bar{{margin-left:0}}
- tr.detail td{{padding:12px;margin-top:10px}}
- .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:8px}}
- .ph-lg{{width:120px!important;height:160px!important;margin-bottom:6px}}
+ tr.detail td{{padding:1rem;margin-top:0}}
+ .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:1rem}}
+ .ph-lg{{width:120px!important;height:160px!important;margin-bottom:1rem}}
  section.method{{grid-template-columns:1fr}} ol.fns{{columns:1}}
- .cmp-t th,.cmp-t td{{padding:7px 9px;font-size:13px}}
+ .cmp-t th,.cmp-t td{{padding:1rem;font-size:13px}}
  .cmp-t thead th{{min-width:140px;font-size:14px}}
  .cmp-t tbody th{{width:84px;min-width:84px;font-size:10px;position:sticky;left:0;background:var(--paper)}}
  .cmp-t thead th:first-child{{position:sticky;left:0;background:var(--paper);min-width:84px}}
