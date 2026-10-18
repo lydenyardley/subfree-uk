@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Accessibility and link audit for the built site.
+"""Verification for the site: rebuild, then audit structure and accessibility.
 
-Serves the repo root on a loopback port, drives the page with Chromium, and
-runs axe-core against WCAG 2.2 A and AA in both themes. Also checks internal
-anchors, image files, headings, labels, target sizes and horizontal overflow at
-the breakpoints the stylesheet defines.
+Runs build/build.py first and reports any generated file it changed, so a stale
+page fails here instead of shipping. Serves the repo root on a loopback port,
+drives the page with Chromium, and runs axe-core against WCAG 2.2 A and AA in
+both themes. Also checks internal anchors, image files, duplicate ids, headings,
+labels, target sizes, the photo lightbox and horizontal overflow at the
+breakpoints the stylesheet defines.
 
     python build/check.py
     python build/check.py --external   # also request every outbound URL
@@ -16,6 +18,7 @@ import argparse
 import functools
 import http.server
 import os
+import subprocess
 import sys
 import threading
 import urllib.error
@@ -23,6 +26,7 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ["index.html", "doorbells.html"]
+GENERATED = PAGES + ["data/doorbells.csv", "data/doorbells.md"]
 WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390]
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 
@@ -97,6 +101,21 @@ def serve():
     return httpd
 
 
+def rebuild():
+    """Run the generator and return the generated files whose bytes changed."""
+    before = {name: open(os.path.join(ROOT, name), "rb").read() for name in GENERATED}
+    result = subprocess.run(
+        [sys.executable, os.path.join(ROOT, "build", "build.py")],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode:
+        return None, result
+    after = {name: open(os.path.join(ROOT, name), "rb").read() for name in GENERATED}
+    return [name for name in GENERATED if before[name] != after[name]], result
+
+
 def load_pages():
     texts = {}
     for page in PAGES:
@@ -117,6 +136,49 @@ def axe_violations(axe, page):
         },
     )
     return results.response["violations"]
+
+
+def lightbox_check(page):
+    """Click the first photo, confirm the dialog, then dismiss it with Esc."""
+    counts = page.evaluate(
+        "() => ({buttons: document.querySelectorAll('.zoom').length, "
+        "thumbs: document.querySelectorAll('img.ph-sm').length, "
+        "dialog: !!document.getElementById('lightbox')})"
+    )
+    problems = []
+    if not counts["dialog"]:
+        return {"problems": ["photo lightbox is missing"], "buttons": 0}
+    if counts["buttons"] < counts["thumbs"]:
+        problems.append(
+            f"only {counts['buttons']} lightbox buttons for {counts['thumbs']} photos"
+        )
+    if not counts["buttons"]:
+        return {"problems": problems + ["no photo opens in the lightbox"], "buttons": 0}
+
+    page.click(".zoom")
+    page.wait_for_timeout(100)
+    opened = page.evaluate(
+        """() => {
+            const d = document.getElementById('lightbox');
+            const img = document.querySelector('#lb-img img');
+            return {open: d.open, src: img ? (img.getAttribute('src') || '') : '',
+                    name: document.getElementById('lb-name').textContent};
+        }"""
+    )
+    if not opened["open"]:
+        problems.append("clicking a photo did not open the lightbox")
+    if not opened["src"].endswith("-lg.webp"):
+        problems.append(f"lightbox opened {opened['src'] or 'no image'} instead of the large file")
+    if not opened["name"]:
+        problems.append("lightbox does not name the product")
+    if opened["src"] and not os.path.exists(os.path.join(ROOT, opened["src"])):
+        problems.append(f"lightbox image file is missing: {opened['src']}")
+
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(50)
+    if page.evaluate("() => document.getElementById('lightbox').open"):
+        problems.append("Esc does not close the lightbox")
+    return {"problems": problems, "buttons": counts["buttons"]}
 
 
 def request_status(url):
@@ -147,9 +209,22 @@ def main():
 
     issues = []
     notes = []
-    pages = load_pages()
 
     print("SubFree UK audit")
+
+    changed, build = rebuild()
+    if changed is None:
+        print("Rebuild failed:")
+        print((build.stderr or build.stdout).strip())
+        return 1
+    if changed:
+        issues.append(
+            "rebuild changed " + ", ".join(changed) + "; commit the regenerated files"
+        )
+    else:
+        print("  ok    rebuild reproduces the committed pages")
+
+    pages = load_pages()
 
     if pages["index.html"] == pages["doorbells.html"]:
         print("  ok    generated pages are identical")
@@ -194,6 +269,7 @@ def main():
             page.wait_for_timeout(200)
 
             data = page.evaluate(AUDIT_JS)
+            lightbox = lightbox_check(page)
 
             axe = Axe()
             dark = axe_violations(axe, page)
@@ -222,6 +298,14 @@ def main():
         print(f"  ok    document language, title and viewport set")
     else:
         issues.append("missing html lang, page title or viewport meta")
+
+    if lightbox["problems"]:
+        issues.extend(lightbox["problems"])
+    else:
+        print(
+            f"  ok    {lightbox['buttons']} photos open in the lightbox, "
+            "named, sized from the large file, and Esc closes it"
+        )
 
     if data["rows"] == 0:
         issues.append("no product rows rendered; the page may be blank")
