@@ -15,6 +15,7 @@ IMAGE_SOURCES.md             where every photo came from, generated
 .nojekyll                    serve files as-is
 build/
   build.py                   THE single source: all doorbell data (ROWS), sources (S) and the page template
+  check.py                   accessibility and link audit (Playwright and axe-core)
   make_images.py             downloads, crops and converts the official product photos
   images.json                image source URLs (written by make_images.py, read by build.py)
   shots.py, shots2.py        screenshot checks (Playwright), output to screenshots/ (git-ignored)
@@ -26,7 +27,7 @@ research/                    Reddit threads and draft replies for the demand tes
 
 ## Rebuilding
 
-Needs Python 3.10+ (built with 3.13). `build.py` uses only the standard library; images need Pillow; screenshots need Playwright.
+Needs Python 3.10+ (built with 3.13). `build.py` uses only the standard library; images need Pillow; screenshots and the audit need Playwright, and the audit also needs `axe-playwright-python`.
 
 ```bash
 git clone https://github.com/lydenyardley/subfree-uk.git
@@ -34,12 +35,15 @@ cd subfree-uk
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r build/requirements.txt
-python -m playwright install chromium   # only needed for screenshots
+python -m playwright install chromium   # needed for screenshots and the audit
 
 python build/build.py            # rewrites index.html, doorbells.html, data/doorbells.csv, data/doorbells.md
 python build/make_images.py      # only if photos changed: rewrites img/, build/images.json, IMAGE_SOURCES.md
 python build/shots2.py           # optional: screenshots at 1280/1000/900/820/390 + 1280 dark into screenshots/
+python build/check.py            # accessibility and link audit; exits 1 on any issue
 ```
+
+`check.py` serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes, and checks anchors, image files, labels, target sizes and horizontal overflow at every breakpoint. Add `--external` to request each outbound link over the network.
 
 Scripts work from any directory. To use an installed Chrome instead of Playwright's Chromium, set `CHROME_PATH` (e.g. `CHROME_PATH=/usr/bin/google-chrome`).
 

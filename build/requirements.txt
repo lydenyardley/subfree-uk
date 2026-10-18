@@ -1,2 +1,3 @@
 Pillow>=10
 playwright>=1.40
+axe-playwright-python>=0.1.8

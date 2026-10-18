@@ -45,6 +45,7 @@ stands.
 ## Before committing
 
 - Run `python build/build.py`.
+- Run `python build/check.py` and fix anything it reports.
 - Check the page at desktop and phone widths.
 - Review the diff and fix what that review finds before committing.
 - Keep commits small and logical, one concern each.
