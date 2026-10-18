@@ -12,6 +12,8 @@ env/
 # secrets / local config
 .env
 *.token
+# local workspace state
+.freebuff/
 # OS/editor
 .DS_Store
 Thumbs.db
