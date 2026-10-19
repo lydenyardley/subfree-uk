@@ -17,6 +17,8 @@
 --v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+.skip{position:absolute;top:0;left:0;z-index:20;transform:translateY(-120%);background:var(--paper);border:1px solid var(--ink);padding:0.5rem 1rem;font:600 14px/1.4 var(--sans);color:var(--ink)}
+.skip:focus{transform:none}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}
 a{color:var(--acc)}
@@ -224,8 +226,9 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .fbody .opts{gap:0.5rem 1rem}
  .fbody input[type=range]{width:100%;max-width:220px}
 }
-@media print{.controls,.tray,.c-cmp,.more-w,#theme{display:none} tr.detail{display:table-row!important}}
+@media print{.skip,.controls,.tray,.c-cmp,.more-w,#theme{display:none} tr.detail{display:table-row!important}}
 </style></head><body>
+<a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
 <div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme" aria-pressed="false"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
 <header class="intro">
@@ -277,7 +280,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 <div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
 
-<table class="main-t" id="tbl">
+<table class="main-t" id="tbl" tabindex="-1">
 <thead><tr>
 <th scope="col" class="c-cmp"><span class="vh">Compare</span></th>
 <th scope="col" data-sort="model" aria-sort="none"><button type="button">Model</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
