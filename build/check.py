@@ -6,8 +6,8 @@ page fails here instead of shipping. Serves the repo root on a loopback port,
 drives the page with Chromium, and runs axe-core against WCAG 2.2 A and AA in
 both themes at 1280px, 820px and 390px. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
-layout, the skip link, the photo lightbox and horizontal overflow at the
-breakpoints the stylesheet defines.
+layout, the price range slider, the skip link, the photo lightbox and horizontal
+overflow at the breakpoints the stylesheet defines.
 
     python build/check.py
     python build/check.py --external   # also request every outbound URL
@@ -127,6 +127,11 @@ OVERFLOW_JS = r"""() => {
 
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    # Keep-alive. The HTTP/1.0 default makes Chromium wait on a half-closed
+    # connection now and then, which shows up as a resource that timed out
+    # against a server that is working perfectly well.
+    protocol_version = "HTTP/1.1"
+
     def log_message(self, *args):
         pass
 
@@ -134,6 +139,7 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
 def serve():
     handler = functools.partial(QuietHandler, directory=ROOT)
     httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    httpd.daemon_threads = True
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd
 
@@ -216,6 +222,139 @@ def lightbox_check(page):
     if page.evaluate("() => document.getElementById('lightbox').open"):
         problems.append("Esc does not close the lightbox")
     return {"problems": problems, "buttons": counts["buttons"]}
+
+
+def price_check(page):
+    """Open the filters and exercise the two-handle price slider."""
+    problems = []
+    shapes = page.evaluate(
+        """() => {
+            const ranges = Array.from(document.querySelectorAll("#controls input[type=range]"));
+            return {
+                count: ranges.length,
+                labels: ranges.map((el) => el.getAttribute("aria-label") || ""),
+                values: ranges.map((el) => el.value),
+                bounds: ranges.map((el) => [el.min, el.max]),
+                outputs: [
+                    document.getElementById("f-min-out").textContent,
+                    document.getElementById("f-max-out").textContent
+                ]
+            };
+        }"""
+    )
+    if shapes["count"] != 2:
+        return [f"expected two price handles, found {shapes['count']}"]
+    if not all(shapes["labels"]):
+        problems.append(f"price handles need labels, got {shapes['labels']}")
+    if shapes["bounds"][0] != shapes["bounds"][1]:
+        problems.append(f"price handles use different bounds: {shapes['bounds']}")
+    if shapes["outputs"] != ["£" + v for v in shapes["values"]]:
+        problems.append(
+            f"the labels read {shapes['outputs']} for handles at {shapes['values']}"
+        )
+
+    page.eval_on_selector("#filters", "el => { el.open = true }")
+    page.wait_for_timeout(80)
+    full = page.evaluate(
+        """() => {
+            const body = document.querySelector("#filters .fbody");
+            const cs = getComputedStyle(body);
+            const content = body.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            return {
+                column: Math.round(content),
+                slider: Math.round(document.querySelector(".dual").getBoundingClientRect().width)
+            };
+        }"""
+    )
+    if full["slider"] < full["column"] - 4:
+        problems.append(
+            f"the price slider is {full['slider']}px wide in a {full['column']}px column"
+        )
+
+    page.eval_on_selector(
+        "#f-min",
+        "el => { el.value = 200; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+    )
+    page.wait_for_timeout(80)
+    filtered = page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll("tbody.item"));
+            const shown = rows.filter((r) => !r.hidden);
+            return {
+                shown: shown.length,
+                total: rows.length,
+                cheapest: Math.min(...shown.map((r) => Number(r.dataset.price)))
+            };
+        }"""
+    )
+    if filtered["shown"] >= filtered["total"] or filtered["cheapest"] < 200:
+        problems.append(
+            f"the lower handle does not filter: {filtered['shown']} of "
+            f"{filtered['total']} rows shown, cheapest £{filtered['cheapest']}"
+        )
+
+    page.eval_on_selector(
+        "#f-max",
+        "el => { el.value = 40; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+    )
+    page.eval_on_selector(
+        "#f-min",
+        "el => { el.value = 300; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+    )
+    page.wait_for_timeout(80)
+    crossed = page.evaluate(
+        "() => [Number(document.getElementById('f-min').value), "
+        "Number(document.getElementById('f-max').value)]"
+    )
+    if crossed[0] > crossed[1]:
+        problems.append(f"the handles crossed: lowest {crossed[0]} above highest {crossed[1]}")
+
+    page.eval_on_selector(
+        "#f-max",
+        "el => { el.value = 150; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+    )
+    page.eval_on_selector(
+        "#f-min",
+        "el => { el.value = 100; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+    )
+    page.wait_for_timeout(80)
+    edges = page.evaluate(
+        """() => {
+            const dual = document.querySelector(".dual");
+            const track = document.querySelector(".dual-track");
+            const fill = document.querySelector("#f-fill");
+            const low = document.getElementById("f-min");
+            const high = document.getElementById("f-max");
+            const db = dual.getBoundingClientRect();
+            const tb = track.getBoundingClientRect();
+            const fb = fill.getBoundingClientRect();
+            const min = Number(low.min), max = Number(low.max);
+            const thumb = parseFloat(getComputedStyle(dual).getPropertyValue("--thumb")) || 0;
+            const centre = (v) => db.x + thumb / 2 + ((v - min) / (max - min)) * (db.width - thumb);
+            return {
+                fill: [fb.x - db.x, db.right - fb.right],
+                want: [centre(Number(low.value)) - db.x, db.right - centre(Number(high.value))],
+                track: [tb.x - db.x, db.right - tb.right]
+            };
+        }"""
+    )
+    if (
+        abs(edges["fill"][0] - edges["want"][0]) > 1.5
+        or abs(edges["fill"][1] - edges["want"][1]) > 1.5
+    ):
+        problems.append(
+            f"the filled span {[round(v) for v in edges['fill']]} does not meet the "
+            f"handles at {[round(v) for v in edges['want']]}"
+        )
+
+    page.click("#reset")
+    page.wait_for_timeout(80)
+    restored = page.evaluate(
+        "() => Array.from(document.querySelectorAll('tbody.item')).filter((r) => !r.hidden).length"
+    )
+    if restored != filtered["total"]:
+        problems.append(f"Reset left {restored} of {filtered['total']} rows showing")
+    return problems
 
 
 def skip_check(page):
@@ -336,6 +475,7 @@ def main():
             phone_data = page.evaluate(AUDIT_JS)
             header = page.evaluate(HEADER_JS)
             header_roles = "columnheader" in page.locator("#tbl").aria_snapshot()
+            prices = price_check(page)
 
             page.set_viewport_size({"width": 1280, "height": 900})
             page.reload(wait_until="load")
@@ -391,6 +531,14 @@ def main():
         print(f"  ok    document language, title and viewport set")
     else:
         issues.append("missing html lang, page title or viewport meta")
+
+    if prices:
+        issues.extend(prices)
+    else:
+        print(
+            "  ok    the price slider is one labelled handle per end, full width, "
+            "fills to the handles, and filters"
+        )
 
     if skip:
         issues.extend(skip)
