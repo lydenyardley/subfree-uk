@@ -230,10 +230,19 @@ def skip_check(page):
         problems.append("the skip link target is not focusable")
     page.keyboard.press("Tab")
     first = page.evaluate(
-        "() => ({cls: document.activeElement.className, text: document.activeElement.textContent.trim()})"
+        """() => ({
+            cls: document.activeElement.className,
+            top: Math.round(document.activeElement.getBoundingClientRect().top),
+            transform: getComputedStyle(document.activeElement).transform
+        })"""
     )
     if "skip" not in first["cls"]:
         problems.append(f"the first Tab stop is {first['cls'] or 'nothing'}, not the skip link")
+    elif first["transform"] != "none" or first["top"] < 0:
+        problems.append(
+            f"the skip link stays off-screen when focused (top {first['top']}px, "
+            f"transform {first['transform']})"
+        )
     page.keyboard.press("Enter")
     page.wait_for_timeout(150)
     landed = page.evaluate(
