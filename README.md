@@ -6,6 +6,8 @@ Live page: https://lydenyardley.github.io/subfree-uk/
 
 A single static HTML page plus self-hosted product photos in `img/` (sources in `IMAGE_SOURCES.md`). No tracking, cookies, external fonts or scripts. Prices change often, so check the linked sources before buying.
 
+The compare selection lives in the URL. Tick two or three models and the address carries `?cmp=`, so the link and the shortlist text both reopen the same table.
+
 ## Repo layout
 
 ```
@@ -46,7 +48,7 @@ python build/shots2.py           # optional: screenshots at 1280/1000/900/820/39
 python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
 ```
 
-`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the price range slider, the theme toggle's state, the filter and selection announcements, the empty-state nearest match, the no-JavaScript fallback, the phone first screen and header association, the photo lightbox, the compare table caption and its 3-year cost row, the shortlist copy, the jump announcement, the theme motion, the score-bar animation, and horizontal overflow at every breakpoint. It fails on axe's WCAG 2.2 A and AA violations; the best-practice rules axe also finds are reported as notes at the end of the run, so `region` and friends stay visible without turning a design decision into a red build. Add `--external` to request each outbound link over the network.
+`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the price range slider, the theme toggle's state, the filter and selection announcements, the empty-state nearest match, the no-JavaScript fallback, the phone first screen and header association, the photo lightbox, the compare table caption and its 3-year cost row, the shortlist copy and its ?cmp= share link, the jump announcement, the theme motion, the score-bar animation, and horizontal overflow at every breakpoint. It fails on axe's WCAG 2.2 A and AA violations; the best-practice rules axe also finds are reported as notes at the end of the run, so `region` and friends stay visible without turning a design decision into a red build. Add `--external` to request each outbound link over the network.
 
 Spotted a mistake or a paywall change? [Open an issue](https://github.com/lydenyardley/subfree-uk/issues/new).
 

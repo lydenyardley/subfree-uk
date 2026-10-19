@@ -46,9 +46,9 @@ stands.
 
 - Run `python build/check.py`. It rebuilds the site, fails if a generated file
   is stale, then runs the accessibility, anchor, image, target-size, type-floor,
-  phone-layout, compare, shortlist-copy, jump-announcement, motion, score-bar,
-  no-JavaScript and overflow audit at every breakpoint. Fix anything it
-  reports.
+  phone-layout, compare, shareable-shortlist, jump-announcement, motion,
+  score-bar, no-JavaScript and overflow audit at every breakpoint. Fix anything
+  it reports.
 - Check the page at desktop and phone widths.
 - Review the diff and fix what that review finds before committing.
 - Keep commits small and logical, one concern each.
