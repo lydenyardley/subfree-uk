@@ -44,7 +44,9 @@ python build/shots2.py           # optional: screenshots at 1280/1000/900/820/39
 python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
 ```
 
-`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes, and checks internal anchors, image files, duplicate ids, labels, target sizes, the photo lightbox and horizontal overflow at every breakpoint. Add `--external` to request each outbound link over the network.
+`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the phone first screen and header association, the photo lightbox and horizontal overflow at every breakpoint. Add `--external` to request each outbound link over the network.
+
+Spotted a mistake or a paywall change? [Open an issue](https://github.com/lydenyardley/subfree-uk/issues/new).
 
 Scripts work from any directory. To use an installed Chrome instead of Playwright's Chromium, set `CHROME_PATH` (e.g. `CHROME_PATH=/usr/bin/google-chrome`).
 

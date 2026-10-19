@@ -45,8 +45,8 @@ stands.
 ## Before committing
 
 - Run `python build/check.py`. It rebuilds the site, fails if a generated file
-  is stale, then runs the accessibility, anchor, image, target-size and
-  overflow audit. Fix anything it reports.
+  is stale, then runs the accessibility, anchor, image, target-size, type-floor,
+  phone-layout and overflow audit at every breakpoint. Fix anything it reports.
 - Check the page at desktop and phone widths.
 - Review the diff and fix what that review finds before committing.
 - Keep commits small and logical, one concern each.
