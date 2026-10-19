@@ -374,7 +374,7 @@ for i,r in enumerate(ROWS):
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
 <td class="c-price num" data-label="Price">{gbp(r['price'])}</td>
-<td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="width:{sc/8*100:.0f}%"></i></span></td>
+<td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i data-w="{sc/8*100:.0f}" style="width:{sc/8*100:.0f}%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
 <td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3'])}</td>
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
@@ -402,7 +402,7 @@ for i,r in enumerate(ROWS):
 
 data_js = json.dumps({r["id"]:{
  "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"price":gbp(r["price"]),"score":f"{r['score_total']}/8",
- "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]),"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
+ "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]),"keep3":r["keep3"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
  "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
@@ -449,7 +449,7 @@ page=f'''<!doctype html>
 .no-js .more-w{{display:none}}
 .nojs{{margin:1rem 0;padding:1rem;border:1px solid var(--rule);font-size:14px;color:var(--ink2)}}
 html{{-webkit-text-size-adjust:100%}}
-body{{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}}
+body{{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);transition:background-color .18s,color .18s}}
 a{{color:var(--acc)}}
 p{{max-width:65ch}}
 sup{{font-size:11px}}
@@ -458,7 +458,9 @@ sup{{font-size:11px}}
 .mast>div>span{{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}}
 #theme{{position:relative;font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:24px}}
 #theme:hover{{border-color:var(--ink)}}
-#theme i{{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}}
+#theme i{{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}}
+:root[data-theme=dark] #theme i{{transform:rotate(180deg)}}
+@media (prefers-color-scheme:dark){{:root:not([data-theme=light]) #theme i{{transform:rotate(180deg)}}}}
 #theme::after{{content:"";position:absolute;inset:-10px -8px}}
 header.intro{{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}}
 h1{{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}}
@@ -538,7 +540,7 @@ span.ph-lg{{font-size:12px}}
 .rec-no{{color:var(--ink2)}} .rec-no::before{{border-color:var(--ink3)}}
 .score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
 .bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
-.bar i{{display:block;height:100%;background:var(--acc)}}
+.bar i{{display:block;height:100%;background:var(--acc);transition:width .2s ease}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
 .fn{{font-size:11px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
@@ -569,11 +571,13 @@ tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1
 /* jump-to-row highlight */
 @keyframes flash{{0%,35%{{background-color:var(--hl)}}100%{{background-color:transparent}}}}
 tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
-@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}}}}
+@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.bar i{{transition:none}}}}
 /* compare */
 #compare{{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}}
 .cmp-head{{display:flex;justify-content:space-between;align-items:baseline;padding:1rem;border-bottom:1px solid var(--rule)}}
 .cmp-head h2{{font:700 20px/1.2 var(--serif);margin:0}}
+.cmp-actions{{display:flex;gap:1rem;align-items:baseline}}
+.cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{{background:var(--tint);font-variant-numeric:tabular-nums}}
 .cmp-scroll{{overflow-x:auto}}
 .cmp-t th,.cmp-t td{{padding:1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
 .cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{{background:var(--tint)}}
@@ -732,7 +736,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
 <section id="compare" hidden aria-live="polite">
-<div class="cmp-head"><h2>Side by side</h2><button type="button" class="link" id="cmp-close">Close</button></div>
+<div class="cmp-head"><h2>Side by side</h2><div class="cmp-actions"><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-close">Close</button></div></div>
 <div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
 
@@ -767,7 +771,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 </dialog>
 <script>
 (function(){{
-var D={data_js};
+var D={data_js},SITE='https://lydenyardley.github.io/subfree-uk/',CHECKED='{CHECKED}';
 var $=function(s,c){{return (c||document).querySelector(s)}},$$=function(s,c){{return Array.prototype.slice.call((c||document).querySelectorAll(s))}};
 var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
 function isDark(){{var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}}
@@ -782,8 +786,8 @@ if(small.addEventListener)small.addEventListener('change',fitFilters);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
 fitFilters();fitSortKeys();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
-var live=$('#live'),liveT,announce=false,lastN=0,nearPick=null;
-function say(m){{clearTimeout(liveT);liveT=setTimeout(function(){{live.textContent=m}},300)}}
+var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
+function say(m){{clearTimeout(liveT);clearTimeout(liveClearT);liveT=setTimeout(function(){{live.textContent='';liveT=setTimeout(function(){{live.textContent=m;liveClearT=setTimeout(function(){{live.textContent=''}},4000)}},60)}},300)}}
 var skey='keep3',sdir=1,SDEF={{keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1}};
 function apply(){{
  var lo0=+minEl.min,hi0=+maxEl.max,lo=+minEl.value,hi=+maxEl.value;
@@ -834,15 +838,24 @@ $('.dual-track').addEventListener('click',function(ev){{
  var el=Math.abs(v-+minEl.value)<=Math.abs(v-+maxEl.value)?minEl:maxEl;
  el.value=v;apply();el.focus({{preventScroll:true}});
 }});
-$('#sort').onchange=function(){{skey=this.value;sdir=SDEF[skey];apply()}};
+$('#sort').onchange=function(){{skey=this.value;sdir=SDEF[skey];apply();drawBars()}};
 $$('#tbl thead th[data-sort] button').forEach(function(b){{b.onclick=function(){{
  var k=b.parentNode.dataset.sort;
  if(k===skey)sdir=-sdir;else{{skey=k;sdir=SDEF[k]}}
- apply();
+ apply();drawBars();
 }}}});
 $('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});minEl.value=minEl.min;maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()}};
 $$('button.more').forEach(function(b){{b.onclick=function(){{var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}}}});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+var barTimers=[];
+function drawBars(){{
+ var bars=$$('#tbl tbody.item:not([hidden]) .bar i');
+ barTimers.forEach(clearTimeout);barTimers=[];
+ if(reduce.matches){{bars.forEach(function(b){{b.style.width=b.dataset.w+'%'}});return}}
+ bars.forEach(function(b){{b.style.width='0'}});
+ void tbl.offsetWidth;
+ setTimeout(function(){{bars.forEach(function(b,i){{barTimers.push(setTimeout(function(){{b.style.width=b.dataset.w+'%'}},i*20))}})}},0);
+}}
 $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
  var rows=a.dataset.ids.split(' ').map(function(id){{return document.getElementById('m-'+id)}});
  if(rows.some(function(r){{return r.hidden}}))$('#reset').click();
@@ -851,6 +864,8 @@ $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
  rows[0].scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'center'}});
  if(history.replaceState)history.replaceState(null,'','#'+rows[0].id);
  rows.forEach(function(r){{r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');clearTimeout(r._ft);r._ft=setTimeout(function(){{r.classList.remove('flash')}},1900)}});
+ var vis=$$('#tbl tbody.item:not([hidden])'),pos=vis.indexOf(rows[0]),vt=rows[0].querySelector('.vtag');
+ say(D[rows[0].dataset.id].name+(vt?', '+vt.textContent.toLowerCase():'')+', row '+(pos+1)+' of '+vis.length);
  var cb=rows[0].querySelector('input.cmp'); if(cb)cb.focus({{preventScroll:true}});
 }})}});
 var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
@@ -870,6 +885,11 @@ function render(){{
   var d=D[id];
   return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }}).join('')+'</tr></thead><tbody>';
+ var keep=s.map(function(id){{return D[id].keep3}}),valid=keep.filter(function(v){{return typeof v==='number'&&isFinite(v)}}),low=valid.length?Math.min.apply(null,valid):Infinity;
+ h+='<tr class="cmp-cost"><th scope="row">3 years, cheapest</th>'+s.map(function(id){{var v=D[id].keep3;
+  if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
+  return '<td>'+(Math.abs(v-low)<0.005?'£'+v.toFixed(2)+' · cheapest':'+£'+(v-low).toFixed(2))+'</td>';
+ }}).join('')+'</tr>';
  ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
 }}
@@ -879,6 +899,26 @@ $('#tray-go').onclick=showCompare;
 $('#cmp-inline').onclick=showCompare;
 $('#tray-clear').onclick=function(){{$$('input.cmp').forEach(function(c){{c.checked=false}});$('#compare').hidden=true;tray()}};
 $('#cmp-close').onclick=function(){{$('#compare').hidden=true}};
+function m3(x){{return '£'+(+x).toFixed(2)}}
+function shortlist(){{
+ return 'SubFree UK shortlist, checked '+CHECKED+'\\n'+SITE+'\\n\\n'+sel().map(function(id){{var d=D[id];
+  return d.name+'\\n'+d.price+' · 3-year cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\\nBest for: '+d.best+'\\nMain catch: '+d.catch;
+ }}).join('\\n\\n');
+}}
+function legacyCopy(text){{
+ var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.top='-1000px';
+ document.body.appendChild(t);t.select();var ok=false;try{{ok=document.execCommand('copy')}}catch(e){{}}
+ document.body.removeChild(t);return ok;
+}}
+var copyBtn=$('#cmp-copy');
+function copyLabel(m){{copyBtn.textContent=m;clearTimeout(copyBtn._t);copyBtn._t=setTimeout(function(){{copyBtn.textContent='Copy shortlist'}},2000)}}
+copyBtn.onclick=function(){{
+ var text=shortlist();
+ function ok(){{copyLabel('Copied')}}
+ function fail(){{copyLabel('Copy failed')}}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(ok,function(){{legacyCopy(text)?ok():fail()}});
+ else legacyCopy(text)?ok():fail();
+}};
 $('#empty-reset').onclick=function(){{$('#reset').click()}};
 $('#near').onclick=function(){{
  if(!nearPick)return;
@@ -907,7 +947,7 @@ lb.addEventListener('click',function(ev){{
  var r=lb.getBoundingClientRect();
  if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
 }});
-apply();announce=true;
+apply();drawBars();announce=true;
 }})();
 </script>
 </body></html>'''
