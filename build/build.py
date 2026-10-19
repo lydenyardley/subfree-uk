@@ -771,7 +771,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 </dialog>
 <script>
 (function(){{
-var D={data_js},SITE='https://lydenyardley.github.io/subfree-uk/',CHECKED='{CHECKED}';
+var D={data_js},CHECKED='{CHECKED}';
 var $=function(s,c){{return (c||document).querySelector(s)}},$$=function(s,c){{return Array.prototype.slice.call((c||document).querySelectorAll(s))}};
 var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
 function isDark(){{var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}}
@@ -862,7 +862,7 @@ $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
  rows.sort(function(x,y){{return x.compareDocumentPosition(y)&4?-1:1}});
  ev.preventDefault();
  rows[0].scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'center'}});
- if(history.replaceState)history.replaceState(null,'','#'+rows[0].id);
+ if(history.replaceState)history.replaceState(null,'',location.pathname+location.search+'#'+rows[0].id);
  rows.forEach(function(r){{r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');clearTimeout(r._ft);r._ft=setTimeout(function(){{r.classList.remove('flash')}},1900)}});
  var vis=$$('#tbl tbody.item:not([hidden])'),pos=vis.indexOf(rows[0]),vt=rows[0].querySelector('.vtag');
  say(D[rows[0].dataset.id].name+(vt?', '+vt.textContent.toLowerCase():'')+', row '+(pos+1)+' of '+vis.length);
@@ -871,6 +871,12 @@ $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
 var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
 function esc(s){{var d=document.createElement('div');d.textContent=s;return d.innerHTML}}
 function sel(){{return $$('input.cmp:checked').map(function(c){{return c.value}})}}
+function cmpIds(){{return sel().slice(0,3)}}
+function shareUrl(){{var s=cmpIds();return location.origin+location.pathname+(s.length?'?cmp='+s.join(','):'')}}
+function syncUrl(){{
+ var s=cmpIds(),u=location.pathname+(s.length?'?cmp='+s.join(','):'')+location.hash;
+ try{{if(history.replaceState)history.replaceState(null,'',u)}}catch(e){{}}
+}}
 function tray(){{
  var s=sel(); $$('input.cmp').forEach(function(c){{c.disabled=!c.checked&&s.length>=3}});
  $('#tray').hidden=s.length===0;
@@ -879,6 +885,7 @@ function tray(){{
  var ib=$('#cmp-inline');$('#cmp-sep').hidden=ib.hidden=s.length<2;ib.textContent='Compare '+s.length;
  if(!$('#compare').hidden){{s.length>=2?render():($('#compare').hidden=true)}}
  say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
+ syncUrl();
 }}
 function render(){{
  var s=sel(),h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){{
@@ -901,7 +908,7 @@ $('#tray-clear').onclick=function(){{$$('input.cmp').forEach(function(c){{c.chec
 $('#cmp-close').onclick=function(){{$('#compare').hidden=true}};
 function m3(x){{return '£'+(+x).toFixed(2)}}
 function shortlist(){{
- return 'SubFree UK shortlist, checked '+CHECKED+'\\n'+SITE+'\\n\\n'+sel().map(function(id){{var d=D[id];
+ return 'SubFree UK shortlist, checked '+CHECKED+'\\n'+shareUrl()+'\\n\\n'+sel().map(function(id){{var d=D[id];
   return d.name+'\\n'+d.price+' · 3-year cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\\nBest for: '+d.best+'\\nMain catch: '+d.catch;
  }}).join('\\n\\n');
 }}
@@ -948,6 +955,18 @@ lb.addEventListener('click',function(ev){{
  if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
 }});
 apply();drawBars();announce=true;
+var shared='';
+try{{shared=decodeURIComponent((location.search.match(/[?&]cmp=([^&]*)/)||[])[1]||'')}}catch(e){{shared=''}}
+if(shared){{
+ var ids=[];
+ shared.split(',').forEach(function(id){{if(D[id]&&ids.indexOf(id)<0&&ids.length<3)ids.push(id)}});
+ if(ids.length){{
+  $$('input.cmp').forEach(function(c){{c.checked=ids.indexOf(c.value)>-1}});
+  tray();
+  if(ids.length>1){{render();$('#compare').hidden=false}}
+ }}
+ syncUrl();
+}}
 }})();
 </script>
 </body></html>'''
