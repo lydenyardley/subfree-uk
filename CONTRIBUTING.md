@@ -35,6 +35,11 @@ Every commit is authored by Lyden Yardley
 <lydenyardley@users.noreply.github.com>. Do not add co-author trailers,
 generated-with lines, or tool attribution to commit messages.
 
+## Data
+
+`ROWS` in `build/build.py` is the dataset. The sourcing rules, including how
+to close a "Not yet verified" note, are in [AGENTS.md](AGENTS.md).
+
 ## Generated files
 
 `index.html`, `doorbells.html`, `data/doorbells.csv` and `data/doorbells.md`
