@@ -53,7 +53,8 @@ stands.
 
 ## Pull requests
 
-CI runs `build/check_commits.py` over every commit in a pull request. To run it
+CI runs `build/check_commits.py` over every commit in a pull request, and
+`build/check.py` on every pull request and every push to `main`. To run them
 locally:
 
 ```bash

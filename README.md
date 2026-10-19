@@ -52,7 +52,7 @@ Scripts work from any directory. To use an installed Chrome instead of Playwrigh
 
 ## Pull requests
 
-`.github/workflows/commits.yml` runs `build/check_commits.py` over every commit in a pull request, so a message that breaks the format in [CONTRIBUTING.md](CONTRIBUTING.md) fails the check. Run the same command locally before opening one:
+`.github/workflows/commits.yml` runs `build/check_commits.py` over every commit in a pull request, so a message that breaks the format in [CONTRIBUTING.md](CONTRIBUTING.md) fails the check. `.github/workflows/audit.yml` runs `build/check.py` on every pull request and every push to `main`, so a page that fails the audit cannot ship unnoticed. Run the same commands locally before opening one:
 
 ```bash
 python build/check_commits.py origin/main..HEAD
