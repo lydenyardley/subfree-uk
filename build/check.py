@@ -417,7 +417,6 @@ def shortlist_check(page):
         problems.append(f"the copy action confirms with {after!r}")
     required = [
         "SubFree UK shortlist, checked 18 October 2026",
-        "https://lydenyardley.github.io/subfree-uk/",
         "TP-Link Tapo TD21",
         "Reolink Video Doorbell PoE",
         "EZVIZ EP3x Pro",
@@ -429,11 +428,61 @@ def shortlist_check(page):
     missing = [part for part in required if part not in text]
     if missing:
         problems.append(f"the shortlist is missing {missing}")
+    links = [line for line in text.split("\n") if "?cmp=" in line]
+    if len(links) != 1 or not all(
+        model in links[0] for model in ("tapo-td21", "reo-poe", "ezviz-ep3x")
+    ):
+        problems.append(f"the shortlist link reads {links}")
     if text.count("Best for:") != 3 or text.count("Main catch:") != 3:
         problems.append("the shortlist does not give Best for and Main catch for all 3 models")
     page.wait_for_timeout(2200)
     if page.inner_text("#cmp-copy") != "Copy shortlist":
         problems.append("the copy label does not return to Copy shortlist")
+    return problems
+
+
+def share_check(page):
+    """A ?cmp= link reopens the same three models and drops unknown ids."""
+    problems = []
+    href = page.evaluate("() => location.href")
+    if "?cmp=" not in href:
+        problems.append(f"selecting three models did not update the URL: {href}")
+    extra = page.context.new_page()
+    try:
+        extra.goto(href, wait_until="load")
+        extra.wait_for_timeout(400)
+        restored = extra.evaluate(
+            """() => ({
+                checked: Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value),
+                compare: !document.getElementById('compare').hidden,
+                names: Array.from(document.querySelectorAll('#cmp-table thead .cmp-name')).map((n) => n.textContent),
+                rows: document.querySelectorAll('#cmp-table tbody tr').length
+            })"""
+        )
+        if restored["checked"] != ["tapo-td21", "reo-poe", "ezviz-ep3x"]:
+            problems.append(f"the shared link restored {restored['checked']}")
+        if restored["rows"] != 18 or not restored["compare"]:
+            problems.append(f"the shared link did not reopen the compare table: {restored}")
+        if len(restored["names"]) != 3:
+            problems.append(f"the shared compare table names {restored['names']}")
+        base = href.split("?")[0]
+        extra.goto(base + "?cmp=reo-poe,bogus,reo-poe", wait_until="load")
+        extra.wait_for_timeout(300)
+        filtered = extra.evaluate(
+            """() => ({
+                checked: Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value),
+                compare: !document.getElementById('compare').hidden,
+                search: location.search
+            })"""
+        )
+        if filtered["checked"] != ["reo-poe"]:
+            problems.append(f"unknown and duplicate ids were kept: {filtered['checked']}")
+        if filtered["compare"]:
+            problems.append("a one-model link opens the compare table")
+        if filtered["search"] != "?cmp=reo-poe":
+            problems.append(f"the link was not cleaned up: {filtered['search']}")
+    finally:
+        extra.close()
     return problems
 
 
@@ -950,6 +999,7 @@ def main():
             page.wait_for_timeout(200)
             shortlist = shortlist_check(page)
             costrow = costrow_check(page)
+            share = share_check(page)
 
             data = page.evaluate(AUDIT_JS)
             foot = page.locator(
@@ -1104,7 +1154,12 @@ def main():
     if shortlist:
         issues.extend(shortlist)
     else:
-        print("  ok    Copy shortlist writes both models, costs, catches and the URL")
+        print("  ok    Copy shortlist writes both models, costs, catches and a ?cmp= link")
+
+    if share:
+        issues.extend(share)
+    else:
+        print("  ok    a ?cmp= link restores the three models and drops unknown ids")
 
     if motion:
         issues.extend(motion)
