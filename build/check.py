@@ -400,6 +400,37 @@ def costrow_check(page):
     return problems
 
 
+def chrome_check(page):
+    """The sort control and compare table keep their declared metrics."""
+    problems = []
+    m = page.evaluate(
+        """() => {
+            const cs = (el) => el ? getComputedStyle(el) : null;
+            const sel = cs(document.getElementById('sort'));
+            const cell = cs(document.querySelector('#cmp-table tbody td'));
+            const head = cs(document.querySelector('#cmp-table thead th'));
+            const th = cs(document.querySelector('#cmp-table tbody th'));
+            return {
+                select: sel ? sel.minHeight : '',
+                cellPad: cell ? cell.paddingTop + ' ' + cell.paddingRight : '',
+                headPad: head ? head.paddingTop + ' ' + head.paddingRight : '',
+                thLine: th ? th.lineHeight : '',
+                thSize: th ? th.fontSize : ''
+            };
+        }"""
+    )
+    if m["select"] != "44px":
+        problems.append(f"the sort select is {m['select']!r} tall, expected 44px")
+    for name in ("cellPad", "headPad"):
+        if m[name] != "8px 16px":
+            problems.append(f"compare table {name} is {m[name]!r}, expected 8px 16px")
+    if m["thSize"] != "11px" or m["thLine"] != "19.2px":
+        problems.append(
+            f"compare row labels are {m['thSize']}/{m['thLine']}, expected 11px/19.2px"
+        )
+    return problems
+
+
 def shortlist_check(page):
     """Copy shortlist puts the selected models and the URL on the clipboard."""
     problems = []
@@ -1009,6 +1040,7 @@ def main():
             shortlist = shortlist_check(page)
             costrow = costrow_check(page)
             share = share_check(page)
+            chrome = chrome_check(page)
 
             data = page.evaluate(AUDIT_JS)
             foot = page.locator(
@@ -1169,6 +1201,11 @@ def main():
         issues.extend(share)
     else:
         print("  ok    a ?cmp= link restores the three models and drops unknown ids")
+
+    if chrome:
+        issues.extend(chrome)
+    else:
+        print("  ok    the sort select is 44px and compare rows use 8/16px padding and aligned labels")
 
     if motion:
         issues.extend(motion)

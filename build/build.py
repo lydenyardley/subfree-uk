@@ -486,7 +486,7 @@ h1{{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-famil
 .verdict h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}}
 .verdict p{{margin:0 0 1rem;padding-left:1rem;border-left:3px solid var(--vc)}}
 .verdict p b{{color:var(--vc)}}
-.vshort{{display:none;margin:0;font-size:14px;line-height:1.45}}
+.vshort{{display:none;margin:1rem 0 0;font-size:14px;line-height:1.45}}
 .v-best{{--vc:var(--v-best)}} .v-batt{{--vc:var(--v-batt)}} .v-avoid{{--vc:var(--v-avoid)}}
 a.jump{{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}}
 a.jump:hover{{color:var(--vc)}}
@@ -518,7 +518,7 @@ input[type=checkbox]{{accent-color:var(--acc);width:15px;height:15px;margin:0}}
 .dual-track i{{position:absolute;top:0;height:100%;background:var(--acc)}}
 .dual-vals{{display:flex;justify-content:space-between;gap:1rem;margin-top:0.5rem;font:600 13px var(--sans);font-variant-numeric:tabular-nums;color:var(--ink2)}}
 .sortby{{margin-left:auto}}
-select{{font:14px var(--sans);padding:0 1rem;min-height:24px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}}
+select{{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}}
 .count{{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}}
 .count button.link{{position:relative;padding:10px 6px;margin:-10px -6px}}
 button.link{{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}}
@@ -594,13 +594,13 @@ tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
 .cmp-actions{{display:flex;gap:1rem;align-items:baseline}}
 .cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{{background:var(--tint);font-variant-numeric:tabular-nums}}
 .cmp-scroll{{overflow-x:auto}}
-.cmp-t th,.cmp-t td{{padding:1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
+.cmp-t th,.cmp-t td{{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
 .cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{{background:var(--tint)}}
 .cmp-t thead th{{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}}
 .cmp-name{{display:block}}
 .cmp-photo{{display:block;margin-top:1rem}}
 .cmp-photo img{{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}}
-.cmp-t tbody th{{font:600 11px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}}
+.cmp-t tbody th{{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}}
 .vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 .tray{{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}}
 .tray button{{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}}
@@ -665,7 +665,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:1rem}}
  .ph-lg{{width:120px!important;height:160px!important;margin-bottom:1rem}}
  section.method{{grid-template-columns:1fr}} ol.fns{{columns:1}}
- .cmp-t th,.cmp-t td{{padding:1rem;font-size:13px}}
+ .cmp-t th,.cmp-t td{{padding:0.5rem 1rem;font-size:13px}}
  .cmp-t thead th{{min-width:140px;font-size:14px}}
  .cmp-t tbody th{{width:84px;min-width:84px;font-size:11px;position:sticky;left:0;background:var(--paper)}}
  .cmp-t thead th:first-child{{position:sticky;left:0;background:var(--paper);min-width:84px}}
