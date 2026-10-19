@@ -8,9 +8,10 @@ drives the page with Chromium, and runs axe-core in both themes at 1280px,
 best-practice rules alongside them. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
 layout, the price range slider, the filter panel resize, the live announcements,
-the three-row compare cap, the empty-state recovery, the no-JavaScript fallback,
-the skip link, the photo lightbox and horizontal overflow at the breakpoints the
-stylesheet defines.
+the three-row compare cap, the empty-state recovery, the compare cost row, the
+shortlist copy, the jump announcement, the theme motion, the score-bar draw, the
+no-JavaScript fallback, the skip link, the photo lightbox and horizontal overflow
+at the breakpoints the stylesheet defines.
 
     python build/check.py
     python build/check.py --external   # also request every outbound URL
@@ -375,6 +376,184 @@ def recovery_check(page):
     return problems
 
 
+def costrow_check(page):
+    """The compare table opens with a row that does the 3-year subtraction."""
+    problems = []
+    state = page.evaluate(
+        """() => {
+            const row = document.querySelector('#cmp-table tr.cmp-cost');
+            return {
+                label: row ? row.querySelector('th').textContent : '',
+                cells: row ? Array.from(row.querySelectorAll('td')).map((td) => td.textContent) : [],
+                rows: document.querySelectorAll('#cmp-table tbody tr').length
+            };
+        }"""
+    )
+    if state["label"] != "3 years, cheapest":
+        problems.append(f"the compare cost row is labelled {state['label']!r}")
+    expected = ["£54.99 · cheapest", "+£25.00", "+£25.00"]
+    if state["cells"] != expected:
+        problems.append(f"compare cost row reads {state['cells']}, expected {expected}")
+    if state["rows"] != 18:
+        problems.append(f"the compare table has {state['rows']} body rows, expected 18")
+    return problems
+
+
+def shortlist_check(page):
+    """Copy shortlist puts the selected models and the URL on the clipboard."""
+    problems = []
+    before = page.inner_text("#cmp-copy")
+    page.click("#cmp-copy")
+    page.wait_for_timeout(350)
+    after = page.inner_text("#cmp-copy")
+    try:
+        text = page.evaluate("() => navigator.clipboard.readText()")
+    except Exception as error:
+        text = ""
+        problems.append(f"could not read the clipboard: {error}")
+    if before != "Copy shortlist":
+        problems.append(f"the copy action reads {before!r}")
+    if after != "Copied":
+        problems.append(f"the copy action confirms with {after!r}")
+    required = [
+        "SubFree UK shortlist, checked 18 October 2026",
+        "https://lydenyardley.github.io/subfree-uk/",
+        "TP-Link Tapo TD21",
+        "Reolink Video Doorbell PoE",
+        "EZVIZ EP3x Pro",
+        "£44.99",
+        "£54.99",
+        "£69.99",
+        "£79.99",
+    ]
+    missing = [part for part in required if part not in text]
+    if missing:
+        problems.append(f"the shortlist is missing {missing}")
+    if text.count("Best for:") != 3 or text.count("Main catch:") != 3:
+        problems.append("the shortlist does not give Best for and Main catch for all 3 models")
+    page.wait_for_timeout(2200)
+    if page.inner_text("#cmp-copy") != "Copy shortlist":
+        problems.append("the copy label does not return to Copy shortlist")
+    return problems
+
+
+def jump_check(page):
+    """A jump announces its model, verdict and position, then clears."""
+    problems = []
+    page.click(".verdict a.jump[data-ids='tapo-d230']")
+    page.wait_for_timeout(700)
+    state = page.evaluate(
+        """() => ({ live: document.getElementById('live').textContent,
+                     active: document.activeElement.className }) """
+    )
+    expected = "TP-Link Tapo D230S1, easiest battery setup, row 4 of 14"
+    if state["live"] != expected:
+        problems.append(f"the jump announced {state['live']!r}, expected {expected!r}")
+    if "cmp" not in state["active"]:
+        problems.append(f"focus after the jump is on {state['active']!r}")
+    page.wait_for_timeout(4200)
+    cleared = page.evaluate("() => document.getElementById('live').textContent")
+    if cleared:
+        problems.append(f"the jump announcement is not cleared: {cleared!r}")
+    return problems
+
+
+def motion_check(page):
+    """The theme disc turns and the page fades, unless reduced motion is set."""
+    problems = []
+
+    def read():
+        return page.evaluate(
+            """() => ({
+                disc: getComputedStyle(document.querySelector('#theme i')).transform,
+                discT: getComputedStyle(document.querySelector('#theme i')).transitionDuration,
+                bodyT: getComputedStyle(document.body).transitionDuration,
+                theme: document.documentElement.getAttribute('data-theme')
+            })"""
+        )
+
+    dark = read()
+    page.click("#theme")
+    page.wait_for_timeout(250)
+    light = read()
+    if dark["disc"] == light["disc"]:
+        problems.append(f"the disc does not turn between themes: {dark['disc']}")
+    if "0.18s" not in dark["discT"] or "0.18s" not in dark["bodyT"]:
+        problems.append(
+            f"theme transitions are disc {dark['discT']!r}, body {dark['bodyT']!r}"
+        )
+    page.emulate_media(reduced_motion="reduce")
+    page.wait_for_timeout(50)
+    reduced = read()
+    if reduced["discT"] != "0s" or reduced["bodyT"] != "0s":
+        problems.append(
+            f"reduced motion still animates: disc {reduced['discT']!r}, body {reduced['bodyT']!r}"
+        )
+    page.click("#theme")
+    page.wait_for_timeout(50)
+    page.emulate_media(reduced_motion="no-preference")
+    return problems
+
+
+def bars_check(page):
+    """Bars draw from zero on a sort, and land on their score widths."""
+    problems = []
+    page.wait_for_timeout(800)
+    initial = page.evaluate(
+        """() => {
+            const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
+            return { n: bars.length,
+                     transition: getComputedStyle(bars[0]).transitionDuration,
+                     widths: bars.map((b) => parseFloat(b.style.width)),
+                     targets: bars.map((b) => +b.dataset.w) };
+        }"""
+    )
+    if initial["n"] != 14:
+        problems.append(f"{initial['n']} score bars are visible, expected 14")
+    if initial["transition"] != "0.2s":
+        problems.append(f"the score bar transition is {initial['transition']!r}")
+    if initial["widths"] != initial["targets"]:
+        problems.append(f"score bar widths {initial['widths']} do not match {initial['targets']}")
+
+    zeroed = page.evaluate(
+        """() => {
+            const sel = document.getElementById('sort');
+            sel.value = 'price';
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            return Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'))
+                .every((b) => parseFloat(b.style.width) === 0);
+        }"""
+    )
+    if not zeroed:
+        problems.append("a sort does not restart the score bars from zero")
+    page.wait_for_timeout(900)
+    drawn = page.evaluate(
+        """() => {
+            const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
+            return { widths: bars.map((b) => parseFloat(b.style.width)),
+                     targets: bars.map((b) => +b.dataset.w) };
+        }"""
+    )
+    if drawn["widths"] != drawn["targets"]:
+        problems.append(f"after the sort the bars sit at {drawn['widths']}, not {drawn['targets']}")
+
+    page.emulate_media(reduced_motion="reduce")
+    page.wait_for_timeout(50)
+    instant = page.evaluate(
+        """() => {
+            const sel = document.getElementById('sort');
+            sel.value = 'score';
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            return Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'))
+                .every((b) => parseFloat(b.style.width) === +b.dataset.w);
+        }"""
+    )
+    if not instant:
+        problems.append("reduced motion does not render the score bars at full width")
+    page.emulate_media(reduced_motion="no-preference")
+    return problems
+
+
 def hit_check(page):
     """A 44px hit area means a click 8px below Details still opens it."""
     problems = []
@@ -555,7 +734,10 @@ def price_check(page):
     if not box or not box["width"]:
         return problems + ["the price track has no width to click on"]
     values = "() => [Number(document.getElementById('f-min').value), Number(document.getElementById('f-max').value)]"
-    track.click(position={"x": round(box["width"] * 0.25), "y": 1})
+    # Playwright's hit-target check sees the transparent range input at this
+    # point even though it has pointer-events:none; a real mouse click is the
+    # behaviour under test.
+    page.mouse.click(box["x"] + box["width"] * 0.25, box["y"] + 1)
     page.wait_for_timeout(80)
     low = page.evaluate(values)
     if abs(low[0] - 105) > 5 or low[1] != 300:
@@ -563,7 +745,7 @@ def price_check(page):
             f"a click a quarter along the track left the handles at {low}, "
             "expected the lower one near 105"
         )
-    track.click(position={"x": round(box["width"] * 0.75), "y": 1})
+    page.mouse.click(box["x"] + box["width"] * 0.75, box["y"] + 1)
     page.wait_for_timeout(80)
     high = page.evaluate(values)
     if abs(high[1] - 235) > 5 or high[0] != low[0]:
@@ -715,7 +897,11 @@ def main():
                 print(f"Could not start Chromium: {error}")
                 print("Run: python -m playwright install chromium")
                 return 2
-            page = browser.new_page(viewport={"width": 390, "height": 844})
+            context = browser.new_context(
+                viewport={"width": 390, "height": 844},
+                permissions=["clipboard-read", "clipboard-write"],
+            )
+            page = context.new_page()
             page.add_init_script("try { localStorage.setItem('theme', 'dark') } catch (e) {}")
             page.on("pageerror", lambda error: console_errors.append(str(error)))
             page.on(
@@ -737,6 +923,7 @@ def main():
             prices = price_check(page)
             copy = copy_check(page)
             recovery = recovery_check(page)
+            bars = bars_check(page)
 
             page.set_viewport_size({"width": 1280, "height": 900})
             page.reload(wait_until="load")
@@ -746,6 +933,8 @@ def main():
             skip = skip_check(page)
             hit = hit_check(page)
             theme = theme_check(page)
+            motion = motion_check(page)
+            jump = jump_check(page)
 
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
@@ -759,6 +948,8 @@ def main():
             )
             page.click("#tray-go")
             page.wait_for_timeout(200)
+            shortlist = shortlist_check(page)
+            costrow = costrow_check(page)
 
             data = page.evaluate(AUDIT_JS)
             foot = page.locator(
@@ -828,6 +1019,11 @@ def main():
     else:
         print("  ok    filtering announces its count; an empty result offers the nearest match")
 
+    if bars:
+        issues.extend(bars)
+    else:
+        print("  ok    score bars draw from zero on a sort and respect reduced motion")
+
     if hit:
         issues.extend(hit)
     else:
@@ -895,10 +1091,30 @@ def main():
     else:
         issues.append(f"cost header name: {foot.strip()}")
 
-    if "Side-by-side comparison of 3 doorbells" in compare["caption"] and compare["rows"] == 17:
+    if "Side-by-side comparison of 3 doorbells" in compare["caption"] and compare["rows"] == 18:
         print("  ok    the compare table is captioned with its model count")
     else:
         issues.append(f"compare table: {compare}")
+
+    if costrow:
+        issues.extend(costrow)
+    else:
+        print("  ok    the compare table names the cheapest 3-year cost and each difference")
+
+    if shortlist:
+        issues.extend(shortlist)
+    else:
+        print("  ok    Copy shortlist writes both models, costs, catches and the URL")
+
+    if motion:
+        issues.extend(motion)
+    else:
+        print("  ok    the theme disc turns and the page fades over 180ms, off under reduced motion")
+
+    if jump:
+        issues.extend(jump)
+    else:
+        print("  ok    a jump announces its model, verdict and row, then clears")
 
     if (
         header["display"] != "none"
