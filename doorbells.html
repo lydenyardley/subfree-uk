@@ -1,14 +1,23 @@
 <!doctype html>
-<html lang="en-GB"><head><meta charset="utf-8">
+<html lang="en-GB" class="no-js"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>Video doorbells that work without a subscription (UK) | SubFree UK</title>
 <meta name="description" content="14 UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.">
-<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="canonical" href="https://lydenyardley.github.io/subfree-uk/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Video doorbells that work without a subscription (UK)">
+<meta property="og:description" content="14 UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.">
+<meta property="og:url" content="https://lydenyardley.github.io/subfree-uk/">
+<meta property="og:image" content="https://lydenyardley.github.io/subfree-uk/img/reo-poe-lg.webp">
+<meta property="og:image:alt" content="Reolink Video Doorbell PoE">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>document.documentElement.className="js";try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <style>
 :root{--ink:#1a1a1a;--ink2:#555;--ink3:#767676;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
---v-best:#17694a;--v-batt:#1f5d96;--v-avoid:#a33b26;--hl:#fff1b8;--tray:#1a1a1a;--tray-ink:#fff;--imgbg:#fff;--imgf:none;
+--v-best:#17694a;--v-batt:#1f5d96;--v-avoid:#a33b26;--hl:#fff1b8;--tray:#332f2a;--tray-ink:#f6f3ec;--imgbg:#fff;--imgf:none;
 --serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
 --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
 :root[data-theme=dark]{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
@@ -19,6 +28,10 @@
 [hidden]{display:none!important}
 .skip{position:absolute;top:0;left:0;z-index:20;transform:translateY(-120%);background:var(--paper);border:1px solid var(--ink);padding:0.5rem 1rem;font:600 14px/1.4 var(--sans);color:var(--ink)}
 .skip:focus{transform:none}
+.no-js .controls{display:none}
+.no-js #theme{display:none}
+.no-js .more-w{display:none}
+.nojs{margin:1rem 0;padding:1rem;border:1px solid var(--rule);font-size:14px;color:var(--ink2)}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}
 a{color:var(--acc)}
@@ -26,12 +39,13 @@ p{max-width:65ch}
 sup{font-size:11px}
 .wrap{max-width:1440px;margin:0 auto;padding:0 1rem}
 .mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:1rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
-.mast span{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}
-#theme{font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:1rem;white-space:nowrap;min-height:24px}
+.mast>div>span{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}
+#theme{position:relative;font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:24px}
 #theme:hover{border-color:var(--ink)}
-#theme i{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+#theme i{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+#theme::after{content:"";position:absolute;inset:-10px -8px}
 header.intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
-h1{font:700 34px/1.12 var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
+h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
 .dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}
 .meta{font-size:13px;color:var(--ink2);margin:0}
 .meta b{color:var(--ink)}
@@ -39,13 +53,14 @@ h1{font:700 34px/1.12 var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-wid
 .verdict h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}
 .verdict p{margin:0 0 1rem;padding-left:1rem;border-left:3px solid var(--vc)}
 .verdict p b{color:var(--vc)}
+.vshort{display:none;margin:0;font-size:14px;line-height:1.45}
 .v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)}
 a.jump{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}
 a.jump:hover{color:var(--vc)}
 .vtag{display:block;margin-top:0;padding:0.5rem 0 0;font:600 12px/1.25 var(--sans);letter-spacing:.01em;color:var(--vc)}
 .vtag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}
 tbody.item[data-v=best]{--vc:var(--v-best)} tbody.item[data-v=batt]{--vc:var(--v-batt)} tbody.item[data-v=avoid]{--vc:var(--v-avoid)}
-tbody.item[data-v] tr.main>td.c-cmp{box-shadow:inset 3px 0 0 var(--vc)}
+tbody.item[data-v] tr.main>td.c-cmp{border-left:3px solid var(--vc)}
 .controls{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}
 .filters>summary{display:none}
 .fbody{display:flex;flex-wrap:nowrap;gap:1rem 2rem;align-items:flex-start}
@@ -72,9 +87,10 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
 .sortby{margin-left:auto}
 select{font:14px var(--sans);padding:0 1rem;min-height:24px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}
 .count{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}
+.count button.link{position:relative;padding:10px 6px;margin:-10px -6px}
 button.link{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}
 table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
-.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:bottom;white-space:normal}
+.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:middle;white-space:normal}
 .main-t thead th.num{text-align:right}
 .main-t thead th button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit}
 .main-t thead th button:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
@@ -110,7 +126,8 @@ span.ph-lg{font-size:12px}
 .note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
 .fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
 .fn:hover{color:var(--acc);text-decoration:underline}
-button.more{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}
+button.more{position:relative;background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}
+button.more::after{content:"";position:absolute;inset:-10px -8px}
 button.more:hover,button.more[aria-expanded=true]{border-color:var(--ink)}
 tr.detail td{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}
 .dgrid{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}
@@ -179,7 +196,6 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .dgrid dl{grid-template-columns:1fr;gap:0} .dgrid dt{margin-top:1rem;font-weight:600;font-size:12px} .dgrid dt:first-child{margin-top:0}
 }
 @media (max-width:900px){
- h1{font-size:30px}
  .main-t td,.main-t tbody th{padding:1rem}
  .main-t thead th{padding:1rem;font-size:11px}
  .c-catch{width:22%}
@@ -189,7 +205,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .wrap{padding:0 1rem}
  header.intro{grid-template-columns:1fr;gap:1rem;padding:2rem 0}
  .verdict{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}
- h1{font-size:27px} .dek{font-size:16px}
+ .dek{font-size:16px}
  .controls{gap:1rem}
  .sortby{margin-left:0}
  input[type=range]{width:150px}
@@ -197,8 +213,8 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .main-t thead th{position:static;padding:0;border:0;background:none}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
  .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem}
- tbody.item[data-v]{box-shadow:inset 3px 0 0 var(--vc)}
- tbody.item[data-v] tr.main>td.c-cmp{box-shadow:none}
+ tbody.item[data-v]{border-left:3px solid var(--vc)}
+ tbody.item[data-v] tr.main>td.c-cmp{border-left:0}
  .main-t tr.main{display:grid;grid-template-columns:2rem repeat(3,minmax(0,1fr));gap:1rem;position:relative}
  .main-t tbody.item:hover tr.main{background:none}
  .main-t tr.main>*{padding:0;border:0;width:auto;min-width:0;max-width:none}
@@ -208,7 +224,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .c-rec{grid-column:2} .c-price{grid-column:3} .c-score{grid-column:4}
  .c-nosub{grid-column:2} .c-sub{grid-column:3 / 5}
  .c-catch{grid-column:2 / 5;font-size:14px}
- .main-t td[data-label]::before{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0}
+ .main-t td[data-label]::before{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0;white-space:normal}
  .main-t td.num,.main-t th.num{text-align:left} .bar{margin-left:0}
  tr.detail td{padding:1rem;margin-top:0}
  .dgrid{grid-template-columns:1fr} .dgrid dl+dl{margin-top:1rem}
@@ -223,9 +239,9 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .mast>div>span{display:none}
  header.intro{padding:1rem 0}
  .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
- .verdict{font-size:13px}
- .verdict h2{margin-bottom:0.5rem}
- .verdict p{padding-left:0.75rem;margin-bottom:0.75rem}
+ .verdict{display:none}
+ .vshort{display:block}
+ .c-nosub,.c-sub{grid-column:2 / 5}
  .controls{padding:0.75rem 0;gap:0.75rem}
  .sortby .lab{margin-bottom:0.5rem}
  .filters{display:block;flex:1 1 100%}
@@ -237,18 +253,19 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .filters:not([open]) .fbody{display:none}
  .fbody{flex-direction:column;align-items:stretch;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}
  .fbody .opts{gap:0.5rem 1rem}
- .range{max-width:none}
+ .range{flex:none;width:100%;max-width:none}
 }
 @media print{.skip,.controls,.tray,.c-cmp,.more-w,#theme{display:none} tr.detail{display:table-row!important}}
 </style></head><body>
 <a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
-<div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme" aria-pressed="false"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
+<div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
 <header class="intro">
 <div>
 <h1>Video doorbells that work without a subscription</h1>
 <p class="dek">14 doorbells sold in the UK, checked against manufacturer pages and independent reviews: what you get for free, what's behind a paywall, and what each one costs over three years.</p>
 <p class="meta"><b>Last checked 18 October 2026.</b> No affiliate links, no tracking, no cookies. Prices change often, so each one links to its source. Spotted a mistake? <a href="https://github.com/lydenyardley/subfree-uk/issues/new">Open an issue</a>.</p>
+<p class="vshort"><b>Short answer:</b> <span class="v-best"><a class="jump" href="#m-reo-poe" data-ids="reo-poe">Reolink PoE</a></span> or <span class="v-batt"><a class="jump" href="#m-tapo-d230" data-ids="tapo-d230">Tapo D230S1</a></span>. <span class="v-avoid"><a class="jump" href="#m-ring" data-ids="ring">Ring</a></span> needs a plan to record.</p>
 </div>
 <aside class="verdict">
 <h2>The short answer</h2>
@@ -259,6 +276,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 </header>
 
 <main>
+<p class="vh" id="live" role="status"></p>
 <form class="controls" id="controls" onsubmit="return false">
 <details class="filters" id="filters" open>
 <summary>Filters</summary>
@@ -292,8 +310,9 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 <option value="sub3">3-year cost, with plan</option>
 <option value="model">Model, A to Z</option>
 </select></div>
-<p class="count">Tick up to 3 rows to compare. <span id="count">14</span> of 14 shown · <button type="button" class="link" id="reset">Reset</button></p>
+<p class="count">Tick up to 3 rows to compare. <span id="count">14</span> of 14 shown · <button type="button" class="link" id="reset">Reset</button><span id="cmp-sep" hidden> · </span><button type="button" class="link" id="cmp-inline" hidden>Compare</button></p>
 </form>
+<noscript><p class="nojs">Filters, sorting, compare and the per-model details need JavaScript. All 14 doorbells are listed below.</p></noscript>
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
 <section id="compare" hidden aria-live="polite">
@@ -305,7 +324,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 <thead><tr>
 <th scope="col" class="c-cmp"><span class="vh">Compare</span></th>
 <th scope="col" data-sort="model" aria-sort="none"><button type="button">Model</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
-<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button">3 yrs, no plan<sup>a</sup></button></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button">3 yrs, with plan<sup>b</sup></button></th><th scope="col">Main catch</th>
+<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3 yrs, no plan, footnote a">3 yrs, no plan<sup aria-hidden="true">a</sup></button></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3 yrs, with plan, footnote b">3 yrs, with plan<sup aria-hidden="true">b</sup></button></th><th scope="col">Main catch</th>
 </tr></thead>
 <tbody class="item" id="m-ring" data-id="ring" data-v="avoid" data-rec="no" data-recv="0" data-ha="0" data-power="battery wired" data-price="79.99" data-keep3="259.63" data-nosub3="79.99" data-sub3="259.63" data-score="2" data-model="ring battery video doorbell 2k" data-idx="0">
 <tr class="main">
@@ -729,7 +748,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 <p class="srcs">Sources <a class="fn" href="#fn42" title="Eagle Security Solutions">42</a>, <a class="fn" href="#fn43" title="Hikvision datasheet">43</a></p></td></tr>
 </tbody>
 </table>
-<p class="empty" id="empty" hidden>Nothing matches those filters. <button type="button" class="link" onclick="document.getElementById('reset').click()">Reset filters</button></p>
+<p class="empty" id="empty" hidden><span id="empty-txt">Nothing matches those filters.</span> <button type="button" class="link" id="near" hidden></button> <button type="button" class="link" id="empty-reset">Reset filters</button></p>
 
 <section class="method" id="method">
 <div>
@@ -756,17 +775,19 @@ var D={"ring": {"name": "Ring Battery Video Doorbell 2K", "rec": "No", "price": 
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
 var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
 function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}
-function syncTheme(){var d=isDark();tb.setAttribute('aria-pressed',d);tb.lastChild.textContent=d?'Light mode':'Dark mode';tb.title=d?'Switch to light mode':'Switch to dark mode'}
+function syncTheme(){var d=isDark();tb.lastChild.textContent=d?'Light mode':'Dark mode';tb.title=d?'Switch to light mode':'Switch to dark mode';tb.setAttribute('aria-label',tb.title)}
 tb.onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n)}catch(e){}syncTheme()};
 if(mq.addEventListener)mq.addEventListener('change',syncTheme);
 syncTheme();
 var narrow=window.matchMedia('(max-width:820px)'),small=window.matchMedia('(max-width:520px)'),filters=$('#filters');
-function fitFilters(){if(small.matches)filters.open=false}
+function fitFilters(){filters.open=!small.matches}
 function fitSortKeys(){$$('#tbl thead th button').forEach(function(b){if(narrow.matches)b.setAttribute('tabindex','-1');else b.removeAttribute('tabindex')})}
 if(small.addEventListener)small.addEventListener('change',fitFilters);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
 fitFilters();fitSortKeys();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
+var live=$('#live'),liveT,announce=false,lastN=0,nearPick=null;
+function say(m){clearTimeout(liveT);liveT=setTimeout(function(){live.textContent=m},300)}
 var skey='keep3',sdir=1,SDEF={keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1};
 function apply(){
  var lo0=+minEl.min,hi0=+maxEl.max,lo=+minEl.value,hi=+maxEl.value;
@@ -776,12 +797,29 @@ function apply(){
  fill.style.left=((lo-lo0)/(hi0-lo0)*100)+'%';
  fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
  var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){return x.value}),n=0;
- items.forEach(function(t){
-  var ok=(!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=lo&&+t.dataset.price<=hi)&&
-   (!pw.length||pw.some(function(p){return t.dataset.power.split(' ').indexOf(p)>-1}));
-  t.hidden=!ok; if(ok)n++;
- });
+ function ok(t,plo,phi){return (!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=plo&&+t.dataset.price<=phi)&&
+  (!pw.length||pw.some(function(p){return t.dataset.power.split(' ').indexOf(p)>-1}))}
+ items.forEach(function(t){var show=ok(t,lo,hi);t.hidden=!show;if(show)n++});
  $('#count').textContent=n; $('#empty').hidden=n>0;
+ var near=null;
+ if(!n){
+  var bestD=Infinity;
+  items.forEach(function(t){
+   if(!ok(t,lo0,hi0))return;
+   var p=+t.dataset.price,d=p<lo?lo-p:p>hi?p-hi:0;
+   if(d<bestD||(d===bestD&&p<+(near?near.dataset.price:Infinity))){bestD=d;near=t}
+  });
+ }
+ nearPick=near;
+ var nb=$('#near');
+ nb.hidden=!near;
+ if(near){
+  var nm=near.querySelector('.brand').textContent+' '+near.querySelector('.mname').textContent;
+  var pr='£'+(+near.dataset.price).toFixed(2).replace(/\.00$/,'');
+  nb.textContent='Show '+nm+' at '+pr;
+ }
+ if(announce&&n!==lastN)say(n?n+' of '+items.length+' doorbells shown':'No doorbells match those filters');
+ lastN=n;
  var s=items.slice().sort(function(a,b){
   var x=skey==='model'?a.dataset.model:+a.dataset[skey],y=skey==='model'?b.dataset.model:+b.dataset[skey];
   if(x<y)return -sdir;if(x>y)return sdir;return +a.dataset.keep3-+b.dataset.keep3;
@@ -791,6 +829,15 @@ function apply(){
  $('#sort').value=skey;
 }
 $$('#controls input').forEach(function(el){el.addEventListener('input',apply);el.addEventListener('change',apply)});
+// The track is decorative and its inputs ignore pointer events, so a click
+// there is a shortcut for "move the handle nearest this spot".
+$('.dual-track').addEventListener('click',function(ev){
+ var r=this.getBoundingClientRect();
+ if(!r.width)return;
+ var v=+minEl.min+Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width))*(+maxEl.max-+minEl.min);
+ var el=Math.abs(v-+minEl.value)<=Math.abs(v-+maxEl.value)?minEl:maxEl;
+ el.value=v;apply();el.focus({preventScroll:true});
+});
 $('#sort').onchange=function(){skey=this.value;sdir=SDEF[skey];apply()};
 $$('#tbl thead th[data-sort] button').forEach(function(b){b.onclick=function(){
  var k=b.parentNode.dataset.sort;
@@ -816,12 +863,14 @@ function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
 function tray(){
  var s=sel(); $$('input.cmp').forEach(function(c){c.disabled=!c.checked&&s.length>=3});
  $('#tray').hidden=s.length===0;
- $('#tray-txt').textContent=s.length===1?'1 selected (tick 1 or 2 more)':s.length+' selected';
+ $('#tray-txt').textContent=s.length===1?'1 selected (tick 1 or 2 more)':s.length>=3?'3 selected (maximum, untick one to swap)':s.length?'2 selected':'';
  $('#tray-go').disabled=s.length<2;
+ var ib=$('#cmp-inline');$('#cmp-sep').hidden=ib.hidden=s.length<2;ib.textContent='Compare '+s.length;
  if(!$('#compare').hidden){s.length>=2?render():($('#compare').hidden=true)}
+ say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
 }
 function render(){
- var s=sel(),h='<thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
+ var s=sel(),h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
   var d=D[id];
   return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }).join('')+'</tr></thead><tbody>';
@@ -829,9 +878,19 @@ function render(){
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
 }
 $$('input.cmp').forEach(function(c){c.addEventListener('change',tray)});
-$('#tray-go').onclick=function(){render();$('#compare').scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'})};
+function showCompare(){render();$('#compare').scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'})}
+$('#tray-go').onclick=showCompare;
+$('#cmp-inline').onclick=showCompare;
 $('#tray-clear').onclick=function(){$$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray()};
 $('#cmp-close').onclick=function(){$('#compare').hidden=true};
+$('#empty-reset').onclick=function(){$('#reset').click()};
+$('#near').onclick=function(){
+ if(!nearPick)return;
+ var p=+nearPick.dataset.price,st=+minEl.step||5,base=+minEl.min;
+ if(p<+minEl.value)minEl.value=base+Math.floor((p-base)/st)*st;
+ else if(p>+maxEl.value)maxEl.value=base+Math.ceil((p-base)/st)*st;
+ apply();
+};
 var lb=$('#lightbox'),lbBox=$('#lb-img'),lbName=$('#lb-name'),lbImg;
 document.addEventListener('click',function(ev){
  var b=ev.target.closest('.zoom');
@@ -852,7 +911,7 @@ lb.addEventListener('click',function(ev){
  var r=lb.getBoundingClientRect();
  if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
 });
-apply();
+apply();announce=true;
 })();
 </script>
 </body></html>

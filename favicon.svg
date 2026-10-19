@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg{fill:#fff}.body{fill:#0f5c4d}.hole{fill:#fff}
+    @media (prefers-color-scheme:dark){.bg{fill:#151514}.body{fill:#62c2a8}.hole{fill:#151514}}
+  </style>
+  <rect class="bg" width="32" height="32" rx="6"/>
+  <rect class="body" x="9" y="4" width="14" height="24" rx="3"/>
+  <circle class="hole" cx="16" cy="21" r="4"/>
+  <circle class="hole" cx="16" cy="9.5" r="1.6"/>
+</svg>
