@@ -8,6 +8,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 CHECKED = "18 October 2026"
+GITHUB = "https://github.com/lydenyardley/subfree-uk"
 CARD = 10.00   # ASSUMPTION (not cited): typical price of a 64 GB microSD card / USB stick
 MONTHS = 36
 
@@ -349,11 +350,13 @@ def zoom(r, size):
         return photo(r, size)
     name = e(f"{r['brand']} {r['model']}")
     return (f'<button type="button" class="zoom" data-full="img/{r["id"]}-lg.webp" data-name="{name}" '
-            f'aria-label="View {name} photo full size">{photo(r, size)}</button>')
+            f'aria-label="View {name} photo full size">{photo(r, size)}<span class="zi" aria-hidden="true"></span></button>')
 
-# Short-answer verdicts, colour-coded and repeated on the matching rows
-VERDICT = {"reo-wifi":"best","reo-poe":"best","reo-batt":"best","tapo-d230":"batt","ring":"avoid","blink":"avoid","arlo":"avoid"}
-V_LABEL = {"best":"Best overall","batt":"Battery pick","avoid":"Avoid without a plan"}
+# Short-answer verdicts, colour-coded and repeated on the matching rows.
+# One row owns "Best overall"; the other variants name the case they win.
+VERDICT = {"reo-poe":"best","reo-wifi":"wired","reo-batt":"batt","tapo-d230":"easy","ring":"avoid","blink":"avoid","arlo":"avoid"}
+V_LABEL = {"best":"Best overall","wired":"Best with doorbell wiring","batt":"Best battery, no fees","easy":"Easiest battery setup","avoid":"Avoid without a plan"}
+V_TONE = {"best":"best","wired":"best","batt":"batt","easy":"batt","avoid":"avoid"}
 def vlink(ids, text): return f'<a class="jump" href="#m-{ids[0]}" data-ids="{" ".join(ids)}">{text}</a>'
 
 rows_html=[]
@@ -361,14 +364,15 @@ for i,r in enumerate(ROWS):
     pw=" ".join(r["power"])
     sc=r["score_total"]
     v=VERDICT.get(r["id"])
-    vattr=f' data-v="{v}"' if v else ""
-    vtag=f'<span class="vtag v-{v}">{V_LABEL[v]}</span>' if v else ""
+    tone=V_TONE[v] if v else ""
+    vattr=f' data-v="{tone}"' if tone else ""
+    vtag=f'<span class="vtag v-{tone}">{V_LABEL[v]}</span>' if v else ""
     rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 999999}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
-<td class="c-price num" data-label="Price">{gbp(r['price'])}{fn([r['price_src']])}</td>
+<td class="c-price num" data-label="Price">{gbp(r['price'])}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="width:{sc/8*100:.0f}%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
 <td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3'])}</td>
@@ -423,15 +427,16 @@ page=f'''<!doctype html>
 --serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
 --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}}
 :root[data-theme=dark]{{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
---v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}}
 @media (prefers-color-scheme:dark){{:root:not([data-theme=light]){{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
---v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#fff;--imgf:brightness(.86);color-scheme:dark}}}}
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}}}}
 *{{box-sizing:border-box}}
 [hidden]{{display:none!important}}
 html{{-webkit-text-size-adjust:100%}}
 body{{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}}
 a{{color:var(--acc)}}
 p{{max-width:65ch}}
+sup{{font-size:11px}}
 .wrap{{max-width:1440px;margin:0 auto;padding:0 1rem}}
 .mast{{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:1rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}}
 .mast span{{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}}
@@ -450,11 +455,13 @@ h1{{font:700 34px/1.12 var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-wi
 .v-best{{--vc:var(--v-best)}} .v-batt{{--vc:var(--v-batt)}} .v-avoid{{--vc:var(--v-avoid)}}
 a.jump{{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}}
 a.jump:hover{{color:var(--vc)}}
-.vtag{{display:block;margin-top:0;padding:0.5rem 0 0;font:700 10px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--vc)}}
+.vtag{{display:block;margin-top:0;padding:0.5rem 0 0;font:600 12px/1.25 var(--sans);letter-spacing:.01em;color:var(--vc)}}
 .vtag::before{{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}}
 tbody.item[data-v=best]{{--vc:var(--v-best)}} tbody.item[data-v=batt]{{--vc:var(--v-batt)}} tbody.item[data-v=avoid]{{--vc:var(--v-avoid)}}
 tbody.item[data-v] tr.main>td.c-cmp{{box-shadow:inset 3px 0 0 var(--vc)}}
 .controls{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}}
+.filters>summary{{display:none}}
+.fbody{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start}}
 fieldset{{border:0;margin:0;padding:0;min-width:0}}
 legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}}
 .opts{{display:flex;flex-wrap:wrap;gap:1rem}}
@@ -473,7 +480,7 @@ table.cmp-t,table.main-t{{border-collapse:collapse;width:100%}}
 .main-t thead th button:hover{{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}}
 .main-t thead th[aria-sort=ascending] button::after{{content:"\\00a0\\2191"}}
 .main-t thead th[aria-sort=descending] button::after{{content:"\\00a0\\2193"}}
-.main-t thead sup{{text-transform:none;font-size:9px}}
+.main-t thead sup{{text-transform:none}}
 .main-t td,.main-t tbody th{{padding:1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}}
 .main-t tbody.item:hover tr.main{{background:var(--tint)}}
 .num{{text-align:right;font-variant-numeric:tabular-nums}}
@@ -486,8 +493,8 @@ td.num{{white-space:nowrap}}
 .mcell>div{{min-width:0}}
 .ph{{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}}
 img.ph{{filter:var(--imgf)}}
-span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink2);font:600 9px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;text-align:center}}
-span.ph-lg{{font-size:11px}}
+span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink2);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;text-align:center;padding:0.5rem 0.25rem}}
+span.ph-lg{{font-size:12px}}
 .brand{{font-weight:700}} .mname{{font-weight:400}}
 .best{{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}}
 .c-catch{{font-size:14px;width:28%}}
@@ -501,16 +508,20 @@ span.ph-lg{{font-size:11px}}
 .bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
 .bar i{{display:block;height:100%;background:var(--acc)}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
-.fn{{font-size:10px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
+.fn{{font-size:11px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
-.c-price .fn{{display:inline-block;min-width:1rem;text-align:left;white-space:nowrap}}
 button.more{{background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}}
 button.more:hover,button.more[aria-expanded=true]{{border-color:var(--ink)}}
 tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}}
 .dgrid{{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}}
 .dimg{{margin:0}}
-.zoom{{display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}}
+.zoom{{position:relative;display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}}
 .zoom:focus-visible{{outline:2px solid var(--acc);outline-offset:2px}}
+.zi{{position:absolute;right:-0.25rem;bottom:-0.25rem;width:1.25rem;height:1.25rem;border-radius:50%;background:var(--paper);border:1px solid var(--ink);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s}}
+.zi::before{{content:"";width:6px;height:6px;border:1.5px solid var(--ink);border-radius:50%;margin:-3px 0 0 -3px}}
+.zi::after{{content:"";position:absolute;right:4px;bottom:4px;width:5px;height:1.5px;background:var(--ink);transform:rotate(45deg)}}
+.zoom:hover .zi,.zoom:focus-visible .zi{{opacity:1}}
+@media (hover:none){{.zi{{opacity:1}}}}
 #lightbox{{border:1px solid var(--rule);background:var(--paper);color:var(--ink);padding:1rem;max-width:min(90vw,420px)}}
 #lightbox img{{display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:70vh;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}}
 #lightbox::backdrop{{background:rgb(0 0 0 / .65)}}
@@ -570,7 +581,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 @media (max-width:900px){{
  h1{{font-size:30px}}
  .main-t td,.main-t tbody th{{padding:1rem}}
- .main-t thead th{{padding:1rem;font-size:10px}}
+ .main-t thead th{{padding:1rem;font-size:11px}}
  .c-catch{{width:22%}}
 }}
 @media (max-width:820px){{
@@ -582,7 +593,8 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .controls{{gap:1rem}}
  .sortby{{margin-left:0}}
  input[type=range]{{width:150px}}
- .main-t thead{{display:none}}
+ .main-t thead{{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}
+ .main-t thead th{{position:static;padding:0;border:0;background:none}}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{{display:block}}
  .main-t tbody.item{{border-bottom:1px solid var(--rule);padding:1rem}}
  tbody.item[data-v]{{box-shadow:inset 3px 0 0 var(--vc)}}
@@ -596,7 +608,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .c-rec{{grid-column:2}} .c-price{{grid-column:3}} .c-score{{grid-column:4}}
  .c-nosub{{grid-column:2}} .c-sub{{grid-column:3 / 5}}
  .c-catch{{grid-column:2 / 5;font-size:14px}}
- .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 10px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:0}}
+ .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0}}
  .main-t td.num,.main-t th.num{{text-align:left}} .bar{{margin-left:0}}
  tr.detail td{{padding:1rem;margin-top:0}}
  .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:1rem}}
@@ -604,10 +616,29 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  section.method{{grid-template-columns:1fr}} ol.fns{{columns:1}}
  .cmp-t th,.cmp-t td{{padding:1rem;font-size:13px}}
  .cmp-t thead th{{min-width:140px;font-size:14px}}
- .cmp-t tbody th{{width:84px;min-width:84px;font-size:10px;position:sticky;left:0;background:var(--paper)}}
+ .cmp-t tbody th{{width:84px;min-width:84px;font-size:11px;position:sticky;left:0;background:var(--paper)}}
  .cmp-t thead th:first-child{{position:sticky;left:0;background:var(--paper);min-width:84px}}
 }}
-@media (max-width:520px){{.mast>div>span{{display:none}}}}
+@media (max-width:520px){{
+ .mast>div>span{{display:none}}
+ header.intro{{padding:1rem 0}}
+ .dek{{font-size:15px;line-height:1.4;margin-bottom:0.5rem}}
+ .verdict{{font-size:13px}}
+ .verdict h2{{margin-bottom:0.5rem}}
+ .verdict p{{padding-left:0.75rem;margin-bottom:0.75rem}}
+ .controls{{padding:0.75rem 0;gap:0.75rem}}
+ .sortby .lab{{margin-bottom:0.5rem}}
+ .filters{{display:block;flex:1 1 100%}}
+ .filters>summary{{display:flex;align-items:center;gap:0.5rem;min-height:44px;padding:0 1rem;border:1px solid var(--rule);font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);cursor:pointer;list-style:none}}
+ .filters>summary::-webkit-details-marker{{display:none}}
+ .filters>summary::marker{{content:""}}
+ .filters>summary::before{{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-right:0.25rem}}
+ .filters[open]>summary::before{{transform:rotate(45deg)}}
+ .filters:not([open]) .fbody{{display:none}}
+ .fbody{{flex-direction:column;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}}
+ .fbody .opts{{gap:0.5rem 1rem}}
+ .fbody input[type=range]{{width:100%;max-width:220px}}
+}}
 @media print{{.controls,.tray,.c-cmp,.more-w,#theme{{display:none}} tr.detail{{display:table-row!important}}}}
 </style></head><body>
 <div class="wrap">
@@ -616,11 +647,11 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <div>
 <h1>Video doorbells that work without a subscription</h1>
 <p class="dek">{len(ROWS)} doorbells sold in the UK, checked against manufacturer pages and independent reviews: what you get for free, what's behind a paywall, and what each one costs over three years.</p>
-<p class="meta"><b>Last checked {CHECKED}.</b> No affiliate links, no tracking, no cookies. Prices change often, so each one links to its source.</p>
+<p class="meta"><b>Last checked {CHECKED}.</b> No affiliate links, no tracking, no cookies. Prices change often, so each one links to its source. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
 </div>
 <aside class="verdict">
 <h2>The short answer</h2>
-<p class="v-best"><b>Best overall without fees:</b> {vlink(["reo-poe","reo-wifi","reo-batt"],"Reolink")}. It records to a card or NVR, nothing is paywalled, and it's the only one here with an official local Home Assistant integration.</p>
+<p class="v-best"><b>Best overall without fees:</b> {vlink(["reo-poe"],"Reolink Video Doorbell PoE")}. It records to a card or NVR, nothing is paywalled, and Reolink is the only brand here with an official local Home Assistant integration. The WiFi and battery versions follow the same rules if you can't run an Ethernet cable.</p>
 <p class="v-batt"><b>Easiest battery pick:</b> {vlink(["tapo-d230"],"Tapo D230S1")}, which keeps footage on a hub inside the house.</p>
 <p class="v-avoid"><b>Avoid if you won't pay monthly:</b> {vlink(["ring"],"Ring")} records nothing without a plan, and {vlink(["blink"],"Blink")} and {vlink(["arlo"],"Arlo")} need extra hardware.</p>
 </aside>
@@ -628,6 +659,9 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 
 <main>
 <form class="controls" id="controls" onsubmit="return false">
+<details class="filters" id="filters" open>
+<summary>Filters</summary>
+<div class="fbody">
 <fieldset><legend>Show only</legend><div class="opts">
 <label><input type="checkbox" id="f-rec"> Records free, no extra kit</label>
 <label><input type="checkbox" id="f-ha"> Local / Home Assistant</label>
@@ -638,6 +672,8 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <label><input type="checkbox" class="f-pw" value="poe"> PoE</label>
 </div></fieldset>
 <div class="range"><label class="lab" for="f-max">Max price</label><input type="range" id="f-max" min="40" max="{maxp}" step="5" value="{maxp}"><output id="f-max-out" for="f-max">£{maxp}</output></div>
+</div>
+</details>
 <div class="sortby"><label class="lab" for="sort">Sort by</label><select id="sort">
 <option value="keep3">3-year cost to keep recordings</option>
 <option value="price">Price, low to high</option>
@@ -649,6 +685,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 </select></div>
 <p class="count">Tick up to 3 rows to compare. <span id="count">{len(ROWS)}</span> of {len(ROWS)} shown · <button type="button" class="link" id="reset">Reset</button></p>
 </form>
+<script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
 <section id="compare" hidden aria-live="polite">
 <div class="cmp-head"><h2>Side by side</h2><button type="button" class="link" id="cmp-close">Close</button></div>
@@ -671,7 +708,8 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <p><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £99.74, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
 <p><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The Reolink (£3.49) and EZVIZ (£4.99) plan prices aren't confirmed for the UK. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
-<p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything we haven't fully confirmed is listed under <i>Not yet verified</i> in each model's details. Spotted something wrong, or a paywall change? Tell us and we'll fix it.</p>
+<p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
+<p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything we haven't fully confirmed is listed under <i>Not yet verified</i> in each model's details. Spotted something wrong, or a paywall change? <a href="{GITHUB}/issues/new">Open an issue</a> and we'll fix it.</p>
 <p><b>Product photos</b> are the manufacturers' own, cropped and resized, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
 </div>
 <div><h2>Sources</h2><ol class="fns">{fn_list}</ol></div>
@@ -693,6 +731,12 @@ function syncTheme(){{var d=isDark();tb.setAttribute('aria-pressed',d);tb.lastCh
 tb.onclick=function(){{var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{{localStorage.setItem('theme',n)}}catch(e){{}}syncTheme()}};
 if(mq.addEventListener)mq.addEventListener('change',syncTheme);
 syncTheme();
+var narrow=window.matchMedia('(max-width:820px)'),small=window.matchMedia('(max-width:520px)'),filters=$('#filters');
+function fitFilters(){{if(small.matches)filters.open=false}}
+function fitSortKeys(){{$$('#tbl thead th button').forEach(function(b){{if(narrow.matches)b.setAttribute('tabindex','-1');else b.removeAttribute('tabindex')}})}}
+if(small.addEventListener)small.addEventListener('change',fitFilters);
+if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
+fitFilters();fitSortKeys();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),maxEl=$('#f-max'),out=$('#f-max-out');
 var skey='keep3',sdir=1,SDEF={{keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1}};
 function apply(){{
@@ -745,7 +789,7 @@ function tray(){{
 function render(){{
  var s=sel(),h='<thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){{
   var d=D[id];
-  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"></button></span>':'')+'</th>';
+  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }}).join('')+'</tr></thead><tbody>';
  ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
