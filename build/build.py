@@ -7,7 +7,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-CHECKED = "18 October 2026"
+CHECKED = "19 October 2026"
 GITHUB = "https://github.com/lydenyardley/subfree-uk"
 CARD = 10.00   # ASSUMPTION (not cited): typical price of a 64 GB microSD card / USB stick
 MINP = 40      # lower end of the price slider; the cheapest doorbell here is £44.99
@@ -22,6 +22,7 @@ S = {
  "nest_prod": ("Google Store UK: Nest Doorbell", "https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB"),
  "nest_prem": ("Google Home Premium UK", "https://store.google.com/gb/product/google_home_premium?hl=en-GB"),
  "ha_nest": ("Home Assistant: Nest", "https://www.home-assistant.io/integrations/nest/"),
+ "nest_plans": ("Google Home Premium: what you get", "https://support.google.com/googlehome/answer/9233159?hl=en-GB"),
  "eufy_prod": ("eufy UK: E340", "https://www.eufy.com/uk/products/T8214311"),
  "eufy_cloud": ("eufy UK cloud plans", "https://www.eufy.com/uk/cloud-storage"),
  "verge_eufy": ("The Verge, Nov 2022", "https://www.theverge.com/2022/11/30/23486753/anker-eufy-security-camera-cloud-private-encryption-authentication-storage"),
@@ -29,14 +30,19 @@ S = {
  "reo_store": ("Reolink UK store", "https://store.reolink.com/gb/video-doorbells/"),
  "reo_batt": ("Reolink UK battery doorbells", "https://store.reolink.com/gb/wireless-doorbell-camera/"),
  "screwfix_reo": ("Screwfix: Reolink Battery", "https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak"),
- "reo_cloud": ("Reolink Cloud plans (EU)", "https://reolink.com/blog/reolink-cloud-in-europa-und-uk/"),
+ "reo_cloud": ("Reolink Cloud UK plans", "https://cloud.reolink.com/cloud-plan"),
+ "reo_faq": ("Reolink doorbell FAQ", "https://support.reolink.com/articles/29213749981209-Reolink-Video-Doorbell-Cameras-FAQ/"),
+ "reo_hub": ("Reolink UK Home Hub", "https://store.reolink.com/gb/home-hub-series/"),
  "ha_reo": ("Home Assistant: Reolink", "https://www.home-assistant.io/integrations/reolink/"),
  "tapo_d230": ("Tapo UK: D230S1", "https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell"),
  "tapo_td21": ("Tapo UK: TD21", "https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21"),
  "tapo_care": ("Tapo Care UK", "https://uk.store.tapo.com/pages/tapo-care"),
- "ha_tapo": ("HA community forum", "https://community.home-assistant.io/t/tapo-d230-video-stream-in-ha/858436"),
+ "ha_tplink": ("Home Assistant: TP-Link Smart Home", "https://www.home-assistant.io/integrations/tplink/"),
+ "tapo_td21_manual": ("Tapo TD21 setup guide", "https://www.tapo.com/en/manuals/1094/"),
  "er_tapo": ("Expert Reviews: EZVIZ EP3x Pro review", "https://www.expertreviews.co.uk/technology/home-security/ezviz-ep3x-pro-video-doorbell-review"),
  "argos_arlo": ("Argos: Arlo doorbell", "https://www.argos.co.uk/product/4379311"),
+ "arlo_plans": ("Arlo UK plan prices", "https://www.arlo.com/en_gb/serviceplans"),
+ "arlo_doorbell": ("Arlo 2nd-gen doorbell FAQ", "https://www.arlo.com/en_gb/support/faq/device-features/arlo-video-doorbell-2nd-generation-faq"),
  "arlo_faq": ("Arlo UK plans FAQ", "https://www.arlo.com/en_gb/support/faq/subscriptions-and-payments/what-arlo-subscription-plans-and-cloud-recording-options-are-available"),
  "arlo_blog": ("Arlo UK blog", "https://www.arlo.com/en_gb/blog/smart-security/should-you-have-a-video-doorbell-without-a-subscription"),
  "arlo_hubcompat": ("Arlo SmartHub compatibility", "https://www.arlo.com/en_gb/support/faq/connectivity-and-integrations/arlo-smarthub-and-base-station-compatibility"),
@@ -45,6 +51,7 @@ S = {
  "ambient_arlo": ("The Ambient", "https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/"),
  "amz_aqara": ("Amazon UK: Aqara G4", "https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG"),
  "aqara_eu": ("Aqara EU store", "https://eu.aqara.com/products/aqara-video-doorbell-g4"),
+ "aqara_specs": ("Aqara G4 specifications", "https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/"),
  "ha_homekit": ("Home Assistant: HomeKit Device", "https://www.home-assistant.io/integrations/homekit_controller"),
  "amz_blink": ("Amazon UK: Blink 2K+", "https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C"),
  "camel_sm2": ("camelcamelcamel (Sync Module 2)", "https://uk.camelcamelcamel.com/product/B08BJ9ZCZC"),
@@ -54,10 +61,12 @@ S = {
  "amz_ep3x": ("Amazon UK: EZVIZ EP3x Pro", "https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD"),
  "ezviz_blog": ("EZVIZ UK: no-subscription guide", "https://www.ezviz.com/uk/blog/detail/best-video-doorbells-without-monthly-subscription-fees/2609214160772537"),
  "ezviz_cloud": ("EZVIZ CloudPlay (EU prices)", "https://www.ezviz.com/page/cloudplay"),
+ "ezviz_terms": ("EZVIZ CloudPlay UK terms", "https://www.ezviz.com/uk/legal/cloudplay-paid-subscription-terms"),
  "ha_ezviz": ("Home Assistant: EZVIZ", "https://www.home-assistant.io/integrations/ezviz/"),
  "ertech_db2": ("ER Tech (UK retailer)", "https://www.ertech.co.uk/product/db2-pro/"),
  "eagle_hik": ("Eagle Security Solutions", "https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/"),
  "hik_ds": ("Hikvision datasheet", "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf"),
+ "hik_4gon": ("4Gon: Hikvision doorbell (discontinued)", "https://www.4gon.co.uk/hikvision-24v-dc-wifi-video-doorbell-dskb6003wip-p-8309.html"),
 }
 
 # rec: 'yes' records free out of the box / 'kit' needs extra hardware or very limited / 'no'
@@ -77,7 +86,7 @@ dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power
  wifi="2.4 GHz only",
  score=dict(rec=0,live=1,alerts=1,ai=0,storage=0,ha=0),
  src=["ring_prod","ring_plans","indy_ring","ha_ring"],
- unverified="Ring's product page lists 'Package Alerts' as included on all doorbells, but its plans page lists package alerts as paid."),
+ unverified=""),
 dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="kit", power=["battery","wired"], ha=0,
  price=179.99, price_note="Google Store UK", price_src="nest_prod",
  extra=0, extra_note="", free_records=False,
@@ -85,14 +94,14 @@ dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="kit", powe
  best="Google Home households who want polished smart alerts",
  catch="Only 3 hours of free history. Anything longer is £8 a month.",
  storage="None", live="Yes", alerts="Yes",
- ai="Partly. Google advertises people/parcel/animal/vehicle alerts, but lists 'intelligent alerts' under Premium",
- history="3 hours of event clips", paywalled="30 or 60 days of history, intelligent alerts, familiar faces, Gemini search. No 24/7 recording on this model at any price",
+ ai="Free: person, parcel, animal and vehicle alerts; Google sells 'smarter' AI notifications as Premium",
+ history="3 hours of event clips", paywalled="30 or 60 days of history, AI notifications, familiar faces, Gemini search. No 24/7 recording on this model at any price",
  sub_text="Google Home Premium Standard £8/month (£80/year); Advanced £16/month (£160/year)",
  ha_text="Official integration, but it goes through Google's cloud (Cloud Push) and needs a one-off US$5 Google developer fee.",
- wifi="Not checked",
+ wifi="2.4 GHz only (5 GHz is US-only)",
  score=dict(rec=1,live=1,alerts=1,ai=1,storage=0,ha=0),
- src=["nest_prod","nest_prem","ha_nest"],
- unverified="Which smart alerts stay free is unclear: Google's own pages contradict each other."),
+ src=["nest_prod","nest_prem","nest_plans","ha_nest"],
+ unverified=""),
 dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power=["battery","wired"], ha=1,
  price=169.99, price_note="eufy UK", price_src="eufy_prod",
  extra=0, extra_note="8 GB storage built in", free_records=True,
@@ -104,94 +113,96 @@ dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power
  history="Yes, event clips kept locally", paywalled="Nothing essential; cloud backup is optional",
  sub_text="Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices",
  ha_text="Community add-on only (eufy_security), which still logs in through your eufy account.",
- wifi="Not checked",
+ wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
  src=["eufy_prod","eufy_cloud","verge_eufy","sha_nosub"],
- unverified="Home Assistant details come from a third-party guide and haven't been tested."),
+ unverified=""),
 dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", power=["wired"], ha=2,
  price=93.49, price_note="Reolink UK sale price (RRP £109.99)", price_src="reo_store",
  extra=CARD, extra_note="+ microSD card", free_records=True,
- sub=3.49, sub_name="Reolink Cloud single-device",
+ sub=4.58, sub_name="Reolink Cloud Upgraded single-device",
  best="Homes with existing doorbell wiring, plus Home Assistant or NVR users",
  catch="Needs doorbell transformer wiring, and the microSD card is sold separately.",
  storage="microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF", live="Yes", alerts="Yes",
  ai="Free: person detection", history="Yes, motion-triggered or 24/7 recording to card or NVR",
  paywalled="Nothing. Reolink Cloud is optional",
- sub_text="Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)",
+ sub_text="Optional Reolink Cloud. UK £4.58/month, or £2.71/month billed yearly (£32.52/year) for 1 camera",
  ha_text="Official, fully local integration (Local Push, top 'Platinum' quality rating); works with no internet connection.",
- wifi="Dual-band (per third-party guide)",
+ wifi="Dual-band 2.4/5 GHz",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
  src=["reo_store","ha_reo","reo_cloud","sha_nosub"],
- unverified="Reolink Cloud UK price (£3.49/month is used in the sums; it comes from a third-party post)."),
+ unverified=""),
 dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power=["poe"], ha=2,
  price=69.99, price_note="Reolink UK sale price (RRP £99.99)", price_src="reo_store",
  extra=CARD, extra_note="+ microSD card", free_records=True,
- sub=3.49, sub_name="Reolink Cloud single-device",
+ sub=None, sub_name="No Reolink Cloud plan",
  best="The most reliable, fully local setup, if you can run an Ethernet cable",
  catch="Needs an Ethernet cable to the door and a PoE switch or injector.",
  storage="microSD and/or NVR; RTSP/ONVIF", live="Yes", alerts="Yes", ai="Free: person detection",
  history="Yes, motion-triggered or 24/7 recording", paywalled="Nothing",
- sub_text="Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)",
+ sub_text="None. Reolink's doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR",
  ha_text="Official, fully local integration (Local Push, Platinum).", wifi="Wired Ethernet",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
- src=["reo_store","ha_reo","reo_cloud"],
- unverified="Reolink Cloud UK price."),
+ src=["reo_store","ha_reo","reo_faq"],
+ unverified=""),
 dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes", power=["battery","wired"], ha=1,
  price=99.99, price_note="Screwfix, includes 64 GB card (Reolink UK also £99.99)", price_src="screwfix_reo",
  extra=0, extra_note="64 GB card included (Screwfix)", free_records=True,
- sub=3.49, sub_name="Reolink Cloud single-device",
+ sub=4.17, sub_name="Reolink Cloud Standard (up to 5 cameras)",
  best="Battery install with 5 GHz Wi-Fi and no fees",
- catch="Footage sits on a card in the doorbell itself unless you pay about £50 more for the Home Hub bundle.",
+ catch="Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49).",
  storage="microSD in the doorbell, or a Home Hub indoors (up to 1 TB)", live="Yes", alerts="Yes",
  ai="Free: person, vehicle and package detection", history="Yes, on card or hub", paywalled="Nothing",
- sub_text="Optional Reolink Cloud. UK price not confirmed; EU from €3.59/month (1 device)",
- ha_text="Official Reolink integration; battery models are best connected through a Reolink Home Hub.",
+ sub_text="Optional Reolink Cloud. UK £4.17/month, or £2.87/month billed yearly (£34.44/year) for up to 5 cameras",
+ ha_text="Official integration through a Reolink Home Hub or NVR, which streams the battery doorbell locally.",
  wifi="Dual-band 2.4/5 GHz",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
- src=["screwfix_reo","reo_batt","ha_reo"],
- unverified="Home Assistant support for this exact model through the Home Hub. Hub bundle £149.99 vs £99.99 on its own."),
+ src=["screwfix_reo","reo_batt","reo_hub","reo_cloud","ha_reo"],
+ unverified=""),
 dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["battery"], ha=1,
  price=84.99, price_note="Tapo UK (RRP £94.99)", price_src="tapo_d230",
  extra=CARD, extra_note="+ microSD card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="An easy battery doorbell that keeps footage indoors on its chime/hub",
- catch="The microSD card is extra, and Home Assistant needs an unofficial add-on.",
+ catch="The microSD card is extra, and Home Assistant gets settings and alerts but not the live video.",
  storage="microSD (up to 512 GB) in the indoor H200 hub", live="Yes", alerts="Yes",
  ai="Free: person detection", history="Yes, on the hub's card",
  paywalled="30-day cloud history, snapshot notifications, Smart Sort",
  sub_text="Optional Tapo Care from £2.99/month or £29.49/year",
- ha_text="Official integration doesn't show video. The community 'Tapo: Cameras Control' add-on reportedly works locally.",
- wifi="Not checked",
+ ha_text="Official TP-Link Smart Home integration, polled locally for settings and motion alerts. Hub-attached cameras still have no live view in Home Assistant.",
+ wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
- src=["tapo_d230","tapo_care","ha_tapo","er_tapo"],
- unverified="Home Assistant support (from forum posts only)."),
+ src=["tapo_d230","tapo_care","ha_tplink","er_tapo"],
+ unverified=""),
 dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
  price=44.99, price_note="Tapo UK sale price (RRP £56.00)", price_src="tapo_td21",
  extra=CARD, extra_note="+ microSD card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="The tightest budget",
- catch="Basic, and it isn't clear whether the card sits in the doorbell (stealable) or the chime.",
- storage="microSD up to 512 GB", live="Yes", alerts="Yes", ai="Free: person detection",
+ catch="Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it.",
+ storage="microSD up to 512 GB, in the doorbell itself", live="Yes", alerts="Yes", ai="Free: person detection",
  history="Yes, on card", paywalled="30-day cloud history, snapshot notifications, Smart Sort",
- sub_text="Optional Tapo Care from £2.99/month", ha_text="Unknown", wifi="Not checked",
+ sub_text="Optional Tapo Care from £2.99/month",
+ ha_text="Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.", wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
- src=["tapo_td21","tapo_care"],
- unverified="Where the card goes; Home Assistant support."),
-dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery","wired"], ha=0,
- price=169.99, price_note="Argos, doorbell + chime bundle", price_src="argos_arlo",
- extra=109.74, extra_note="+ Arlo SmartHub £99.74 + USB stick", free_records=True,
+ src=["tapo_td21","tapo_care","tapo_td21_manual","ha_tplink"],
+ unverified=""),
+dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery"], ha=0,
+ power_note="Can be wired to an existing chime for trickle charging, but still runs on its battery.",
+ price=84.99, price_note="Argos half price, doorbell + chime bundle (was £169.99)", price_src="argos_arlo",
+ extra=115.07, extra_note="+ Arlo SmartHub £105.07 + USB stick", free_records=True,
  sub=7.99, sub_name="Arlo Secure (1 camera)",
  best="People who already own Arlo cameras",
- catch="Recording needs a £7.99/month plan or a separate hub costing about £100.",
+ catch="Recording needs a £7.99/month plan or a separate hub costing about £105.",
  storage="Only through an Arlo SmartHub (VMB4540, USB) or a Base Station", live="Yes", alerts="Yes",
  ai="Paid", history="None without a hub",
  paywalled="Cloud recording (7, 14 or 30 days depending on plan), object detection, activity zones, theft replacement",
- sub_text="Arlo Secure £7.99/month (1 camera, 7 days), Multi-Cam £11.99, Secure Plus £19.99, Secure Pro £24.99",
+ sub_text="Arlo Secure £7.99/month (1 camera, 7 days), Multi-Camera £12.99, Secure Plus £19.99 (14 days), Secure Pro £24.99",
  ha_text="No official integration; only a community add-on that goes through Arlo's cloud.",
- wifi="Not checked",
+ wifi="2.4 GHz only",
  score=dict(rec=1,live=1,alerts=1,ai=0,storage=0,ha=0),
- src=["argos_arlo","arlo_blog","arlo_faq","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo"],
- unverified="Argos price; whether the doorbell can be hardwired. Arlo's own UK pages don't show plan prices; the £7.99 is from two 2026 reviews."),
+ src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo"],
+ unverified=""),
 dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
  price=84.99, price_note="Amazon UK", price_src="amz_aqara",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -201,11 +212,12 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
  storage="microSD (up to 512 GB) in the indoor chime", live="Yes", alerts="Yes",
  ai="Free: face recognition on the device", history="Yes, on the chime's card (24/7 only when wired)",
  paywalled="Nothing essential. HomeKit Secure Video needs Apple's paid iCloud+",
- sub_text="None needed", ha_text="Reported to work locally through HA's HomeKit Device integration.",
- wifi="Not checked",
+ sub_text="None needed",
+ ha_text="Reported to work locally through Home Assistant's HomeKit Device integration; two-way audio isn't available there.",
+ wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
- src=["amz_aqara","aqara_eu","ha_homekit"],
- unverified="Amazon price and card limit (from search summaries); Home Assistant support (from user forum posts)."),
+ src=["amz_aqara","aqara_eu","aqara_specs","ha_homekit"],
+ unverified=""),
 dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
  price=69.99, price_note="Amazon UK RRP (deals as low as £29.99)", price_src="amz_blink",
  extra=49.99, extra_note="+ Sync Module 2 £39.99 + USB stick", free_records=True,
@@ -219,7 +231,7 @@ dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=[
  ha_text="Official integration, but it goes through Blink's cloud.", wifi="2.4 GHz (Blink requirement)",
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
  src=["amz_blink","camel_sm2","blink_plans","blink_sm2","ha_blink"],
- unverified="Amazon listing showed long dispatch times when checked."),
+ unverified=""),
 dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["battery"], ha=0,
  price=79.99, price_note="Amazon UK (list price £89.99)", price_src="amz_ep3x",
  extra=0, extra_note="32 GB storage built in", free_records=True,
@@ -229,12 +241,12 @@ dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["batter
  storage="32 GB built in, no card needed", live="Yes", alerts="Yes",
  ai="Free: human and package detection", history="Yes, on built-in storage",
  paywalled="Nothing essential. CloudPlay is optional",
- sub_text="Optional CloudPlay: €4.99/month (7 days) on EZVIZ's EU page; UK price only shown in the app",
- ha_text="Official integration, but it goes through EZVIZ's cloud. Support for battery doorbells unknown.",
- wifi="2.4 GHz",
+ sub_text="Optional CloudPlay. UK price is app-only; EU €4.99/month (7 days), so treat the plan column as an estimate",
+ ha_text="Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.",
+ wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=0),
- src=["amz_ep3x","ezviz_blog","er_tapo","ezviz_cloud","ha_ezviz"],
- unverified="CloudPlay UK price (£4.99 assumed); Amazon price."),
+ src=["amz_ep3x","ezviz_blog","er_tapo","ezviz_cloud","ezviz_terms","ha_ezviz"],
+ unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["battery"], ha=0,
  price=114.99, price_note="ER Tech, UK retailer", price_src="ertech_db2",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -243,23 +255,24 @@ dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["batt
  catch="2.4 GHz Wi-Fi only, and the card is sold separately.",
  storage="microSD (up to 256 GB) in the included indoor chime", live="Yes", alerts="Yes",
  ai="Free: PIR plus human-shape detection", history="Yes, on the chime's card", paywalled="Nothing essential",
- sub_text="Optional CloudPlay: €4.99/month (7 days) on EZVIZ's EU page; UK price only shown in the app", ha_text="Official integration, but it goes through EZVIZ's cloud.",
+ sub_text="Optional CloudPlay. UK price is app-only; EU €4.99/month (7 days), so treat the plan column as an estimate",
+ ha_text="Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
- src=["ertech_db2","ezviz_blog","ezviz_cloud","ha_ezviz"],
- unverified="CloudPlay UK price; Home Assistant support for this model."),
+ src=["ertech_db2","ezviz_blog","ezviz_cloud","ezviz_terms","ha_ezviz"],
+ unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wired"], ha=1,
- price=295.00, price_note="Only UK listing found; includes installation", price_src="eagle_hik",
+ price=295.00, price_note="Only UK listing found (fitted install); the model is discontinued", price_src="eagle_hik",
  extra=CARD, extra_note="+ microSD card", free_records=True,
  sub=None, sub_name="No plan",
  best="Only worth it if an installer is fitting a Hikvision system anyway",
- catch="Discontinued trade product; the price includes fitting.",
+ catch="Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295.",
  storage="microSD up to 128 GB; RTSP to an NVR", live="Yes (Hik-Connect app)", alerts="Yes (motion)",
  ai="None", history="Yes, on card or NVR", paywalled="Nothing", sub_text="None",
- ha_text="Works as a generic RTSP camera.", wifi="Not checked",
+ ha_text="Works as a generic RTSP camera.", wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=0,storage=0,ha=1),
- src=["eagle_hik","hik_ds"],
- unverified="ONVIF support; availability."),
+ src=["eagle_hik","hik_ds","hik_4gon"],
+ unverified=""),
 ]
 
 # ---------- derived figures ----------
@@ -316,7 +329,7 @@ for r in ROWS:
       f"- **Price:** {money(r['price'])} ({r['price_note']})", f"- **3-year cost, no plan:** {r['maths_free']}", f"- **3-year cost, with plan:** {r['maths_sub']}",
       f"- **Storage:** {r['storage']}", f"- **Free:** live view {r['live'].lower()}; alerts {r['alerts'].lower()}; smart detection: {r['ai']}",
       f"- **History without plan:** {r['history']}", f"- **Paywalled:** {r['paywalled']}", f"- **Plans:** {r['sub_text']}",
-      f"- **Home Assistant:** {r['ha_text']}", f"- **Unverified:** {r['unverified']}",
+      f"- **Home Assistant:** {r['ha_text']}", *([f"- **Unverified:** {r['unverified']}"] if r["unverified"] else []),
       "- **Sources:** " + " · ".join(f"[{S[k][0]}]({S[k][1]})" for k in r["src"]), ""]
 md += ["## How the 3-year costs are worked out",
  f"- Without a plan: hardware price + anything extra you need to record for free (a microSD card or USB stick is assumed at {money(CARD)}; that figure isn't from a cited source).",
@@ -368,6 +381,8 @@ for i,r in enumerate(ROWS):
     tone=V_TONE[v] if v else ""
     vattr=f' data-v="{tone}"' if tone else ""
     vtag=f'<span class="vtag v-{tone}">{V_LABEL[v]}</span>' if v else ""
+    unv=f'<p class="unverified"><b>Not yet verified:</b> {e(r["unverified"])}</p>' if r["unverified"] else ""
+    pnote='. ' + e(r["power_note"]) if r.get("power_note") else ""
     rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 999999}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
@@ -382,7 +397,7 @@ for i,r in enumerate(ROWS):
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
 <figure class="dimg">{zoom(r,"lg")}</figure>
 <dl>
-<dt>Power</dt><dd>{" / ".join(POWER_LABEL[p] for p in r['power'])}; Wi-Fi: {e(r['wifi'])}</dd>
+<dt>Power</dt><dd>{" / ".join(POWER_LABEL[p] for p in r['power'])}; Wi-Fi: {e(r['wifi'])}{pnote}</dd>
 <dt>Storage</dt><dd>{e(r['storage'])}</dd>
 <dt>Live view</dt><dd>{e(r['live'])}</dd>
 <dt>Motion alerts</dt><dd>{e(r['alerts'])}</dd>
@@ -396,7 +411,7 @@ for i,r in enumerate(ROWS):
 <dt>3 years, with plan</dt><dd class="maths">{e(r['maths_sub'])}</dd>
 <dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k,lbl,mx in SCORE_PARTS)}</dd>
 </dl></div>
-<p class="unverified"><b>Not yet verified:</b> {e(r['unverified'])}</p>
+{unv}
 <p class="srcs">Sources {fn(r['src'])}</p></td></tr>
 </tbody>''')
 
@@ -753,8 +768,8 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <section class="method" id="method">
 <div>
 <h2>How we worked it out</h2>
-<p><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £99.74, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
-<p><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The Reolink (£3.49) and EZVIZ (£4.99) plan prices aren't confirmed for the UK. Every model's sums are under <i>Details</i>.</p>
+<p><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
+<p><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
 <p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
 <p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything we haven't fully confirmed is listed under <i>Not yet verified</i> in each model's details. Spotted something wrong, or a paywall change? <a href="{GITHUB}/issues/new">Open an issue</a> and we'll fix it.</p>
@@ -973,3 +988,6 @@ if(shared){{
 for _f in ("index.html","doorbells.html"): open(os.path.join(ROOT,_f),"w",encoding="utf-8").write(page)
 print(len(ROWS),"rows written")
 for r in sorted(ROWS,key=lambda r:r["keep3"]): print(f"{r['brand']:14} {r['model']:38} score {r['score_total']}  nosub {r['nosub3']:8.2f}  sub {r['sub3'] if r['sub3'] else '-':>8}  keep {r['keep3']:.2f}")
+open_rows=[r for r in ROWS if r["unverified"]]
+print(f"\nUnverified ({len(open_rows)} of {len(ROWS)} rows):" + (" none" if not open_rows else ""))
+for r in open_rows: print(f"  {r['brand']} {r['model']}: {r['unverified'].replace('£','GBP ')}")

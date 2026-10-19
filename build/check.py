@@ -20,6 +20,7 @@ at the breakpoints the stylesheet defines.
 Needs the venv from README.md. Exit status is 1 when an issue is found.
 """
 import argparse
+import csv
 import functools
 import http.server
 import os
@@ -416,7 +417,7 @@ def shortlist_check(page):
     if after != "Copied":
         problems.append(f"the copy action confirms with {after!r}")
     required = [
-        "SubFree UK shortlist, checked 18 October 2026",
+        "SubFree UK shortlist, checked 19 October 2026",
         "TP-Link Tapo TD21",
         "Reolink Video Doorbell PoE",
         "EZVIZ EP3x Pro",
@@ -927,6 +928,14 @@ def main():
         print("  ok    rebuild reproduces the committed pages")
 
     pages = load_pages()
+
+    with open(os.path.join(ROOT, "data", "doorbells.csv"), newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    pending = [r for r in rows if r["Unverified / re-check"].strip()]
+    print(f"  note  {len(pending)} of {len(rows)} rows still carry an unverified note")
+    for row in pending:
+        why = row["Unverified / re-check"].replace("£", "GBP ")
+        print(f"        {row['Brand']} {row['Model']}: {why}")
 
     if pages["index.html"] == pages["doorbells.html"]:
         print("  ok    generated pages are identical")
