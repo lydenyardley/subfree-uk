@@ -4,9 +4,10 @@
 Runs build/build.py first and reports any generated file it changed, so a stale
 page fails here instead of shipping. Serves the repo root on a loopback port,
 drives the page with Chromium, and runs axe-core against WCAG 2.2 A and AA in
-both themes. Also checks internal anchors, image files, duplicate ids, headings,
-labels, target sizes, the photo lightbox and horizontal overflow at the
-breakpoints the stylesheet defines.
+both themes at 1280px, 820px and 390px. Also checks internal anchors, image
+files, duplicate ids, headings, labels, target sizes, the type floor, the phone
+layout, the photo lightbox and horizontal overflow at the breakpoints the
+stylesheet defines.
 
     python build/check.py
     python build/check.py --external   # also request every outbound URL
@@ -28,6 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ["index.html", "doorbells.html"]
 GENERATED = PAGES + ["data/doorbells.csv", "data/doorbells.md"]
 WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390]
+AXE_WIDTHS = [1280, 820, 390]
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 
 AUDIT_JS = r"""() => {
@@ -72,7 +74,42 @@ AUDIT_JS = r"""() => {
     thNoScope: all("th").filter((th) => !th.getAttribute("scope")).length,
     footRefs: internal.filter((a) => /^#fn\d+$/.test(a.href)).map((a) => a.href.slice(1)),
     footTargets: all('li[id^="fn"]').map((li) => li.id),
-    externals: external.map((a) => a.href)
+    externals: external.map((a) => a.href),
+    tags: all(".vtag").map(text),
+    priceFootnotes: all(".c-price .fn").length,
+    zoomGlyphs: all(".zoom .zi").length,
+    contactLinks: anchors.filter((a) => /github\.com\/lydenyardley\/subfree-uk\/issues/.test(a.href)).length,
+    hasGlossary: /Power over Ethernet/.test(text(document.body)),
+    tiny: all("body *").filter((el) => {
+      if (!el.getClientRects().length) return false;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden") return false;
+      const own = Array.from(el.childNodes).some((n) => n.nodeType === 3 && n.textContent.trim());
+      return own && parseFloat(cs.fontSize) < 11;
+    }).map((el) => el.tagName.toLowerCase() + "." + String(el.className || "").split(" ")[0] +
+      " at " + getComputedStyle(el).fontSize + ": " + text(el).slice(0, 24))
+  };
+}"""
+
+PHONE_JS = r"""() => {
+  const filters = document.getElementById("filters");
+  const row = document.querySelector("#tbl tbody.item:not([hidden])");
+  return {
+    open: filters ? filters.open : null,
+    firstRowTop: row ? Math.round(row.getBoundingClientRect().top) : -1,
+    viewport: window.innerHeight
+  };
+}"""
+
+HEADER_JS = r"""() => {
+  const thead = document.querySelector("#tbl thead");
+  const ths = Array.from(thead.querySelectorAll("th[scope=col]"));
+  const buttons = Array.from(thead.querySelectorAll("button"));
+  return {
+    display: getComputedStyle(thead).display,
+    width: Math.round(thead.getBoundingClientRect().width),
+    headers: ths.length,
+    untabbable: buttons.length > 0 && buttons.every((b) => b.tabIndex === -1)
   };
 }"""
 
@@ -244,7 +281,7 @@ def main():
                 print(f"Could not start Chromium: {error}")
                 print("Run: python -m playwright install chromium")
                 return 2
-            page = browser.new_page(viewport={"width": 1280, "height": 900})
+            page = browser.new_page(viewport={"width": 390, "height": 844})
             page.add_init_script("try { localStorage.setItem('theme', 'dark') } catch (e) {}")
             page.on("pageerror", lambda error: console_errors.append(str(error)))
             page.on(
@@ -254,6 +291,16 @@ def main():
                 else None,
             )
             page.goto(url, wait_until="load")
+
+            # Measure the phone first paint before any detail row or the compare
+            # table pushes the products down.
+            phone = page.evaluate(PHONE_JS)
+            phone_data = page.evaluate(AUDIT_JS)
+            header = page.evaluate(HEADER_JS)
+            header_roles = "columnheader" in page.locator("#tbl").aria_snapshot()
+
+            page.set_viewport_size({"width": 1280, "height": 900})
+            page.reload(wait_until="load")
 
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
@@ -272,10 +319,14 @@ def main():
             lightbox = lightbox_check(page)
 
             axe = Axe()
-            dark = axe_violations(axe, page)
-            page.click("#theme")
-            page.wait_for_timeout(100)
-            light = axe_violations(axe, page)
+            axe_results = {}
+            for theme in ("dark", "light"):
+                for width in AXE_WIDTHS:
+                    page.set_viewport_size({"width": width, "height": 900})
+                    page.wait_for_timeout(120)
+                    axe_results[(theme, width)] = axe_violations(axe, page)
+                page.click("#theme")
+                page.wait_for_timeout(120)
 
             widths = []
             for width in WIDTHS:
@@ -309,6 +360,74 @@ def main():
 
     if data["rows"] == 0:
         issues.append("no product rows rendered; the page may be blank")
+
+    if not phone["open"] and phone["firstRowTop"] < phone["viewport"]:
+        print(
+            f"  ok    phone: filters start collapsed; first product at "
+            f"{phone['firstRowTop']}px of {phone['viewport']}px"
+        )
+    else:
+        issues.append(
+            "phone first paint: "
+            f"filters open={phone['open']}, first product at "
+            f"{phone['firstRowTop']}px of {phone['viewport']}px"
+        )
+
+    if (
+        header["display"] != "none"
+        and header["width"] <= 2
+        and header["headers"] == 8
+        and header["untabbable"]
+        and header_roles
+    ):
+        print(
+            "  ok    phone: 8 column headers stay in the accessibility tree; "
+            "sort buttons leave the tab order"
+        )
+    else:
+        issues.append(
+            "phone table header: "
+            f"display={header['display']}, width={header['width']}px, "
+            f"headers={header['headers']}, untabbable={header['untabbable']}, "
+            f"columnheader in tree={header_roles}"
+        )
+
+    tiny = data["tiny"] + phone_data["tiny"]
+    if tiny:
+        issues.append("text below 11px: " + "; ".join(sorted(set(tiny))[:6]))
+    else:
+        print("  ok    no rendered text is below 11px")
+
+    best = data["tags"].count("Best overall")
+    if best == 1 and "Best with doorbell wiring" in data["tags"]:
+        print('  ok    one row owns "Best overall"; the Reolink variants name their own case')
+    else:
+        issues.append(f'verdict tags: {best} rows say "Best overall" ({data["tags"]})')
+
+    if data["priceFootnotes"]:
+        issues.append(f"{data['priceFootnotes']} footnote numbers in price cells")
+    else:
+        print("  ok    price cells carry no footnote numbers")
+
+    if data["zoomGlyphs"] == lightbox["buttons"] and lightbox["buttons"]:
+        print(f"  ok    all {lightbox['buttons']} photos show a zoom glyph")
+    else:
+        issues.append(
+            f"{lightbox['buttons']} photo buttons but {data['zoomGlyphs']} zoom glyphs"
+        )
+
+    if data["contactLinks"] >= 2:
+        print(f"  ok    contact route linked in {data['contactLinks']} places")
+    else:
+        issues.append(
+            "expected a contact link in the header and the method, "
+            f"found {data['contactLinks']}"
+        )
+
+    if data["hasGlossary"]:
+        print("  ok    method defines PoE, NVR, microSD and Home Assistant")
+    else:
+        issues.append("method does not gloss PoE, NVR, microSD and Home Assistant")
 
     if data["mains"] == 1:
         print("  ok    one main landmark")
@@ -418,19 +537,21 @@ def main():
     else:
         print(f"  ok    {len(data['externals'])} external links use https")
 
-    for theme, violations in (("dark", dark), ("light", light)):
-        if not violations:
-            print(f"  ok    axe-core ({theme}): no WCAG 2.2 A/AA violations")
-            continue
-        for violation in violations:
-            nodes = violation["nodes"]
-            issues.append(
-                f"axe {theme}: {violation['id']} ({violation['impact']}), "
-                f"{len(nodes)} node(s). {violation['help']}"
-            )
-            for node in nodes[:4]:
-                summary = node.get("failureSummary", "").replace("\n", " ").strip()
-                print(f"        {', '.join(node['target'])}  {summary[:150]}")
+    for theme in ("dark", "light"):
+        for width in AXE_WIDTHS:
+            violations = axe_results[(theme, width)]
+            if not violations:
+                print(f"  ok    axe-core ({theme}, {width}px): no WCAG 2.2 A/AA violations")
+                continue
+            for violation in violations:
+                nodes = violation["nodes"]
+                issues.append(
+                    f"axe {theme} at {width}px: {violation['id']} ({violation['impact']}), "
+                    f"{len(nodes)} node(s). {violation['help']}"
+                )
+                for node in nodes[:4]:
+                    summary = node.get("failureSummary", "").replace("\n", " ").strip()
+                    print(f"        {', '.join(node['target'])}  {summary[:150]}")
 
     overflow = [f"{width}px" for width, result in widths if result["over"] > 0]
     if overflow:
