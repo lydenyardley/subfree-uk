@@ -10,6 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CHECKED = "18 October 2026"
 GITHUB = "https://github.com/lydenyardley/subfree-uk"
 CARD = 10.00   # ASSUMPTION (not cited): typical price of a 64 GB microSD card / USB stick
+MINP = 40      # lower end of the price slider; the cheapest doorbell here is £44.99
 MONTHS = 36
 
 # Shared sources (footnote numbers are assigned automatically)
@@ -463,14 +464,27 @@ tbody.item[data-v=best]{{--vc:var(--v-best)}} tbody.item[data-v=batt]{{--vc:var(
 tbody.item[data-v] tr.main>td.c-cmp{{box-shadow:inset 3px 0 0 var(--vc)}}
 .controls{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}}
 .filters>summary{{display:none}}
-.fbody{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start}}
+.fbody{{display:flex;flex-wrap:nowrap;gap:1rem 2rem;align-items:flex-start}}
 fieldset{{border:0;margin:0;padding:0;min-width:0}}
 legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}}
 .opts{{display:flex;flex-wrap:wrap;gap:1rem}}
 .opts label{{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}}
 input[type=checkbox]{{accent-color:var(--acc);width:15px;height:15px;margin:0}}
-input[type=range]{{accent-color:var(--acc);width:180px;min-height:24px;vertical-align:middle;margin:0}}
-.range output{{font:600 14px var(--sans);font-variant-numeric:tabular-nums;margin-left:1rem}}
+/* One range input per handle, stacked, so each keeps its own keyboard value.
+   Only the thumbs take pointer events, which is what lets them overlap. */
+.range{{flex:1 1 180px;min-width:170px;max-width:320px}}
+.dual{{position:relative;height:24px;width:100%;--thumb:18px}}
+/* Firefox draws a smaller thumb, so the track inset has to match it too. */
+@supports selector(::-moz-range-thumb){{.dual{{--thumb:14px}}}}
+.dual input[type=range]{{position:absolute;left:0;top:0;width:100%;height:24px;margin:0;background:none;border:0;padding:0;-webkit-appearance:none;appearance:none;pointer-events:none}}
+.dual input[type=range]:focus-visible{{outline:2px solid var(--acc);outline-offset:2px}}
+.dual input[type=range]::-webkit-slider-runnable-track{{height:24px;background:none;border:0}}
+.dual input[type=range]::-moz-range-track{{height:24px;background:none;border:0}}
+.dual input[type=range]::-webkit-slider-thumb{{-webkit-appearance:none;appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}}
+.dual input[type=range]::-moz-range-thumb{{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}}
+.dual-track{{position:absolute;left:calc(var(--thumb)/2);right:calc(var(--thumb)/2);top:11px;height:2px;background:var(--rule)}}
+.dual-track i{{position:absolute;top:0;height:100%;background:var(--acc)}}
+.dual-vals{{display:flex;justify-content:space-between;gap:1rem;margin-top:0.5rem;font:600 13px var(--sans);font-variant-numeric:tabular-nums;color:var(--ink2)}}
 .sortby{{margin-left:auto}}
 select{{font:14px var(--sans);padding:0 1rem;min-height:24px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}}
 .count{{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}}
@@ -637,9 +651,9 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .filters>summary::before{{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-right:0.25rem}}
  .filters[open]>summary::before{{transform:rotate(45deg)}}
  .filters:not([open]) .fbody{{display:none}}
- .fbody{{flex-direction:column;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}}
+ .fbody{{flex-direction:column;align-items:stretch;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}}
  .fbody .opts{{gap:0.5rem 1rem}}
- .fbody input[type=range]{{width:100%;max-width:220px}}
+ .range{{max-width:none}}
 }}
 @media print{{.skip,.controls,.tray,.c-cmp,.more-w,#theme{{display:none}} tr.detail{{display:table-row!important}}}}
 </style></head><body>
@@ -674,7 +688,15 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <label><input type="checkbox" class="f-pw" value="wired"> Wired</label>
 <label><input type="checkbox" class="f-pw" value="poe"> PoE</label>
 </div></fieldset>
-<div class="range"><label class="lab" for="f-max">Max price</label><input type="range" id="f-max" min="40" max="{maxp}" step="5" value="{maxp}"><output id="f-max-out" for="f-max">£{maxp}</output></div>
+<div class="range">
+<span class="lab">Price</span>
+<div class="dual">
+<div class="dual-track" aria-hidden="true"><i id="f-fill"></i></div>
+<input type="range" id="f-min" min="{MINP}" max="{maxp}" step="5" value="{MINP}" aria-label="Lowest price">
+<input type="range" id="f-max" min="{MINP}" max="{maxp}" step="5" value="{maxp}" aria-label="Highest price">
+</div>
+<div class="dual-vals"><output id="f-min-out" for="f-min">£{MINP}</output><output id="f-max-out" for="f-max">£{maxp}</output></div>
+</div>
 </div>
 </details>
 <div class="sortby"><label class="lab" for="sort">Sort by</label><select id="sort">
@@ -740,13 +762,18 @@ function fitSortKeys(){{$$('#tbl thead th button').forEach(function(b){{if(narro
 if(small.addEventListener)small.addEventListener('change',fitFilters);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
 fitFilters();fitSortKeys();
-var tbl=$('#tbl'),items=$$('tbody.item',tbl),maxEl=$('#f-max'),out=$('#f-max-out');
+var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
 var skey='keep3',sdir=1,SDEF={{keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1}};
 function apply(){{
- var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){{return x.value}}),mx=+maxEl.value,n=0;
- out.textContent='£'+mx;
+ var lo0=+minEl.min,hi0=+maxEl.max,lo=+minEl.value,hi=+maxEl.value;
+ if(lo>hi){{lo=hi;minEl.value=hi}}
+ minEl.style.zIndex=lo>=hi?2:1;
+ minOut.textContent='£'+lo;maxOut.textContent='£'+hi;
+ fill.style.left=((lo-lo0)/(hi0-lo0)*100)+'%';
+ fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
+ var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){{return x.value}}),n=0;
  items.forEach(function(t){{
-  var ok=(!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price<=mx)&&
+  var ok=(!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=lo&&+t.dataset.price<=hi)&&
    (!pw.length||pw.some(function(p){{return t.dataset.power.split(' ').indexOf(p)>-1}}));
   t.hidden=!ok; if(ok)n++;
  }});
@@ -766,7 +793,7 @@ $$('#tbl thead th[data-sort] button').forEach(function(b){{b.onclick=function(){
  if(k===skey)sdir=-sdir;else{{skey=k;sdir=SDEF[k]}}
  apply();
 }}}});
-$('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()}};
+$('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});minEl.value=minEl.min;maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()}};
 $$('button.more').forEach(function(b){{b.onclick=function(){{var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}}}});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
