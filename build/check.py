@@ -6,8 +6,8 @@ page fails here instead of shipping. Serves the repo root on a loopback port,
 drives the page with Chromium, and runs axe-core against WCAG 2.2 A and AA in
 both themes at 1280px, 820px and 390px. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
-layout, the photo lightbox and horizontal overflow at the breakpoints the
-stylesheet defines.
+layout, the skip link, the photo lightbox and horizontal overflow at the
+breakpoints the stylesheet defines.
 
     python build/check.py
     python build/check.py --external   # also request every outbound URL
@@ -218,6 +218,35 @@ def lightbox_check(page):
     return {"problems": problems, "buttons": counts["buttons"]}
 
 
+def skip_check(page):
+    """Tab to the skip link, press Enter, and confirm focus lands on the table."""
+    problems = []
+    links = page.evaluate(
+        "() => Array.from(document.querySelectorAll('a.skip')).map(a => a.getAttribute('href'))"
+    )
+    if links != ["#tbl"]:
+        return [f"expected one skip link to #tbl, found {links or 'none'}"]
+    if not page.evaluate("() => document.getElementById('tbl').tabIndex === -1"):
+        problems.append("the skip link target is not focusable")
+    page.keyboard.press("Tab")
+    first = page.evaluate(
+        "() => ({cls: document.activeElement.className, text: document.activeElement.textContent.trim()})"
+    )
+    if "skip" not in first["cls"]:
+        problems.append(f"the first Tab stop is {first['cls'] or 'nothing'}, not the skip link")
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(150)
+    landed = page.evaluate(
+        "() => ({hash: location.hash, focus: (document.activeElement || {}).id || ''})"
+    )
+    if landed["hash"] != "#tbl" or landed["focus"] != "tbl":
+        problems.append(
+            f"Enter moved to {landed['hash'] or 'nowhere'} with focus on "
+            f"{landed['focus'] or 'nothing'}"
+        )
+    return problems
+
+
 def request_status(url):
     # Some shops answer 404 to HEAD and 200 to GET, so ask the way a reader
     # would and never read the body.
@@ -302,6 +331,10 @@ def main():
             page.set_viewport_size({"width": 1280, "height": 900})
             page.reload(wait_until="load")
 
+            # Focus starts at the top of a fresh document, so this is the only
+            # point where the skip link can be reached with one Tab.
+            skip = skip_check(page)
+
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
             page.eval_on_selector_all("button.more", "els => els.forEach(el => el.click())")
@@ -349,6 +382,11 @@ def main():
         print(f"  ok    document language, title and viewport set")
     else:
         issues.append("missing html lang, page title or viewport meta")
+
+    if skip:
+        issues.extend(skip)
+    else:
+        print("  ok    the skip link is the first Tab stop and Enter lands on the table")
 
     if lightbox["problems"]:
         issues.extend(lightbox["problems"])
