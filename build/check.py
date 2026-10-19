@@ -3,11 +3,14 @@
 
 Runs build/build.py first and reports any generated file it changed, so a stale
 page fails here instead of shipping. Serves the repo root on a loopback port,
-drives the page with Chromium, and runs axe-core against WCAG 2.2 A and AA in
-both themes at 1280px, 820px and 390px. Also checks internal anchors, image
+drives the page with Chromium, and runs axe-core in both themes at 1280px,
+820px and 390px, failing on WCAG 2.2 A and AA and reporting the
+best-practice rules alongside them. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
-layout, the price range slider, the skip link, the photo lightbox and horizontal
-overflow at the breakpoints the stylesheet defines.
+layout, the price range slider, the filter panel resize, the live announcements,
+the three-row compare cap, the empty-state recovery, the no-JavaScript fallback,
+the skip link, the photo lightbox and horizontal overflow at the breakpoints the
+stylesheet defines.
 
     python build/check.py
     python build/check.py --external   # also request every outbound URL
@@ -31,6 +34,7 @@ GENERATED = PAGES + ["data/doorbells.csv", "data/doorbells.md"]
 WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390]
 AXE_WIDTHS = [1280, 820, 390]
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
+BEST_PRACTICE_TAG = "best-practice"
 
 AUDIT_JS = r"""() => {
   const all = (s) => Array.from(document.querySelectorAll(s));
@@ -75,9 +79,24 @@ AUDIT_JS = r"""() => {
     footRefs: internal.filter((a) => /^#fn\d+$/.test(a.href)).map((a) => a.href.slice(1)),
     footTargets: all('li[id^="fn"]').map((li) => li.id),
     externals: external.map((a) => a.href),
+    rowRule: (() => {
+      const marked = all("tbody.item[data-v]")[0];
+      const plain = all("tbody.item:not([data-v])")[0];
+      const cell = (row) => row && row.querySelector("tr.main > td.c-cmp");
+      if (!marked || !plain) return null;
+      const a = getComputedStyle(cell(marked)), b = getComputedStyle(cell(plain));
+      return { border: parseFloat(a.borderLeftWidth), pad: parseFloat(a.paddingLeft),
+               plain: parseFloat(b.borderLeftWidth) };
+    })(),
     tags: all(".vtag").map(text),
     priceFootnotes: all(".c-price .fn").length,
     zoomGlyphs: all(".zoom .zi").length,
+    icon: document.querySelector('link[rel="icon"]')
+      ? document.querySelector('link[rel="icon"]').getAttribute("href") : "",
+    canonical: document.querySelector('link[rel="canonical"]')
+      ? document.querySelector('link[rel="canonical"]').getAttribute("href") : "",
+    ogTitle: document.querySelector('meta[property="og:title"]')
+      ? document.querySelector('meta[property="og:title"]').content : "",
     contactLinks: anchors.filter((a) => /github\.com\/lydenyardley\/subfree-uk\/issues/.test(a.href)).length,
     hasGlossary: /Power over Ethernet/.test(text(document.body)),
     tiny: all("body *").filter((el) => {
@@ -94,10 +113,35 @@ AUDIT_JS = r"""() => {
 PHONE_JS = r"""() => {
   const filters = document.getElementById("filters");
   const row = document.querySelector("#tbl tbody.item:not([hidden])");
+  const verdict = document.querySelector(".verdict");
+  const short = document.querySelector(".vshort");
   return {
     open: filters ? filters.open : null,
     firstRowTop: row ? Math.round(row.getBoundingClientRect().top) : -1,
-    viewport: window.innerHeight
+    viewport: window.innerHeight,
+    verdict: verdict ? getComputedStyle(verdict).display : null,
+    shortAnswer: short ? getComputedStyle(short).display : null
+  };
+}"""
+
+COST_JS = r"""() => {
+  const row = document.querySelector("#tbl tbody.item");
+  const a = row.querySelector(".c-nosub"), b = row.querySelector(".c-sub");
+  return {
+    aFits: a.scrollWidth <= a.clientWidth + 1,
+    bFits: b.scrollWidth <= b.clientWidth + 1,
+    aWidth: a.clientWidth,
+    bWidth: b.clientWidth
+  };
+}"""
+
+FILTERS_JS = r"""() => {
+  const filters = document.getElementById("filters");
+  const body = filters.querySelector(".fbody");
+  return {
+    open: filters.open,
+    display: getComputedStyle(body).display,
+    visible: body.getClientRects().length > 0
   };
 }"""
 
@@ -175,7 +219,7 @@ def axe_violations(axe, page):
         page,
         options={
             "resultTypes": ["violations"],
-            "runOnly": {"type": "tag", "values": WCAG_TAGS},
+            "runOnly": {"type": "tag", "values": WCAG_TAGS + [BEST_PRACTICE_TAG]},
         },
     )
     return results.response["violations"]
@@ -222,6 +266,161 @@ def lightbox_check(page):
     if page.evaluate("() => document.getElementById('lightbox').open"):
         problems.append("Esc does not close the lightbox")
     return {"problems": problems, "buttons": counts["buttons"]}
+
+
+def filters_check(page):
+    """The phone filter panel is collapsed, and has to come back when the window widens."""
+    problems = []
+    page.set_viewport_size({"width": 900, "height": 900})
+    page.wait_for_timeout(150)
+    wide = page.evaluate(FILTERS_JS)
+    if not wide["open"] or not wide["visible"]:
+        problems.append(f"the filter panel stays closed at 900px: {wide}")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(150)
+    narrow = page.evaluate(FILTERS_JS)
+    if narrow["open"] or narrow["visible"]:
+        problems.append(f"the filter panel stays open at 390px: {narrow}")
+    return problems
+
+
+def copy_check(page):
+    """Three selections explain the cap, announce it, and expose Compare nearby."""
+    problems = []
+    page.eval_on_selector_all(
+        "input.cmp",
+        """els => els.slice(0, 3).forEach(el => {
+            el.checked = true;
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+        })""",
+    )
+    page.wait_for_timeout(450)
+    state = page.evaluate(
+        """() => ({
+            tray: document.getElementById("tray-txt").textContent,
+            live: document.getElementById("live").textContent,
+            inline: document.getElementById("cmp-inline").hidden
+                ? null : document.getElementById("cmp-inline").textContent,
+            disabled: Array.from(document.querySelectorAll("input.cmp"))
+                .filter((c) => c.disabled).length
+        })"""
+    )
+    if "maximum" not in state["tray"]:
+        problems.append(f"the 3-row cap is not explained: {state['tray']!r}")
+    if "maximum" not in state["live"]:
+        problems.append(f"the 3-row cap is not announced: {state['live']!r}")
+    if state["inline"] != "Compare 3":
+        problems.append(f"the inline compare action reads {state['inline']!r}")
+    if state["disabled"] == 0:
+        problems.append("no checkbox is disabled at three selections")
+    return problems
+
+
+def recovery_check(page):
+    """Filtering announces its count; an empty result offers the nearest match."""
+    problems = []
+    page.eval_on_selector_all(
+        "input.cmp",
+        """els => els.forEach(el => {
+            el.checked = false;
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+        })""",
+    )
+    page.eval_on_selector("#filters", "el => { el.open = true }")
+    page.eval_on_selector(
+        "#f-rec",
+        "el => { el.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })) }",
+    )
+    page.wait_for_timeout(450)
+    filtered = page.evaluate(
+        "() => ({count: document.getElementById('count').textContent, "
+        "live: document.getElementById('live').textContent})"
+    )
+    if filtered["count"] == "14" or "doorbells shown" not in filtered["live"]:
+        problems.append(
+            f"filtering set {filtered['count']} rows and announced {filtered['live']!r}"
+        )
+
+    for handle in ("#f-min", "#f-max"):
+        page.eval_on_selector(
+            handle,
+            "el => { el.value = 300; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+        )
+    page.wait_for_timeout(600)
+    empty = page.evaluate(
+        """() => ({
+            visible: !document.getElementById("empty").hidden,
+            near: document.getElementById("near").hidden
+                ? null : document.getElementById("near").textContent,
+            live: document.getElementById("live").textContent
+        })"""
+    )
+    if not empty["visible"] or not empty["near"]:
+        problems.append(f"the empty state offers no nearest match: {empty}")
+    elif "£" not in empty["near"]:
+        problems.append(f"the nearest-match label has no price: {empty['near']!r}")
+    if "No doorbells match" not in empty["live"]:
+        problems.append(f"the empty result is not announced: {empty['live']!r}")
+    else:
+        page.click("#near")
+        page.wait_for_timeout(400)
+        after = page.evaluate(
+            "() => Array.from(document.querySelectorAll('tbody.item'))"
+            ".filter((r) => !r.hidden).length"
+        )
+        if after < 1:
+            problems.append("the nearest-match button leaves the table empty")
+    page.click("#reset")
+    page.wait_for_timeout(150)
+    return problems
+
+
+def hit_check(page):
+    """A 44px hit area means a click 8px below Details still opens it."""
+    problems = []
+    button = page.locator("button.more").first
+    button.scroll_into_view_if_needed()
+    box = button.bounding_box()
+    if not box:
+        return ["no visible Details button"]
+    page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+    page.wait_for_timeout(120)
+    if button.get_attribute("aria-expanded") != "true":
+        problems.append("a click 8px below Details does not open it")
+    page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+    page.wait_for_timeout(80)
+    return problems
+
+
+def theme_check(page):
+    """The toggle names its action, carries no pressed state, and takes a 44px click."""
+    problems = []
+    state = page.evaluate(
+        """() => {
+            const b = document.getElementById("theme");
+            return { pressed: b.getAttribute("aria-pressed"),
+                     label: b.getAttribute("aria-label"), text: b.textContent.trim() };
+        }"""
+    )
+    if state["pressed"] is not None:
+        problems.append(f"the theme button still claims aria-pressed={state['pressed']}")
+    if not (state["label"] or "").startswith("Switch to "):
+        problems.append(f"the theme button is named {state['label']!r}")
+    before = state["text"]
+    toggle = page.locator("#theme")
+    toggle.scroll_into_view_if_needed()
+    box = toggle.bounding_box()
+    if box:
+        page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+        page.wait_for_timeout(150)
+        after = toggle.inner_text().strip()
+        if after == before:
+            problems.append("a click 8px below the theme button does nothing")
+        else:
+            box = page.locator("#theme").bounding_box()
+            page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+            page.wait_for_timeout(150)
+    return problems
 
 
 def price_check(page):
@@ -349,6 +548,32 @@ def price_check(page):
 
     page.click("#reset")
     page.wait_for_timeout(80)
+
+    # Clicking the bare track is a shortcut for the nearer handle.
+    track = page.locator(".dual-track")
+    box = track.bounding_box()
+    if not box or not box["width"]:
+        return problems + ["the price track has no width to click on"]
+    values = "() => [Number(document.getElementById('f-min').value), Number(document.getElementById('f-max').value)]"
+    track.click(position={"x": round(box["width"] * 0.25), "y": 1})
+    page.wait_for_timeout(80)
+    low = page.evaluate(values)
+    if abs(low[0] - 105) > 5 or low[1] != 300:
+        problems.append(
+            f"a click a quarter along the track left the handles at {low}, "
+            "expected the lower one near 105"
+        )
+    track.click(position={"x": round(box["width"] * 0.75), "y": 1})
+    page.wait_for_timeout(80)
+    high = page.evaluate(values)
+    if abs(high[1] - 235) > 5 or high[0] != low[0]:
+        problems.append(
+            f"a click three quarters along the track left the handles at {high}, "
+            "expected the upper one near 235"
+        )
+
+    page.click("#reset")
+    page.wait_for_timeout(80)
     restored = page.evaluate(
         "() => Array.from(document.querySelectorAll('tbody.item')).filter((r) => !r.hidden).length"
     )
@@ -406,6 +631,38 @@ def request_status(url):
             return response.status
     except urllib.error.HTTPError as error:
         return error.code
+
+
+def nojs_check(browser, url):
+    """Without JavaScript the inert filters are hidden and the table still stands."""
+    problems = []
+    context = browser.new_context(java_script_enabled=False)
+    try:
+        page = context.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_timeout(100)
+        state = {
+            "controls": page.locator(".controls").is_visible(),
+            "note": page.locator(".nojs").inner_text()
+            if page.locator(".nojs").count()
+            else "",
+            "rows": page.locator("#tbl tbody.item").count(),
+            "theme": page.locator("#theme").is_visible(),
+            "details": page.locator(".more-w").first.is_visible(),
+        }
+    finally:
+        context.close()
+    if state["controls"]:
+        problems.append("filter controls stay visible without JavaScript")
+    if state["theme"]:
+        problems.append("the inert theme toggle stays visible without JavaScript")
+    if state["details"]:
+        problems.append("the inert Details buttons stay visible without JavaScript")
+    if "need JavaScript" not in state["note"]:
+        problems.append(f"no no-JavaScript note: {state['note']!r}")
+    if state["rows"] < 14:
+        problems.append(f"only {state['rows']} rows render without JavaScript")
+    return problems
 
 
 def main():
@@ -472,10 +729,14 @@ def main():
             # Measure the phone first paint before any detail row or the compare
             # table pushes the products down.
             phone = page.evaluate(PHONE_JS)
+            cost = page.evaluate(COST_JS)
             phone_data = page.evaluate(AUDIT_JS)
             header = page.evaluate(HEADER_JS)
             header_roles = "columnheader" in page.locator("#tbl").aria_snapshot()
+            resize = filters_check(page)
             prices = price_check(page)
+            copy = copy_check(page)
+            recovery = recovery_check(page)
 
             page.set_viewport_size({"width": 1280, "height": 900})
             page.reload(wait_until="load")
@@ -483,6 +744,8 @@ def main():
             # Focus starts at the top of a fresh document, so this is the only
             # point where the skip link can be reached with one Tab.
             skip = skip_check(page)
+            hit = hit_check(page)
+            theme = theme_check(page)
 
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
@@ -498,15 +761,24 @@ def main():
             page.wait_for_timeout(200)
 
             data = page.evaluate(AUDIT_JS)
+            foot = page.locator(
+                "#tbl thead th[data-sort=nosub3] button"
+            ).aria_snapshot()
+            compare = page.evaluate(
+                """() => ({
+                    caption: (document.querySelector("#cmp-table caption") || {}).textContent || "",
+                    rows: document.querySelectorAll("#cmp-table tbody tr").length
+                })"""
+            )
             lightbox = lightbox_check(page)
 
             axe = Axe()
             axe_results = {}
-            for theme in ("dark", "light"):
+            for mode in ("dark", "light"):
                 for width in AXE_WIDTHS:
                     page.set_viewport_size({"width": width, "height": 900})
                     page.wait_for_timeout(120)
-                    axe_results[(theme, width)] = axe_violations(axe, page)
+                    axe_results[(mode, width)] = axe_violations(axe, page)
                 page.click("#theme")
                 page.wait_for_timeout(120)
 
@@ -516,6 +788,7 @@ def main():
                 page.wait_for_timeout(80)
                 widths.append((width, page.evaluate(OVERFLOW_JS)))
 
+            fallback = nojs_check(browser, url)
             browser.close()
     finally:
         httpd.shutdown()
@@ -532,6 +805,11 @@ def main():
     else:
         issues.append("missing html lang, page title or viewport meta")
 
+    if resize:
+        issues.extend(resize)
+    else:
+        print("  ok    the phone filter panel reopens when the window grows past 520px")
+
     if prices:
         issues.extend(prices)
     else:
@@ -539,6 +817,31 @@ def main():
             "  ok    the price slider is one labelled handle per end, full width, "
             "fills to the handles, and filters"
         )
+
+    if copy:
+        issues.extend(copy)
+    else:
+        print("  ok    the 3-row cap is explained and announced; Compare sits by the count")
+
+    if recovery:
+        issues.extend(recovery)
+    else:
+        print("  ok    filtering announces its count; an empty result offers the nearest match")
+
+    if hit:
+        issues.extend(hit)
+    else:
+        print("  ok    Details takes a click 8px outside its visible box")
+
+    if theme:
+        issues.extend(theme)
+    else:
+        print("  ok    the theme toggle names its action and takes a 44px click")
+
+    if fallback:
+        issues.extend(fallback)
+    else:
+        print("  ok    without JavaScript the inert filters are hidden and 14 rows remain")
 
     if skip:
         issues.extend(skip)
@@ -556,17 +859,46 @@ def main():
     if data["rows"] == 0:
         issues.append("no product rows rendered; the page may be blank")
 
-    if not phone["open"] and phone["firstRowTop"] < phone["viewport"]:
+    if (
+        not phone["open"]
+        and phone["firstRowTop"] < 600
+        and phone["verdict"] == "none"
+        and phone["shortAnswer"] == "block"
+    ):
         print(
-            f"  ok    phone: filters start collapsed; first product at "
+            f"  ok    phone: compact short answer, filters collapsed, first product at "
             f"{phone['firstRowTop']}px of {phone['viewport']}px"
         )
     else:
         issues.append(
             "phone first paint: "
             f"filters open={phone['open']}, first product at "
-            f"{phone['firstRowTop']}px of {phone['viewport']}px"
+            f"{phone['firstRowTop']}px of {phone['viewport']}px, "
+            f"verdict={phone['verdict']}, short answer={phone['shortAnswer']}"
         )
+
+    if cost["aFits"] and cost["bFits"]:
+        print("  ok    phone: both 3-year cost cells fit their columns")
+    else:
+        issues.append(f"phone cost cells overflow: {cost}")
+
+    if data["icon"] == "favicon.svg" and data["canonical"].endswith("/subfree-uk/"):
+        print("  ok    favicon, canonical URL and Open Graph title are present")
+    else:
+        issues.append(
+            f"share metadata: icon={data['icon']!r}, canonical={data['canonical']!r}, "
+            f"og:title={data['ogTitle']!r}"
+        )
+
+    if "footnote a" in foot:
+        print("  ok    the cost header reads its footnote letter to screen readers")
+    else:
+        issues.append(f"cost header name: {foot.strip()}")
+
+    if "Side-by-side comparison of 3 doorbells" in compare["caption"] and compare["rows"] == 17:
+        print("  ok    the compare table is captioned with its model count")
+    else:
+        issues.append(f"compare table: {compare}")
 
     if (
         header["display"] != "none"
@@ -598,6 +930,12 @@ def main():
         print('  ok    one row owns "Best overall"; the Reolink variants name their own case')
     else:
         issues.append(f'verdict tags: {best} rows say "Best overall" ({data["tags"]})')
+
+    rule = data["rowRule"]
+    if rule and rule["border"] == 3 and rule["pad"] == 8 and rule["plain"] == 0:
+        print("  ok    the verdict rule is a 3px border outside the first cell's 8px padding")
+    else:
+        issues.append(f"verdict row rule: {rule}")
 
     if data["priceFootnotes"]:
         issues.append(f"{data['priceFootnotes']} footnote numbers in price cells")
@@ -732,13 +1070,30 @@ def main():
     else:
         print(f"  ok    {len(data['externals'])} external links use https")
 
+    best_practice = {}
     for theme in ("dark", "light"):
         for width in AXE_WIDTHS:
             violations = axe_results[(theme, width)]
-            if not violations:
+            wcag = [v for v in violations if set(v["tags"]) & set(WCAG_TAGS)]
+            wcag_ids = {v["id"] for v in wcag}
+            for violation in violations:
+                if violation["id"] in wcag_ids:
+                    continue
+                entry = best_practice.setdefault(
+                    violation["id"],
+                    {
+                        "impact": violation["impact"],
+                        "help": violation["help"],
+                        "targets": set(),
+                        "where": set(),
+                    },
+                )
+                entry["targets"].update(node["target"][0] for node in violation["nodes"])
+                entry["where"].add(f"{theme} {width}px")
+            if not wcag:
                 print(f"  ok    axe-core ({theme}, {width}px): no WCAG 2.2 A/AA violations")
                 continue
-            for violation in violations:
+            for violation in wcag:
                 nodes = violation["nodes"]
                 issues.append(
                     f"axe {theme} at {width}px: {violation['id']} ({violation['impact']}), "
@@ -747,6 +1102,18 @@ def main():
                 for node in nodes[:4]:
                     summary = node.get("failureSummary", "").replace("\n", " ").strip()
                     print(f"        {', '.join(node['target'])}  {summary[:150]}")
+
+    for rule, entry in sorted(best_practice.items()):
+        notes.append(
+            f"axe best-practice {rule} ({entry['impact']}): {entry['help']} On "
+            f"{', '.join(sorted(entry['targets'])[:3])}, in {len(entry['where'])} of "
+            f"{len(AXE_WIDTHS) * 2} theme and width passes"
+        )
+    if best_practice:
+        print(
+            f"  note  {len(best_practice)} axe best-practice rule(s) reported below; "
+            "only WCAG failures block the build"
+        )
 
     overflow = [f"{width}px" for width, result in widths if result["over"] > 0]
     if overflow:
