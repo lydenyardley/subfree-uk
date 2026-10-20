@@ -2,8 +2,8 @@
 
 - Status: Accepted
 - Date: 20 October 2026
-- Source: the four read-only audits of 19 October 2026. The critique audit was
-  completed, implemented and removed; the other three keep their open items.
+- Source: the four read-only audits of 19 October 2026. All four are
+  completed and removed; what was declined rather than built is in ADR 5.
 
 ## Context
 

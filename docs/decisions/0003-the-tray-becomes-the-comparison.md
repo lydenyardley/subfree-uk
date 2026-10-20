@@ -2,8 +2,9 @@
 
 - Status: Accepted
 - Date: 20 October 2026
-- Source: `docs/audits/2026-10-19-overdrive.md`, items 2, 3 and 4, and the
-  prototype in `docs/mockups/overdrive-tray-table.html`.
+- Source: the overdrive audit of 19 October 2026, items 2, 3 and 4, and its
+  tray-to-table prototype. Both are gone; the design they produced is below,
+  and ADR 5 records what was declined.
 
 ## Context
 

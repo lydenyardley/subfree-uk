@@ -2,9 +2,9 @@
 
 - Status: Accepted
 - Date: 19 October 2026
-- Source: the first delight audit run on 19 October 2026, superseded by the
-  read-only re-run in `docs/audits/2026-10-19-delight.md`. This record keeps
-  the durable decisions from the first run.
+- Source: the first delight audit run on 19 October 2026, and its read-only
+  re-run the same day. Both are gone; ADR 5 holds what they declined, and this
+  record keeps the durable decisions from the first run.
 
 ## Context
 
