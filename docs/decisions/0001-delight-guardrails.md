@@ -98,6 +98,12 @@ Every future delight item is done only when:
 
 ## Consequences
 
+Muted text is `#6e6e6e`, not the `#767676` it used to be. The cards tint on
+hover and the notes inside them sat at 4.13:1 against that tint: axe passed
+only because the pointer happened not to be over a row during the audit. The
+pair is now asserted directly, on paper and on the tint, in both themes, by
+`ink_check` in `build/check.py`.
+
 New work can still surprise the reader at the four moments above. It must not
 turn the quiet parts into a performance, reopen a declined decision without
 new evidence, or spend the byte budget on a font or a library. The next
