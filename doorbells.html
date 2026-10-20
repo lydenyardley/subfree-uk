@@ -260,7 +260,11 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .main-t thead{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
  .main-t thead th{position:static;padding:0;border:0;background:none}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
- .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem}
+ /* Off-screen cards skip layout, so a sort lays out only the cards in view.
+    330px is the content estimate, 363px with padding and rule, against real
+    cards of 331 to 409px. Auto remembers the real size once a card has been
+    laid out, so the estimate is only paid above the reader's fold. */
+ .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 330px}
  tbody.item[data-v]{border-left:3px solid var(--vc)}
  tbody.item[data-v] tr.main>td.c-cmp{border-left:0}
  .main-t tr.main{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:0 1rem;position:relative;align-items:baseline}

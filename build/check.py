@@ -9,7 +9,8 @@ best-practice rules alongside them. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
 layout, the price range slider, the filter panel resize, the live announcements,
 the three-row compare cap, the empty-state recovery, the compare cost row,the shortlist copy, the differences-only view, the jump announcement, the tray
-to compare-header transition, the theme motion, the score-bar draw, the muted-text contrast, the record and plan labels, the phone label column,
+to compare-header transition, the theme motion, the static score bars, the
+contained phone cards, the muted-text contrast, the record and plan labels, the phone label column,
 the host-grouped source list, the closing line, the performance budget, the
 no-JavaScript fallback, the skip link, the photo lightbox and horizontal overflow
 at the breakpoints the stylesheet defines.
@@ -1240,6 +1241,29 @@ def bars_check(page):
     return problems
 
 
+def contain_check(page):
+    """Off-screen phone cards skip layout, with an intrinsic size to stand in."""
+    problems = []
+    got = page.evaluate(
+        """() => {
+            const card = document.querySelector('#tbl tbody.item');
+            const cs = getComputedStyle(card);
+            const cards = Array.from(document.querySelectorAll('#tbl tbody.item'));
+            return { visibility: cs.contentVisibility,
+                     size: cs.containIntrinsicSize,
+                     n: cards.length,
+                     hidden: cards.filter((c) => c.hidden).length };
+        }"""
+    )
+    if got["visibility"] != "auto":
+        problems.append(f"a phone card's content-visibility is {got['visibility']!r}, expected auto")
+    if got["size"] != "auto 330px":
+        problems.append(f"the phone card's intrinsic size is {got['size']!r}, expected 'auto 330px'")
+    if got["n"] != 14 or got["hidden"]:
+        problems.append(f"{got['n']} cards with {got['hidden']} hidden, expected 14 shown")
+    return problems
+
+
 def hit_check(page):
     """A 44px hit area means a click 8px below Details still opens it."""
     problems = []
@@ -1506,10 +1530,35 @@ def price_check(page):
     return problems
 
 
+PHONE_SORT_JS = r"""async () => {
+    const frame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+    document.getElementById('reset').click();
+    await frame();
+    await new Promise((r) => setTimeout(r, 300));
+    const sort = document.getElementById('sort');
+    const tbl = document.getElementById('tbl');
+    const layout = [];
+    for (const value of ['price', 'score', 'keep3', 'model', 'price', 'score']) {
+        const t = performance.now();
+        sort.value = value;
+        sort.dispatchEvent(new Event('change', { bubbles: true }));
+        tbl.offsetHeight;  // read back the height, so the sort's layout is in the figure
+        layout.push(Math.round((performance.now() - t) * 10) / 10);
+        await frame();
+        await new Promise((r) => setTimeout(r, 150));
+    }
+    return layout;
+}"""
+
+
 def perf_check(page):
     """A sort and the compare response against the budget, at 4x CPU throttle.
 
-    Budget: docs/performance-budget.md.
+    Budget: docs/performance-budget.md. The compare response is measured at
+    1280px, where the panel's 18 rows are the table they always are. A sort is
+    measured at 390px, because that is where the phone cards are: the desktop
+    table cannot be contained, and its layout is 70 to 150ms at 4x in either
+    state, which is printed and not gated.
     """
     problems = []
     session = page.context.new_cdp_session(page)
@@ -1574,6 +1623,11 @@ def perf_check(page):
                 return { sorts, sortLong, shift, opens, compareLong };
             }"""
         )
+        # A sort on the phone lays out only the cards in view, because the rest
+        # are contained. This is the figure the budget line is about.
+        page.set_viewport_size({"width": 390, "height": 844})
+        page.wait_for_timeout(400)
+        phone_sort = page.evaluate(PHONE_SORT_JS)
     finally:
         session.send("Emulation.setCPUThrottlingRate", {"rate": 1})
         session.detach()
@@ -1591,7 +1645,13 @@ def perf_check(page):
         problems.append("the tray did not open, so the shift was not measured")
     if state["shift"]["height"] or state["shift"]["top"]:
         problems.append(f"the table moved when the tray appeared: {state['shift']}")
-    longest = max(state["sortLong"], default=0)
+    desktop_long = max(state["sortLong"], default=0)
+    phone_layout = max(phone_sort)
+    if phone_layout >= 50:
+        problems.append(
+            "a 390px sort and its layout took "
+            f"{phone_layout}ms at 4x throttle, budget 50ms"
+        )
     # The transition must not turn the open into a task of its own.
     morph_long = max(state["compareLong"], default=0)
     if morph_long >= 50:
@@ -1600,7 +1660,8 @@ def perf_check(page):
         )
     note = (
         f"slowest sort {slowest:.0f}ms, compare opens {opens}ms (median {median}) at 4x CPU; "
-        f"longest task during a sort {longest}ms (budget 50ms, open in docs/performance-budget.md), "
+        f"sort plus layout at 390px {phone_layout}ms (budget 50ms), "
+        f"sort task at 1280px {desktop_long}ms (table rows, not gated), "
         f"during the compare transition {morph_long}ms"
     )
     return problems, note
@@ -1776,6 +1837,7 @@ def main():
             footer = footer_check(page)
             recovery = recovery_check(page)
             bars = bars_check(page)
+            contain = contain_check(page)
             sources = sources_check(page)
             head = head_check(page)
 
@@ -1898,6 +1960,11 @@ def main():
         issues.extend(bars)
     else:
         print("  ok    score bars are painted at their score and a sort never redraws them")
+
+    if contain:
+        issues.extend(contain)
+    else:
+        print("  ok    off-screen phone cards skip layout, with a 330px estimate standing in")
 
     if sources:
         issues.extend(sources)
