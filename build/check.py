@@ -524,6 +524,39 @@ def sources_check(page):
     return problems
 
 
+def footer_check(page):
+    """The page ends on one line with the date, a contact route and a way back."""
+    state = page.evaluate(
+        """() => {
+            const f = document.querySelector('footer.foot');
+            if (!f) return null;
+            return {
+                text: f.textContent.replace(/\\s+/g, ' ').trim(),
+                size: getComputedStyle(f).fontSize,
+                border: parseFloat(getComputedStyle(f).borderTopWidth),
+                links: Array.from(f.querySelectorAll('a')).map((a) => a.getAttribute('href')),
+                height: Math.round(f.getBoundingClientRect().height),
+                last: f === document.querySelector('main').lastElementChild
+            };
+        }"""
+    )
+    if not state:
+        return ["the page has no closing line"]
+    problems = []
+    if not state["text"].startswith("Last checked 19 October 2026"):
+        problems.append(f"the closing line reads {state['text'][:40]!r}")
+    if "#tbl" not in state["links"]:
+        problems.append(f"the closing line has no way back: {state['links']}")
+    if state["size"] != "13px" or state["border"] != 1:
+        problems.append(
+            f"the closing line is {state['size']} with a {state['border']}px rule, "
+            "expected 13px and 1px"
+        )
+    if not state["last"] or state["height"] > 120:
+        problems.append(f"the closing line sits at {state['height']}px and is not last")
+    return problems
+
+
 def chrome_check(page):
     """The sort control and compare table keep their declared metrics."""
     problems = []
@@ -1254,6 +1287,7 @@ def main():
             prices = price_check(page)
             copy = copy_check(page)
             labels = labels_check(page)
+            footer = footer_check(page)
             recovery = recovery_check(page)
             bars = bars_check(page)
             sources = sources_check(page)
@@ -1357,6 +1391,11 @@ def main():
             "  ok    Nest names its 3-hour limit, no-plan reads as words, PoE is defined "
             "at the filter, and the phone card shares one label column"
         )
+
+    if footer:
+        issues.extend(footer)
+    else:
+        print("  ok    the page ends on one line with the date, an issue link and a way back")
 
     if recovery:
         issues.extend(recovery)

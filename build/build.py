@@ -645,6 +645,9 @@ section.method p a{{color:var(--ink2)}}
 ol.fns{{margin:0;padding-left:1.5rem;columns:1}}
 ol.fns li{{margin:0}}
 ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration:underline;color:var(--ink2)}}
+.foot{{border-top:1px solid var(--rule);padding:1rem 0 2rem;font-size:13px;color:var(--ink2)}}
+.foot p{{margin:0;max-width:none}}
+.foot a{{color:var(--ink2)}}
 @media (min-width:821px) and (max-width:1100px){{
  .count{{flex:1 1 auto;order:1;align-self:flex-end}} .sortby{{order:2}}
 }}
@@ -811,11 +814,12 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <p><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
 <p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
-<p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything we haven't fully confirmed is listed under <i>Not yet verified</i> in each model's details. Spotted something wrong, or a paywall change? <a href="{GITHUB}/issues/new">Open an issue</a> and we'll fix it.</p>
-<p><b>Product photos</b> are the manufacturers' own, cropped and resized, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
+<p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything not yet confirmed is listed under <i>Not yet verified</i> in each model's details.</p>
+<p>Photos are the manufacturers' own, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
 </div>
 <details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
+<footer class="foot"><p>Last checked {CHECKED}. {len(ROWS)} UK doorbells, no affiliate links, no tracking. <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a>.</p></footer>
 </main>
 </div>
 <div class="tray" id="tray" hidden><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
