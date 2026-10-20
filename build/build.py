@@ -4,6 +4,7 @@ Run from anywhere: python3 build/build.py
 """
 import csv, html, json
 import os
+from urllib.parse import urlparse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -424,7 +425,20 @@ data_js = json.dumps({r["id"]:{
  "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
  "imgLg":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-lg.webp'} for r in ROWS}, ensure_ascii=False)
 
-fn_list="".join(f'<li id="fn{FN[k]}"><a href="{e(S[k][1])}" rel="nofollow noopener noreferrer">{e(S[k][0])}</a></li>' for k in order)
+# 52 numbered lines are hard to scan, so the list is grouped by the host the
+# link points at. Real <li value> keeps every footnote number stable.
+HOST_PREFIX = {"www", "en", "en-uk", "uk", "eu", "us", "store", "cloud", "support", "blog"}
+def src_host(url):
+    parts = urlparse(url).netloc.lower().split(".")
+    while len(parts) > 2 and parts[0] in HOST_PREFIX: parts = parts[1:]
+    return ".".join(parts)
+groups={}
+for k in order: groups.setdefault(src_host(S[k][1]), []).append(k)
+fn_list="".join(
+    f'<section class="fns-g"><h3>{e(host)}</h3><ol class="fns">'
+    + "".join(f'<li id="fn{FN[k]}" value="{FN[k]}"><a href="{e(S[k][1])}" rel="nofollow noopener noreferrer">{e(S[k][0])}</a></li>' for k in keys)
+    + '</ol></section>'
+    for host, keys in sorted(groups.items(), key=lambda kv: FN[kv[1][0]]))
 maxp=int(max(r["price"] for r in ROWS)+5)
 byid={r["id"]:r for r in ROWS}
 photo_credits=", ".join(f'<a href="{e(IMG[r["id"]]["page"])}" rel="nofollow noopener noreferrer">{e(r["brand"])} {e(r["model"])}</a>' for r in ROWS if not IMG.get(r["id"],{}).get("placeholder"))
@@ -615,8 +629,17 @@ section.method{{display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1
 section.method h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}}
 section.method p{{margin:0 0 1rem;max-width:none}}
 section.method p a{{color:var(--ink2)}}
-ol.fns{{margin:0;padding-left:2rem;columns:2;column-gap:2rem}}
-ol.fns li{{margin:0;break-inside:avoid}}
+.srcs>summary{{display:flex;align-items:center;gap:0.5rem;min-height:24px;margin:0 0 1rem;cursor:pointer;list-style:none}}
+.srcs>summary::-webkit-details-marker{{display:none}}
+.srcs>summary h2{{margin:0}}
+.srcs>summary::before{{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg);margin-right:0.25rem}}
+.srcs[open]>summary::before{{transform:rotate(45deg)}}
+.srcs-n{{font:500 12px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}}
+.fns-wrap{{columns:2;column-gap:2rem}}
+.fns-g{{margin:0 0 0.75rem;break-inside:avoid}}
+.fns-g h3{{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0}}
+ol.fns{{margin:0;padding-left:1.5rem;columns:1}}
+ol.fns li{{margin:0}}
 ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration:underline;color:var(--ink2)}}
 @media (min-width:821px) and (max-width:1100px){{
  .count{{flex:1 1 auto;order:1;align-self:flex-end}} .sortby{{order:2}}
@@ -675,7 +698,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  tr.detail td{{padding:1rem;margin-top:0}}
  .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:1rem}}
  .ph-lg{{width:120px!important;height:160px!important;margin-bottom:1rem}}
- section.method{{grid-template-columns:1fr}} ol.fns{{columns:1}}
+ section.method{{grid-template-columns:1fr}} .fns-wrap{{columns:1}}
  .cmp-t th,.cmp-t td{{padding:0.5rem 1rem;font-size:13px}}
  .cmp-t thead th{{min-width:140px;font-size:14px}}
  .cmp-t tbody th{{width:84px;min-width:84px;font-size:11px;position:sticky;left:0;background:var(--paper)}}
@@ -687,6 +710,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .dek{{font-size:15px;line-height:1.4;margin-bottom:0.5rem}}
  .verdict{{display:none}}
  .vshort{{display:block}}
+ .srcs>summary{{align-items:flex-start}}
  .controls{{padding:0.75rem 0;gap:0.75rem}}
  .sortby .lab{{margin-bottom:0.5rem}}
  .filters{{display:block;flex:1 1 100%}}
@@ -700,7 +724,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .fbody .opts{{gap:0.5rem 1rem}}
  .range{{flex:none;width:100%;max-width:none}}
 }}
-@media print{{.skip,.controls,.tray,.c-cmp,.more-w,#theme{{display:none}} tr.detail{{display:table-row!important}}}}
+@media print{{.skip,.controls,.tray,.c-cmp,.more-w,#theme,.srcs>summary{{display:none}} tr.detail{{display:table-row!important}}}}
 </style></head><body>
 <a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
@@ -785,7 +809,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything we haven't fully confirmed is listed under <i>Not yet verified</i> in each model's details. Spotted something wrong, or a paywall change? <a href="{GITHUB}/issues/new">Open an issue</a> and we'll fix it.</p>
 <p><b>Product photos</b> are the manufacturers' own, cropped and resized, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
 </div>
-<div><h2>Sources</h2><ol class="fns">{fn_list}</ol></div>
+<details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
 </main>
 </div>
@@ -804,12 +828,15 @@ function syncTheme(){{var d=isDark();tb.lastChild.textContent=d?'Light mode':'Da
 tb.onclick=function(){{var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{{localStorage.setItem('theme',n)}}catch(e){{}}syncTheme()}};
 if(mq.addEventListener)mq.addEventListener('change',syncTheme);
 syncTheme();
-var narrow=window.matchMedia('(max-width:820px)'),small=window.matchMedia('(max-width:520px)'),filters=$('#filters');
+var narrow=window.matchMedia('(max-width:820px)'),small=window.matchMedia('(max-width:520px)'),filters=$('#filters'),srcs=$('#sources');
 function fitFilters(){{filters.open=!small.matches}}
+function fitSources(){{srcs.open=!narrow.matches}}
 function fitSortKeys(){{$$('#tbl thead th button').forEach(function(b){{if(narrow.matches)b.setAttribute('tabindex','-1');else b.removeAttribute('tabindex')}})}}
 if(small.addEventListener)small.addEventListener('change',fitFilters);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
-fitFilters();fitSortKeys();
+if(narrow.addEventListener)narrow.addEventListener('change',fitSources);
+addEventListener('beforeprint',function(){{srcs.open=true}});
+fitFilters();fitSortKeys();fitSources();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
 var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
 function say(m){{clearTimeout(liveT);clearTimeout(liveClearT);liveT=setTimeout(function(){{live.textContent='';liveT=setTimeout(function(){{live.textContent=m;liveClearT=setTimeout(function(){{live.textContent=''}},4000)}},60)}},300)}}

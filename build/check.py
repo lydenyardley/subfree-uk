@@ -462,6 +462,68 @@ def labels_check(page):
     return problems
 
 
+def sources_check(page):
+    """The source list is a disclosure grouped by host, with stable numbers."""
+    problems = []
+
+    def read():
+        return page.evaluate(
+            """() => {
+                const box = document.getElementById('sources');
+                const summary = box.querySelector('summary');
+                const values = Array.from(box.querySelectorAll('li')).map((li) => +li.getAttribute('value'));
+                const groups = Array.from(box.querySelectorAll('.fns-g')).map((g) => ({
+                    host: g.querySelector('h3').textContent.trim(),
+                    n: g.querySelectorAll('li').length,
+                    foreign: Array.from(g.querySelectorAll('li a'))
+                        .filter((a) => !a.href.toLowerCase().includes(g.querySelector('h3').textContent.trim()))
+                        .map((a) => a.href)
+                }));
+                return {
+                    tag: box.tagName,
+                    open: box.open,
+                    summary: summary.textContent.replace(/\\s+/g, ' ').trim(),
+                    headingInSummary: !!summary.querySelector('h2'),
+                    headingLevel: box.querySelector('h3') ? box.querySelector('h3').tagName : '',
+                    summaryHeight: Math.round(summary.getBoundingClientRect().height),
+                    count: values.length,
+                    values: values.slice().sort((a, b) => a - b),
+                    groups: groups
+                };
+            }"""
+        )
+
+    phone = read()
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(120)
+    wide = read()
+
+    if phone["tag"] != "DETAILS" or wide["tag"] != "DETAILS":
+        problems.append(f"the source list is a {phone['tag']}, not a disclosure")
+    if phone["open"]:
+        problems.append("the source list is open on a 390px screen")
+    if not wide["open"]:
+        problems.append("the source list is closed on a 1280px screen")
+    if phone["count"] != 52:
+        problems.append(f"the source list holds {phone['count']} entries, expected 52")
+    if phone["values"] != list(range(1, 53)):
+        problems.append(f"the footnote numbers are not 1 to 52: {phone['values'][:6]}")
+    if phone["headingInSummary"] is False:
+        problems.append("the Sources heading is no longer a heading inside the summary")
+    if "52 links" not in phone["summary"]:
+        problems.append(f"the summary reads {phone['summary']!r}")
+    if phone["summaryHeight"] < 24:
+        problems.append(f"the summary is {phone['summaryHeight']}px tall")
+    if len(phone["groups"]) < 10:
+        problems.append(f"the list has {len(phone['groups'])} host groups")
+    if sum(group["n"] for group in phone["groups"]) != 52:
+        problems.append(f"the groups hold {[g['n'] for g in phone['groups']]}")
+    foreign = [link for group in phone["groups"] for link in group["foreign"]]
+    if foreign:
+        problems.append(f"links sit under the wrong host: {foreign[:3]}")
+    return problems
+
+
 def chrome_check(page):
     """The sort control and compare table keep their declared metrics."""
     problems = []
@@ -1090,6 +1152,7 @@ def main():
             labels = labels_check(page)
             recovery = recovery_check(page)
             bars = bars_check(page)
+            sources = sources_check(page)
 
             page.set_viewport_size({"width": 1280, "height": 900})
             page.reload(wait_until="load")
@@ -1199,6 +1262,14 @@ def main():
         issues.extend(bars)
     else:
         print("  ok    score bars draw from zero on a sort and respect reduced motion")
+
+    if sources:
+        issues.extend(sources)
+    else:
+        print(
+            "  ok    the 52 sources sit in a host-grouped disclosure, closed below "
+            "821px and open above it"
+        )
 
     if hit:
         issues.extend(hit)
