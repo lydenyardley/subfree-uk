@@ -24,6 +24,14 @@ the table would repeat the number in the one place the reader is scanning for
 differences, and it would sit among the decision rows that never collapse,
 describing rows somewhere else in the panel.
 
+### 2. Draw the bars once on entry, then sort instantly: built as "instantly"
+
+This is the one distill suggestion that was not declined: the timers are gone.
+The audit offered two shapes, drawing once when the table enters view or
+painting instantly, and the page took the second. A draw-on-entry would have
+delayed the first row behind a measurement it does not need, which the same
+audit's guardrails forbid.
+
 ### 3. Shorten the "Best for" lines to six words: declined
 
 Those lines are sourced data, not copy. Each one is the claim the row's
@@ -53,6 +61,13 @@ is a verdict about a trade this particular reader may not be making, and the
 cost row already computes that trade for the three models they chose. Written
 once for everyone, it either picks for the reader or repeats the row.
 
+### 2. Draw the score bars once, when the table first comes into view: built as static bars
+
+The same change as distill 2 and overdrive 1. The bars are painted at their
+score in the markup, so nothing draws them at all, and the variant that waits
+for the table to enter view was declined for the reason given there: it delays
+the rows behind a measurement.
+
 ### 3. "Widen the budget to £295 to include Hikvision": declined
 
 Measured at 390px: the current label, "Show Hikvision DS-KB6003-WIP at £295",
@@ -72,6 +87,14 @@ target height at the bottom of a 6,600px page, which is the one place a reader
 is leaving rather than arriving.
 
 ## Overdrive
+
+### 1. Finish the sort: built, with the desktop named as open
+
+The fourteen timers and the phone layout are gone: a 390px sort measures 6.6 to
+14ms and fails the build at 50. The second half of the item, the layout pass,
+was measured at 1280px where the table cannot be contained, and it is unchanged
+at 70 to 150ms. ADR 4 and `docs/performance-budget.md` record that figure and
+the four levers that failed to move it, rather than reporting the item closed.
 
 ### 2. A sticky current-model verdict line: declined
 
