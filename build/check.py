@@ -1120,6 +1120,82 @@ def price_check(page):
     return problems
 
 
+def perf_check(page):
+    """A sort and the compare response against the budget, at 4x CPU throttle.
+
+    Budget: docs/performance-budget.md.
+    """
+    problems = []
+    session = page.context.new_cdp_session(page)
+    try:
+        session.send("Emulation.setCPUThrottlingRate", {"rate": 4})
+        page.wait_for_timeout(400)
+        state = page.evaluate(
+            """async () => {
+                const frame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+                const long = [];
+                new PerformanceObserver((list) => list.getEntries().forEach((e) => long.push(Math.round(e.duration))))
+                    .observe({ entryTypes: ['longtask'] });
+                document.getElementById('compare').hidden = true;
+                document.querySelectorAll('button.more[aria-expanded="true"]').forEach((b) => b.click());
+                document.getElementById('reset').click();
+                await frame();
+                await new Promise((r) => setTimeout(r, 250));
+                const started = long.length;
+                const sort = document.getElementById('sort');
+                const sorts = [];
+                for (const value of ['price', 'score', 'keep3', 'model']) {
+                    const t = performance.now();
+                    sort.value = value;
+                    sort.dispatchEvent(new Event('change', { bubbles: true }));
+                    sorts.push(performance.now() - t);
+                    await frame();
+                    await new Promise((r) => setTimeout(r, 120));
+                }
+                const sortLong = long.slice(started);
+                const table = document.getElementById('tbl');
+                const height = table.getBoundingClientRect().height;
+                const top = document.querySelector('#tbl tbody.item').getBoundingClientRect().top;
+                const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+                document.querySelectorAll('input.cmp').forEach((c) => {
+                    c.checked = ids.indexOf(c.value) > -1;
+                    c.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                await frame();
+                const shift = {
+                    height: Math.round(table.getBoundingClientRect().height - height),
+                    top: Math.round(document.querySelector('#tbl tbody.item').getBoundingClientRect().top - top),
+                    tray: !document.getElementById('tray').hidden
+                };
+                const t = performance.now();
+                document.getElementById('tray-go').click();
+                const compare = performance.now() - t;
+                return { sorts, sortLong, shift, compare };
+            }"""
+        )
+    finally:
+        session.send("Emulation.setCPUThrottlingRate", {"rate": 1})
+        session.detach()
+
+    slowest = max(state["sorts"])
+    if slowest >= 100:
+        problems.append(f"the slowest sort took {slowest:.0f}ms at 4x throttle, budget 100ms")
+    if state["compare"] >= 100:
+        problems.append(
+            f"opening the compare took {state['compare']:.0f}ms at 4x throttle, budget 100ms"
+        )
+    if not state["shift"]["tray"]:
+        problems.append("the tray did not open, so the shift was not measured")
+    if state["shift"]["height"] or state["shift"]["top"]:
+        problems.append(f"the table moved when the tray appeared: {state['shift']}")
+    longest = max(state["sortLong"], default=0)
+    note = (
+        f"slowest sort {slowest:.0f}ms, compare {state['compare']:.0f}ms at 4x CPU; "
+        f"longest task during a sort {longest}ms (budget 50ms, open in docs/performance-budget.md)"
+    )
+    return problems, note
+
+
 def skip_check(page):
     """Tab to the skip link, press Enter, and confirm focus lands on the table."""
     problems = []
@@ -1349,6 +1425,7 @@ def main():
                 page.wait_for_timeout(80)
                 widths.append((width, page.evaluate(OVERFLOW_JS)))
 
+            perf, perf_note = perf_check(page)
             fallback = nojs_check(browser, url)
             browser.close()
     finally:
@@ -1442,6 +1519,16 @@ def main():
             f"  ok    {lightbox['buttons']} photos open in the lightbox, "
             "named, sized from the large file, and Esc closes it"
         )
+
+    if perf:
+        issues.extend(perf)
+    else:
+        print(
+            "  ok    a sort and the compare respond in under 100ms at 4x throttle, "
+            "with no shift when the tray appears"
+        )
+    if perf_note:
+        notes.append(perf_note)
 
     if data["rows"] == 0:
         issues.append("no product rows rendered; the page may be blank")

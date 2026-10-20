@@ -274,6 +274,9 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .srcs>summary{align-items:flex-start}
  .controls{padding:0.75rem 0;gap:0.75rem}
  .sortby .lab{margin-bottom:0.5rem}
+ /* The Compare action joins this line on the first tick; reserve its second
+    line so the table does not jump 19px when the tray appears. */
+ .count{min-height:3em}
  .filters{display:block;flex:1 1 100%}
  .filters>summary{display:flex;align-items:center;gap:0.5rem;min-height:44px;padding:0 1rem;border:1px solid var(--rule);font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);cursor:pointer;list-style:none}
  .filters>summary::-webkit-details-marker{display:none}
@@ -888,7 +891,6 @@ function drawBars(){
  barTimers.forEach(clearTimeout);barTimers=[];
  if(reduce.matches){bars.forEach(function(b){b.style.transform='scaleX('+(b.dataset.w/100)+')'});return}
  bars.forEach(function(b){b.style.transform='scaleX(0)'});
- void tbl.offsetWidth;
  setTimeout(function(){bars.forEach(function(b,i){barTimers.push(setTimeout(function(){b.style.transform='scaleX('+(b.dataset.w/100)+')'},i*20))})},0);
 }
 $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
