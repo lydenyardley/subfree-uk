@@ -88,13 +88,12 @@ is leaving rather than arriving.
 
 ## Overdrive
 
-### 1. Finish the sort: built, with the desktop named as open
+### 1. Finish the sort: built, the phone first and the desktop after
 
-The fourteen timers and the phone layout are gone: a 390px sort measures 6.6 to
-14ms and fails the build at 50. The second half of the item, the layout pass,
-was measured at 1280px where the table cannot be contained, and it is unchanged
-at 70 to 150ms. ADR 4 and `docs/performance-budget.md` record that figure and
-the four levers that failed to move it, rather than reporting the item closed.
+The fourteen timers and the phone layout are gone: a 390px sort measures 9 to
+15ms and fails the build at 50. The second half, the desktop table's layout
+pass, was measured at 70 to 150ms and left open in this record; ADR 6 closes it
+by making a desktop row a contained grid track, which measures 9.6 to 21ms.
 
 ### 2. A sticky current-model verdict line: declined
 
@@ -130,6 +129,6 @@ assumption.
 
 The audit documents and the tray-to-table prototype are removed. ADR 3 holds
 the design they produced, including where the build deviates from the prototype
-and why; ADR 4 holds the sort work they finished. A future audit starts from
+and why; ADR 4 and ADR 6 hold the sort work they finished. A future audit starts from
 these records rather than from the originals, and a suggestion listed here
 needs a measurement or a source to reopen it.

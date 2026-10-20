@@ -46,6 +46,10 @@ movement is below the fold, and Chrome's scroll anchoring held it: thirty-four
 
 ### The desktop table is not contained, and that is named
 
+Superseded by ADR 6. The measurement below is what this record decided at the
+time: it held until the table's own column balancing was measured and found not
+to be the cost.
+
 `content-visibility` does not apply to table rows, and the desktop cost is the
 table's own column balancing rather than the cards. At 1280px the sort's task
 is 70 to 150ms at 4x in either state: this change does nothing there, and the

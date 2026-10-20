@@ -740,6 +740,33 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .cmp-t tbody th{{width:84px;min-width:84px;font-size:11px;position:sticky;left:0;background:var(--paper)}}
  .cmp-t thead th:first-child{{position:sticky;left:0;background:var(--paper);min-width:84px}}
 }}
+/* Above the phone breakpoint a row is a grid row rather than a table row. A
+   table lays all fourteen rows out again on every sort and no cell can skip
+   that; a contained block lays out only the rows in view. The tracks are the
+   widths the table itself chose at 1280px, so the columns stay where they
+   were: at 1280px to the pixel, and within about 1% of table height from 900
+   to 1100px. */
+@media (min-width:821px){{
+ .main-t{{display:block}}
+ .main-t thead,.main-t tbody{{display:block}}
+ /* 2rem plus the 2px the collapsed table border used to take, so every
+    column after the compare box starts where it did. */
+ .main-t thead tr,.main-t tr.main{{display:grid;grid-template-columns:calc(2rem + 2px) 27% 120px 6.7% 8.2% 8.7% 9.1% 1fr}}
+ /* A sticky cell can only move inside its parent, so the header row sticks as
+    a block: fourteen rows of table no longer move it, and the cells still sit
+    on one line each. */
+ .main-t thead{{position:sticky;top:0;z-index:2;background:var(--paper)}}
+ .main-t thead th{{position:static;display:flex;align-items:center}}
+ /* The column rules above are track widths now; a percentage width on a grid
+    item would resolve against its own track and shrink the cell inside it. */
+ .main-t tr.main>*{{width:auto;min-width:0;max-width:none}}
+ .main-t tr.detail{{display:block}}
+ .main-t tbody.item{{content-visibility:auto;contain-intrinsic-size:auto 118px}}
+}}
+@media (min-width:821px) and (max-width:1100px){{
+ .main-t thead tr,.main-t tr.main{{grid-template-columns:calc(2rem + 2px) 28% 84px 84px 84px 84px 84px 1fr}}
+ .main-t tbody.item{{contain-intrinsic-size:auto 140px}}
+}}
 @media (max-width:520px){{
  .mast>div>span{{display:none}}
  header.intro{{padding:1rem 0}}
