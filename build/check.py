@@ -1168,75 +1168,74 @@ def motion_check(page):
     return problems
 
 
+BARS_JS = r"""() => {
+    const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
+    const scale = (b) => {
+        const m = getComputedStyle(b).transform.match(/matrix\(([-0-9.]+)/);
+        return m ? +m[1] : NaN;
+    };
+    const score = (b) => {
+        const cell = b.closest('td');
+        const n = cell && cell.querySelector('.score b');
+        return n ? +n.textContent / 8 : NaN;
+    };
+    return {
+        n: bars.length,
+        transition: getComputedStyle(bars[0]).transitionDuration,
+        property: getComputedStyle(bars[0]).transitionProperty,
+        scales: bars.map(scale),
+        targets: bars.map(score)
+    };
+}"""
+
+
 def bars_check(page):
-    """Bars draw from zero on a sort, paint with a transform, and land on their scores."""
+    """Score bars are painted once at their score and never redrawn on a sort."""
     problems = []
     page.wait_for_timeout(800)
-    scale = "const s = (b) => { const m = b.style.transform.match(/scaleX\\(([-0-9.]+)\\)/); return m ? +m[1] : NaN; };"
-    initial = page.evaluate(
-        """() => {
-            const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
-            const cs = getComputedStyle(bars[0]);
-            const m = bars[0].style.transform.match(/scaleX\\(([-0-9.]+)\\)/);
-            return { n: bars.length,
-                     transition: cs.transitionDuration,
-                     property: cs.transitionProperty,
-                     scale: m ? +m[1] : NaN,
-                     target: +bars[0].dataset.w / 100 };
-        }"""
-    )
+    initial = page.evaluate(BARS_JS)
     if initial["n"] != 14:
         problems.append(f"{initial['n']} score bars are visible, expected 14")
-    if initial["transition"] != "0.2s" or initial["property"] != "transform":
+    if initial["transition"] != "0s":
         problems.append(
-            f"the score bar animates {initial['property']} over {initial['transition']!r}, "
-            "expected transform over 0.2s"
+            f"the score bar still transitions {initial['property']} over {initial['transition']!r}"
         )
-    if abs(initial["scale"] - initial["target"]) > 0.01:
-        problems.append(f"the first bar is scaled {initial['scale']}, expected {initial['target']}")
+    off = [(a, b) for a, b in zip(initial["scales"], initial["targets"]) if abs(a - b) > 0.01]
+    if off:
+        problems.append(f"a bar is scaled {off[0][0]:.2f}, not its score {off[0][1]:.2f}")
 
-    zeroed = page.evaluate(
-        f"""() => {{
-            {scale}
+    # A sort must not touch them: no zero phase, no timers, no redraw. Keyed by
+    # row, because the sort reorders the DOM under the selector.
+    before = page.evaluate(
+        """() => Object.fromEntries(Array.from(document.querySelectorAll('#tbl tbody.item .bar i'))
+            .map((b) => [b.closest('tbody.item').id, b.style.transform]))"""
+    )
+    painted = page.evaluate(
+        """() => {
             const sel = document.getElementById('sort');
             sel.value = 'price';
-            sel.dispatchEvent(new Event('change', {{ bubbles: true }}));
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
             return Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'))
-                .every((b) => s(b) === 0);
-        }}"""
+                .map((b) => getComputedStyle(b).transform);
+        }"""
     )
-    if not zeroed:
-        problems.append("a sort does not restart the score bars from zero")
-    page.wait_for_timeout(900)
-    drawn = page.evaluate(
-        f"""() => {{
-            {scale}
-            const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
-            return {{ scales: bars.map(s), targets: bars.map((b) => +b.dataset.w / 100) }};
-        }}"""
+    page.wait_for_timeout(400)
+    after = page.evaluate(
+        """() => Object.fromEntries(Array.from(document.querySelectorAll('#tbl tbody.item .bar i'))
+            .map((b) => [b.closest('tbody.item').id, b.style.transform]))"""
     )
-    off = [
-        (a, b)
-        for a, b in zip(drawn["scales"], drawn["targets"])
-        if abs(a - b) > 0.01
-    ]
-    if off:
-        problems.append(f"after the sort the bars sit at {off}, not their scores")
+    moved = [k for k in before if before[k] != after.get(k)]
+    if moved:
+        problems.append(f"a sort rewrites the bar transforms on {len(moved)} rows")
+    if not painted or not all(t.startswith("matrix") for t in painted):
+        problems.append(f"a bar has no computed transform after the sort: {painted[:2]}")
 
     page.emulate_media(reduced_motion="reduce")
-    page.wait_for_timeout(50)
-    instant = page.evaluate(
-        f"""() => {{
-            {scale}
-            const sel = document.getElementById('sort');
-            sel.value = 'score';
-            sel.dispatchEvent(new Event('change', {{ bubbles: true }}));
-            return Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'))
-                .every((b) => Math.abs(s(b) - +b.dataset.w / 100) < 0.01);
-        }}"""
-    )
-    if not instant:
-        problems.append("reduced motion does not render the score bars at their scores")
+    page.wait_for_timeout(80)
+    reduced = page.evaluate(BARS_JS)
+    off = [(a, b) for a, b in zip(reduced["scales"], reduced["targets"]) if abs(a - b) > 0.01]
+    if off:
+        problems.append(f"reduced motion shows a bar at {off[0][0]:.2f}, not {off[0][1]:.2f}")
     page.emulate_media(reduced_motion="no-preference")
     return problems
 
@@ -1898,7 +1897,7 @@ def main():
     if bars:
         issues.extend(bars)
     else:
-        print("  ok    score bars draw from zero on a sort and respect reduced motion")
+        print("  ok    score bars are painted at their score and a sort never redraws them")
 
     if sources:
         issues.extend(sources)

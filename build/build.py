@@ -391,7 +391,7 @@ for i,r in enumerate(ROWS):
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
 <td class="c-price num">{gbp(r['price'])}</td>
-<td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i data-w="{sc/8*100:.0f}" style="transform:scaleX({sc/8:.3f})"></i></span></td>
+<td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
 <td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3']) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}</td>
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
@@ -573,7 +573,7 @@ span.ph-lg{{font-size:12px}}
 .score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
 .bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
 /* scaleX paints on the compositor; animating width forced a layout each frame */
-.bar i{{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center;transition:transform .2s ease}}
+.bar i{{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
 .fn{{font-size:11px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
@@ -604,7 +604,7 @@ tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1
 /* jump-to-row highlight */
 @keyframes flash{{0%,35%{{background-color:var(--hl)}}100%{{background-color:transparent}}}}
 tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
-@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.bar i,.cmp-note{{transition:none}}}}
+@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.cmp-note{{transition:none}}}}
 /* compare */
 #compare{{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}}
 .cmp-head{{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0.5rem 1rem;padding:1rem;border-bottom:1px solid var(--rule)}}
@@ -928,23 +928,15 @@ $('.dual-track').addEventListener('click',function(ev){{
  var el=Math.abs(v-+minEl.value)<=Math.abs(v-+maxEl.value)?minEl:maxEl;
  el.value=v;apply();el.focus({{preventScroll:true}});
 }});
-$('#sort').onchange=function(){{skey=this.value;sdir=SDEF[skey];apply();drawBars()}};
+$('#sort').onchange=function(){{skey=this.value;sdir=SDEF[skey];apply()}};
 $$('#tbl thead th[data-sort] button').forEach(function(b){{b.onclick=function(){{
  var k=b.parentNode.dataset.sort;
  if(k===skey)sdir=-sdir;else{{skey=k;sdir=SDEF[k]}}
- apply();drawBars();
+ apply();
 }}}});
 $('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});minEl.value=minEl.min;maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()}};
 $$('button.more').forEach(function(b){{b.onclick=function(){{var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}}}});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
-var barTimers=[];
-function drawBars(){{
- var bars=$$('#tbl tbody.item:not([hidden]) .bar i');
- barTimers.forEach(clearTimeout);barTimers=[];
- if(reduce.matches){{bars.forEach(function(b){{b.style.transform='scaleX('+(b.dataset.w/100)+')'}});return}}
- bars.forEach(function(b){{b.style.transform='scaleX(0)'}});
- setTimeout(function(){{bars.forEach(function(b,i){{barTimers.push(setTimeout(function(){{b.style.transform='scaleX('+(b.dataset.w/100)+')'}},i*20))}})}},0);
-}}
 $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
  var rows=a.dataset.ids.split(' ').map(function(id){{return document.getElementById('m-'+id)}});
  if(rows.some(function(r){{return r.hidden}}))$('#reset').click();
@@ -1101,7 +1093,7 @@ lb.addEventListener('click',function(ev){{
  var r=lb.getBoundingClientRect();
  if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
 }});
-apply();drawBars();announce=true;
+apply();announce=true;
 var shared='';
 try{{shared=decodeURIComponent((location.search.match(/[?&]cmp=([^&]*)/)||[])[1]||'')}}catch(e){{shared=''}}
 if(shared){{
