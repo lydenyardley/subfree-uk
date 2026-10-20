@@ -87,7 +87,7 @@ dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power
  score=dict(rec=0,live=1,alerts=1,ai=0,storage=0,ha=0),
  src=["ring_prod","ring_plans","indy_ring","ha_ring"],
  unverified=""),
-dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="kit", power=["battery","wired"], ha=0,
+dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", power=["battery","wired"], ha=0,
  price=179.99, price_note="Google Store UK", price_src="nest_prod",
  extra=0, extra_note="", free_records=False,
  sub=8.00, sub_name="Google Home Premium Standard",
@@ -291,8 +291,9 @@ for r in ROWS:
     m_sub = (f"{money(r['price'])} + {MONTHS} × {money(r['sub'])} ({r['sub_name']}) = {money(r['sub3'])}" if r["sub3"] is not None else "No subscription offered or needed")
     r["maths_free"], r["maths_sub"] = m_free, m_sub
 
-REC_LABEL = {"yes":"Yes", "kit":"Only with extra kit", "no":"No"}
-REC_RANK = {"yes":2, "kit":1, "no":0}
+# 'brief' is a time limit, not missing hardware: Nest keeps 3 hours with no kit.
+REC_LABEL = {"yes":"Yes", "kit":"Only with extra kit", "brief":"Only briefly (3 hrs)", "no":"No"}
+REC_RANK = {"yes":2, "kit":1, "brief":1, "no":0}
 POWER_LABEL = {"battery":"Battery", "wired":"Wired", "poe":"PoE"}
 HA_LABEL = {2:"Official, local", 1:"Local, unofficial", 0:"Cloud only"}
 SCORE_PARTS = [("rec","Records free",2),("live","Live view free",1),("alerts","Motion alerts free",1),("ai","Smart detection free",1),("storage","Storage in the box",1),("ha","Local / Home Assistant",2)]
@@ -383,15 +384,15 @@ for i,r in enumerate(ROWS):
     vtag=f'<span class="vtag v-{tone}">{V_LABEL[v]}</span>' if v else ""
     unv=f'<p class="unverified"><b>Not yet verified:</b> {e(r["unverified"])}</p>' if r["unverified"] else ""
     pnote='. ' + e(r["power_note"]) if r.get("power_note") else ""
-    rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 999999}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
+    rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 0}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
-<td class="c-price num" data-label="Price">{gbp(r['price'])}</td>
+<td class="c-price num">{gbp(r['price'])}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i data-w="{sc/8*100:.0f}" style="width:{sc/8*100:.0f}%"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
-<td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3'])}</td>
+<td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3']) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}</td>
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
@@ -417,7 +418,7 @@ for i,r in enumerate(ROWS):
 
 data_js = json.dumps({r["id"]:{
  "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"price":gbp(r["price"]),"score":f"{r['score_total']}/8",
- "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]),"keep3":r["keep3"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
+ "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
  "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
@@ -501,6 +502,7 @@ fieldset{{border:0;margin:0;padding:0;min-width:0}}
 legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}}
 .opts{{display:flex;flex-wrap:wrap;gap:1rem}}
 .opts label{{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}}
+.hint{{margin:0.5rem 0 0;font-size:12px;line-height:1.35;color:var(--ink3);max-width:26ch}}
 input[type=checkbox]{{accent-color:var(--acc);width:15px;height:15px;margin:0}}
 /* One range input per handle, stacked, so each keeps its own keyboard value.
    Only the thumbs take pointer events, which is what lets them overlap. */
@@ -551,8 +553,9 @@ span.ph-lg{{font-size:12px}}
 .rec{{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}}
 .rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
 .rec-yes::before{{background:var(--acc)}}
-.rec-kit::before{{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}}
+.rec-kit::before,.rec-brief::before{{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}}
 .rec-no{{color:var(--ink2)}} .rec-no::before{{border-color:var(--ink3)}}
+.noplan{{color:var(--ink2)}}
 .score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
 .bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
 .bar i{{display:block;height:100%;background:var(--acc);transition:width .2s ease}}
@@ -650,15 +653,22 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .main-t tbody.item{{border-bottom:1px solid var(--rule);padding:1rem}}
  tbody.item[data-v]{{border-left:3px solid var(--vc)}}
  tbody.item[data-v] tr.main>td.c-cmp{{border-left:0}}
- .main-t tr.main{{display:grid;grid-template-columns:2rem repeat(3,minmax(0,1fr));gap:1rem;position:relative}}
+ .main-t tr.main{{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:0 1rem;position:relative;align-items:baseline}}
  .main-t tbody.item:hover tr.main{{background:none}}
  .main-t tr.main>*{{padding:0;border:0;width:auto;min-width:0;max-width:none}}
  .c-cmp{{grid-row:1;grid-column:1;padding-top:0!important}}
- .c-model{{grid-column:2 / 5}}
+ .c-model{{grid-column:2;grid-row:1}}
  .ph-sm{{width:45px!important;height:60px!important}}
- .c-rec{{grid-column:2}} .c-price{{grid-column:3}} .c-score{{grid-column:4}}
- .c-nosub{{grid-column:2}} .c-sub{{grid-column:3 / 5}}
- .c-catch{{grid-column:2 / 5;font-size:14px}}
+ .c-rec{{grid-column:2;grid-row:2}} .c-price{{grid-column:2;grid-row:3}} .c-score{{grid-column:2;grid-row:4}}
+ .c-nosub{{grid-column:2;grid-row:5}} .c-sub{{grid-column:2;grid-row:6}}
+ .c-catch{{grid-column:2;grid-row:7;padding-top:0.75rem;font-size:14px}}
+ /* One muted label column, value to its right, so five separate label
+    lines become one aligned rhythm. The price needs no label. */
+ .main-t td.c-rec,.main-t td.c-score,.main-t td.c-nosub,.main-t td.c-sub{{display:flex;gap:0.75rem;align-items:baseline;padding:0.45rem 0 0}}
+ .main-t td.c-rec::before,.main-t td.c-score::before,.main-t td.c-nosub::before,.main-t td.c-sub::before{{flex:0 0 8.5rem;margin:0}}
+ .main-t td.c-price{{padding:0.5rem 0 0.25rem;font:700 17px/1.2 var(--sans)}}
+ .main-t td.c-score .bar{{margin:0;flex:0 0 52px;align-self:center}}
+ .main-t td.c-nosub .note{{white-space:normal}}
  .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0;white-space:normal}}
  .main-t td.num,.main-t th.num{{text-align:left}} .bar{{margin-left:0}}
  tr.detail td{{padding:1rem;margin-top:0}}
@@ -676,7 +686,6 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .dek{{font-size:15px;line-height:1.4;margin-bottom:0.5rem}}
  .verdict{{display:none}}
  .vshort{{display:block}}
- .c-nosub,.c-sub{{grid-column:2 / 5}}
  .controls{{padding:0.75rem 0;gap:0.75rem}}
  .sortby .lab{{margin-bottom:0.5rem}}
  .filters{{display:block;flex:1 1 100%}}
@@ -724,7 +733,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <label><input type="checkbox" class="f-pw" value="battery"> Battery</label>
 <label><input type="checkbox" class="f-pw" value="wired"> Wired</label>
 <label><input type="checkbox" class="f-pw" value="poe"> PoE</label>
-</div></fieldset>
+</div><p class="hint">PoE: one cable carries both power and data.</p></fieldset>
 <div class="range">
 <span class="lab">Price</span>
 <div class="dual">

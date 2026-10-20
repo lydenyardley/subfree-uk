@@ -400,6 +400,68 @@ def costrow_check(page):
     return problems
 
 
+def labels_check(page):
+    """The record column names a time limit, the plan column names its absence,
+    PoE is defined at the filter, and the phone card uses one label column."""
+    problems = []
+    state = page.evaluate(
+        """() => {
+            const all = (s) => Array.from(document.querySelectorAll(s));
+            const spec = ['.c-rec', '.c-score', '.c-nosub', '.c-sub'];
+            const cells = spec.map((cls) => document.querySelector('#tbl tbody.item ' + cls));
+            const nest = document.querySelector('#m-nest .c-rec');
+            const price = document.querySelector('#tbl tbody.item .c-price');
+            const catchCell = document.querySelector('#tbl tbody.item .c-catch');
+            const subs = all('#tbl tbody.item .c-sub');
+            const hint = document.querySelector('#filters .hint');
+            const power = hint ? hint.closest('fieldset') : null;
+            const pseudo = (el) => getComputedStyle(el, '::before');
+            return {
+                nestText: nest.textContent.trim(),
+                nestClass: nest.querySelector('.rec').className,
+                planWords: subs.filter((td) => /No plan/.test(td.textContent)).length,
+                planDashes: subs.filter((td) => /\u2014/.test(td.textContent)).length,
+                priceLabel: pseudo(price).content,
+                catchLabel: pseudo(catchCell).content,
+                displays: cells.map((td) => getComputedStyle(td).display),
+                basis: cells.map((td) => pseudo(td).flexBasis),
+                widths: cells.map((td) => pseudo(td).width),
+                hint: hint ? hint.textContent.trim() : '',
+                hintPower: !!(power && /Power/.test(power.querySelector('legend').textContent)),
+                hintSize: hint ? getComputedStyle(hint).fontSize : '',
+                hintVisible: hint ? hint.getClientRects().length > 0 : false
+            };
+        }"""
+    )
+    if state["nestText"] != "Only briefly (3 hrs)":
+        problems.append(f"the Nest record cell reads {state['nestText']!r}")
+    if "rec-brief" not in state["nestClass"]:
+        problems.append(f"the Nest record marker has the class {state['nestClass']!r}")
+    if state["planWords"] != 3 or state["planDashes"]:
+        problems.append(
+            f"the plan column prints {state['planWords']} words and "
+            f"{state['planDashes']} bare dashes, expected 3 and 0"
+        )
+    if state["priceLabel"] not in ("normal", "none"):
+        problems.append(f"the phone price cell still carries the label {state['priceLabel']}")
+    if "Main catch" not in state["catchLabel"]:
+        problems.append(f"the catch cell lost its label: {state['catchLabel']}")
+    if any(display != "flex" for display in state["displays"]):
+        problems.append(f"the phone spec cells are {state['displays']}, expected flex rows")
+    basis = state["basis"]
+    if len(set(basis)) != 1 or not basis[0].endswith("px") or float(basis[0][:-2]) < 100:
+        problems.append(f"the phone labels do not share one column: {basis}")
+    if len(set(state["widths"])) != 1:
+        problems.append(f"the phone labels render at different widths: {state['widths']}")
+    if not state["hint"].startswith("PoE"):
+        problems.append(f"the Power filter has no PoE note: {state['hint']!r}")
+    if not state["hintPower"]:
+        problems.append("the PoE note is not inside the Power fieldset")
+    if state["hintSize"] != "12px":
+        problems.append(f"the PoE note is {state['hintSize']}, expected 12px")
+    return problems
+
+
 def chrome_check(page):
     """The sort control and compare table keep their declared metrics."""
     problems = []
@@ -1011,6 +1073,7 @@ def main():
             resize = filters_check(page)
             prices = price_check(page)
             copy = copy_check(page)
+            labels = labels_check(page)
             recovery = recovery_check(page)
             bars = bars_check(page)
 
@@ -1104,6 +1167,14 @@ def main():
         issues.extend(copy)
     else:
         print("  ok    the 3-row cap is explained and announced; Compare sits by the count")
+
+    if labels:
+        issues.extend(labels)
+    else:
+        print(
+            "  ok    Nest names its 3-hour limit, no-plan reads as words, PoE is defined "
+            "at the filter, and the phone card shares one label column"
+        )
 
     if recovery:
         issues.extend(recovery)

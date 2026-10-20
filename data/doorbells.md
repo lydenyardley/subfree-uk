@@ -17,7 +17,7 @@ Last checked 19 October 2026. 14 doorbells. No affiliate links.
 | Arlo Essential Video Doorbell 2K (2nd gen) | Only with extra kit | [£84.99](https://www.argos.co.uk/product/4379311) | 3 | £200.06 | £372.63 | People who already own Arlo cameras | Recording needs a £7.99/month plan or a separate hub costing about £105. |
 | Ring Battery Video Doorbell 2K | No | [£79.99](https://en-uk.ring.com/products/battery-doorbell-2nd-gen) | 2 | £79.99 | £259.63 | Alexa households happy to pay the monthly plan | Saves no video at all unless you pay £4.99 a month. |
 | Hikvision DS-KB6003-WIP | Yes | [£295.00](https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/) | 5 | £305.00 | — | Only worth it if an installer is fitting a Hikvision system anyway | Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295. |
-| Google Nest Doorbell (battery) | Only with extra kit | [£179.99](https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB) | 4 | £179.99 | £467.99 | Google Home households who want polished smart alerts | Only 3 hours of free history. Anything longer is £8 a month. |
+| Google Nest Doorbell (battery) | Only briefly (3 hrs) | [£179.99](https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB) | 4 | £179.99 | £467.99 | Google Home households who want polished smart alerts | Only 3 hours of free history. Anything longer is £8 a month. |
 
 ## Detail
 
