@@ -390,7 +390,7 @@ for i,r in enumerate(ROWS):
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
 <td class="c-price num">{gbp(r['price'])}</td>
-<td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i data-w="{sc/8*100:.0f}" style="width:{sc/8*100:.0f}%"></i></span></td>
+<td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i data-w="{sc/8*100:.0f}" style="transform:scaleX({sc/8:.3f})"></i></span></td>
 <td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
 <td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3']) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}</td>
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
@@ -558,7 +558,8 @@ span.ph-lg{{font-size:12px}}
 .noplan{{color:var(--ink2)}}
 .score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
 .bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
-.bar i{{display:block;height:100%;background:var(--acc);transition:width .2s ease}}
+/* scaleX paints on the compositor; animating width forced a layout each frame */
+.bar i{{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center;transition:transform .2s ease}}
 .note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
 .fn{{font-size:11px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
 .fn:hover{{color:var(--acc);text-decoration:underline}}
@@ -875,10 +876,10 @@ var barTimers=[];
 function drawBars(){{
  var bars=$$('#tbl tbody.item:not([hidden]) .bar i');
  barTimers.forEach(clearTimeout);barTimers=[];
- if(reduce.matches){{bars.forEach(function(b){{b.style.width=b.dataset.w+'%'}});return}}
- bars.forEach(function(b){{b.style.width='0'}});
+ if(reduce.matches){{bars.forEach(function(b){{b.style.transform='scaleX('+(b.dataset.w/100)+')'}});return}}
+ bars.forEach(function(b){{b.style.transform='scaleX(0)'}});
  void tbl.offsetWidth;
- setTimeout(function(){{bars.forEach(function(b,i){{barTimers.push(setTimeout(function(){{b.style.width=b.dataset.w+'%'}},i*20))}})}},0);
+ setTimeout(function(){{bars.forEach(function(b,i){{barTimers.push(setTimeout(function(){{b.style.transform='scaleX('+(b.dataset.w/100)+')'}},i*20))}})}},0);
 }}
 $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
  var rows=a.dataset.ids.split(' ').map(function(id){{return document.getElementById('m-'+id)}});

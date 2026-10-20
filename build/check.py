@@ -639,60 +639,74 @@ def motion_check(page):
 
 
 def bars_check(page):
-    """Bars draw from zero on a sort, and land on their score widths."""
+    """Bars draw from zero on a sort, paint with a transform, and land on their scores."""
     problems = []
     page.wait_for_timeout(800)
+    scale = "const s = (b) => { const m = b.style.transform.match(/scaleX\\(([-0-9.]+)\\)/); return m ? +m[1] : NaN; };"
     initial = page.evaluate(
         """() => {
             const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
+            const cs = getComputedStyle(bars[0]);
+            const m = bars[0].style.transform.match(/scaleX\\(([-0-9.]+)\\)/);
             return { n: bars.length,
-                     transition: getComputedStyle(bars[0]).transitionDuration,
-                     widths: bars.map((b) => parseFloat(b.style.width)),
-                     targets: bars.map((b) => +b.dataset.w) };
+                     transition: cs.transitionDuration,
+                     property: cs.transitionProperty,
+                     scale: m ? +m[1] : NaN,
+                     target: +bars[0].dataset.w / 100 };
         }"""
     )
     if initial["n"] != 14:
         problems.append(f"{initial['n']} score bars are visible, expected 14")
-    if initial["transition"] != "0.2s":
-        problems.append(f"the score bar transition is {initial['transition']!r}")
-    if initial["widths"] != initial["targets"]:
-        problems.append(f"score bar widths {initial['widths']} do not match {initial['targets']}")
+    if initial["transition"] != "0.2s" or initial["property"] != "transform":
+        problems.append(
+            f"the score bar animates {initial['property']} over {initial['transition']!r}, "
+            "expected transform over 0.2s"
+        )
+    if abs(initial["scale"] - initial["target"]) > 0.01:
+        problems.append(f"the first bar is scaled {initial['scale']}, expected {initial['target']}")
 
     zeroed = page.evaluate(
-        """() => {
+        f"""() => {{
+            {scale}
             const sel = document.getElementById('sort');
             sel.value = 'price';
-            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            sel.dispatchEvent(new Event('change', {{ bubbles: true }}));
             return Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'))
-                .every((b) => parseFloat(b.style.width) === 0);
-        }"""
+                .every((b) => s(b) === 0);
+        }}"""
     )
     if not zeroed:
         problems.append("a sort does not restart the score bars from zero")
     page.wait_for_timeout(900)
     drawn = page.evaluate(
-        """() => {
+        f"""() => {{
+            {scale}
             const bars = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'));
-            return { widths: bars.map((b) => parseFloat(b.style.width)),
-                     targets: bars.map((b) => +b.dataset.w) };
-        }"""
+            return {{ scales: bars.map(s), targets: bars.map((b) => +b.dataset.w / 100) }};
+        }}"""
     )
-    if drawn["widths"] != drawn["targets"]:
-        problems.append(f"after the sort the bars sit at {drawn['widths']}, not {drawn['targets']}")
+    off = [
+        (a, b)
+        for a, b in zip(drawn["scales"], drawn["targets"])
+        if abs(a - b) > 0.01
+    ]
+    if off:
+        problems.append(f"after the sort the bars sit at {off}, not their scores")
 
     page.emulate_media(reduced_motion="reduce")
     page.wait_for_timeout(50)
     instant = page.evaluate(
-        """() => {
+        f"""() => {{
+            {scale}
             const sel = document.getElementById('sort');
             sel.value = 'score';
-            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            sel.dispatchEvent(new Event('change', {{ bubbles: true }}));
             return Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden]) .bar i'))
-                .every((b) => parseFloat(b.style.width) === +b.dataset.w);
-        }"""
+                .every((b) => Math.abs(s(b) - +b.dataset.w / 100) < 0.01);
+        }}"""
     )
     if not instant:
-        problems.append("reduced motion does not render the score bars at full width")
+        problems.append("reduced motion does not render the score bars at their scores")
     page.emulate_media(reduced_motion="no-preference")
     return problems
 
