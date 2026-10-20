@@ -941,6 +941,77 @@ def morph_check(page):
     return problems
 
 
+def rule_check(page):
+    """A hairline along the table reports scroll position; it never hijacks it."""
+    problems = []
+    page.evaluate("() => scrollTo(0, 0)")
+    page.wait_for_timeout(150)
+    box = page.evaluate(
+        """() => {
+            const w = document.querySelector('.tbl-w'), pr = w.querySelector('.prog'), i = pr.querySelector('i');
+            const t = document.getElementById('tbl'), s = getComputedStyle(i);
+            return {
+                inWrapper: w.contains(t) && w.firstElementChild === pr,
+                static: { h: getComputedStyle(pr).height, pe: getComputedStyle(pr).pointerEvents,
+                          hidden: pr.getAttribute('aria-hidden') },
+                anim: { name: s.animationName, timeline: s.animationTimeline, range: s.animationRange },
+                height: Math.round(w.getBoundingClientRect().height - t.getBoundingClientRect().height),
+                rows: t.querySelectorAll('tbody.item').length
+            };
+        }"""
+    )
+    if not box["inWrapper"] or box["rows"] != 14:
+        problems.append(f"the rule is not the first child of the table's box: {box}")
+    if box["static"] != {"h": "2px", "pe": "none", "hidden": "true"}:
+        problems.append(f"the rule is not a silent 2px hairline: {box['static']}")
+    if box["height"] != 0:
+        problems.append(f"the wrapper adds {box['height']}px to the table")
+    if box["anim"] != {"name": "rule", "timeline": "--tbl", "range": "cover"}:
+        problems.append(f"the rule is not driven by the table's own timeline: {box['anim']}")
+
+    samples = []
+    for frac in (0.2, 0.5, 0.9):
+        page.evaluate(
+            """(f) => {
+                const r = document.getElementById('tbl').getBoundingClientRect();
+                scrollTo(0, scrollY + r.top + r.height * f - 300);
+            }""",
+            frac,
+        )
+        page.wait_for_timeout(120)
+        samples.append(
+            page.evaluate(
+                """() => {
+                    const pr = document.querySelector('.prog');
+                    const m = new DOMMatrix(getComputedStyle(pr.querySelector('i')).transform);
+                    return { top: Math.round(pr.getBoundingClientRect().top), fill: +m.a.toFixed(3) };
+                }"""
+            )
+        )
+    fills = [s["fill"] for s in samples]
+    if any(b <= a for a, b in zip(fills, fills[1:])):
+        problems.append(f"the rule does not grow with scroll: {fills}")
+    if fills[-1] < 0.7 or fills[0] > 0.45:
+        problems.append(f"the rule does not track the table's own span: {fills}")
+    if any(s["top"] != 0 for s in samples[1:]):
+        problems.append(f"the rule does not stay at the top of the viewport: {samples}")
+
+    # No timeline support means the @supports block never applies: an empty hairline.
+    page.evaluate("() => { document.querySelector('.prog i').style.animation = 'none' }")
+    page.wait_for_timeout(80)
+    plain = page.evaluate(
+        """() => {
+            const i = document.querySelector('.prog i');
+            return { t: getComputedStyle(i).transform, h: getComputedStyle(i).height };
+        }"""
+    )
+    if plain != {"t": "matrix(0, 0, 0, 1, 0, 0)", "h": "2px"}:
+        problems.append(f"without the timeline the rule is not a plain hairline: {plain}")
+    page.evaluate("() => { document.querySelector('.prog i').style.animation = ''; scrollTo(0, 0) }")
+    page.wait_for_timeout(150)
+    return problems
+
+
 def share_check(page):
     """A ?cmp= link reopens the same three models and drops unknown ids."""
     problems = []
@@ -1610,6 +1681,7 @@ def main():
             motion = motion_check(page)
             jump = jump_check(page)
             morph = morph_check(page)
+            rule = rule_check(page)
 
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
@@ -1851,6 +1923,11 @@ def main():
             "  ok    the tray becomes the compare header in one named pair over 240ms, "
             "skipped under reduced motion and without the API"
         )
+
+    if rule:
+        issues.extend(rule)
+    else:
+        print("  ok    a hairline along the table follows scroll, with a plain rule where timelines are missing")
 
     if (
         header["display"] != "none"

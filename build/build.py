@@ -631,6 +631,15 @@ tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
  /* The tray becomes the compare header and comes back again. The two are never
     on screen together, so one name serves both and no other element is named. */
  #tray,.cmp-head{{view-transition-name:cmp-tray}}
+ /* Where the reader is in the table, reported not hijacked: the rule only
+    follows scroll. Without native timelines it is a plain hairline. */
+ .tbl-w{{view-timeline-name:--tbl;view-timeline-axis:block}}
+ .prog{{position:sticky;top:0;z-index:3;height:2px;margin-bottom:-2px;background:var(--rule2);pointer-events:none}}
+ .prog i{{display:block;height:100%;background:var(--acc);transform:scaleX(0);transform-origin:left center}}
+ @supports (animation-timeline:view()){{
+  .prog i{{animation:rule linear both;animation-timeline:--tbl;animation-range:cover 0% cover 100%}}
+  @keyframes rule{{from{{transform:scaleX(0)}}to{{transform:scaleX(1)}}}}
+ }}
  ::view-transition-group(cmp-tray){{animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}}
  /* Hand over rather than dissolve: two bars of text cross-fading in one box
     reads as a smear, so the old bar goes first and the new one arrives after. */
@@ -748,7 +757,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .fbody .opts{{gap:0.5rem 1rem}}
  .range{{flex:none;width:100%;max-width:none}}
 }}
-@media print{{.skip,.controls,.tray,.c-cmp,.more-w,#theme,.srcs>summary,.cmp-note{{display:none}} tr.detail{{display:table-row!important}}}}
+@media print{{.skip,.controls,.tray,.prog,.c-cmp,.more-w,#theme,.srcs>summary,.cmp-note{{display:none}} tr.detail{{display:table-row!important}}}}
 </style></head><body>
 <a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
@@ -814,6 +823,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
 
+<div class="tbl-w"><div class="prog" aria-hidden="true"><i></i></div>
 <table class="main-t" id="tbl" tabindex="-1">
 <thead><tr>
 <th scope="col" class="c-cmp"><span class="vh">Compare</span></th>
@@ -821,7 +831,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3 yrs, no plan, footnote a">3 yrs, no plan<sup aria-hidden="true">a</sup></button></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3 yrs, with plan, footnote b">3 yrs, with plan<sup aria-hidden="true">b</sup></button></th><th scope="col">Main catch</th>
 </tr></thead>
 {''.join(rows_html)}
-</table>
+</table></div>
 <p class="empty" id="empty" hidden><span id="empty-txt">Nothing matches those filters.</span> <button type="button" class="link" id="near" hidden></button> <button type="button" class="link" id="empty-reset">Reset filters</button></p>
 
 <section class="method" id="method">
