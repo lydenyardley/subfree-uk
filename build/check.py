@@ -8,9 +8,8 @@ drives the page with Chromium, and runs axe-core in both themes at 1280px,
 best-practice rules alongside them. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
 layout, the price range slider, the filter panel resize, the live announcements,
-the three-row compare cap, the empty-state recovery, the compare cost row, the
-shortlist copy, the differences-only view, the jump announcement, the theme
-motion, the score-bar draw, the record and plan labels, the phone label column,
+the three-row compare cap, the empty-state recovery, the compare cost row,the shortlist copy, the differences-only view, the jump announcement, the tray
+to compare-header transition, the theme motion, the score-bar draw, the record and plan labels, the phone label column,
 the host-grouped source list, the closing line, the performance budget, the
 no-JavaScript fallback, the skip link, the photo lightbox and horizontal overflow
 at the breakpoints the stylesheet defines.
@@ -661,7 +660,9 @@ def diff_check(page):
         }"""
     )
     page.wait_for_timeout(250)
-    page.click("#tray-go")
+    # The count line is the open affordance that survives while the tray is
+    # away, so the check does not depend on the panel being closed first.
+    page.click("#cmp-inline")
     page.wait_for_timeout(150)
     off = page.evaluate(
         """() => {
@@ -740,8 +741,203 @@ def diff_check(page):
         }"""
     )
     page.wait_for_timeout(200)
-    page.click("#tray-go")
+    page.click("#cmp-inline")
     page.wait_for_timeout(150)
+    return problems
+
+
+def morph_check(page):
+    """The compare panel is the tray, moved: one named pair, 240ms, guarded."""
+    problems = []
+    page.emulate_media(reduced_motion="no-preference")
+    page.evaluate(
+        """() => {
+            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(200)
+
+    names = page.evaluate(
+        """() => ({
+            tray: getComputedStyle(document.getElementById('tray')).viewTransitionName,
+            head: getComputedStyle(document.querySelector('.cmp-head')).viewTransitionName,
+            named: Array.from(document.querySelectorAll('body *')).filter(
+                (e) => getComputedStyle(e).viewTransitionName !== 'none'
+            ).map((e) => e.id || e.className)
+        })"""
+    )
+    if names["tray"] != "cmp-tray" or names["head"] != "cmp-tray":
+        problems.append(f"the tray and the compare header do not share one name: {names}")
+    if len(names["named"]) != 2:
+        problems.append(f"{len(names['named'])} elements are named for the transition: {names['named']}")
+
+    # Opening: one transition, 240ms, and the tray's box is now the panel's.
+    page.evaluate(
+        """() => {
+            window.__vt = { calls: 0 };
+            window.__vtReal = document.startViewTransition;
+            const real = window.__vtReal.bind(document);
+            document.startViewTransition = (cb) => {
+                window.__vt.calls++;
+                return real(cb);
+            };
+        }"""
+    )
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(60)
+    during = page.evaluate(
+        """() => {
+            const r = document.documentElement;
+            const anims = document.getAnimations({ subtree: true });
+            return {
+                dur: getComputedStyle(r, '::view-transition-group(cmp-tray)').animationDuration,
+                root: getComputedStyle(r, '::view-transition-old(root)').animationName,
+                named: anims.filter((a) => (a.effect.pseudoElement || '').includes('cmp-tray')).length,
+                keyframes: anims
+                    .filter((a) => a.effect.pseudoElement === '::view-transition-group(cmp-tray)')
+                    .length
+            };
+        }"""
+    )
+    page.wait_for_timeout(320)
+    opened = page.evaluate(
+        """() => ({
+            calls: window.__vt.calls,
+            tray: document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden,
+            focus: document.activeElement.id,
+            top: Math.round(document.getElementById('compare').getBoundingClientRect().top)
+        })"""
+    )
+    if opened["calls"] != 1:
+        problems.append(f"opening ran {opened['calls']} view transitions, expected 1")
+    if not opened["panel"] or not opened["tray"]:
+        problems.append(f"opening did not hand the tray's place to the panel: {opened}")
+    if during["dur"] != "0.24s" or not during["keyframes"]:
+        problems.append(f"the named group does not run 240ms: {during}")
+    if during["root"] != "none":
+        problems.append(f"the page cross-fades behind the pair: root old animation {during['root']}")
+    if during["named"] < 3:
+        problems.append(f"only {during['named']} animations of the named pair ran")
+    if abs(opened["top"]) > 2:
+        problems.append(f"the panel opens {opened['top']}px from the top of the viewport")
+    if opened["focus"] != "cmp-h":
+        problems.append(
+            f"opening put focus on {opened['focus'] or 'nothing'}, not the panel's heading"
+        )
+
+    page.evaluate("() => document.getElementById('cmp-close').click()")
+    page.wait_for_timeout(400)
+    closed = page.evaluate(
+        """() => ({
+            vt: window.__vt.calls,
+            tray: !document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden
+        })"""
+    )
+    if closed["vt"] != 2:
+        problems.append(f"closing ran {closed['vt']} transitions in total, expected 2")
+    if not closed["tray"] or closed["panel"]:
+        problems.append(f"closing did not give the tray back: {closed}")
+
+    # Clear lives in the panel because the tray is not on screen while it is open,
+    # and the button that is about to vanish cannot keep focus.
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(350)
+    page.focus("#cmp-clear")
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(250)
+    cleared = page.evaluate(
+        """() => ({
+            checked: document.querySelectorAll('input.cmp:checked').length,
+            tray: !document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden,
+            focus: document.activeElement.matches('input.cmp')
+        })"""
+    )
+    if cleared["checked"] or cleared["panel"] or cleared["tray"]:
+        problems.append(f"Clear in the panel did not empty the selection: {cleared}")
+    if not cleared["focus"]:
+        problems.append("clearing from the panel left focus on a hidden button")
+
+    # Reduced motion: the swap still happens, but nothing animates.
+    page.emulate_media(reduced_motion="reduce")
+    page.evaluate(
+        """() => {
+            const ids = ['tapo-td21', 'reo-poe'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            window.__vt.calls = 0;
+        }"""
+    )
+    page.wait_for_timeout(150)
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(300)
+    reduced = page.evaluate(
+        """() => ({ calls: window.__vt.calls, panel: !document.getElementById('compare').hidden })"""
+    )
+    if reduced["calls"] != 0:
+        problems.append("reduced motion still runs a view transition")
+    if not reduced["panel"]:
+        problems.append("reduced motion does not open the comparison")
+    page.evaluate("() => document.getElementById('cmp-close').click()")
+    page.wait_for_timeout(250)
+
+    # No API at all: the old instant swap, and the reader still gets the panel.
+    page.emulate_media(reduced_motion="no-preference")
+    page.evaluate("() => { document.startViewTransition = undefined }")
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(300)
+    fallback = page.evaluate(
+        """() => ({
+            api: typeof document.startViewTransition,
+            panel: !document.getElementById('compare').hidden,
+            tray: !document.getElementById('tray').hidden
+        })"""
+    )
+    if fallback["api"] != "undefined" or not fallback["panel"] or fallback["tray"]:
+        problems.append(f"without the API the panel does not open or the tray stays: {fallback}")
+
+    # Unticking below two closes the panel and leaves focus where the reader is.
+    page.focus("input.cmp[value='tapo-td21']")
+    page.evaluate(
+        """() => {
+            const c = document.querySelector("input.cmp[value='reo-poe']");
+            c.checked = false;
+            c.dispatchEvent(new Event('change', { bubbles: true }));
+        }"""
+    )
+    page.wait_for_timeout(200)
+    implicit = page.evaluate(
+        """() => ({
+            panel: !document.getElementById('compare').hidden,
+            tray: !document.getElementById('tray').hidden,
+            checked: document.querySelectorAll('input.cmp:checked').length,
+            focus: document.activeElement.value
+        })"""
+    )
+    if implicit["panel"] or not implicit["tray"] or implicit["checked"] != 1:
+        problems.append(f"unticking below two did not close the panel: {implicit}")
+    if implicit["focus"] != "tapo-td21":
+        problems.append(f"unticking below two moved focus to {implicit['focus']}")
+
+    page.evaluate(
+        """() => {
+            delete document.startViewTransition;
+            document.getElementById('cmp-close').click();
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = false;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
     return problems
 
 
@@ -1178,10 +1374,25 @@ def perf_check(page):
                     top: Math.round(document.querySelector('#tbl tbody.item').getBoundingClientRect().top - top),
                     tray: !document.getElementById('tray').hidden
                 };
-                const t = performance.now();
-                document.getElementById('tray-go').click();
-                const compare = performance.now() - t;
-                return { sorts, sortLong, shift, compare };
+                // The open now finishes in the transition's callback, on a later
+                // frame, so time it to the panel being on screen, not to the click.
+                // Three times: the first pays Chrome's snapshot warm-up.
+                const openBefore = long.length;
+                const opens = [];
+                for (let i = 0; i < 3; i++) {
+                    if (!document.getElementById('compare').hidden) {
+                        document.getElementById('cmp-close').click();
+                        await new Promise((r) => setTimeout(r, 500));
+                    }
+                    const t = performance.now();
+                    document.getElementById('tray-go').click();
+                    for (let f = 0; f < 120 && document.getElementById('compare').hidden; f++) await frame();
+                    opens.push(Math.round(performance.now() - t));
+                    await new Promise((r) => setTimeout(r, 400));
+                }
+                await new Promise((r) => setTimeout(r, 300));
+                const compareLong = long.slice(openBefore);
+                return { sorts, sortLong, shift, opens, compareLong };
             }"""
         )
     finally:
@@ -1191,18 +1402,27 @@ def perf_check(page):
     slowest = max(state["sorts"])
     if slowest >= 100:
         problems.append(f"the slowest sort took {slowest:.0f}ms at 4x throttle, budget 100ms")
-    if state["compare"] >= 100:
+    opens = state["opens"]
+    median = sorted(opens)[1]
+    if median >= 150:
         problems.append(
-            f"opening the compare took {state['compare']:.0f}ms at 4x throttle, budget 100ms"
+            f"opening the compare took {median}ms (median of {opens}) at 4x throttle, budget 150ms"
         )
     if not state["shift"]["tray"]:
         problems.append("the tray did not open, so the shift was not measured")
     if state["shift"]["height"] or state["shift"]["top"]:
         problems.append(f"the table moved when the tray appeared: {state['shift']}")
     longest = max(state["sortLong"], default=0)
+    # The transition must not turn the open into a task of its own.
+    morph_long = max(state["compareLong"], default=0)
+    if morph_long >= 50:
+        problems.append(
+            f"opening the comparison ran a {morph_long}ms task at 4x throttle, budget 50ms"
+        )
     note = (
-        f"slowest sort {slowest:.0f}ms, compare {state['compare']:.0f}ms at 4x CPU; "
-        f"longest task during a sort {longest}ms (budget 50ms, open in docs/performance-budget.md)"
+        f"slowest sort {slowest:.0f}ms, compare opens {opens}ms (median {median}) at 4x CPU; "
+        f"longest task during a sort {longest}ms (budget 50ms, open in docs/performance-budget.md), "
+        f"during the compare transition {morph_long}ms"
     )
     return problems, note
 
@@ -1389,6 +1609,7 @@ def main():
             theme = theme_check(page)
             motion = motion_check(page)
             jump = jump_check(page)
+            morph = morph_check(page)
 
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
@@ -1622,6 +1843,14 @@ def main():
         issues.extend(jump)
     else:
         print("  ok    a jump announces its model, verdict and row, then clears")
+
+    if morph:
+        issues.extend(morph)
+    else:
+        print(
+            "  ok    the tray becomes the compare header in one named pair over 240ms, "
+            "skipped under reduced motion and without the API"
+        )
 
     if (
         header["display"] != "none"

@@ -628,6 +628,20 @@ tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
 .tray button{{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}}
 .tray button:disabled{{opacity:.5;cursor:default}}
 .tray button.ghost{{background:none;color:var(--tray-ink);text-decoration:underline;padding:0 1rem}}
+ /* The tray becomes the compare header and comes back again. The two are never
+    on screen together, so one name serves both and no other element is named. */
+ #tray,.cmp-head{{view-transition-name:cmp-tray}}
+ ::view-transition-group(cmp-tray){{animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}}
+ /* Hand over rather than dissolve: two bars of text cross-fading in one box
+    reads as a smear, so the old bar goes first and the new one arrives after. */
+ ::view-transition-old(cmp-tray){{animation:vt-out 100ms linear both}}
+ ::view-transition-new(cmp-tray){{animation:vt-in 140ms 100ms linear both}}
+ @keyframes vt-out{{to{{opacity:0}}}}
+ @keyframes vt-in{{from{{opacity:0}}}}
+ /* Only the pair moves. Without this the whole page cross-fades and the table
+    ghosts behind the comparison. */
+ ::view-transition-old(root),::view-transition-new(root){{animation:none}}
+ @media (prefers-reduced-motion:reduce){{::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){{animation:none!important}}}}
 /* footer */
 section.method{{display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}}
 section.method h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}}
@@ -795,7 +809,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
 <section id="compare" hidden>
-<div class="cmp-head"><h2>Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-close">Close</button></div></div>
+<div class="cmp-head"><h2 id="cmp-h" tabindex="-1">Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-clear">Clear</button><button type="button" class="link" id="cmp-close">Close</button></div></div>
 <p class="cmp-note" id="cmp-note" role="status" hidden></p>
 <div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
@@ -943,11 +957,16 @@ function syncUrl(){{
 }}
 function tray(){{
  var s=sel(); $$('input.cmp').forEach(function(c){{c.disabled=!c.checked&&s.length>=3}});
- $('#tray').hidden=s.length===0;
+ $('#tray').hidden=s.length===0||!$('#compare').hidden;
  $('#tray-txt').textContent=s.length===1?'1 selected (tick 1 or 2 more)':s.length>=3?'3 selected (maximum, untick one to swap)':s.length?'2 selected':'';
  $('#tray-go').disabled=s.length<2;
  var ib=$('#cmp-inline');$('#cmp-sep').hidden=ib.hidden=s.length<2;ib.textContent='Compare '+s.length;
- if(!$('#compare').hidden){{s.length>=2?render():($('#compare').hidden=true)}}
+ // Unticking below two closes the panel without stealing focus from the box
+ // the reader is on, so this path never touches focus.
+ if(!$('#compare').hidden){{
+  if(s.length>=2)render();
+  else{{$('#compare').hidden=true;$('#tray').hidden=s.length===0}}
+ }}
  say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
  syncUrl();
 }}
@@ -979,11 +998,41 @@ function render(){{
 function applyDiff(){{$$('#cmp-table tbody tr[data-same]').forEach(function(tr){{tr.hidden=diffOnly}})}}
 $('#cmp-diff').onchange=function(){{diffOnly=this.checked;applyDiff()}};
 $$('input.cmp').forEach(function(c){{c.addEventListener('change',tray)}});
-function showCompare(){{render();$('#compare').scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'start'}});say('Side-by-side comparison of '+sel().length+' doorbells')}}
+function showCompare(){{
+ // Already open: take the reader back to it rather than rebuilding it.
+ if(!$('#compare').hidden){{$('#compare').scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'start'}});$('#cmp-h').focus({{preventScroll:true}});return}}
+ // The tray leaves and its place is taken by the compare header: the same box
+ // stops being one control and starts being another. Scroll first, so both
+ // snapshots are taken from the reader's final position.
+ function go(smooth){{
+  render();tray();
+  $('#compare').scrollIntoView({{behavior:smooth?'smooth':'auto',block:'start'}});
+  // The button that opened this is hidden now, so hand focus to the panel's
+  // heading. Not the section: its name would be every cell in the table.
+  $('#cmp-h').focus({{preventScroll:true}});
+ }}
+ if(document.startViewTransition&&!reduce.matches)document.startViewTransition(function(){{go(false)}});else go(!reduce.matches);
+ say('Side-by-side comparison of '+sel().length+' doorbells');
+}}
+function closeCompare(){{
+ if($('#compare').hidden)return;
+ var go=function(){{
+  $('#compare').hidden=true;tray();
+  if(!$('#tray').hidden)$('#tray-go').focus({{preventScroll:true}});
+ }};
+ if(document.startViewTransition&&!reduce.matches)document.startViewTransition(go);else go();
+}}
+function clearAll(){{
+ // Both Clear buttons are about to be hidden, so focus needs somewhere real.
+ var inside=$('#compare').contains(document.activeElement)||$('#tray').contains(document.activeElement);
+ $$('input.cmp').forEach(function(c){{c.checked=false}});$('#compare').hidden=true;tray();
+ if(inside){{var f=document.querySelector('input.cmp');if(f)f.focus({{preventScroll:true}})}}
+}}
 $('#tray-go').onclick=showCompare;
 $('#cmp-inline').onclick=showCompare;
-$('#tray-clear').onclick=function(){{$$('input.cmp').forEach(function(c){{c.checked=false}});$('#compare').hidden=true;tray()}};
-$('#cmp-close').onclick=function(){{$('#compare').hidden=true}};
+$('#tray-clear').onclick=clearAll;
+$('#cmp-clear').onclick=clearAll;
+$('#cmp-close').onclick=closeCompare;
 function m3(x){{return '£'+(+x).toFixed(2)}}
 function shortlist(){{
  return 'SubFree UK shortlist, checked '+CHECKED+'\\n'+shareUrl()+'\\n\\n'+sel().map(function(id){{var d=D[id];
@@ -1048,8 +1097,8 @@ if(shared){{
  shared.split(',').forEach(function(id){{if(D[id]&&ids.indexOf(id)<0&&ids.length<3)ids.push(id)}});
  if(ids.length){{
   $$('input.cmp').forEach(function(c){{c.checked=ids.indexOf(c.value)>-1}});
+  if(ids.length>1)render();
   tray();
-  if(ids.length>1){{render();$('#compare').hidden=false}}
  }}
  syncUrl();
 }}
