@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overdrive mockup: tray to table | SubFree UK</title>
+<style>
+:root {
+  --ink: #1a1a1a; --ink2: #555; --ink3: #767676; --rule: #d9d6cf; --rule2: #ece9e2;
+  --paper: #fff; --tint: #f6f4ef; --acc: #0f5c4d; --tray: #332f2a; --tray-ink: #f6f3ec;
+  --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.45 var(--sans); }
+p { max-width: 62ch; }
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 1rem 8rem; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.hd { padding: 2rem 0 1rem; border-bottom: 1px solid var(--ink); }
+.eyebrow { font: 600 11px/1 var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); margin: 0 0 1rem; }
+h1 { font: 700 clamp(24px, 4vw, 36px)/1.15 var(--serif); margin: 0 0 1rem; letter-spacing: -.01em; }
+.dek { font: 17px/1.45 var(--serif); color: var(--ink2); margin: 0 0 1rem; }
+.sup { font: 12px/1.5 var(--sans); color: var(--ink3); margin: 0; font-variant-numeric: tabular-nums; }
+
+/* 4. Scroll-driven hairline. The track is always there; the fill only moves
+   where the browser can drive it from the scroll position. */
+.progress { position: sticky; top: 0; z-index: 3; height: 2px; background: var(--rule2); }
+.progress i { display: block; height: 100%; background: var(--acc); transform: scaleX(0); transform-origin: left center; }
+@supports (animation-timeline: scroll()) {
+  .progress i { animation: rule linear both; animation-timeline: scroll(root); }
+  @keyframes rule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+
+ul.rows { list-style: none; margin: 0; padding: 0; }
+.mrow { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
+        padding: 1rem 0; border-bottom: 1px solid var(--rule2); }
+.mrow input { accent-color: var(--acc); width: 16px; height: 16px; margin: 0; }
+.mrow b { font-weight: 700; } .mrow span { color: var(--ink2); font-size: 14px; }
+.mrow em { font-style: normal; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* 2 and 3. The tray and the compare panel are the same object: one name, so
+   the browser morphs between them instead of cross-fading. */
+.cmp { border: 1px solid var(--ink); margin: 0 0 1rem; }
+.cmp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--rule); }
+.cmp-head h2 { font: 700 20px/1.2 var(--serif); margin: 0; }
+.cmp button { font: 600 13px var(--sans); background: none; border: 0; padding: 0; color: var(--acc); text-decoration: underline; cursor: pointer; min-height: 24px; }
+.cmp-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+.cmp th, .cmp td { padding: .6rem 1rem; border-bottom: 1px solid var(--rule2); text-align: left; font-size: 14px; vertical-align: top; }
+.cmp thead th { font: 700 14px/1.25 var(--sans); border-bottom: 2px solid var(--ink); }
+.cmp tbody th { font: 600 11px/1.3 var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--ink2); white-space: nowrap; }
+.cmp-cost td { background: var(--tint); font-variant-numeric: tabular-nums; }
+
+.tray { position: sticky; bottom: 0; display: flex; gap: 1rem; align-items: center; justify-content: center;
+        background: var(--tray); color: var(--tray-ink); padding: 1rem; border-top: 1px solid var(--rule); }
+.tray button { font: 600 14px var(--sans); background: var(--tray-ink); color: var(--tray); border: 0; padding: 0 1.25rem; min-height: 32px; cursor: pointer; }
+.tray button:disabled { opacity: .55; cursor: default; }
+.tray button.ghost { background: none; color: var(--tray-ink); text-decoration: underline; padding: 0 1rem; }
+#log { position: fixed; left: 1rem; bottom: 5rem; font: 12px/1.4 var(--sans); color: var(--ink3); }
+
+.note { border-top: 1px solid var(--ink); margin-top: 2rem; padding-top: 1rem; font-size: 13px; color: var(--ink2); }
+.note h2 { font: 700 12px/1.2 var(--sans); text-transform: uppercase; letter-spacing: .07em; color: var(--ink); margin: 0 0 .75rem; }
+.note li { margin: 0 0 .4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(.2, .7, .2, 1);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hd">
+    <p class="eyebrow">Overdrive mockup &middot; suggestions 2, 3 and 4</p>
+    <h1>Tray to table, one continuous object</h1>
+    <p class="dek">Tick two or three models, then press Compare. The tray should lift into the
+      panel and each chosen row should slide into its own column, because it is the same
+      selection moving, not a new surface appearing.</p>
+    <p class="sup" id="sup"></p>
+  </header>
+
+  <div class="progress" aria-hidden="true"><i></i></div>
+
+  <ul class="rows" id="rows">
+    <li class="mrow" data-id="reo-poe"><input type="checkbox" aria-label="Compare Reolink Video Doorbell PoE"><span><b>Reolink</b> Video Doorbell PoE<br><span>Records free, nothing paywalled</span></span><em>&pound;69.99</em></li>
+    <li class="mrow" data-id="reo-wifi"><input type="checkbox" aria-label="Compare Reolink Video Doorbell WiFi"><span><b>Reolink</b> Video Doorbell WiFi<br><span>Records to a card, needs wiring</span></span><em>&pound;93.49</em></li>
+    <li class="mrow" data-id="reo-batt"><input type="checkbox" aria-label="Compare Reolink Video Doorbell (Battery)"><span><b>Reolink</b> Video Doorbell (Battery)<br><span>Card in the doorbell, no fees</span></span><em>&pound;99.99</em></li>
+    <li class="mrow" data-id="tapo-d230"><input type="checkbox" aria-label="Compare Tapo D230S1"><span><b>Tapo</b> D230S1<br><span>Footage indoors on the chime</span></span><em>&pound;84.99</em></li>
+    <li class="mrow" data-id="ring"><input type="checkbox" aria-label="Compare Ring Battery Video Doorbell"><span><b>Ring</b> Battery Video Doorbell 2K<br><span>Records nothing without a plan</span></span><em>&pound;79.99</em></li>
+  </ul>
+
+  <section class="cmp" id="cmp" hidden aria-labelledby="cmp-h">
+    <div class="cmp-head"><h2 id="cmp-h">Side by side</h2><button type="button" id="close">Close</button></div>
+    <div class="cmp-scroll"><table id="cmp-table"></table></div>
+  </section>
+
+  <div class="note">
+    <h2>What this mockup is testing</h2>
+    <ul>
+      <li><b>2.</b> A same-document View Transition on the compare open and close, with a
+        feature detect, a reduced-motion skip and an instant fallback.</li>
+      <li><b>3.</b> Only the tray and the chosen rows carry a transition name. Nothing else is
+        named, so one moment stays one moment.</li>
+      <li><b>4.</b> A hairline rule along the top of the list, driven by
+        <code>animation-timeline: scroll()</code> inside <code>@supports</code>. Without
+        support the track is there and the fill never moves. It reports position and hijacks
+        nothing.</li>
+    </ul>
+  </div>
+</div>
+
+<form class="tray" id="tray" hidden>
+  <span id="tray-txt"></span>
+  <button type="button" id="go">Compare</button>
+  <button type="button" class="ghost" id="clear">Clear</button>
+</form>
+<p id="log" role="status"></p>
+
+<script>
+(function () {
+  var MODELS = {
+    'reo-poe': { name: 'Reolink Video Doorbell PoE', rec: 'Yes', price: '£69.99', keep: '£79.99' },
+    'reo-wifi': { name: 'Reolink Video Doorbell WiFi', rec: 'Yes', price: '£93.49', keep: '£103.49' },
+    'reo-batt': { name: 'Reolink Video Doorbell (Battery)', rec: 'Yes', price: '£99.99', keep: '£99.99' },
+    'tapo-d230': { name: 'Tapo D230S1', rec: 'Yes', price: '£84.99', keep: '£94.99' },
+    'ring': { name: 'Ring Battery Video Doorbell 2K', rec: 'No', price: '£79.99', keep: '£259.63' }
+  };
+  var ROWS = [['Records free?', 'rec'], ['Price', 'price'], ['3 years, cheapest', 'keep']];
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.mrow'));
+  var list = document.getElementById('rows');
+  var panel = document.getElementById('cmp');
+  var tray = document.getElementById('tray');
+  var note = document.getElementById('log');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var open = false;
+
+  function picked() {
+    return rows.filter(function (r) { return r.querySelector('input').checked; })
+               .map(function (r) { return r.dataset.id; });
+  }
+
+  function shortlist(ids) {
+    return ids.map(function (id) { return MODELS[id]; })
+              .map(function (m) { return m.name + ' ' + m.price; }).join(', ');
+  }
+
+  function table(ids) {
+    var head = '<thead><tr><th><span class="vh">Spec</span></th>' + ids.map(function (id) {
+      return '<th class="cmp-col" data-id="' + id + '" style="view-transition-name:row-' + id + '">' +
+             MODELS[id].name + '</th>';
+    }).join('') + '</tr></thead><tbody>';
+    var body = ROWS.map(function (r) {
+      return '<tr><th scope="row">' + r[0] + '</th>' + ids.map(function (id) {
+        return '<td>' + MODELS[id][r[1]] + '</td>';
+      }).join('') + '</tr>';
+    }).join('');
+    document.getElementById('cmp-table').innerHTML = head + body + '</tbody>';
+  }
+
+  function names(ids) {
+    rows.forEach(function (r) {
+      r.style.viewTransitionName = ids.indexOf(r.dataset.id) > -1 ? 'row-' + r.dataset.id : 'none';
+    });
+  }
+
+  function trayState() {
+    var ids = picked();
+    tray.hidden = open || ids.length === 0;
+    document.getElementById('tray-txt').textContent =
+      ids.length ? ids.length + ' selected' : '';
+    var go = document.getElementById('go');
+    go.disabled = ids.length < 2;
+    go.textContent = ids.length < 2 ? 'Pick 2 or 3' : 'Compare ' + ids.length;
+    names(ids);
+  }
+
+  function apply(next) {
+    open = next;
+    if (open) {
+      var ids = picked();
+      table(ids);
+      panel.hidden = false;
+      list.hidden = true;
+      tray.hidden = true;
+    } else {
+      panel.hidden = true;
+      list.hidden = false;
+    }
+    trayState();
+  }
+
+  function move(next) {
+    var ids = picked();
+    if (open === next) return;
+    if (ids.length < 2) { apply(next); return; }
+    names(ids);
+    if (!document.startViewTransition || reduce.matches) {
+      apply(next);
+      note.textContent = document.startViewTransition
+        ? 'Instant: reduced motion is on.'
+        : 'Instant: this browser has no View Transitions.';
+      return;
+    }
+    var vt = document.startViewTransition(function () { apply(next); });
+    note.textContent = 'View Transition: ' + ids.length + ' rows into columns, 240ms.';
+    vt.finished.then(function () { names(picked()); }, function () {});
+  }
+
+  document.getElementById('go').addEventListener('click', function () { move(true); });
+  document.getElementById('close').addEventListener('click', function () { move(false); });
+  document.getElementById('clear').addEventListener('click', function () {
+    rows.forEach(function (r) { r.querySelector('input').checked = false; });
+    if (open) { open = false; panel.hidden = true; list.hidden = false; }
+    trayState();
+  });
+
+  rows.forEach(function (r) {
+    r.querySelector('input').addEventListener('change', function () {
+      var ids = picked();
+      // A selection change is a different comparison, not the same object
+      // moving, so it re-renders without a transition.
+      if (open) {
+        if (ids.length >= 2) { table(ids); } else { open = false; panel.hidden = true; list.hidden = false; }
+      }
+      trayState();
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && open) move(false);
+  });
+
+  function support() {
+    document.getElementById('sup').textContent = [
+      'startViewTransition: ' + (document.startViewTransition ? 'yes' : 'no'),
+      'animation-timeline: scroll(): ' + (CSS.supports('animation-timeline', 'scroll()') ? 'yes' : 'no'),
+      'reduced motion: ' + (reduce.matches ? 'reduce' : 'no-preference')
+    ].join('  ·  ');
+  }
+  if (reduce.addEventListener) reduce.addEventListener('change', support);
+  support();
+  trayState();
+})();
+</script>
+</body>
+</html>
