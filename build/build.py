@@ -552,8 +552,6 @@ table.cmp-t,table.main-t{{border-collapse:collapse;width:100%}}
 .main-t td.num,.main-t th.num{{text-align:right}}
 td.num{{white-space:nowrap}}
 .c-cmp{{width:2rem;padding-left:0.5rem!important;padding-right:0.5rem!important}}
-.c-rec{{width:120px}}
-.c-model{{width:27%}}
 .mcell{{display:flex;gap:1rem;align-items:flex-start}}
 .mcell>div{{min-width:0}}
 .ph{{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}}
@@ -562,7 +560,7 @@ span.ph{{display:flex;align-items:center;justify-content:center;background:var(-
 span.ph-lg{{font-size:12px}}
 .brand{{font-weight:700}} .mname{{font-weight:400}}
 .best{{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}}
-.c-catch{{font-size:14px;width:28%}}
+.c-catch{{font-size:14px}}
 .more-w{{margin-top:0.5rem}}
 .rec{{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}}
 .rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
@@ -680,7 +678,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 @media (max-width:1100px){{
  .main-t td,.main-t tbody th{{padding:1rem}}
  .main-t thead th{{padding:1rem;letter-spacing:.04em}}
- .c-model{{width:30%}} .c-rec{{width:auto}} .c-catch{{width:24%;font-size:13px}}
+ .c-catch{{font-size:13px}}
  .mcell{{gap:1rem}} .ph-sm{{width:36px!important;height:48px!important}}
  .best{{font-size:12.5px}}
  .rec{{font-size:13px}}
@@ -692,7 +690,6 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 @media (max-width:900px){{
  .main-t td,.main-t tbody th{{padding:1rem}}
  .main-t thead th{{padding:1rem;font-size:11px}}
- .c-catch{{width:22%}}
 }}
 @media (max-width:820px){{
  body{{font-size:15px}}

@@ -47,10 +47,11 @@ compare box moved 2px left. Between 821 and 1100 the tracks are
 `calc(2rem + 2px) 28% 84px 84px 84px 84px 84px 1fr`, because the table clamped
 its numeric columns at about 84px there and gave the rest to the catch column.
 
-The cells keep their `width` rules for the compare table, so `.main-t tr.main >
-*` resets width to `auto`: a percentage width on a grid item resolves against
-its own track, and the model column measured 91px inside a 337px track until
-that reset was added.
+One cell width survives, the 2rem on the compare box, and a width on a grid
+item resolves against its own track rather than filling it: the model column
+measured 91px inside a 337px track until `.main-t tr.main > *` reset the width
+to `auto`. That reset stays even now the column rules are gone, because it is
+what keeps the compare box's width off its own track.
 
 ### The header sticks as a block
 
@@ -96,5 +97,7 @@ its paper background over the strip.
   most widths; at 900px rows average 155px against the 140px estimate, so the
   table can start up to 200px shorter and grow as the reader scrolls. Chrome's
   scroll anchoring held the phone cards against the same movement in ADR 4.
-- A future redesign of the desktop columns has to edit these tracks and the
-  table's own widths together, or the two layouts will disagree.
+- The tracks are the only source of the desktop columns. The `.c-model`,
+  `.c-rec` and `.c-catch` width rules the table used are deleted, since the
+  grid tracks and the card layout both override them; measured at 1280, 900,
+  820 and 390px, removing them changes no height and no cell width.
