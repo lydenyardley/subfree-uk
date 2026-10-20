@@ -561,7 +561,12 @@ def shortlist_check(page):
     before = page.inner_text("#cmp-copy")
     page.click("#cmp-copy")
     page.wait_for_timeout(350)
-    after = page.inner_text("#cmp-copy")
+    after = page.evaluate(
+        """() => {
+            const n = document.getElementById('cmp-note');
+            return { text: n.textContent.trim(), hidden: n.hidden, role: n.getAttribute('role') };
+        }"""
+    )
     try:
         text = page.evaluate("() => navigator.clipboard.readText()")
     except Exception as error:
@@ -569,8 +574,14 @@ def shortlist_check(page):
         problems.append(f"could not read the clipboard: {error}")
     if before != "Copy shortlist":
         problems.append(f"the copy action reads {before!r}")
-    if after != "Copied":
-        problems.append(f"the copy action confirms with {after!r}")
+    confirm = (
+        "Copied 3 models as Markdown, with prices and the date checked. "
+        "Paste it into a message or a note."
+    )
+    if after["text"] != confirm or after["hidden"]:
+        problems.append(f"the copy confirmation reads {after['text']!r}")
+    if after["role"] != "status":
+        problems.append(f"the copy confirmation has role {after['role']!r}")
     required = [
         "SubFree UK shortlist, checked 19 October 2026",
         "TP-Link Tapo TD21",
@@ -591,9 +602,102 @@ def shortlist_check(page):
         problems.append(f"the shortlist link reads {links}")
     if text.count("Best for:") != 3 or text.count("Main catch:") != 3:
         problems.append("the shortlist does not give Best for and Main catch for all 3 models")
-    page.wait_for_timeout(2200)
+    page.wait_for_timeout(6800)
+    if not page.evaluate("() => document.getElementById('cmp-note').hidden"):
+        problems.append("the copy confirmation does not fade after six seconds")
     if page.inner_text("#cmp-copy") != "Copy shortlist":
-        problems.append("the copy label does not return to Copy shortlist")
+        problems.append("the copy button label changed")
+    return problems
+
+
+def diff_check(page):
+    """A differences-only view hides identical spec rows but keeps the decisions."""
+    problems = []
+    page.evaluate(
+        """() => {
+            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    page.click("#tray-go")
+    page.wait_for_timeout(150)
+    off = page.evaluate(
+        """() => {
+            const box = document.getElementById('cmp-diff-w');
+            const rows = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
+            return {
+                hidden: box.hidden,
+                label: box.textContent.replace(/\\s+/g, ' ').trim(),
+                checked: document.getElementById('cmp-diff').checked,
+                rows: rows.length,
+                shown: rows.filter((tr) => !tr.hidden).length,
+                dupes: +((document.getElementById('cmp-dupes').textContent.match(/\\d+/) || [0])[0])
+            };
+        }"""
+    )
+    if off["hidden"]:
+        problems.append("the differences-only control is hidden for a trio with identical rows")
+    if off["checked"]:
+        problems.append("the differences-only view is on before anyone asks for it")
+    if off["dupes"] < 1:
+        problems.append(f"the control counts {off['dupes']} identical rows for the Reolink trio")
+    if f"({off['dupes']} identical)" not in off["label"]:
+        problems.append(f"the control reads {off['label']!r}")
+    if off["rows"] != 18 or off["shown"] != 18:
+        problems.append(f"the compare table starts at {off['shown']} of {off['rows']} rows")
+
+    page.check("#cmp-diff")
+    page.wait_for_timeout(150)
+    on = page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
+            const hidden = rows.filter((tr) => tr.hidden);
+            const same = hidden.every((tr) => {
+                const cells = Array.from(tr.querySelectorAll('td')).map((td) => td.textContent);
+                return cells.length > 1 && cells.every((v) => v === cells[0]);
+            });
+            return {
+                shown: rows.filter((tr) => !tr.hidden).length,
+                hidden: hidden.length,
+                allIdentical: same,
+                pinnedHidden: rows.filter((tr) => tr.dataset.pin && tr.hidden)
+                    .map((tr) => tr.querySelector('th').textContent),
+                pinned: rows.filter((tr) => tr.dataset.pin).length
+            };
+        }"""
+    )
+    if on["hidden"] != off["dupes"]:
+        problems.append(f"the toggle hides {on['hidden']} rows, not {off['dupes']}")
+    if on["shown"] + on["hidden"] != 18:
+        problems.append(f"the table holds {on['shown'] + on['hidden']} rows after the toggle")
+    if not on["allIdentical"]:
+        problems.append("the toggle hides a row that is not identical")
+    if on["pinnedHidden"]:
+        problems.append(f"the toggle hides a decision row: {on['pinnedHidden']}")
+    if on["pinned"] != 5:
+        problems.append(f"{on['pinned']} rows are pinned, expected the cost row and four decisions")
+
+    page.uncheck("#cmp-diff")
+    page.wait_for_timeout(120)
+    if page.evaluate("() => document.querySelectorAll('#cmp-table tbody tr:not([hidden])').length") != 18:
+        problems.append("unticking differences only does not restore the rows")
+
+    page.evaluate(
+        """() => {
+            const ids = ['tapo-td21', 'reo-poe', 'ezviz-ep3x'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(200)
+    page.click("#tray-go")
+    page.wait_for_timeout(150)
     return problems
 
 
@@ -1181,6 +1285,7 @@ def main():
             costrow = costrow_check(page)
             share = share_check(page)
             chrome = chrome_check(page)
+            diff = diff_check(page)
 
             data = page.evaluate(AUDIT_JS)
             foot = page.locator(
@@ -1357,6 +1462,14 @@ def main():
         issues.extend(share)
     else:
         print("  ok    a ?cmp= link restores the three models and drops unknown ids")
+
+    if diff:
+        issues.extend(diff)
+    else:
+        print(
+            "  ok    differences only hides identical spec rows, keeps the decision rows, "
+            "and names its count"
+        )
 
     if chrome:
         issues.extend(chrome)

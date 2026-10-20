@@ -604,12 +604,16 @@ tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1
 /* jump-to-row highlight */
 @keyframes flash{{0%,35%{{background-color:var(--hl)}}100%{{background-color:transparent}}}}
 tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
-@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.bar i{{transition:none}}}}
+@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.bar i,.cmp-note{{transition:none}}}}
 /* compare */
 #compare{{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}}
 .cmp-head{{display:flex;justify-content:space-between;align-items:baseline;padding:1rem;border-bottom:1px solid var(--rule)}}
 .cmp-head h2{{font:700 20px/1.2 var(--serif);margin:0}}
-.cmp-actions{{display:flex;gap:1rem;align-items:baseline}}
+.cmp-actions{{display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap}}
+.cmpo{{display:inline-flex;align-items:center;gap:0.4rem;font-size:13px;line-height:1.3;color:var(--ink2);cursor:pointer}}
+#cmp-dupes{{color:var(--ink3);white-space:nowrap}}
+.cmp-note{{margin:0;padding:0 1rem 1rem;font-size:13px;line-height:1.4;color:var(--ink2);transition:opacity .4s}}
+.cmp-note.out{{opacity:0}}
 .cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{{background:var(--tint);font-variant-numeric:tabular-nums}}
 .cmp-scroll{{overflow-x:auto}}
 .cmp-t th,.cmp-t td{{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
@@ -724,7 +728,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
  .fbody .opts{{gap:0.5rem 1rem}}
  .range{{flex:none;width:100%;max-width:none}}
 }}
-@media print{{.skip,.controls,.tray,.c-cmp,.more-w,#theme,.srcs>summary{{display:none}} tr.detail{{display:table-row!important}}}}
+@media print{{.skip,.controls,.tray,.c-cmp,.more-w,#theme,.srcs>summary,.cmp-note{{display:none}} tr.detail{{display:table-row!important}}}}
 </style></head><body>
 <a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
@@ -784,8 +788,9 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <noscript><p class="nojs">Filters, sorting, compare and the per-model details need JavaScript. All {len(ROWS)} doorbells are listed below.</p></noscript>
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
-<section id="compare" hidden aria-live="polite">
-<div class="cmp-head"><h2>Side by side</h2><div class="cmp-actions"><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-close">Close</button></div></div>
+<section id="compare" hidden>
+<div class="cmp-head"><h2>Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-close">Close</button></div></div>
+<p class="cmp-note" id="cmp-note" role="status" hidden></p>
 <div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
 
@@ -920,6 +925,7 @@ $$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
  say(D[rows[0].dataset.id].name+(vt?', '+vt.textContent.toLowerCase():'')+', row '+(pos+1)+' of '+vis.length);
  var cb=rows[0].querySelector('input.cmp'); if(cb)cb.focus({{preventScroll:true}});
 }})}});
+var PINNED=['Records free?','Price','3 yrs, no plan','3 yrs, with plan'],diffOnly=false;
 var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
 function esc(s){{var d=document.createElement('div');d.textContent=s;return d.innerHTML}}
 function sel(){{return $$('input.cmp:checked').map(function(c){{return c.value}})}}
@@ -945,15 +951,29 @@ function render(){{
   return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }}).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){{return D[id].keep3}}),valid=keep.filter(function(v){{return typeof v==='number'&&isFinite(v)}}),low=valid.length?Math.min.apply(null,valid):Infinity;
- h+='<tr class="cmp-cost"><th scope="row">3 years, cheapest</th>'+s.map(function(id){{var v=D[id].keep3;
+ h+='<tr class="cmp-cost" data-pin="1"><th scope="row">3 years, cheapest</th>'+s.map(function(id){{var v=D[id].keep3;
   if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
   return '<td>'+(Math.abs(v-low)<0.005?'£'+v.toFixed(2)+' · cheapest':'+£'+(v-low).toFixed(2))+'</td>';
  }}).join('')+'</tr>';
- ROWS.forEach(function(r){{h+='<tr><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>'}});
+ var dupes=0;
+ ROWS.forEach(function(r){{
+  var vals=s.map(function(id){{return D[id][r[1]]}}),pin=PINNED.indexOf(r[0])>-1,same=vals.every(function(v){{return v===vals[0]}});
+  if(same&&!pin)dupes++;
+  h+='<tr'+(pin?' data-pin="1"':'')+(same&&!pin?' data-same="1"':'')+'><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>';
+ }});
  $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
+ if(!dupes)diffOnly=false;
+ $('#cmp-diff-w').hidden=!dupes;
+ $('#cmp-dupes').textContent=dupes?'('+dupes+' identical)':'';
+ $('#cmp-diff').checked=diffOnly;
+ applyDiff();
 }}
+// Identical rows are the one part of a comparison that carries no decision, so
+// they can go. The four that do carry one stay even when they match.
+function applyDiff(){{$$('#cmp-table tbody tr[data-same]').forEach(function(tr){{tr.hidden=diffOnly}})}}
+$('#cmp-diff').onchange=function(){{diffOnly=this.checked;applyDiff()}};
 $$('input.cmp').forEach(function(c){{c.addEventListener('change',tray)}});
-function showCompare(){{render();$('#compare').scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'start'}})}}
+function showCompare(){{render();$('#compare').scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'start'}});say('Side-by-side comparison of '+sel().length+' doorbells')}}
 $('#tray-go').onclick=showCompare;
 $('#cmp-inline').onclick=showCompare;
 $('#tray-clear').onclick=function(){{$$('input.cmp').forEach(function(c){{c.checked=false}});$('#compare').hidden=true;tray()}};
@@ -969,12 +989,20 @@ function legacyCopy(text){{
  document.body.appendChild(t);t.select();var ok=false;try{{ok=document.execCommand('copy')}}catch(e){{}}
  document.body.removeChild(t);return ok;
 }}
-var copyBtn=$('#cmp-copy');
-function copyLabel(m){{copyBtn.textContent=m;clearTimeout(copyBtn._t);copyBtn._t=setTimeout(function(){{copyBtn.textContent='Copy shortlist'}},2000)}}
+var copyBtn=$('#cmp-copy'),noteEl=$('#cmp-note'),noteT,noteT2;
+function copyNote(m){{
+ noteEl.textContent=m;noteEl.hidden=false;noteEl.classList.remove('out');
+ clearTimeout(noteT);clearTimeout(noteT2);
+ noteT=setTimeout(function(){{
+  if(reduce.matches){{noteEl.hidden=true;return}}
+  noteEl.classList.add('out');
+  noteT2=setTimeout(function(){{noteEl.hidden=true;noteEl.classList.remove('out')}},400);
+ }},6000);
+}}
 copyBtn.onclick=function(){{
- var text=shortlist();
- function ok(){{copyLabel('Copied')}}
- function fail(){{copyLabel('Copy failed')}}
+ var text=shortlist(),n=sel().length;
+ function ok(){{copyNote('Copied '+n+' model'+(n===1?'':'s')+' as Markdown, with prices and the date checked. Paste it into a message or a note.')}}
+ function fail(){{copyNote('Copying is blocked in this browser. Select the table text and copy it by hand instead.')}}
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(ok,function(){{legacyCopy(text)?ok():fail()}});
  else legacyCopy(text)?ok():fail();
 }};
