@@ -9,7 +9,9 @@ best-practice rules alongside them. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
 layout, the price range slider, the filter panel resize, the live announcements,
 the three-row compare cap, the empty-state recovery, the compare cost row, the
-shortlist copy, the jump announcement, the theme motion, the score-bar draw, the
+shortlist copy, the differences-only view, the jump announcement, the theme
+motion, the score-bar draw, the record and plan labels, the phone label column,
+the host-grouped source list, the closing line, the performance budget, the
 no-JavaScript fallback, the skip link, the photo lightbox and horizontal overflow
 at the breakpoints the stylesheet defines.
 
@@ -420,6 +422,8 @@ def labels_check(page):
                 nestText: nest.textContent.trim(),
                 nestClass: nest.querySelector('.rec').className,
                 planWords: subs.filter((td) => /No plan/.test(td.textContent)).length,
+                planRows: Array.from(document.querySelectorAll('#tbl tbody.item'))
+                    .filter((row) => row.dataset.sub3 === '0').length,
                 planDashes: subs.filter((td) => /\u2014/.test(td.textContent)).length,
                 priceLabel: pseudo(price).content,
                 catchLabel: pseudo(catchCell).content,
@@ -437,10 +441,11 @@ def labels_check(page):
         problems.append(f"the Nest record cell reads {state['nestText']!r}")
     if "rec-brief" not in state["nestClass"]:
         problems.append(f"the Nest record marker has the class {state['nestClass']!r}")
-    if state["planWords"] != 3 or state["planDashes"]:
+    if state["planWords"] != state["planRows"] or state["planDashes"]:
         problems.append(
-            f"the plan column prints {state['planWords']} words and "
-            f"{state['planDashes']} bare dashes, expected 3 and 0"
+            f"the plan column prints {state['planWords']} words for "
+            f"{state['planRows']} rows without a plan, and "
+            f"{state['planDashes']} bare dashes"
         )
     if state["priceLabel"] not in ("normal", "none"):
         problems.append(f"the phone price cell still carries the label {state['priceLabel']}")
@@ -666,6 +671,7 @@ def diff_check(page):
                 hidden: box.hidden,
                 label: box.textContent.replace(/\\s+/g, ' ').trim(),
                 checked: document.getElementById('cmp-diff').checked,
+                live: document.getElementById('compare').getAttribute('aria-live'),
                 rows: rows.length,
                 shown: rows.filter((tr) => !tr.hidden).length,
                 dupes: +((document.getElementById('cmp-dupes').textContent.match(/\\d+/) || [0])[0])
@@ -682,6 +688,11 @@ def diff_check(page):
         problems.append(f"the control reads {off['label']!r}")
     if off["rows"] != 18 or off["shown"] != 18:
         problems.append(f"the compare table starts at {off['shown']} of {off['rows']} rows")
+    if off["live"]:
+        problems.append(
+            f"the compare panel is a live region ({off['live']}); rendering eighteen rows "
+            "would read them all aloud"
+        )
 
     page.check("#cmp-diff")
     page.wait_for_timeout(150)

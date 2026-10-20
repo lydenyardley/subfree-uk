@@ -9,9 +9,9 @@ is the closest a desktop browser gets to a mid-range Android phone.
 
 | Budget | Target | Measured 20 October 2026 | Status |
 |---|---|---|---|
-| Sort response | under 100ms | 5 to 15ms of script | Met |
+| Sort response | under 100ms | 5 to 16ms of script | Met |
 | Compare response | under 100ms | 15 to 20ms | Met |
-| Longest task during a sort | under 50ms | 65 to 90ms | **Open** |
+| Longest task during a sort | under 50ms | 65 to 125ms | **Open** |
 | Table movement when the tray opens | 0px | 0px | Met |
 
 ## How to measure
@@ -20,11 +20,13 @@ is the closest a desktop browser gets to a mid-range Android phone.
 length of the check, dispatches four sorts and a compare, and prints the
 slowest sort, the compare response and the longest long task seen during the
 sorts. The response and shift lines fail the build; the long-task figure is
-printed because it varies by a factor of two between runs on the same machine.
+printed because it more than doubles between runs on the same machine, which
+is why the budget records it instead of gating on it. An open Details row
+makes it worse: with all fourteen open it measured 110ms.
 
 ## Why the long-task line is open
 
-The sort's own JavaScript is 5 to 15ms. The rest of the task is Chromium
+The sort's own JavaScript is 5 to 16ms. The rest of the task is Chromium
 laying out 14 card blocks that together run to about 5,000px, and a
 `:has`-free reorder of that much content cannot avoid a layout pass.
 
@@ -35,7 +37,8 @@ draw still restarts from zero and animates to the score.
 
 `content-visibility: auto` with `contain-intrinsic-size` on the phone cards
 was measured too. It cut the longest task to 58ms and added 84px of page
-height from the size estimate, so it is not in yet.
+height from the size estimate, so it is not in yet: 58ms is still over the
+ceiling, and the height is a cost the page would pay on every visit.
 
 Next step: take the cards out of the sort's layout path entirely, either by
 containing off-screen cards once the intrinsic-size estimate stops costing
