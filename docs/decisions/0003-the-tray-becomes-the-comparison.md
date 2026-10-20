@@ -69,7 +69,11 @@ the hairline is the plain 2px track. Print hides it.
   and the count line still names the number.
 - A future panel that wants a transition names at most one more element, and
   that element must leave the flow. A stationary duplicate is not a candidate.
-- `morph_check` and `rule_check` in `build/check.py` fail the build if the two
-  names diverge, if a second element is named, if the duration or the root
-  suppression changes, if reduced motion or a missing API stops opening the
-  panel, or if the rule stops growing with scroll.
+- `morph_check`, `head_check` and `rule_check` in `build/check.py` fail the
+  build if the two names diverge, if a second element is named, if the duration
+  or the root suppression changes, if reduced motion or a missing API stops
+  opening the panel, if the header's heading wraps or its links split, or if
+  the rule stops growing with scroll.
+- The panel's header is three rows at 390 (heading, the differences label, the
+  three links) and one row from 820 up. Adding a fourth action is a header
+  redesign, not a new link.
