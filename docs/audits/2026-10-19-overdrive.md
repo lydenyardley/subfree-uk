@@ -108,42 +108,66 @@ Do not layer B and A. One extraordinary moment.
    14 timers that draw the ripple on a re-sort nobody needs twice, and the
    layout pass that still costs 65 to 90ms, which is the open line in
    `docs/performance-budget.md`.
-2. Add the tray-to-table View Transition behind a feature detect, with the
-   reduced-motion and first-paint guards. Fall back to today's instant swap.
-3. Name only the tray and the three compare rows for the transition. Do not
-   name the 18 table rows; that turns one authored moment into a crowd.
-4. Add a hairline progress rule along the table using `animation-timeline:
-   scroll()` inside `@supports`, and a static rule otherwise. Never hijack
-   scroll.
-5. Add the sticky current-model verdict line only if it can be read by a
+2. Add the sticky current-model verdict line only if it can be read by a
    screen reader without announcing on every scroll. If not, skip it.
-6. Add the plan-price assumption control (Direction A) in a later release,
+3. Add the plan-price assumption control (Direction A) in a later release,
    with a visible "assumption, not a quote" caption and no change to the
    default ranking.
 
+## Shipped (20 October 2026)
+
+B and the hairline rule are in `build/build.py`, with `morph_check` and
+`rule_check` guarding them in `build/check.py`.
+
+- The tray and the compare header share one `view-transition-name`. They are
+  never on screen together any more, so one name is always exactly one box:
+  no clearing dance, and nothing else in the page is named. 240ms on one
+  easing curve, opened and closed through `startViewTransition`.
+- The old bar leaves in 100ms and the new one arrives after, rather than the
+  two cross-fading in one box. A still frame of the midpoint showed both
+  texts stacked and translucent.
+- Reduced motion and a missing API both fall back to the instant swap. The
+  page cross-fade is off, so the table behind the pair does not ghost.
+- The tray now leaves while the comparison is open, which is what makes the
+  move real. Clear moved into the panel's actions so nothing was lost, and
+  focus lands on the panel's heading on open and back on the tray's Compare on
+  close. Without that, the button that opened it left focus on the body; the
+  section itself announced every cell, so the heading took the focus instead.
+
+**Deviation from suggestion 3.** The three chosen rows are not named. In the
+mockup the list is replaced by the panel, so a row can leave and arrive as a
+column. On the real page the table stays, so a named row is painted twice for
+the length of the transition, once in place and once flying to its column, or
+it has to vanish for 240ms. One pair carries the moment; four would have made
+it a crowd.
+
+**Deviation from suggestion 4.** The rule is driven by a view timeline on the
+table's box (`--tbl`, full cover range), not `scroll(root)`. Page progress and
+table progress differ by the mast, the controls and the method block, and the
+rule sits on the table's own top edge, where it is the header's hairline once
+the header sticks.
+
 ## Mockup
 
-`docs/mockups/overdrive-tray-table.html` carries suggestions 2, 3 and 4 in one
-standalone file: a tray that lifts into the compare panel through
-`document.startViewTransition`, names only the tray and the chosen rows, and a
-hairline rule driven by `animation-timeline: scroll()` inside `@supports`. It
-has a feature readout, a reduced-motion path and an instant fallback. Open it,
-tick two or three rows and press Compare.
+`docs/mockups/overdrive-tray-table.html` is the prototype these came from: a
+tray that lifts into the compare panel, named rows, and the hairline rule with
+a feature readout, a reduced-motion path and an instant fallback. It stays as
+the record of what was compared; the page is now the authority.
 
-## Implementation sketch for B
+## What the build actually does
 
 - Wrap the compare open and close state change in `document.startViewTransition`
   when it exists.
-- Give the tray a stable `view-transition-name`, and give each selected row a
-  name derived from its model slug. Clear the names before the next paint so
-  two elements never share one.
-- Set `::view-transition-group(...)` duration to 240ms and a single easing
-  curve. Respect `prefers-reduced-motion` by skipping the call entirely.
-- Do not change where focus lands. Check the current focus target and Escape
-  behaviour before the change, and verify both again after it. The transition
-  must not steal or delay focus.
-- Measure with a performance trace on a mid-range Android profile; the
-  transition itself should not add a long task.
+- One name on the tray and the compare header. They are mutually exclusive, so
+  two elements never share it and no names have to be cleared.
+- `::view-transition-group(cmp-tray)` runs 240ms on one easing curve. Old and
+  new bars hand over instead of cross-fading. Reduced motion skips the call.
+- Focus moves to the panel's heading on open and back to the tray on close,
+  because the control that opened the panel is no longer on screen. Verified by
+  keyboard: open, Tab reaches the panel's actions, close returns to Compare.
+- The rule is a 2px sticky hairline inside the table's box, filled by a view
+  timeline across the table's cover range, with `animation-range: cover`.
+  Without timelines it is the plain hairline, and print hides it.
 
 ## Never
 

@@ -52,8 +52,9 @@ stands.
 - Run `python build/check.py`. It rebuilds the site, fails if a generated file
   is stale, then runs the accessibility, anchor, image, target-size, type-floor,
   phone-layout, compare and differences-only, shareable-shortlist,
-  jump-announcement, motion, score-bar, label, source-list, closing-line,
-  performance-budget, no-JavaScript and overflow audit at every breakpoint.
+  jump-announcement, the tray-to-comparison transition, the table's scroll
+  rule, motion, score-bar, label, source-list, closing-line, performance-budget,
+  no-JavaScript and overflow audit at every breakpoint.
   Fix anything it reports.
 - Check the page at desktop and phone widths, and keep the numbers in
   [docs/performance-budget.md](docs/performance-budget.md) honest if you touch
