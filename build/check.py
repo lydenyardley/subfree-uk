@@ -9,7 +9,7 @@ best-practice rules alongside them. Also checks internal anchors, image
 files, duplicate ids, headings, labels, target sizes, the type floor, the phone
 layout, the price range slider, the filter panel resize, the live announcements,
 the three-row compare cap, the empty-state recovery, the compare cost row,the shortlist copy, the differences-only view, the jump announcement, the tray
-to compare-header transition, the theme motion, the score-bar draw, the record and plan labels, the phone label column,
+to compare-header transition, the theme motion, the score-bar draw, the muted-text contrast, the record and plan labels, the phone label column,
 the host-grouped source list, the closing line, the performance budget, the
 no-JavaScript fallback, the skip link, the photo lightbox and horizontal overflow
 at the breakpoints the stylesheet defines.
@@ -1258,6 +1258,62 @@ def hit_check(page):
     return problems
 
 
+INK_JS = r"""() => {
+    const cs = getComputedStyle(document.documentElement);
+    const rgb = (value) => {
+        const m = value.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+        if (!m) return null;
+        const hex = m[1].length === 3 ? m[1].replace(/(.)/g, '$1$1') : m[1];
+        return [0, 2, 4].map((i) => parseInt(hex.substr(i, 2), 16) / 255);
+    };
+    const lum = (c) => c
+        .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)))
+        .reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
+    const cr = (a, b) => {
+        const la = lum(a), lb = lum(b);
+        return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    };
+    const ink3 = rgb(cs.getPropertyValue('--ink3'));
+    const paper = rgb(cs.getPropertyValue('--paper'));
+    const tint = rgb(cs.getPropertyValue('--tint'));
+    const raw = cs.getPropertyValue('--ink3').trim();
+    if (!ink3 || !paper || !tint) return { raw, theme: 'unparsed' };
+    return { raw, theme: document.documentElement.getAttribute('data-theme') || 'auto',
+             paper: Math.round(cr(ink3, paper) * 100) / 100,
+             tint: Math.round(cr(ink3, tint) * 100) / 100 };
+}"""
+
+
+def ink_check(page):
+    """Muted text clears 4.5:1 on the page and on a tinted row, in both themes.
+
+    The cards tint their row on hover, so a note has to pass on the tint, not
+    only on paper.
+    """
+    problems = []
+    start = page.evaluate("() => document.documentElement.getAttribute('data-theme')")
+    for want in ("light", "dark"):
+        page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", want)
+        page.wait_for_timeout(60)
+        got = page.evaluate(INK_JS)
+        if got.get("theme") == "unparsed":
+            problems.append(f"{want}: --ink3/--paper/--tint are not hex: {got['raw']!r}")
+            continue
+        for surface in ("paper", "tint"):
+            if got[surface] < 4.5:
+                problems.append(
+                    f"{want}: --ink3 {got['raw']} on --{surface} is {got[surface]}:1, needs 4.5"
+                )
+    page.evaluate(
+        """(t) => {
+            if (t) document.documentElement.setAttribute('data-theme', t);
+            else document.documentElement.removeAttribute('data-theme');
+        }""",
+        start,
+    )
+    return problems
+
+
 def theme_check(page):
     """The toggle names its action, carries no pressed state, and takes a 44px click."""
     problems = []
@@ -1732,6 +1788,7 @@ def main():
             skip = skip_check(page)
             hit = hit_check(page)
             theme = theme_check(page)
+            ink = ink_check(page)
             motion = motion_check(page)
             jump = jump_check(page)
             morph = morph_check(page)
@@ -1860,6 +1917,11 @@ def main():
         issues.extend(theme)
     else:
         print("  ok    the theme toggle names its action and takes a 44px click")
+
+    if ink:
+        issues.extend(ink)
+    else:
+        print("  ok    muted text clears 4.5:1 on paper and on a tinted row, in both themes")
 
     if fallback:
         issues.extend(fallback)
