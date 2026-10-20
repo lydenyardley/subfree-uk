@@ -1012,6 +1012,59 @@ def rule_check(page):
     return problems
 
 
+def head_check(page):
+    """The compare header keeps its heading on one line and its links together.
+
+    Clear sits beside Copy shortlist and Close, so a phone must not break the
+    heading across two lines or leave one link alone on a third.
+    """
+    problems = []
+    width = page.evaluate("() => innerWidth")
+    page.evaluate(
+        """() => {
+            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(150)
+    page.evaluate("() => document.getElementById('cmp-inline').click()")
+    page.wait_for_timeout(450)
+    shape = page.evaluate(
+        """() => {
+            const head = document.querySelector('.cmp-head');
+            const h2 = document.getElementById('cmp-h').getBoundingClientRect();
+            const links = Array.from(document.querySelectorAll('.cmp-links > *'))
+                .map((el) => Math.round(el.getBoundingClientRect().top));
+            return {
+                headH: Math.round(head.getBoundingClientRect().height),
+                heading: [Math.round(h2.width), Math.round(h2.height)],
+                linkTops: links,
+                over: Math.round(head.scrollWidth - head.clientWidth)
+            };
+        }"""
+    )
+    if shape["heading"][1] > 30:
+        problems.append(f"at {width}px the compare heading wraps: {shape['heading']}")
+    if len(set(shape["linkTops"])) != 1:
+        problems.append(f"at {width}px the header links split across rows: {shape['linkTops']}")
+    if shape["over"] > 1:
+        problems.append(f"at {width}px the compare header overflows by {shape['over']}px")
+    page.evaluate(
+        """() => {
+            document.getElementById('cmp-close').click();
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = false;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    return problems
+
+
 def share_check(page):
     """A ?cmp= link reopens the same three models and drops unknown ids."""
     problems = []
@@ -1669,6 +1722,7 @@ def main():
             recovery = recovery_check(page)
             bars = bars_check(page)
             sources = sources_check(page)
+            head = head_check(page)
 
             page.set_viewport_size({"width": 1280, "height": 900})
             page.reload(wait_until="load")
@@ -1682,6 +1736,7 @@ def main():
             jump = jump_check(page)
             morph = morph_check(page)
             rule = rule_check(page)
+            head = head + head_check(page)
 
             # Hidden detail rows and the compare table are part of the page, so
             # open them before auditing instead of testing only the first paint.
@@ -1928,6 +1983,11 @@ def main():
         issues.extend(rule)
     else:
         print("  ok    a hairline along the table follows scroll, with a plain rule where timelines are missing")
+
+    if head:
+        issues.extend(head)
+    else:
+        print("  ok    the compare header keeps its heading on one line and its links in one row at 390 and 1280")
 
     if (
         header["display"] != "none"

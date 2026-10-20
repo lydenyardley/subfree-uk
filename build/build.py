@@ -607,9 +607,11 @@ tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
 @media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.bar i,.cmp-note{{transition:none}}}}
 /* compare */
 #compare{{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}}
-.cmp-head{{display:flex;justify-content:space-between;align-items:baseline;padding:1rem;border-bottom:1px solid var(--rule)}}
+.cmp-head{{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0.5rem 1rem;padding:1rem;border-bottom:1px solid var(--rule)}}
 .cmp-head h2{{font:700 20px/1.2 var(--serif);margin:0}}
-.cmp-actions{{display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap}}
+.cmp-actions{{display:flex;gap:0.5rem 1rem;align-items:baseline;flex-wrap:wrap}}
+ /* The three links wrap as one block, so a phone never leaves Close alone. */
+ .cmp-links{{display:flex;gap:1rem;align-items:baseline;flex-wrap:nowrap}}
 .cmpo{{display:inline-flex;align-items:center;gap:0.4rem;font-size:13px;line-height:1.3;color:var(--ink2);cursor:pointer}}
 #cmp-dupes{{color:var(--ink3);white-space:nowrap}}
 .cmp-note{{margin:0;padding:0 1rem 1rem;font-size:13px;line-height:1.4;color:var(--ink2);transition:opacity .4s}}
@@ -818,7 +820,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
 <section id="compare" hidden>
-<div class="cmp-head"><h2 id="cmp-h" tabindex="-1">Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-clear">Clear</button><button type="button" class="link" id="cmp-close">Close</button></div></div>
+<div class="cmp-head"><h2 id="cmp-h" tabindex="-1">Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><span class="cmp-links"><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-clear">Clear</button><button type="button" class="link" id="cmp-close">Close</button></span></div></div>
 <p class="cmp-note" id="cmp-note" role="status" hidden></p>
 <div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
