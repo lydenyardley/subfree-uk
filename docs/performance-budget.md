@@ -10,7 +10,7 @@ is the closest a desktop browser gets to a mid-range Android phone.
 | Budget | Target | Measured 20 October 2026 | Status |
 |---|---|---|---|
 | Sort response | under 100ms | 5 to 16ms of script | Met |
-| Compare open, transition included | under 150ms, median of 3 | 86 to 97ms warm; 119 to 171ms on the first open | Met |
+| Compare open, transition included | under 150ms, median of 3 | 83 to 122ms warm; 119 to 171ms on the first open | Met |
 | Longest task during a sort | under 50ms | 65 to 125ms | **Open** |
 | Longest task when the compare opens | under 50ms | none over 50ms in 3 runs | Met |
 | Table movement when the tray opens | 0px | 0px | Met |
@@ -34,11 +34,12 @@ only then paints the panel. The panel's first paint therefore waits for one
 snapshot it did not wait for before, which is one to two frames at this
 throttle. The page's own share is the 18-row render, 4 to 20ms.
 
-Measured over three opens per run: 86 to 97ms warmer, and 119 to 171ms on the
-first open of a session, which pays the snapshot pipeline's warm-up. 150ms is
+Measured over three opens per run: 83 to 122ms warm across nine runs, and 119
+to 171ms on the first open of a session, which pays the snapshot pipeline's
+warm-up. The spread tracks machine load, which is why the check takes the
+median of three and prints all three rather than trusting one number. 150ms is
 the line at which the capture has become a stall rather than a frame; a change
-that doubles the page's share lands well past it. The check takes the median of
-three and prints all three.
+that doubles the page's share lands well past it.
 
 ## Why the long-task line is open
 
