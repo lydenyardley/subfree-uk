@@ -86,8 +86,8 @@ its paper background over the strip.
   exact; 900 to 1100px differ by about 1%; 821px, one pixel above the card
   breakpoint, is 2.7% taller because its catch column is 3px narrower. No cell
   clips and no page scrolls sideways at any width.
-- The printed page is unchanged: a 1280px PDF of both layouts is the same
-  bytes.
+- Print is unchanged and does not see this layout: an A4 page is 794px wide,
+  below the breakpoint, so both produce the same bytes.
 - `content-visibility: auto` keeps skipped rows in the accessibility tree, as
   it does for the phone cards; a jump to a row still lands centred with focus
   on its checkbox.

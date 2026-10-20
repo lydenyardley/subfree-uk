@@ -1271,7 +1271,7 @@ DESKTOP_ROWS_JS = r"""() => {
     const head = Array.from(table.querySelectorAll('thead th')).map((th) => th.getBoundingClientRect().left);
     const row = table.querySelector('tr.main');
     const card = table.querySelector('tbody.item');
-    const rows = Array.from(table.querySelectorAll('tbody.item')).map((item) => ({
+    const rows = Array.from(table.querySelectorAll('tbody.item:not([hidden])')).map((item) => ({
         id: item.id,
         lefts: Array.from(item.querySelector('tr.main').children).map((cell) => cell.getBoundingClientRect().left),
         heights: Array.from(item.querySelector('tr.main').children).map((cell) => Math.round(cell.getBoundingClientRect().height)),
@@ -1329,6 +1329,9 @@ def desktop_rows_check(page):
             problems.append(
                 f"at {width}px the rows are not contained: {got['visibility']!r} {got['size']!r}"
             )
+        if len(got["rows"]) != 14:
+            problems.append(f"at {width}px {len(got['rows'])} of 14 rows are showing")
+            continue
         skew = max(
             abs(left - head)
             for row in got["rows"]
