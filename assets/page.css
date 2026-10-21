@@ -1,0 +1,327 @@
+:root{--ink:#1a1a1a;--ink2:#555;--ink3:#6e6e6e;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
+--v-best:#17694a;--v-batt:#1f5d96;--v-avoid:#a33b26;--hl:#fff1b8;--tray:#332f2a;--tray-ink:#f6f3ec;--imgbg:#fff;--imgf:none;
+--serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
+:root[data-theme=dark]{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.skip{position:absolute;top:0;left:0;z-index:20;transform:translateY(-120%);background:var(--paper);border:1px solid var(--ink);padding:0.5rem 1rem;font:600 14px/1.4 var(--sans);color:var(--ink)}
+.skip:focus{transform:none}
+.no-js .controls{display:none}
+.no-js #theme{display:none}
+.no-js .more-w{display:none}
+.nojs{margin:1rem 0;padding:1rem;border:1px solid var(--rule);font-size:14px;color:var(--ink2)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);transition:background-color .18s,color .18s}
+a{color:var(--acc)}
+p{max-width:65ch}
+sup{font-size:11px}
+.wrap{max-width:1440px;margin:0 auto;padding:0 1rem}
+.mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:1rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.mast>div>span{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}
+#theme{position:relative;font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:24px}
+#theme:hover{border-color:var(--ink)}
+#theme i{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}
+:root[data-theme=dark] #theme i{transform:rotate(180deg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #theme i{transform:rotate(180deg)}}
+#theme::after{content:"";position:absolute;inset:-10px -8px}
+header.intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
+h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
+.dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}
+.meta{font-size:13px;color:var(--ink2);margin:0}
+.meta b{color:var(--ink)}
+.verdict{border-left:1px solid var(--rule);padding:0 0 0 2rem;font-size:14px}
+.verdict h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}
+.verdict p{margin:0 0 1rem;padding-left:1rem;border-left:3px solid var(--vc)}
+.verdict p b{color:var(--vc)}
+.vshort{display:none;margin:1rem 0 0;font-size:14px;line-height:1.45}
+.v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)}
+a.jump{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}
+a.jump:hover{color:var(--vc)}
+.vtag{display:block;margin-top:0;padding:0.5rem 0 0;font:600 12px/1.25 var(--sans);letter-spacing:.01em;color:var(--vc)}
+.vtag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}
+tbody.item[data-v=best]{--vc:var(--v-best)} tbody.item[data-v=batt]{--vc:var(--v-batt)} tbody.item[data-v=avoid]{--vc:var(--v-avoid)}
+tbody.item[data-v] tr.main>td.c-cmp{border-left:3px solid var(--vc)}
+.controls{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}
+.filters>summary{display:none}
+.fbody{display:flex;flex-wrap:nowrap;gap:1rem 2rem;align-items:flex-start}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}
+.opts{display:flex;flex-wrap:wrap;gap:1rem}
+.opts label{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}
+.hint{margin:0.5rem 0 0;font-size:12px;line-height:1.35;color:var(--ink3);max-width:26ch}
+input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
+/* One range input per handle, stacked, so each keeps its own keyboard value.
+   Only the thumbs take pointer events, which is what lets them overlap. */
+.range{flex:1 1 180px;min-width:170px;max-width:320px}
+.dual{position:relative;height:24px;width:100%;--thumb:18px}
+/* Firefox draws a smaller thumb, so the track inset has to match it too. */
+@supports selector(::-moz-range-thumb){.dual{--thumb:14px}}
+.dual input[type=range]{position:absolute;left:0;top:0;width:100%;height:24px;margin:0;background:none;border:0;padding:0;-webkit-appearance:none;appearance:none;pointer-events:none}
+.dual input[type=range]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.dual input[type=range]::-webkit-slider-runnable-track{height:24px;background:none;border:0}
+.dual input[type=range]::-moz-range-track{height:24px;background:none;border:0}
+.dual input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}
+.dual input[type=range]::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}
+.dual-track{position:absolute;left:calc(var(--thumb)/2);right:calc(var(--thumb)/2);top:11px;height:2px;background:var(--rule)}
+.dual-track i{position:absolute;top:0;height:100%;background:var(--acc)}
+.dual-vals{display:flex;justify-content:space-between;gap:1rem;margin-top:0.5rem;font:600 13px var(--sans);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.sortby{margin-left:auto}
+select{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}
+.count{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}
+.count button.link{position:relative;padding:10px 6px;margin:-10px -6px}
+button.link{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}
+table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
+.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:middle;white-space:normal}
+.main-t thead th.num{text-align:right}
+.main-t thead th button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit}
+.main-t thead th button:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.main-t thead th[aria-sort=ascending] button::after{content:"\\00a0\\2191"}
+.main-t thead th[aria-sort=descending] button::after{content:"\\00a0\\2193"}
+.main-t thead sup{text-transform:none}
+.main-t td,.main-t tbody th{padding:1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}
+.main-t tbody.item:hover tr.main{background:var(--tint)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.main-t td.num,.main-t th.num{text-align:right}
+td.num{white-space:nowrap}
+.c-cmp{width:2rem;padding-left:0.5rem!important;padding-right:0.5rem!important}
+.mcell{display:flex;gap:1rem;align-items:flex-start}
+.mcell>div{min-width:0}
+.ph{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}
+img.ph{filter:var(--imgf)}
+span.ph{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink2);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;text-align:center;padding:0.5rem 0.25rem}
+span.ph-lg{font-size:12px}
+.brand{font-weight:700} .mname{font-weight:400}
+.best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
+.c-catch{font-size:14px}
+.more-w{margin-top:0.5rem}
+.rec{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}
+.rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
+.rec-yes::before{background:var(--acc)}
+.rec-kit::before,.rec-brief::before{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}
+.rec-no{color:var(--ink2)} .rec-no::before{border-color:var(--ink3)}
+.noplan{color:var(--ink2)}
+.score b{font-size:15px} .score{color:var(--ink2);font-size:13px;white-space:nowrap}
+.bar{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}
+/* scaleX paints on the compositor; animating width forced a layout each frame */
+.bar i{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center}
+.note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
+.fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0.15em;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
+.fn:hover{color:var(--acc);text-decoration:underline}
+button.more{position:relative;background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}
+button.more::after{content:"";position:absolute;inset:-10px -8px}
+button.more:hover,button.more[aria-expanded=true]{border-color:var(--ink)}
+tr.detail td{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}
+.dgrid{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}
+.dimg{margin:0}
+.zoom{position:relative;display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}
+.zoom:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.zi{position:absolute;right:-0.25rem;bottom:-0.25rem;width:1.25rem;height:1.25rem;border-radius:50%;background:var(--paper);border:1px solid var(--ink);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s}
+.zi::before{content:"";width:6px;height:6px;border:1.5px solid var(--ink);border-radius:50%;margin:-3px 0 0 -3px}
+.zi::after{content:"";position:absolute;right:4px;bottom:4px;width:5px;height:1.5px;background:var(--ink);transform:rotate(45deg)}
+.zoom:hover .zi,.zoom:focus-visible .zi{opacity:1}
+@media (hover:none){.zi{opacity:1}}
+#lightbox{border:1px solid var(--rule);background:var(--paper);color:var(--ink);padding:1rem;max-width:min(90vw,420px)}
+#lightbox img{display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:70vh;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
+#lightbox::backdrop{background:rgb(0 0 0 / .65)}
+.lb-bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1rem;font:600 13px/1.3 var(--sans)}
+.dgrid dl{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:1rem;font-size:14px;align-content:start}
+.dgrid dt{color:var(--ink2)} .dgrid dd{margin:0}
+.maths{font-variant-numeric:tabular-nums}
+.unverified{font-size:13px;margin:1rem 0 0;color:var(--ink2)}
+.srcs{font-size:12px;color:var(--ink2);margin:1rem 0 0}
+.srcs .fn{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}
+.empty{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}
+/* jump-to-row highlight */
+@keyframes flash{0%,35%{background-color:var(--hl)}100%{background-color:transparent}}
+tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} tbody.item.flash tr.main>*{animation:none;background:var(--hl)} #theme i,body,.cmp-note{transition:none}}
+/* compare */
+#compare{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}
+.cmp-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0.5rem 1rem;padding:1rem;border-bottom:1px solid var(--rule)}
+.cmp-head h2{font:700 20px/1.2 var(--serif);margin:0}
+.cmp-actions{display:flex;gap:0.5rem 1rem;align-items:baseline;flex-wrap:wrap}
+ /* The three links wrap as one block, so a phone never leaves Close alone. */
+ .cmp-links{display:flex;gap:1rem;align-items:baseline;flex-wrap:nowrap}
+.cmpo{display:inline-flex;align-items:center;gap:0.4rem;font-size:13px;line-height:1.3;color:var(--ink2);cursor:pointer}
+#cmp-dupes{color:var(--ink3);white-space:nowrap}
+.cmp-note{margin:0;padding:0 1rem 1rem;font-size:13px;line-height:1.4;color:var(--ink2);transition:opacity .4s}
+.cmp-note.out{opacity:0}
+.cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{background:var(--tint);font-variant-numeric:tabular-nums}
+.cmp-scroll{overflow-x:auto}
+.cmp-scroll:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cmp-t th,.cmp-t td{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}
+.cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{background:var(--tint)}
+.cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}
+.cmp-name{display:block}
+.cmp-photo{display:block;margin-top:1rem}
+.cmp-photo img{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
+.cmp-t tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tray{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}
+.tray button{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}
+.tray button:disabled{opacity:.5;cursor:default}
+.tray button.ghost{background:none;color:var(--tray-ink);text-decoration:underline;padding:0 1rem}
+ /* The tray becomes the compare header and comes back again. The two are never
+    on screen together, so one name serves both and no other element is named. */
+ #tray,.cmp-head{view-transition-name:cmp-tray}
+ /* Where the reader is in the table, reported not hijacked: the rule only
+    follows scroll. Without native timelines it is a plain hairline. */
+ .tbl-w{view-timeline-name:--tbl;view-timeline-axis:block}
+ .prog{position:sticky;top:0;z-index:3;height:2px;margin-bottom:-2px;background:var(--rule2);pointer-events:none}
+ .prog i{display:block;height:100%;background:var(--acc);transform:scaleX(0);transform-origin:left center}
+ @supports (animation-timeline:view()){
+  .prog i{animation:rule linear both;animation-timeline:--tbl;animation-range:cover 0% cover 100%}
+  @keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+ }
+ ::view-transition-group(cmp-tray){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+ /* Hand over rather than dissolve: two bars of text cross-fading in one box
+    reads as a smear, so the old bar goes first and the new one arrives after. */
+ ::view-transition-old(cmp-tray){animation:vt-out 100ms linear both}
+ ::view-transition-new(cmp-tray){animation:vt-in 140ms 100ms linear both}
+ @keyframes vt-out{to{opacity:0}}
+ @keyframes vt-in{from{opacity:0}}
+ /* Only the pair moves. Without this the whole page cross-fades and the table
+    ghosts behind the comparison. */
+ ::view-transition-old(root),::view-transition-new(root){animation:none}
+ @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){animation:none!important}}
+/* footer */
+section.method{display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
+section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}
+section.method p{margin:0 0 1rem;max-width:none}
+section.method p a{color:var(--ink2)}
+.srcs>summary{display:flex;align-items:center;gap:0.5rem;min-height:24px;margin:0 0 1rem;cursor:pointer;list-style:none}
+.srcs>summary::-webkit-details-marker{display:none}
+.srcs>summary h2{margin:0}
+.srcs>summary::before{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg);margin-right:0.25rem}
+.srcs[open]>summary::before{transform:rotate(45deg)}
+.srcs-n{font:500 12px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}
+.fns-wrap{columns:2;column-gap:2rem}
+.fns-g{margin:0 0 0.75rem;break-inside:avoid}
+.fns-g h3{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0}
+ol.fns{margin:0;padding-left:1.5rem;columns:1}
+ol.fns li{margin:0}
+ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:underline;color:var(--ink2)}
+.foot{border-top:1px solid var(--rule);padding:1rem 0 2rem;font-size:13px;color:var(--ink2)}
+.foot p{margin:0;max-width:none}
+.foot a{color:var(--ink2)}
+@media (min-width:821px) and (max-width:1100px){
+ .count{flex:1 1 auto;order:1;align-self:flex-end} .sortby{order:2}
+}
+/* 821-1100px: the full table must fit without sideways scrolling */
+@media (max-width:1100px){
+ .main-t td,.main-t tbody th{padding:1rem}
+ .main-t thead th{padding:1rem;letter-spacing:.04em}
+ .c-catch{font-size:13px}
+ .mcell{gap:1rem} .ph-sm{width:36px!important;height:48px!important}
+ .best{font-size:12.5px}
+ .rec{font-size:13px}
+ tr.detail td{padding-left:1rem}
+ .dgrid{grid-template-columns:140px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}
+ .ph-lg{width:140px!important;height:187px!important}
+ .dgrid dl{grid-template-columns:1fr;gap:0} .dgrid dt{margin-top:1rem;font-weight:600;font-size:12px} .dgrid dt:first-child{margin-top:0}
+}
+@media (max-width:900px){
+ .main-t td,.main-t tbody th{padding:1rem}
+ .main-t thead th{padding:1rem;font-size:11px}
+}
+@media (max-width:820px){
+ body{font-size:15px}
+ .wrap{padding:0 1rem}
+ header.intro{grid-template-columns:1fr;gap:1rem;padding:2rem 0}
+ .verdict{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}
+ .dek{font-size:16px}
+ .controls{gap:1rem}
+ .sortby{margin-left:0}
+ input[type=range]{width:150px}
+ .main-t thead{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .main-t thead th{position:static;padding:0;border:0;background:none}
+ .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
+ /* Off-screen cards skip layout, so a sort lays out only the cards in view.
+    330px is the content estimate, 363px with padding and rule, against real
+    cards of 331 to 409px. Auto remembers the real size once a card has been
+    laid out, so the estimate is only paid above the reader's fold. */
+ .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 330px}
+ tbody.item[data-v]{border-left:3px solid var(--vc)}
+ tbody.item[data-v] tr.main>td.c-cmp{border-left:0}
+ .main-t tr.main{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:0 1rem;position:relative;align-items:baseline}
+ .main-t tbody.item:hover tr.main{background:none}
+ .main-t tr.main>*{padding:0;border:0;width:auto;min-width:0;max-width:none}
+ .c-cmp{grid-row:1;grid-column:1;padding-top:0!important}
+ .c-model{grid-column:2;grid-row:1}
+ .ph-sm{width:45px!important;height:60px!important}
+ .c-rec{grid-column:2;grid-row:2} .c-price{grid-column:2;grid-row:3} .c-score{grid-column:2;grid-row:4}
+ .c-nosub{grid-column:2;grid-row:5} .c-sub{grid-column:2;grid-row:6}
+ .c-catch{grid-column:2;grid-row:7;padding-top:0.75rem;font-size:14px}
+ /* One muted label column, value to its right, so five separate label
+    lines become one aligned rhythm. The price needs no label. */
+ .main-t td.c-rec,.main-t td.c-score,.main-t td.c-nosub,.main-t td.c-sub{display:flex;gap:0.75rem;align-items:baseline;padding:0.45rem 0 0}
+ .main-t td.c-rec::before,.main-t td.c-score::before,.main-t td.c-nosub::before,.main-t td.c-sub::before{flex:0 0 8.5rem;margin:0}
+ .main-t td.c-price{padding:0.5rem 0 0.25rem;font:700 17px/1.2 var(--sans)}
+ .main-t td.c-score .bar{margin:0;flex:0 0 52px;align-self:center}
+ .main-t td.c-nosub .note{white-space:normal}
+ .main-t td[data-label]::before{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0;white-space:normal}
+ .main-t td.num,.main-t th.num{text-align:left} .bar{margin-left:0}
+ tr.detail td{padding:1rem;margin-top:0}
+ .dgrid{grid-template-columns:1fr} .dgrid dl+dl{margin-top:1rem}
+ .ph-lg{width:120px!important;height:160px!important;margin-bottom:1rem}
+ section.method{grid-template-columns:1fr} .fns-wrap{columns:1}
+ .cmp-t th,.cmp-t td{padding:0.5rem 1rem;font-size:13px}
+ .cmp-t thead th{min-width:140px;font-size:14px}
+ .cmp-t tbody th{width:84px;min-width:84px;font-size:11px;position:sticky;left:0;background:var(--paper)}
+ .cmp-t thead th:first-child{position:sticky;left:0;background:var(--paper);min-width:84px}
+}
+/* Above the phone breakpoint a row is a grid row rather than a table row. A
+   table lays all fourteen rows out again on every sort and no cell can skip
+   that; a contained block lays out only the rows in view. The tracks are the
+   widths the table itself chose at 1280px, so the columns stay where they
+   were: at 1280px to the pixel, and within about 1% of table height from 900
+   to 1100px. */
+@media (min-width:821px){
+ .main-t{display:block}
+ .main-t thead,.main-t tbody{display:block}
+ /* 2rem plus the 2px the collapsed table border used to take, so every
+    column after the compare box starts where it did. */
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:calc(2rem + 2px) 27% 120px 6.7% 8.2% 8.7% 9.1% 1fr}
+ /* A sticky cell can only move inside its parent, so the header row sticks as
+    a block: fourteen rows of table no longer move it, and the cells still sit
+    on one line each. */
+ .main-t thead{position:sticky;top:0;z-index:2;background:var(--paper)}
+ .main-t thead th{position:static;display:flex;align-items:center}
+ /* The column rules above are track widths now; a percentage width on a grid
+    item would resolve against its own track and shrink the cell inside it. */
+ .main-t tr.main>*{width:auto;min-width:0;max-width:none}
+ .main-t tr.detail{display:block}
+ .main-t tbody.item{content-visibility:auto;contain-intrinsic-size:auto 118px}
+}
+@media (min-width:821px) and (max-width:1100px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2rem + 2px) 28% 84px 84px 84px 84px 84px 1fr}
+ .main-t tbody.item{contain-intrinsic-size:auto 140px}
+}
+@media (max-width:520px){
+ .mast>div>span{display:none}
+ header.intro{padding:1rem 0}
+ .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
+ .verdict{display:none}
+ .vshort{display:block}
+ .srcs>summary{align-items:flex-start}
+ .controls{padding:0.75rem 0;gap:0.75rem}
+ .sortby .lab{margin-bottom:0.5rem}
+ /* The Compare action joins this line on the first tick; reserve its second
+    line so the table does not jump 19px when the tray appears. */
+ .count{min-height:3em}
+ .filters{display:block;flex:1 1 100%}
+ .filters>summary{display:flex;align-items:center;gap:0.5rem;min-height:44px;padding:0 1rem;border:1px solid var(--rule);font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);cursor:pointer;list-style:none}
+ .filters>summary::-webkit-details-marker{display:none}
+ .filters>summary::marker{content:""}
+ .filters>summary::before{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-right:0.25rem}
+ .filters[open]>summary::before{transform:rotate(45deg)}
+ .filters:not([open]) .fbody{display:none}
+ .fbody{flex-direction:column;align-items:stretch;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}
+ .fbody .opts{gap:0.5rem 1rem}
+ .range{flex:none;width:100%;max-width:none}
+}
+@media print{.skip,.controls,.tray,.prog,.c-cmp,.more-w,#theme,.srcs>summary,.cmp-note{display:none} tr.detail{display:table-row!important}}

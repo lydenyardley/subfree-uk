@@ -1,14 +1,21 @@
 """Single source of truth for the SubFree UK doorbell table.
-Generates data/doorbells.csv, data/doorbells.md and the site (index.html + doorbells.html at the repo root) from ROWS below.
+Generates data/doorbells.csv, data/doorbells.md and the site (index.html at the
+repo root, with doorbells.html as a redirect) from ROWS below. The page's CSS
+and JavaScript are build/page.css and build/page.js, inlined here at build time.
 Run from anywhere: python3 build/build.py
 """
-import csv, html, json
+import csv, hashlib, html, json
 import os
+from datetime import date
 from urllib.parse import urlparse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-CHECKED = "19 October 2026"
+# The one hand-typed fact: the day the prices and plans were checked. ISO, so
+# the age can be counted; build/check.py warns after 30 days and fails at 60.
+CHECKED_ISO = "2026-10-19"
+_CHECKED_DATE = date.fromisoformat(CHECKED_ISO)
+CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
 GITHUB = "https://github.com/lydenyardley/subfree-uk"
 CARD = 10.00   # ASSUMPTION (not cited): typical price of a 64 GB microSD card / USB stick
 MINP = 40      # lower end of the price slider; the cheapest doorbell here is £44.99
@@ -67,6 +74,8 @@ S = {
  "ertech_db2": ("ER Tech (UK retailer)", "https://www.ertech.co.uk/product/db2-pro/"),
  "eagle_hik": ("Eagle Security Solutions", "https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/"),
  "hik_ds": ("Hikvision datasheet", "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf"),
+ "ha_eufy": ("Home Assistant: eufy (ha-eufy-sdk)", "https://github.com/mega-yfue/ha-eufy-sdk"),
+ "ha_arlo": ("Home Assistant: Aarlo (community)", "https://github.com/twrecked/hass-aarlo"),
  "hik_4gon": ("4Gon: Hikvision doorbell (discontinued)", "https://www.4gon.co.uk/hikvision-24v-dc-wifi-video-doorbell-dskb6003wip-p-8309.html"),
 }
 
@@ -87,7 +96,7 @@ dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power
  wifi="2.4 GHz only",
  score=dict(rec=0,live=1,alerts=1,ai=0,storage=0,ha=0),
  src=["ring_prod","ring_plans","indy_ring","ha_ring"],
- unverified=""),
+ rec_src="ring_plans", history_src="ring_plans", ha_src="ha_ring", unverified=""),
 dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", power=["battery","wired"], ha=0,
  price=179.99, price_note="Google Store UK", price_src="nest_prod",
  extra=0, extra_note="", free_records=False,
@@ -102,7 +111,7 @@ dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", po
  wifi="2.4 GHz only (5 GHz is US-only)",
  score=dict(rec=1,live=1,alerts=1,ai=1,storage=0,ha=0),
  src=["nest_prod","nest_prem","nest_plans","ha_nest"],
- unverified=""),
+ rec_src="nest_plans", history_src="nest_plans", ha_src="ha_nest", unverified=""),
 dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power=["battery","wired"], ha=1,
  price=169.99, price_note="eufy UK", price_src="eufy_prod",
  extra=0, extra_note="8 GB storage built in", free_records=True,
@@ -113,11 +122,11 @@ dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power
  ai="Free: person and package detection on the device",
  history="Yes, event clips kept locally", paywalled="Nothing essential; cloud backup is optional",
  sub_text="Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices",
- ha_text="Community add-on only (eufy_security), which still logs in through your eufy account.",
+ ha_text="Community integration only (ha-eufy-sdk), which still logs in through your eufy account.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
- src=["eufy_prod","eufy_cloud","verge_eufy","sha_nosub"],
- unverified=""),
+ src=["eufy_prod","eufy_cloud","verge_eufy","sha_nosub","ha_eufy"],
+ rec_src="eufy_prod", history_src="eufy_prod", ha_src="ha_eufy", unverified=""),
 dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", power=["wired"], ha=2,
  price=93.49, price_note="Reolink UK sale price (RRP £109.99)", price_src="reo_store",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -132,7 +141,7 @@ dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", pow
  wifi="Dual-band 2.4/5 GHz",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
  src=["reo_store","ha_reo","reo_cloud","sha_nosub"],
- unverified=""),
+ rec_src="reo_store", history_src="reo_store", ha_src="ha_reo", unverified=""),
 dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power=["poe"], ha=2,
  price=69.99, price_note="Reolink UK sale price (RRP £99.99)", price_src="reo_store",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -145,7 +154,7 @@ dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power
  ha_text="Official, fully local integration (Local Push, Platinum).", wifi="Wired Ethernet",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
  src=["reo_store","ha_reo","reo_faq"],
- unverified=""),
+ rec_src="reo_faq", history_src="reo_faq", ha_src="ha_reo", unverified=""),
 dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes", power=["battery","wired"], ha=1,
  price=99.99, price_note="Screwfix, includes 64 GB card (Reolink UK also £99.99)", price_src="screwfix_reo",
  extra=0, extra_note="64 GB card included (Screwfix)", free_records=True,
@@ -159,7 +168,7 @@ dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes"
  wifi="Dual-band 2.4/5 GHz",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
  src=["screwfix_reo","reo_batt","reo_hub","reo_cloud","ha_reo"],
- unverified=""),
+ rec_src="reo_batt", history_src="reo_batt", ha_src="ha_reo", unverified=""),
 dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["battery"], ha=1,
  price=84.99, price_note="Tapo UK (RRP £94.99)", price_src="tapo_d230",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -174,7 +183,7 @@ dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["ba
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
  src=["tapo_d230","tapo_care","ha_tplink","er_tapo"],
- unverified=""),
+ rec_src="tapo_d230", history_src="tapo_d230", ha_src="ha_tplink", unverified=""),
 dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
  price=44.99, price_note="Tapo UK sale price (RRP £56.00)", price_src="tapo_td21",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -187,7 +196,7 @@ dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["batt
  ha_text="Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.", wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
  src=["tapo_td21","tapo_care","tapo_td21_manual","ha_tplink"],
- unverified=""),
+ rec_src="tapo_td21", history_src="tapo_td21", ha_src="ha_tplink", unverified=""),
 dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery"], ha=0,
  power_note="Can be wired to an existing chime for trickle charging, but still runs on its battery.",
  price=84.99, price_note="Argos half price, doorbell + chime bundle (was £169.99)", price_src="argos_arlo",
@@ -202,8 +211,8 @@ dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec
  ha_text="No official integration; only a community add-on that goes through Arlo's cloud.",
  wifi="2.4 GHz only",
  score=dict(rec=1,live=1,alerts=1,ai=0,storage=0,ha=0),
- src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo"],
- unverified=""),
+ src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo","ha_arlo"],
+ rec_src="arlo_blog", history_src="arlo_doorbell", ha_src="ha_arlo", unverified=""),
 dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
  price=84.99, price_note="Amazon UK", price_src="amz_aqara",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -218,7 +227,7 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
  src=["amz_aqara","aqara_eu","aqara_specs","ha_homekit"],
- unverified=""),
+ rec_src="aqara_specs", history_src="aqara_specs", ha_src="ha_homekit", unverified=""),
 dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
  price=69.99, price_note="Amazon UK RRP (deals as low as £29.99)", price_src="amz_blink",
  extra=49.99, extra_note="+ Sync Module 2 £39.99 + USB stick", free_records=True,
@@ -232,7 +241,7 @@ dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=[
  ha_text="Official integration, but it goes through Blink's cloud.", wifi="2.4 GHz (Blink requirement)",
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
  src=["amz_blink","camel_sm2","blink_plans","blink_sm2","ha_blink"],
- unverified=""),
+ rec_src="blink_sm2", history_src="blink_sm2", ha_src="ha_blink", unverified=""),
 dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["battery"], ha=0,
  price=79.99, price_note="Amazon UK (list price £89.99)", price_src="amz_ep3x",
  extra=0, extra_note="32 GB storage built in", free_records=True,
@@ -247,7 +256,7 @@ dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["batter
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=0),
  src=["amz_ep3x","ezviz_blog","er_tapo","ezviz_cloud","ezviz_terms","ha_ezviz"],
- unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
+ rec_src="amz_ep3x", history_src="ezviz_blog", ha_src="ha_ezviz", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["battery"], ha=0,
  price=114.99, price_note="ER Tech, UK retailer", price_src="ertech_db2",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -261,7 +270,7 @@ dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["batt
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
  src=["ertech_db2","ezviz_blog","ezviz_cloud","ezviz_terms","ha_ezviz"],
- unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
+ rec_src="ertech_db2", history_src="ertech_db2", ha_src="ha_ezviz", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wired"], ha=1,
  price=295.00, price_note="Only UK listing found (fitted install); the model is discontinued", price_src="eagle_hik",
  extra=CARD, extra_note="+ microSD card", free_records=True,
@@ -273,12 +282,62 @@ dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wire
  ha_text="Works as a generic RTSP camera.", wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=0,storage=0,ha=1),
  src=["eagle_hik","hik_ds","hik_4gon"],
- unverified=""),
+ rec_src="hik_ds", history_src="hik_ds", ha_src="hik_ds", unverified=""),
 ]
 
+# ---------- row shape ----------
+# A row with a missing key fails here, before anything is generated. The
+# unknown-key test is what catches a misspelling, which would otherwise read as
+# a valid optional field and quietly skip a sentence or print nothing.
+REQUIRED_ROW_KEYS = (
+    "id", "brand", "model", "rec", "power", "ha", "price", "price_note",
+    "price_src", "extra", "extra_note", "free_records", "sub", "sub_name",
+    "best", "catch", "storage", "live", "alerts", "ai", "history",
+    "paywalled", "sub_text", "ha_text", "wifi", "score", "src", "unverified",
+    "rec_src", "history_src", "ha_src",
+)
+OPTIONAL_ROW_KEYS = ("power_note", "cards", "plan_price_region")
+DERIVED_ROW_KEYS = (
+    "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
+    "plan_region",
+)
+
+def row_problems():
+    problems = []
+    for r in ROWS:
+        rid = r.get("id", "(no id)")
+        missing = [k for k in REQUIRED_ROW_KEYS if k not in r]
+        allowed = REQUIRED_ROW_KEYS + OPTIONAL_ROW_KEYS + DERIVED_ROW_KEYS
+        unknown = [k for k in r if k not in allowed]
+        if missing: problems.append(f"{rid}: missing {', '.join(missing)}")
+        if unknown: problems.append(f"{rid}: unknown {', '.join(unknown)}")
+        for key in ("price_src", "rec_src", "history_src", "ha_src"):
+            if key in r and r[key] not in S:
+                problems.append(f"{rid}: {key} {r[key]!r} is not in S")
+            if key in r and r[key] not in r.get("src", []):
+                problems.append(f"{rid}: {key} {r[key]!r} is not in the row's src list")
+        if r.get("cards", 1) < 1:
+            problems.append(f"{rid}: cards must be at least 1")
+        if r.get("plan_price_region", "UK") not in ("UK", "EU"):
+            problems.append(f"{rid}: plan_price_region must be UK or EU")
+    return problems
+
+_ROW_PROBLEMS = row_problems()
+if _ROW_PROBLEMS:
+    raise SystemExit("Row problems:\n  " + "\n  ".join(_ROW_PROBLEMS))
+
 # ---------- derived figures ----------
-def money(x): return f"£{x:,.2f}"
+def money(x, decimals=2):
+    """£ figure. decimals=None keeps whole pounds whole and shows pence otherwise."""
+    if x is None: return "—"
+    if decimals is None: decimals = 0 if float(x).is_integer() else 2
+    return f"£{x:,.{decimals}f}"
+
 for r in ROWS:
+    r["cards"] = r.get("cards", 1)
+    r["plan_region"] = r.get("plan_price_region", "UK")
+    # A second card is a second purchase: the base extra has one already.
+    if r["cards"] > 1: r["extra"] = round(r["extra"] + CARD * (r["cards"] - 1), 2)
     r["score_total"] = sum(r["score"].values())
     r["nosub3"] = round(r["price"] + r["extra"], 2)
     r["sub3"] = round(r["price"] + MONTHS * r["sub"], 2) if r["sub"] is not None else None
@@ -312,12 +371,12 @@ with open(os.path.join(ROOT,"data","doorbells.csv"),"w",newline="",encoding="utf
     w.writerow(["Brand","Model","Records free without subscription","Power","UK price (£)","Price note","Price source",
         "Best for","Main catch","Free-feature score (/8)","3-yr cost without subscription (£)","3-yr cost with cheapest plan, monthly (£)",
         "Cheapest 3-yr cost to keep recordings (£)","Maths: without","Maths: with","Local storage","Live view free?","Motion alerts free?",
-        "Smart detection","Recorded history without subscription","What's paywalled","Subscription & UK price","Home Assistant / local-only",
+        "Smart detection","Recorded history without subscription","What's paywalled","Subscription & UK price","Plan price region","Home Assistant / local-only",
         "Wi-Fi","Sources","Unverified / re-check","Last checked"])
     for r in ROWS:
         w.writerow([r["brand"],r["model"],REC_LABEL[r["rec"]],"/".join(POWER_LABEL[p] for p in r["power"]),f"{r['price']:.2f}",r["price_note"],S[r["price_src"]][1],
             r["best"],r["catch"],r["score_total"],f"{r['nosub3']:.2f}","" if r["sub3"] is None else f"{r['sub3']:.2f}",f"{r['keep3']:.2f}",r["maths_free"],r["maths_sub"],
-            r["storage"],r["live"],r["alerts"],r["ai"],r["history"],r["paywalled"],r["sub_text"],r["ha_text"],r["wifi"],
+            r["storage"],r["live"],r["alerts"],r["ai"],r["history"],r["paywalled"],r["sub_text"],r["plan_region"],r["ha_text"],r["wifi"],
             " ; ".join(S[k][1] for k in r["src"]),r["unverified"],CHECKED])
 
 # ---------- Markdown ----------
@@ -342,7 +401,7 @@ open(os.path.join(ROOT,"data","doorbells.md"),"w",encoding="utf-8").write("\n".j
 # ---------- HTML ----------
 e=html.escape
 def fn(keys): return ", ".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{FN[k]}</a>' for k in keys)
-def gbp(x): return "—" if x is None else f"£{x:,.0f}" if float(x).is_integer() else f"£{x:,.2f}"
+
 
 # Product photos: manufacturers' own images, processed by make_images.py into img/*.webp; sources in images.json
 IMG = json.load(open(os.path.join(HERE,"images.json"), encoding="utf-8"))
@@ -389,11 +448,11 @@ for i,r in enumerate(ROWS):
 <tr class="main">
 <td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span></td>
-<td class="c-price num">{gbp(r['price'])}</td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span>{fn([r['rec_src']])}</td>
+<td class="c-price num">{money(r['price'], None)}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
-<td class="c-nosub num" data-label="3 yrs, no plan">{gbp(r['nosub3'])}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
-<td class="c-sub num" data-label="3 yrs, with plan">{gbp(r['sub3']) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}</td>
+<td class="c-nosub num" data-label="3 yrs, no plan">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
+<td class="c-sub num" data-label="3 yrs, with plan" data-region="{r['plan_region']}">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</td>
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
@@ -404,11 +463,11 @@ for i,r in enumerate(ROWS):
 <dt>Live view</dt><dd>{e(r['live'])}</dd>
 <dt>Motion alerts</dt><dd>{e(r['alerts'])}</dd>
 <dt>Smart detection</dt><dd>{e(r['ai'])}</dd>
-<dt>History without a plan</dt><dd>{e(r['history'])}</dd>
+<dt>History without a plan</dt><dd>{e(r['history'])} {fn([r['history_src']])}</dd>
 </dl><dl>
 <dt>Behind the paywall</dt><dd>{e(r['paywalled'])}</dd>
 <dt>Plans</dt><dd>{e(r['sub_text'])}</dd>
-<dt>Home Assistant</dt><dd>{e(r['ha_text'])}</dd>
+<dt>Home Assistant</dt><dd>{e(r['ha_text'])} {fn([r['ha_src']])}</dd>
 <dt>3 years, no plan</dt><dd class="maths">{e(r['maths_free'])}</dd>
 <dt>3 years, with plan</dt><dd class="maths">{e(r['maths_sub'])}</dd>
 <dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k,lbl,mx in SCORE_PARTS)}</dd>
@@ -418,8 +477,8 @@ for i,r in enumerate(ROWS):
 </tbody>''')
 
 data_js = json.dumps({r["id"]:{
- "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"price":gbp(r["price"]),"score":f"{r['score_total']}/8",
- "nosub3":gbp(r["nosub3"]),"sub3":gbp(r["sub3"]) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
+ "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"price":money(r["price"], None),"score":f"{r['score_total']}/8",
+ "nosub3":money(r["nosub3"], None),"sub3":money(r["sub3"], None) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"region":r["plan_region"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
  "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
@@ -444,6 +503,25 @@ byid={r["id"]:r for r in ROWS}
 photo_credits=", ".join(f'<a href="{e(IMG[r["id"]]["page"])}" rel="nofollow noopener noreferrer">{e(r["brand"])} {e(r["model"])}</a>' for r in ROWS if not IMG.get(r["id"],{}).get("placeholder"))
 no_photo=", ".join(f'{e(r["brand"])} {e(r["model"])}' for r in ROWS if IMG.get(r["id"],{}).get("placeholder"))
 
+# The page's static parts live in their own files so an editor, a linter and
+# `node --check` can see them. They ship as separate asset files, not inline:
+# with gzip on, that is 26.2KB on a first visit against 29.0KB inlined, and
+# 13.5KB on a repeat visit. The version in the URL is a content hash, so a
+# change busts the cache, while the path stays stable: GitHub Pages caches HTML
+# for ten minutes, and a hashed filename that a deploy deletes would leave that
+# cached copy asking for a file that no longer exists.
+PAGE_CSS = open(os.path.join(HERE, "page.css"), encoding="utf-8").read()
+PAGE_JS = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
+           .replace("/*@@DATA@@*/{}", data_js).replace("@@CHECKED@@", CHECKED))
+
+def content_version(text):
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]
+
+
+CSS_FILE, JS_FILE = "assets/page.css", "assets/page.js"
+CSS_URL = f"{CSS_FILE}?v={content_version(PAGE_CSS)}"
+JS_URL = f"{JS_FILE}?v={content_version(PAGE_JS)}"
+
 page=f'''<!doctype html>
 <html lang="en-GB" class="no-js"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -461,334 +539,8 @@ page=f'''<!doctype html>
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script>document.documentElement.className="js";try{{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}</script>
-<style>
-:root{{--ink:#1a1a1a;--ink2:#555;--ink3:#6e6e6e;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
---v-best:#17694a;--v-batt:#1f5d96;--v-avoid:#a33b26;--hl:#fff1b8;--tray:#332f2a;--tray-ink:#f6f3ec;--imgbg:#fff;--imgf:none;
---serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
---sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}}
-:root[data-theme=dark]{{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
---v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme=light]){{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
---v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#e9e7e2;--imgf:brightness(.84);color-scheme:dark}}}}
-*{{box-sizing:border-box}}
-[hidden]{{display:none!important}}
-.skip{{position:absolute;top:0;left:0;z-index:20;transform:translateY(-120%);background:var(--paper);border:1px solid var(--ink);padding:0.5rem 1rem;font:600 14px/1.4 var(--sans);color:var(--ink)}}
-.skip:focus{{transform:none}}
-.no-js .controls{{display:none}}
-.no-js #theme{{display:none}}
-.no-js .more-w{{display:none}}
-.nojs{{margin:1rem 0;padding:1rem;border:1px solid var(--rule);font-size:14px;color:var(--ink2)}}
-html{{-webkit-text-size-adjust:100%}}
-body{{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);transition:background-color .18s,color .18s}}
-a{{color:var(--acc)}}
-p{{max-width:65ch}}
-sup{{font-size:11px}}
-.wrap{{max-width:1440px;margin:0 auto;padding:0 1rem}}
-.mast{{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:1rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}}
-.mast>div>span{{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}}
-#theme{{position:relative;font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:24px}}
-#theme:hover{{border-color:var(--ink)}}
-#theme i{{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}}
-:root[data-theme=dark] #theme i{{transform:rotate(180deg)}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme=light]) #theme i{{transform:rotate(180deg)}}}}
-#theme::after{{content:"";position:absolute;inset:-10px -8px}}
-header.intro{{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}}
-h1{{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}}
-.dek{{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}}
-.meta{{font-size:13px;color:var(--ink2);margin:0}}
-.meta b{{color:var(--ink)}}
-.verdict{{border-left:1px solid var(--rule);padding:0 0 0 2rem;font-size:14px}}
-.verdict h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}}
-.verdict p{{margin:0 0 1rem;padding-left:1rem;border-left:3px solid var(--vc)}}
-.verdict p b{{color:var(--vc)}}
-.vshort{{display:none;margin:1rem 0 0;font-size:14px;line-height:1.45}}
-.v-best{{--vc:var(--v-best)}} .v-batt{{--vc:var(--v-batt)}} .v-avoid{{--vc:var(--v-avoid)}}
-a.jump{{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}}
-a.jump:hover{{color:var(--vc)}}
-.vtag{{display:block;margin-top:0;padding:0.5rem 0 0;font:600 12px/1.25 var(--sans);letter-spacing:.01em;color:var(--vc)}}
-.vtag::before{{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}}
-tbody.item[data-v=best]{{--vc:var(--v-best)}} tbody.item[data-v=batt]{{--vc:var(--v-batt)}} tbody.item[data-v=avoid]{{--vc:var(--v-avoid)}}
-tbody.item[data-v] tr.main>td.c-cmp{{border-left:3px solid var(--vc)}}
-.controls{{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}}
-.filters>summary{{display:none}}
-.fbody{{display:flex;flex-wrap:nowrap;gap:1rem 2rem;align-items:flex-start}}
-fieldset{{border:0;margin:0;padding:0;min-width:0}}
-legend,.lab{{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}}
-.opts{{display:flex;flex-wrap:wrap;gap:1rem}}
-.opts label{{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}}
-.hint{{margin:0.5rem 0 0;font-size:12px;line-height:1.35;color:var(--ink3);max-width:26ch}}
-input[type=checkbox]{{accent-color:var(--acc);width:15px;height:15px;margin:0}}
-/* One range input per handle, stacked, so each keeps its own keyboard value.
-   Only the thumbs take pointer events, which is what lets them overlap. */
-.range{{flex:1 1 180px;min-width:170px;max-width:320px}}
-.dual{{position:relative;height:24px;width:100%;--thumb:18px}}
-/* Firefox draws a smaller thumb, so the track inset has to match it too. */
-@supports selector(::-moz-range-thumb){{.dual{{--thumb:14px}}}}
-.dual input[type=range]{{position:absolute;left:0;top:0;width:100%;height:24px;margin:0;background:none;border:0;padding:0;-webkit-appearance:none;appearance:none;pointer-events:none}}
-.dual input[type=range]:focus-visible{{outline:2px solid var(--acc);outline-offset:2px}}
-.dual input[type=range]::-webkit-slider-runnable-track{{height:24px;background:none;border:0}}
-.dual input[type=range]::-moz-range-track{{height:24px;background:none;border:0}}
-.dual input[type=range]::-webkit-slider-thumb{{-webkit-appearance:none;appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}}
-.dual input[type=range]::-moz-range-thumb{{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}}
-.dual-track{{position:absolute;left:calc(var(--thumb)/2);right:calc(var(--thumb)/2);top:11px;height:2px;background:var(--rule)}}
-.dual-track i{{position:absolute;top:0;height:100%;background:var(--acc)}}
-.dual-vals{{display:flex;justify-content:space-between;gap:1rem;margin-top:0.5rem;font:600 13px var(--sans);font-variant-numeric:tabular-nums;color:var(--ink2)}}
-.sortby{{margin-left:auto}}
-select{{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}}
-.count{{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}}
-.count button.link{{position:relative;padding:10px 6px;margin:-10px -6px}}
-button.link{{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}}
-table.cmp-t,table.main-t{{border-collapse:collapse;width:100%}}
-.main-t thead th{{position:sticky;top:0;z-index:2;background:var(--paper);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:middle;white-space:normal}}
-.main-t thead th.num{{text-align:right}}
-.main-t thead th button{{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit}}
-.main-t thead th button:hover{{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}}
-.main-t thead th[aria-sort=ascending] button::after{{content:"\\00a0\\2191"}}
-.main-t thead th[aria-sort=descending] button::after{{content:"\\00a0\\2193"}}
-.main-t thead sup{{text-transform:none}}
-.main-t td,.main-t tbody th{{padding:1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}}
-.main-t tbody.item:hover tr.main{{background:var(--tint)}}
-.num{{text-align:right;font-variant-numeric:tabular-nums}}
-.main-t td.num,.main-t th.num{{text-align:right}}
-td.num{{white-space:nowrap}}
-.c-cmp{{width:2rem;padding-left:0.5rem!important;padding-right:0.5rem!important}}
-.mcell{{display:flex;gap:1rem;align-items:flex-start}}
-.mcell>div{{min-width:0}}
-.ph{{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}}
-img.ph{{filter:var(--imgf)}}
-span.ph{{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink2);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;text-align:center;padding:0.5rem 0.25rem}}
-span.ph-lg{{font-size:12px}}
-.brand{{font-weight:700}} .mname{{font-weight:400}}
-.best{{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}}
-.c-catch{{font-size:14px}}
-.more-w{{margin-top:0.5rem}}
-.rec{{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}}
-.rec::before{{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}}
-.rec-yes::before{{background:var(--acc)}}
-.rec-kit::before,.rec-brief::before{{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}}
-.rec-no{{color:var(--ink2)}} .rec-no::before{{border-color:var(--ink3)}}
-.noplan{{color:var(--ink2)}}
-.score b{{font-size:15px}} .score{{color:var(--ink2);font-size:13px;white-space:nowrap}}
-.bar{{display:block;height:3px;background:var(--rule2);margin:0.5rem 0 0;width:52px}}
-/* scaleX paints on the compositor; animating width forced a layout each frame */
-.bar i{{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center}}
-.note{{display:block;font-size:12px;color:var(--ink3);white-space:normal}}
-.fn{{font-size:11px;vertical-align:super;line-height:0;margin-left:0;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}}
-.fn:hover{{color:var(--acc);text-decoration:underline}}
-button.more{{position:relative;background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}}
-button.more::after{{content:"";position:absolute;inset:-10px -8px}}
-button.more:hover,button.more[aria-expanded=true]{{border-color:var(--ink)}}
-tr.detail td{{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}}
-.dgrid{{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}}
-.dimg{{margin:0}}
-.zoom{{position:relative;display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}}
-.zoom:focus-visible{{outline:2px solid var(--acc);outline-offset:2px}}
-.zi{{position:absolute;right:-0.25rem;bottom:-0.25rem;width:1.25rem;height:1.25rem;border-radius:50%;background:var(--paper);border:1px solid var(--ink);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s}}
-.zi::before{{content:"";width:6px;height:6px;border:1.5px solid var(--ink);border-radius:50%;margin:-3px 0 0 -3px}}
-.zi::after{{content:"";position:absolute;right:4px;bottom:4px;width:5px;height:1.5px;background:var(--ink);transform:rotate(45deg)}}
-.zoom:hover .zi,.zoom:focus-visible .zi{{opacity:1}}
-@media (hover:none){{.zi{{opacity:1}}}}
-#lightbox{{border:1px solid var(--rule);background:var(--paper);color:var(--ink);padding:1rem;max-width:min(90vw,420px)}}
-#lightbox img{{display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:70vh;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}}
-#lightbox::backdrop{{background:rgb(0 0 0 / .65)}}
-.lb-bar{{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1rem;font:600 13px/1.3 var(--sans)}}
-.dgrid dl{{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:1rem;font-size:14px;align-content:start}}
-.dgrid dt{{color:var(--ink2)}} .dgrid dd{{margin:0}}
-.maths{{font-variant-numeric:tabular-nums}}
-.unverified{{font-size:13px;margin:1rem 0 0;color:var(--ink2)}}
-.srcs{{font-size:12px;color:var(--ink2);margin:1rem 0 0}}
-.srcs .fn{{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}}
-.empty{{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}}
-/* jump-to-row highlight */
-@keyframes flash{{0%,35%{{background-color:var(--hl)}}100%{{background-color:transparent}}}}
-tbody.item.flash tr.main>*{{animation:flash 1.8s ease-out}}
-@media (prefers-reduced-motion:reduce){{html{{scroll-behavior:auto}} tbody.item.flash tr.main>*{{animation:none;background:var(--hl)}} #theme i,body,.cmp-note{{transition:none}}}}
-/* compare */
-#compare{{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}}
-.cmp-head{{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0.5rem 1rem;padding:1rem;border-bottom:1px solid var(--rule)}}
-.cmp-head h2{{font:700 20px/1.2 var(--serif);margin:0}}
-.cmp-actions{{display:flex;gap:0.5rem 1rem;align-items:baseline;flex-wrap:wrap}}
- /* The three links wrap as one block, so a phone never leaves Close alone. */
- .cmp-links{{display:flex;gap:1rem;align-items:baseline;flex-wrap:nowrap}}
-.cmpo{{display:inline-flex;align-items:center;gap:0.4rem;font-size:13px;line-height:1.3;color:var(--ink2);cursor:pointer}}
-#cmp-dupes{{color:var(--ink3);white-space:nowrap}}
-.cmp-note{{margin:0;padding:0 1rem 1rem;font-size:13px;line-height:1.4;color:var(--ink2);transition:opacity .4s}}
-.cmp-note.out{{opacity:0}}
-.cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{{background:var(--tint);font-variant-numeric:tabular-nums}}
-.cmp-scroll{{overflow-x:auto}}
-.cmp-t th,.cmp-t td{{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}}
-.cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{{background:var(--tint)}}
-.cmp-t thead th{{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}}
-.cmp-name{{display:block}}
-.cmp-photo{{display:block;margin-top:1rem}}
-.cmp-photo img{{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}}
-.cmp-t tbody th{{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}}
-.vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
-.tray{{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}}
-.tray button{{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}}
-.tray button:disabled{{opacity:.5;cursor:default}}
-.tray button.ghost{{background:none;color:var(--tray-ink);text-decoration:underline;padding:0 1rem}}
- /* The tray becomes the compare header and comes back again. The two are never
-    on screen together, so one name serves both and no other element is named. */
- #tray,.cmp-head{{view-transition-name:cmp-tray}}
- /* Where the reader is in the table, reported not hijacked: the rule only
-    follows scroll. Without native timelines it is a plain hairline. */
- .tbl-w{{view-timeline-name:--tbl;view-timeline-axis:block}}
- .prog{{position:sticky;top:0;z-index:3;height:2px;margin-bottom:-2px;background:var(--rule2);pointer-events:none}}
- .prog i{{display:block;height:100%;background:var(--acc);transform:scaleX(0);transform-origin:left center}}
- @supports (animation-timeline:view()){{
-  .prog i{{animation:rule linear both;animation-timeline:--tbl;animation-range:cover 0% cover 100%}}
-  @keyframes rule{{from{{transform:scaleX(0)}}to{{transform:scaleX(1)}}}}
- }}
- ::view-transition-group(cmp-tray){{animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}}
- /* Hand over rather than dissolve: two bars of text cross-fading in one box
-    reads as a smear, so the old bar goes first and the new one arrives after. */
- ::view-transition-old(cmp-tray){{animation:vt-out 100ms linear both}}
- ::view-transition-new(cmp-tray){{animation:vt-in 140ms 100ms linear both}}
- @keyframes vt-out{{to{{opacity:0}}}}
- @keyframes vt-in{{from{{opacity:0}}}}
- /* Only the pair moves. Without this the whole page cross-fades and the table
-    ghosts behind the comparison. */
- ::view-transition-old(root),::view-transition-new(root){{animation:none}}
- @media (prefers-reduced-motion:reduce){{::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){{animation:none!important}}}}
-/* footer */
-section.method{{display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}}
-section.method h2{{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}}
-section.method p{{margin:0 0 1rem;max-width:none}}
-section.method p a{{color:var(--ink2)}}
-.srcs>summary{{display:flex;align-items:center;gap:0.5rem;min-height:24px;margin:0 0 1rem;cursor:pointer;list-style:none}}
-.srcs>summary::-webkit-details-marker{{display:none}}
-.srcs>summary h2{{margin:0}}
-.srcs>summary::before{{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg);margin-right:0.25rem}}
-.srcs[open]>summary::before{{transform:rotate(45deg)}}
-.srcs-n{{font:500 12px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}}
-.fns-wrap{{columns:2;column-gap:2rem}}
-.fns-g{{margin:0 0 0.75rem;break-inside:avoid}}
-.fns-g h3{{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0}}
-ol.fns{{margin:0;padding-left:1.5rem;columns:1}}
-ol.fns li{{margin:0}}
-ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration:underline;color:var(--ink2)}}
-.foot{{border-top:1px solid var(--rule);padding:1rem 0 2rem;font-size:13px;color:var(--ink2)}}
-.foot p{{margin:0;max-width:none}}
-.foot a{{color:var(--ink2)}}
-@media (min-width:821px) and (max-width:1100px){{
- .count{{flex:1 1 auto;order:1;align-self:flex-end}} .sortby{{order:2}}
-}}
-/* 821-1100px: the full table must fit without sideways scrolling */
-@media (max-width:1100px){{
- .main-t td,.main-t tbody th{{padding:1rem}}
- .main-t thead th{{padding:1rem;letter-spacing:.04em}}
- .c-catch{{font-size:13px}}
- .mcell{{gap:1rem}} .ph-sm{{width:36px!important;height:48px!important}}
- .best{{font-size:12.5px}}
- .rec{{font-size:13px}}
- tr.detail td{{padding-left:1rem}}
- .dgrid{{grid-template-columns:140px minmax(0,1fr) minmax(0,1fr);gap:0 2rem}}
- .ph-lg{{width:140px!important;height:187px!important}}
- .dgrid dl{{grid-template-columns:1fr;gap:0}} .dgrid dt{{margin-top:1rem;font-weight:600;font-size:12px}} .dgrid dt:first-child{{margin-top:0}}
-}}
-@media (max-width:900px){{
- .main-t td,.main-t tbody th{{padding:1rem}}
- .main-t thead th{{padding:1rem;font-size:11px}}
-}}
-@media (max-width:820px){{
- body{{font-size:15px}}
- .wrap{{padding:0 1rem}}
- header.intro{{grid-template-columns:1fr;gap:1rem;padding:2rem 0}}
- .verdict{{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}}
- .dek{{font-size:16px}}
- .controls{{gap:1rem}}
- .sortby{{margin-left:0}}
- input[type=range]{{width:150px}}
- .main-t thead{{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}
- .main-t thead th{{position:static;padding:0;border:0;background:none}}
- .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{{display:block}}
- /* Off-screen cards skip layout, so a sort lays out only the cards in view.
-    330px is the content estimate, 363px with padding and rule, against real
-    cards of 331 to 409px. Auto remembers the real size once a card has been
-    laid out, so the estimate is only paid above the reader's fold. */
- .main-t tbody.item{{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 330px}}
- tbody.item[data-v]{{border-left:3px solid var(--vc)}}
- tbody.item[data-v] tr.main>td.c-cmp{{border-left:0}}
- .main-t tr.main{{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:0 1rem;position:relative;align-items:baseline}}
- .main-t tbody.item:hover tr.main{{background:none}}
- .main-t tr.main>*{{padding:0;border:0;width:auto;min-width:0;max-width:none}}
- .c-cmp{{grid-row:1;grid-column:1;padding-top:0!important}}
- .c-model{{grid-column:2;grid-row:1}}
- .ph-sm{{width:45px!important;height:60px!important}}
- .c-rec{{grid-column:2;grid-row:2}} .c-price{{grid-column:2;grid-row:3}} .c-score{{grid-column:2;grid-row:4}}
- .c-nosub{{grid-column:2;grid-row:5}} .c-sub{{grid-column:2;grid-row:6}}
- .c-catch{{grid-column:2;grid-row:7;padding-top:0.75rem;font-size:14px}}
- /* One muted label column, value to its right, so five separate label
-    lines become one aligned rhythm. The price needs no label. */
- .main-t td.c-rec,.main-t td.c-score,.main-t td.c-nosub,.main-t td.c-sub{{display:flex;gap:0.75rem;align-items:baseline;padding:0.45rem 0 0}}
- .main-t td.c-rec::before,.main-t td.c-score::before,.main-t td.c-nosub::before,.main-t td.c-sub::before{{flex:0 0 8.5rem;margin:0}}
- .main-t td.c-price{{padding:0.5rem 0 0.25rem;font:700 17px/1.2 var(--sans)}}
- .main-t td.c-score .bar{{margin:0;flex:0 0 52px;align-self:center}}
- .main-t td.c-nosub .note{{white-space:normal}}
- .main-t td[data-label]::before{{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0;white-space:normal}}
- .main-t td.num,.main-t th.num{{text-align:left}} .bar{{margin-left:0}}
- tr.detail td{{padding:1rem;margin-top:0}}
- .dgrid{{grid-template-columns:1fr}} .dgrid dl+dl{{margin-top:1rem}}
- .ph-lg{{width:120px!important;height:160px!important;margin-bottom:1rem}}
- section.method{{grid-template-columns:1fr}} .fns-wrap{{columns:1}}
- .cmp-t th,.cmp-t td{{padding:0.5rem 1rem;font-size:13px}}
- .cmp-t thead th{{min-width:140px;font-size:14px}}
- .cmp-t tbody th{{width:84px;min-width:84px;font-size:11px;position:sticky;left:0;background:var(--paper)}}
- .cmp-t thead th:first-child{{position:sticky;left:0;background:var(--paper);min-width:84px}}
-}}
-/* Above the phone breakpoint a row is a grid row rather than a table row. A
-   table lays all fourteen rows out again on every sort and no cell can skip
-   that; a contained block lays out only the rows in view. The tracks are the
-   widths the table itself chose at 1280px, so the columns stay where they
-   were: at 1280px to the pixel, and within about 1% of table height from 900
-   to 1100px. */
-@media (min-width:821px){{
- .main-t{{display:block}}
- .main-t thead,.main-t tbody{{display:block}}
- /* 2rem plus the 2px the collapsed table border used to take, so every
-    column after the compare box starts where it did. */
- .main-t thead tr,.main-t tr.main{{display:grid;grid-template-columns:calc(2rem + 2px) 27% 120px 6.7% 8.2% 8.7% 9.1% 1fr}}
- /* A sticky cell can only move inside its parent, so the header row sticks as
-    a block: fourteen rows of table no longer move it, and the cells still sit
-    on one line each. */
- .main-t thead{{position:sticky;top:0;z-index:2;background:var(--paper)}}
- .main-t thead th{{position:static;display:flex;align-items:center}}
- /* The column rules above are track widths now; a percentage width on a grid
-    item would resolve against its own track and shrink the cell inside it. */
- .main-t tr.main>*{{width:auto;min-width:0;max-width:none}}
- .main-t tr.detail{{display:block}}
- .main-t tbody.item{{content-visibility:auto;contain-intrinsic-size:auto 118px}}
-}}
-@media (min-width:821px) and (max-width:1100px){{
- .main-t thead tr,.main-t tr.main{{grid-template-columns:calc(2rem + 2px) 28% 84px 84px 84px 84px 84px 1fr}}
- .main-t tbody.item{{contain-intrinsic-size:auto 140px}}
-}}
-@media (max-width:520px){{
- .mast>div>span{{display:none}}
- header.intro{{padding:1rem 0}}
- .dek{{font-size:15px;line-height:1.4;margin-bottom:0.5rem}}
- .verdict{{display:none}}
- .vshort{{display:block}}
- .srcs>summary{{align-items:flex-start}}
- .controls{{padding:0.75rem 0;gap:0.75rem}}
- .sortby .lab{{margin-bottom:0.5rem}}
- /* The Compare action joins this line on the first tick; reserve its second
-    line so the table does not jump 19px when the tray appears. */
- .count{{min-height:3em}}
- .filters{{display:block;flex:1 1 100%}}
- .filters>summary{{display:flex;align-items:center;gap:0.5rem;min-height:44px;padding:0 1rem;border:1px solid var(--rule);font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);cursor:pointer;list-style:none}}
- .filters>summary::-webkit-details-marker{{display:none}}
- .filters>summary::marker{{content:""}}
- .filters>summary::before{{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-right:0.25rem}}
- .filters[open]>summary::before{{transform:rotate(45deg)}}
- .filters:not([open]) .fbody{{display:none}}
- .fbody{{flex-direction:column;align-items:stretch;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}}
- .fbody .opts{{gap:0.5rem 1rem}}
- .range{{flex:none;width:100%;max-width:none}}
-}}
-@media print{{.skip,.controls,.tray,.prog,.c-cmp,.more-w,#theme,.srcs>summary,.cmp-note{{display:none}} tr.detail{{display:table-row!important}}}}
-</style></head><body>
+<link rel="stylesheet" href="{CSS_URL}">
+</head><body>
 <a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
 <div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
@@ -850,7 +602,7 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <section id="compare" hidden>
 <div class="cmp-head"><h2 id="cmp-h" tabindex="-1">Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><span class="cmp-links"><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-clear">Clear</button><button type="button" class="link" id="cmp-close">Close</button></span></div></div>
 <p class="cmp-note" id="cmp-note" role="status" hidden></p>
-<div class="cmp-scroll"><table class="cmp-t" id="cmp-table"></table></div>
+<div class="cmp-scroll" tabindex="0" role="region" aria-label="Comparison table, scrolls sideways"><table class="cmp-t" id="cmp-table"></table></div>
 </section>
 
 <div class="tbl-w"><div class="prog" aria-hidden="true"><i></i></div>
@@ -884,262 +636,38 @@ ol.fns a{{display:inline-flex;align-items:center;min-height:24px;text-decoration
 <div id="lb-img"></div>
 <div class="lb-bar"><span id="lb-name"></span><button type="button" class="link" id="lb-close">Close</button></div>
 </dialog>
-<script>
-(function(){{
-var D={data_js},CHECKED='{CHECKED}';
-var $=function(s,c){{return (c||document).querySelector(s)}},$$=function(s,c){{return Array.prototype.slice.call((c||document).querySelectorAll(s))}};
-var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
-function isDark(){{var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}}
-function syncTheme(){{var d=isDark();tb.lastChild.textContent=d?'Light mode':'Dark mode';tb.title=d?'Switch to light mode':'Switch to dark mode';tb.setAttribute('aria-label',tb.title)}}
-tb.onclick=function(){{var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{{localStorage.setItem('theme',n)}}catch(e){{}}syncTheme()}};
-if(mq.addEventListener)mq.addEventListener('change',syncTheme);
-syncTheme();
-var narrow=window.matchMedia('(max-width:820px)'),small=window.matchMedia('(max-width:520px)'),filters=$('#filters'),srcs=$('#sources');
-function fitFilters(){{filters.open=!small.matches}}
-function fitSources(){{srcs.open=!narrow.matches}}
-function fitSortKeys(){{$$('#tbl thead th button').forEach(function(b){{if(narrow.matches)b.setAttribute('tabindex','-1');else b.removeAttribute('tabindex')}})}}
-if(small.addEventListener)small.addEventListener('change',fitFilters);
-if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
-if(narrow.addEventListener)narrow.addEventListener('change',fitSources);
-addEventListener('beforeprint',function(){{srcs.open=true}});
-fitFilters();fitSortKeys();fitSources();
-var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
-var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
-function say(m){{clearTimeout(liveT);clearTimeout(liveClearT);liveT=setTimeout(function(){{live.textContent='';liveT=setTimeout(function(){{live.textContent=m;liveClearT=setTimeout(function(){{live.textContent=''}},4000)}},60)}},300)}}
-var skey='keep3',sdir=1,SDEF={{keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1}};
-function apply(){{
- var lo0=+minEl.min,hi0=+maxEl.max,lo=+minEl.value,hi=+maxEl.value;
- if(lo>hi){{lo=hi;minEl.value=hi}}
- minEl.style.zIndex=lo>=hi?2:1;
- minOut.textContent='£'+lo;maxOut.textContent='£'+hi;
- fill.style.left=((lo-lo0)/(hi0-lo0)*100)+'%';
- fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
- var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){{return x.value}}),n=0;
- function ok(t,plo,phi){{return (!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=plo&&+t.dataset.price<=phi)&&
-  (!pw.length||pw.some(function(p){{return t.dataset.power.split(' ').indexOf(p)>-1}}))}}
- items.forEach(function(t){{var show=ok(t,lo,hi);t.hidden=!show;if(show)n++}});
- $('#count').textContent=n; $('#empty').hidden=n>0;
- var near=null;
- if(!n){{
-  var bestD=Infinity;
-  items.forEach(function(t){{
-   if(!ok(t,lo0,hi0))return;
-   var p=+t.dataset.price,d=p<lo?lo-p:p>hi?p-hi:0;
-   if(d<bestD||(d===bestD&&p<+(near?near.dataset.price:Infinity))){{bestD=d;near=t}}
-  }});
- }}
- nearPick=near;
- var nb=$('#near');
- nb.hidden=!near;
- if(near){{
-  var nm=near.querySelector('.brand').textContent+' '+near.querySelector('.mname').textContent;
-  var pr='£'+(+near.dataset.price).toFixed(2).replace(/\\.00$/,'');
-  nb.textContent='Show '+nm+' at '+pr;
- }}
- if(announce&&n!==lastN)say(n?n+' of '+items.length+' doorbells shown':'No doorbells match those filters');
- lastN=n;
- var s=items.slice().sort(function(a,b){{
-  var x=skey==='model'?a.dataset.model:+a.dataset[skey],y=skey==='model'?b.dataset.model:+b.dataset[skey];
-  if(x<y)return -sdir;if(x>y)return sdir;return +a.dataset.keep3-+b.dataset.keep3;
- }});
- s.forEach(function(t){{tbl.appendChild(t)}});
- $$('#tbl thead th[data-sort]').forEach(function(th){{th.setAttribute('aria-sort',th.dataset.sort===skey?(sdir>0?'ascending':'descending'):'none')}});
- $('#sort').value=skey;
-}}
-$$('#controls input').forEach(function(el){{el.addEventListener('input',apply);el.addEventListener('change',apply)}});
-// The track is decorative and its inputs ignore pointer events, so a click
-// there is a shortcut for "move the handle nearest this spot".
-$('.dual-track').addEventListener('click',function(ev){{
- var r=this.getBoundingClientRect();
- if(!r.width)return;
- var v=+minEl.min+Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width))*(+maxEl.max-+minEl.min);
- var el=Math.abs(v-+minEl.value)<=Math.abs(v-+maxEl.value)?minEl:maxEl;
- el.value=v;apply();el.focus({{preventScroll:true}});
-}});
-$('#sort').onchange=function(){{skey=this.value;sdir=SDEF[skey];apply()}};
-$$('#tbl thead th[data-sort] button').forEach(function(b){{b.onclick=function(){{
- var k=b.parentNode.dataset.sort;
- if(k===skey)sdir=-sdir;else{{skey=k;sdir=SDEF[k]}}
- apply();
-}}}});
-$('#reset').onclick=function(){{$$('#controls input[type=checkbox]').forEach(function(c){{c.checked=false}});minEl.value=minEl.min;maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()}};
-$$('button.more').forEach(function(b){{b.onclick=function(){{var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}}}});
-var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
-$$('a.jump').forEach(function(a){{a.addEventListener('click',function(ev){{
- var rows=a.dataset.ids.split(' ').map(function(id){{return document.getElementById('m-'+id)}});
- if(rows.some(function(r){{return r.hidden}}))$('#reset').click();
- rows.sort(function(x,y){{return x.compareDocumentPosition(y)&4?-1:1}});
- ev.preventDefault();
- rows[0].scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'center'}});
- if(history.replaceState)history.replaceState(null,'',location.pathname+location.search+'#'+rows[0].id);
- rows.forEach(function(r){{r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');clearTimeout(r._ft);r._ft=setTimeout(function(){{r.classList.remove('flash')}},1900)}});
- var vis=$$('#tbl tbody.item:not([hidden])'),pos=vis.indexOf(rows[0]),vt=rows[0].querySelector('.vtag');
- say(D[rows[0].dataset.id].name+(vt?', '+vt.textContent.toLowerCase():'')+', row '+(pos+1)+' of '+vis.length);
- var cb=rows[0].querySelector('input.cmp'); if(cb)cb.focus({{preventScroll:true}});
-}})}});
-var PINNED=['Records free?','Price','3 yrs, no plan','3 yrs, with plan'],diffOnly=false;
-var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
-function esc(s){{var d=document.createElement('div');d.textContent=s;return d.innerHTML}}
-function sel(){{return $$('input.cmp:checked').map(function(c){{return c.value}})}}
-function cmpIds(){{return sel().slice(0,3)}}
-function shareUrl(){{var s=cmpIds();return location.origin+location.pathname+(s.length?'?cmp='+s.join(','):'')}}
-function syncUrl(){{
- var s=cmpIds(),u=location.pathname+(s.length?'?cmp='+s.join(','):'')+location.hash;
- try{{if(history.replaceState)history.replaceState(null,'',u)}}catch(e){{}}
-}}
-function tray(){{
- var s=sel(); $$('input.cmp').forEach(function(c){{c.disabled=!c.checked&&s.length>=3}});
- $('#tray').hidden=s.length===0||!$('#compare').hidden;
- $('#tray-txt').textContent=s.length===1?'1 selected (tick 1 or 2 more)':s.length>=3?'3 selected (maximum, untick one to swap)':s.length?'2 selected':'';
- $('#tray-go').disabled=s.length<2;
- var ib=$('#cmp-inline');$('#cmp-sep').hidden=ib.hidden=s.length<2;ib.textContent='Compare '+s.length;
- // Unticking below two closes the panel without stealing focus from the box
- // the reader is on, so this path never touches focus.
- if(!$('#compare').hidden){{
-  if(s.length>=2)render();
-  else{{$('#compare').hidden=true;$('#tray').hidden=s.length===0}}
- }}
- say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
- syncUrl();
-}}
-function render(){{
- var s=sel(),h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){{
-  var d=D[id];
-  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
- }}).join('')+'</tr></thead><tbody>';
- var keep=s.map(function(id){{return D[id].keep3}}),valid=keep.filter(function(v){{return typeof v==='number'&&isFinite(v)}}),low=valid.length?Math.min.apply(null,valid):Infinity;
- h+='<tr class="cmp-cost" data-pin="1"><th scope="row">3 years, cheapest</th>'+s.map(function(id){{var v=D[id].keep3;
-  if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
-  return '<td>'+(Math.abs(v-low)<0.005?'£'+v.toFixed(2)+' · cheapest':'+£'+(v-low).toFixed(2))+'</td>';
- }}).join('')+'</tr>';
- var dupes=0;
- ROWS.forEach(function(r){{
-  var vals=s.map(function(id){{return D[id][r[1]]}}),pin=PINNED.indexOf(r[0])>-1,same=vals.every(function(v){{return v===vals[0]}});
-  if(same&&!pin)dupes++;
-  h+='<tr'+(pin?' data-pin="1"':'')+(same&&!pin?' data-same="1"':'')+'><th scope="row">'+r[0]+'</th>'+s.map(function(id){{return '<td>'+esc(D[id][r[1]])+'</td>'}}).join('')+'</tr>';
- }});
- $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
- if(!dupes)diffOnly=false;
- $('#cmp-diff-w').hidden=!dupes;
- $('#cmp-dupes').textContent=dupes?'('+dupes+' identical)':'';
- $('#cmp-diff').checked=diffOnly;
- applyDiff();
-}}
-// Identical rows are the one part of a comparison that carries no decision, so
-// they can go. The four that do carry one stay even when they match.
-function applyDiff(){{$$('#cmp-table tbody tr[data-same]').forEach(function(tr){{tr.hidden=diffOnly}})}}
-$('#cmp-diff').onchange=function(){{diffOnly=this.checked;applyDiff()}};
-$$('input.cmp').forEach(function(c){{c.addEventListener('change',tray)}});
-function showCompare(){{
- // Already open: take the reader back to it rather than rebuilding it.
- if(!$('#compare').hidden){{$('#compare').scrollIntoView({{behavior:reduce.matches?'auto':'smooth',block:'start'}});$('#cmp-h').focus({{preventScroll:true}});return}}
- // The tray leaves and its place is taken by the compare header: the same box
- // stops being one control and starts being another. Scroll first, so both
- // snapshots are taken from the reader's final position.
- function go(smooth){{
-  render();tray();
-  $('#compare').scrollIntoView({{behavior:smooth?'smooth':'auto',block:'start'}});
-  // The button that opened this is hidden now, so hand focus to the panel's
-  // heading. Not the section: its name would be every cell in the table.
-  $('#cmp-h').focus({{preventScroll:true}});
- }}
- if(document.startViewTransition&&!reduce.matches)document.startViewTransition(function(){{go(false)}});else go(!reduce.matches);
- say('Side-by-side comparison of '+sel().length+' doorbells');
-}}
-function closeCompare(){{
- if($('#compare').hidden)return;
- var go=function(){{
-  $('#compare').hidden=true;tray();
-  if(!$('#tray').hidden)$('#tray-go').focus({{preventScroll:true}});
- }};
- if(document.startViewTransition&&!reduce.matches)document.startViewTransition(go);else go();
-}}
-function clearAll(){{
- // Both Clear buttons are about to be hidden, so focus needs somewhere real.
- var inside=$('#compare').contains(document.activeElement)||$('#tray').contains(document.activeElement);
- $$('input.cmp').forEach(function(c){{c.checked=false}});$('#compare').hidden=true;tray();
- if(inside){{var f=document.querySelector('input.cmp');if(f)f.focus({{preventScroll:true}})}}
-}}
-$('#tray-go').onclick=showCompare;
-$('#cmp-inline').onclick=showCompare;
-$('#tray-clear').onclick=clearAll;
-$('#cmp-clear').onclick=clearAll;
-$('#cmp-close').onclick=closeCompare;
-function m3(x){{return '£'+(+x).toFixed(2)}}
-function shortlist(){{
- return 'SubFree UK shortlist, checked '+CHECKED+'\\n'+shareUrl()+'\\n\\n'+sel().map(function(id){{var d=D[id];
-  return d.name+'\\n'+d.price+' · 3-year cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\\nBest for: '+d.best+'\\nMain catch: '+d.catch;
- }}).join('\\n\\n');
-}}
-function legacyCopy(text){{
- var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.top='-1000px';
- document.body.appendChild(t);t.select();var ok=false;try{{ok=document.execCommand('copy')}}catch(e){{}}
- document.body.removeChild(t);return ok;
-}}
-var copyBtn=$('#cmp-copy'),noteEl=$('#cmp-note'),noteT,noteT2;
-function copyNote(m){{
- noteEl.textContent=m;noteEl.hidden=false;noteEl.classList.remove('out');
- clearTimeout(noteT);clearTimeout(noteT2);
- noteT=setTimeout(function(){{
-  if(reduce.matches){{noteEl.hidden=true;return}}
-  noteEl.classList.add('out');
-  noteT2=setTimeout(function(){{noteEl.hidden=true;noteEl.classList.remove('out')}},400);
- }},6000);
-}}
-copyBtn.onclick=function(){{
- var text=shortlist(),n=sel().length;
- function ok(){{copyNote('Copied '+n+' model'+(n===1?'':'s')+' as Markdown, with prices and the date checked. Paste it into a message or a note.')}}
- function fail(){{copyNote('Copying is blocked in this browser. Select the table text and copy it by hand instead.')}}
- if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(ok,function(){{legacyCopy(text)?ok():fail()}});
- else legacyCopy(text)?ok():fail();
-}};
-$('#empty-reset').onclick=function(){{$('#reset').click()}};
-$('#near').onclick=function(){{
- if(!nearPick)return;
- var p=+nearPick.dataset.price,st=+minEl.step||5,base=+minEl.min;
- if(p<+minEl.value)minEl.value=base+Math.floor((p-base)/st)*st;
- else if(p>+maxEl.value)maxEl.value=base+Math.ceil((p-base)/st)*st;
- apply();
-}};
-var lb=$('#lightbox'),lbBox=$('#lb-img'),lbName=$('#lb-name'),lbImg;
-document.addEventListener('click',function(ev){{
- var b=ev.target.closest('.zoom');
- if(!b)return;
- if(!lbImg){{
-  lbImg=document.createElement('img');
-  lbImg.width=360;lbImg.height=480;lbImg.decoding='async';
-  lbBox.appendChild(lbImg);
- }}
- lbImg.src=b.dataset.full;
- lbImg.alt=b.dataset.name;
- lbName.textContent=b.dataset.name;
- if(lb.showModal)lb.showModal();
-}});
-$('#lb-close').onclick=function(){{lb.close()}};
-lb.addEventListener('click',function(ev){{
- if(ev.target!==lb)return;
- var r=lb.getBoundingClientRect();
- if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
-}});
-apply();announce=true;
-var shared='';
-try{{shared=decodeURIComponent((location.search.match(/[?&]cmp=([^&]*)/)||[])[1]||'')}}catch(e){{shared=''}}
-if(shared){{
- var ids=[];
- shared.split(',').forEach(function(id){{if(D[id]&&ids.indexOf(id)<0&&ids.length<3)ids.push(id)}});
- if(ids.length){{
-  $$('input.cmp').forEach(function(c){{c.checked=ids.indexOf(c.value)>-1}});
-  if(ids.length>1)render();
-  tray();
- }}
- syncUrl();
-}}
-}})();
-</script>
+<script src="{JS_URL}"></script>
 </body></html>'''
-for _f in ("index.html","doorbells.html"): open(os.path.join(ROOT,_f),"w",encoding="utf-8").write(page)
-print(len(ROWS),"rows written")
-for r in sorted(ROWS,key=lambda r:r["keep3"]): print(f"{r['brand']:14} {r['model']:38} score {r['score_total']}  nosub {r['nosub3']:8.2f}  sub {r['sub3'] if r['sub3'] else '-':>8}  keep {r['keep3']:.2f}")
-open_rows=[r for r in ROWS if r["unverified"]]
-print(f"\nUnverified ({len(open_rows)} of {len(ROWS)} rows):" + (" none" if not open_rows else ""))
-for r in open_rows: print(f"  {r['brand']} {r['model']}: {r['unverified'].replace('£','GBP ')}")
+# One page, one name. The second filename used to be a byte-identical copy;
+# it is now a redirect so an old link still lands on the canonical URL.
+ALIAS = '''<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<title>Moved: the doorbell comparison</title>
+<link rel="canonical" href="https://lydenyardley.github.io/subfree-uk/">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=./">
+</head><body><p>This page has moved to the <a href="./">UK doorbell comparison</a>.</p></body></html>'''
+
+def write():
+    if _CHECKED_DATE > date.today():
+        raise SystemExit(
+            f"CHECKED_ISO is {CHECKED_ISO}, which is in the future; fix the date before building"
+        )
+    open(os.path.join(ROOT,"index.html"),"w",encoding="utf-8").write(page)
+    open(os.path.join(ROOT,"doorbells.html"),"w",encoding="utf-8").write(ALIAS)
+    assets = os.path.join(ROOT, "assets")
+    os.makedirs(assets, exist_ok=True)
+    for name, text in ((CSS_FILE, PAGE_CSS), (JS_FILE, PAGE_JS)):
+        open(os.path.join(ROOT, name), "w", encoding="utf-8").write(text)
+    # The one-off content-hashed names from the first version of this change.
+    for name in os.listdir(assets):
+        if name.startswith("page-") and name.endswith((".css", ".js")):
+            os.remove(os.path.join(assets, name))
+    print(len(ROWS),"rows written")
+    for r in sorted(ROWS,key=lambda r:r["keep3"]): print(f"{r['brand']:14} {r['model']:38} score {r['score_total']}  nosub {r['nosub3']:8.2f}  sub {r['sub3'] if r['sub3'] else '-':>8}  keep {r['keep3']:.2f}")
+    open_rows=[r for r in ROWS if r["unverified"]]
+    print(f"\nUnverified ({len(open_rows)} of {len(ROWS)} rows):" + (" none" if not open_rows else ""))
+    for r in open_rows: print(f"  {r['brand']} {r['model']}: {r['unverified'].replace('£','GBP ')}")
+
+if __name__ == "__main__":
+    write()

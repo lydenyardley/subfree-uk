@@ -1,0 +1,254 @@
+(function(){
+var D={"ring": {"name": "Ring Battery Video Doorbell 2K", "rec": "No", "price": "£79.99", "score": "2/8", "nosub3": "£79.99", "sub3": "£259.63", "keep3": 259.63, "region": "UK", "best": "Alexa households happy to pay the monthly plan", "catch": "Saves no video at all unless you pay £4.99 a month.", "power": "Battery / Wired", "storage": "None. No on-device or hub storage.", "live": "Yes", "alerts": "Yes, motion and button-press alerts", "ai": "Paid (person, package and vehicle alerts on Ring's plans page)", "history": "None", "paywalled": "All recording and playback (up to 180 days), smart alerts, Extended Live View; 24/7 recording is £3/month extra per device", "plan": "Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month", "ha": "Official integration, but it goes through Ring's cloud. No local-only option.", "wifi": "2.4 GHz only", "img": "img/ring-sm.webp", "imgLg": "img/ring-lg.webp"}, "nest": {"name": "Google Nest Doorbell (battery)", "rec": "Only briefly (3 hrs)", "price": "£179.99", "score": "4/8", "nosub3": "£179.99", "sub3": "£467.99", "keep3": 467.99, "region": "UK", "best": "Google Home households who want polished smart alerts", "catch": "Only 3 hours of free history. Anything longer is £8 a month.", "power": "Battery / Wired", "storage": "None", "live": "Yes", "alerts": "Yes", "ai": "Free: person, parcel, animal and vehicle alerts; Google sells 'smarter' AI notifications as Premium", "history": "3 hours of event clips", "paywalled": "30 or 60 days of history, AI notifications, familiar faces, Gemini search. No 24/7 recording on this model at any price", "plan": "Google Home Premium Standard £8/month (£80/year); Advanced £16/month (£160/year)", "ha": "Official integration, but it goes through Google's cloud (Cloud Push) and needs a one-off US$5 Google developer fee.", "wifi": "2.4 GHz only (5 GHz is US-only)", "img": "img/nest-sm.webp", "imgLg": "img/nest-lg.webp"}, "eufy-e340": {"name": "eufy Video Doorbell E340", "rec": "Yes", "price": "£169.99", "score": "7/8", "nosub3": "£169.99", "sub3": "£313.63", "keep3": 169.99, "region": "UK", "best": "Busy doorsteps with lots of parcels: a second camera looks straight down", "catch": "Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.", "power": "Battery / Wired", "storage": "8 GB in the doorbell; optional HomeBase S380 (16 GB, expandable)", "live": "Yes", "alerts": "Yes", "ai": "Free: person and package detection on the device", "history": "Yes, event clips kept locally", "paywalled": "Nothing essential; cloud backup is optional", "plan": "Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices", "ha": "Community integration only (ha-eufy-sdk), which still logs in through your eufy account.", "wifi": "2.4 GHz only", "img": "img/eufy-e340-sm.webp", "imgLg": "img/eufy-e340-lg.webp"}, "reo-wifi": {"name": "Reolink Video Doorbell WiFi", "rec": "Yes", "price": "£93.49", "score": "7/8", "nosub3": "£103.49", "sub3": "£258.37", "keep3": 103.49, "region": "UK", "best": "Homes with existing doorbell wiring, plus Home Assistant or NVR users", "catch": "Needs doorbell transformer wiring, and the microSD card is sold separately.", "power": "Wired", "storage": "microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, motion-triggered or 24/7 recording to card or NVR", "paywalled": "Nothing. Reolink Cloud is optional", "plan": "Optional Reolink Cloud. UK £4.58/month, or £2.71/month billed yearly (£32.52/year) for 1 camera", "ha": "Official, fully local integration (Local Push, top 'Platinum' quality rating); works with no internet connection.", "wifi": "Dual-band 2.4/5 GHz", "img": "img/reo-wifi-sm.webp", "imgLg": "img/reo-wifi-lg.webp"}, "reo-poe": {"name": "Reolink Video Doorbell PoE", "rec": "Yes", "price": "£69.99", "score": "7/8", "nosub3": "£79.99", "sub3": "No plan", "keep3": 79.99, "region": "UK", "best": "The most reliable, fully local setup, if you can run an Ethernet cable", "catch": "Needs an Ethernet cable to the door and a PoE switch or injector.", "power": "PoE", "storage": "microSD and/or NVR; RTSP/ONVIF", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, motion-triggered or 24/7 recording", "paywalled": "Nothing", "plan": "None. Reolink's doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR", "ha": "Official, fully local integration (Local Push, Platinum).", "wifi": "Wired Ethernet", "img": "img/reo-poe-sm.webp", "imgLg": "img/reo-poe-lg.webp"}, "reo-batt": {"name": "Reolink Video Doorbell (Battery)", "rec": "Yes", "price": "£99.99", "score": "7/8", "nosub3": "£99.99", "sub3": "£250.11", "keep3": 99.99, "region": "UK", "best": "Battery install with 5 GHz Wi-Fi and no fees", "catch": "Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49).", "power": "Battery / Wired", "storage": "microSD in the doorbell, or a Home Hub indoors (up to 1 TB)", "live": "Yes", "alerts": "Yes", "ai": "Free: person, vehicle and package detection", "history": "Yes, on card or hub", "paywalled": "Nothing", "plan": "Optional Reolink Cloud. UK £4.17/month, or £2.87/month billed yearly (£34.44/year) for up to 5 cameras", "ha": "Official integration through a Reolink Home Hub or NVR, which streams the battery doorbell locally.", "wifi": "Dual-band 2.4/5 GHz", "img": "img/reo-batt-sm.webp", "imgLg": "img/reo-batt-lg.webp"}, "tapo-d230": {"name": "TP-Link Tapo D230S1", "rec": "Yes", "price": "£84.99", "score": "6/8", "nosub3": "£94.99", "sub3": "£192.63", "keep3": 94.99, "region": "UK", "best": "An easy battery doorbell that keeps footage indoors on its chime/hub", "catch": "The microSD card is extra, and Home Assistant gets settings and alerts but not the live video.", "power": "Battery", "storage": "microSD (up to 512 GB) in the indoor H200 hub", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, on the hub's card", "paywalled": "30-day cloud history, snapshot notifications, Smart Sort", "plan": "Optional Tapo Care from £2.99/month or £29.49/year", "ha": "Official TP-Link Smart Home integration, polled locally for settings and motion alerts. Hub-attached cameras still have no live view in Home Assistant.", "wifi": "2.4 GHz only", "img": "img/tapo-d230-sm.webp", "imgLg": "img/tapo-d230-lg.webp"}, "tapo-td21": {"name": "TP-Link Tapo TD21", "rec": "Yes", "price": "£44.99", "score": "5/8", "nosub3": "£54.99", "sub3": "£152.63", "keep3": 54.99, "region": "UK", "best": "The tightest budget", "catch": "Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it.", "power": "Battery", "storage": "microSD up to 512 GB, in the doorbell itself", "live": "Yes", "alerts": "Yes", "ai": "Free: person detection", "history": "Yes, on card", "paywalled": "30-day cloud history, snapshot notifications, Smart Sort", "plan": "Optional Tapo Care from £2.99/month", "ha": "Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.", "wifi": "2.4 GHz only", "img": "img/tapo-td21-sm.webp", "imgLg": "img/tapo-td21-lg.webp"}, "arlo": {"name": "Arlo Essential Video Doorbell 2K (2nd gen)", "rec": "Only with extra kit", "price": "£84.99", "score": "3/8", "nosub3": "£200.06", "sub3": "£372.63", "keep3": 200.06, "region": "UK", "best": "People who already own Arlo cameras", "catch": "Recording needs a £7.99/month plan or a separate hub costing about £105.", "power": "Battery", "storage": "Only through an Arlo SmartHub (VMB4540, USB) or a Base Station", "live": "Yes", "alerts": "Yes", "ai": "Paid", "history": "None without a hub", "paywalled": "Cloud recording (7, 14 or 30 days depending on plan), object detection, activity zones, theft replacement", "plan": "Arlo Secure £7.99/month (1 camera, 7 days), Multi-Camera £12.99, Secure Plus £19.99 (14 days), Secure Pro £24.99", "ha": "No official integration; only a community add-on that goes through Arlo's cloud.", "wifi": "2.4 GHz only", "img": "img/arlo-sm.webp", "imgLg": "img/arlo-lg.webp"}, "aqara-g4": {"name": "Aqara Video Doorbell G4", "rec": "Yes", "price": "£84.99", "score": "6/8", "nosub3": "£94.99", "sub3": "No plan", "keep3": 94.99, "region": "UK", "best": "Apple Home users", "catch": "Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.", "power": "Battery / Wired", "storage": "microSD (up to 512 GB) in the indoor chime", "live": "Yes", "alerts": "Yes", "ai": "Free: face recognition on the device", "history": "Yes, on the chime's card (24/7 only when wired)", "paywalled": "Nothing essential. HomeKit Secure Video needs Apple's paid iCloud+", "plan": "None needed", "ha": "Reported to work locally through Home Assistant's HomeKit Device integration; two-way audio isn't available there.", "wifi": "2.4 GHz only", "img": "img/aqara-g4-sm.webp", "imgLg": "img/aqara-g4-lg.webp"}, "blink": {"name": "Blink Battery Doorbell 2K+", "rec": "Only with extra kit", "price": "£69.99", "score": "2/8", "nosub3": "£119.98", "sub3": "£159.99", "keep3": 119.98, "region": "UK", "best": "The cheapest way into Amazon's ecosystem, if you catch a deal", "catch": "Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.", "power": "Battery", "storage": "Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted", "live": "Capped at 5 minutes", "alerts": "Yes", "ai": "Paid (person and vehicle detection)", "history": "None without a Sync Module 2", "paywalled": "Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions", "plan": "Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month", "ha": "Official integration, but it goes through Blink's cloud.", "wifi": "2.4 GHz (Blink requirement)", "img": "img/blink-sm.webp", "imgLg": "img/blink-lg.webp"}, "ezviz-ep3x": {"name": "EZVIZ EP3x Pro", "rec": "Yes", "price": "£79.99", "score": "6/8", "nosub3": "£79.99", "sub3": "£259.63", "keep3": 79.99, "region": "EU", "best": "Two cameras on a budget, with storage built in", "catch": "Expert Reviews found its motion detection unreliable and the app confusing.", "power": "Battery", "storage": "32 GB built in, no card needed", "live": "Yes", "alerts": "Yes", "ai": "Free: human and package detection", "history": "Yes, on built-in storage", "paywalled": "Nothing essential. CloudPlay is optional", "plan": "Optional CloudPlay. UK price is app-only; EU €4.99/month (7 days), so treat the plan column as an estimate", "ha": "Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.", "wifi": "2.4 GHz only", "img": "img/ezviz-ep3x-sm.webp", "imgLg": "img/ezviz-ep3x-lg.webp"}, "ezviz-db2": {"name": "EZVIZ DB2 Pro Kit", "rec": "Yes", "price": "£114.99", "score": "5/8", "nosub3": "£124.99", "sub3": "£294.63", "keep3": 124.99, "region": "EU", "best": "Flats and rentals: no wiring, and footage stays indoors in the chime", "catch": "2.4 GHz Wi-Fi only, and the card is sold separately.", "power": "Battery", "storage": "microSD (up to 256 GB) in the included indoor chime", "live": "Yes", "alerts": "Yes", "ai": "Free: PIR plus human-shape detection", "history": "Yes, on the chime's card", "paywalled": "Nothing essential", "plan": "Optional CloudPlay. UK price is app-only; EU €4.99/month (7 days), so treat the plan column as an estimate", "ha": "Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.", "wifi": "2.4 GHz only", "img": "img/ezviz-db2-sm.webp", "imgLg": "img/ezviz-db2-lg.webp"}, "hik": {"name": "Hikvision DS-KB6003-WIP", "rec": "Yes", "price": "£295", "score": "5/8", "nosub3": "£305", "sub3": "No plan", "keep3": 305.0, "region": "UK", "best": "Only worth it if an installer is fitting a Hikvision system anyway", "catch": "Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295.", "power": "Wired", "storage": "microSD up to 128 GB; RTSP to an NVR", "live": "Yes (Hik-Connect app)", "alerts": "Yes (motion)", "ai": "None", "history": "Yes, on card or NVR", "paywalled": "Nothing", "plan": "None", "ha": "Works as a generic RTSP camera.", "wifi": "2.4 GHz only", "img": "", "imgLg": ""}},CHECKED='19 October 2026';
+var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
+function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}
+function syncTheme(){var d=isDark();tb.lastChild.textContent=d?'Light mode':'Dark mode';tb.title=d?'Switch to light mode':'Switch to dark mode';tb.setAttribute('aria-label',tb.title)}
+tb.onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n)}catch(e){}syncTheme()};
+if(mq.addEventListener)mq.addEventListener('change',syncTheme);
+syncTheme();
+var narrow=window.matchMedia('(max-width:820px)'),small=window.matchMedia('(max-width:520px)'),filters=$('#filters'),srcs=$('#sources');
+function fitFilters(){filters.open=!small.matches}
+function fitSources(){srcs.open=!narrow.matches}
+function fitSortKeys(){$$('#tbl thead th button').forEach(function(b){if(narrow.matches)b.setAttribute('tabindex','-1');else b.removeAttribute('tabindex')})}
+if(small.addEventListener)small.addEventListener('change',fitFilters);
+if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
+if(narrow.addEventListener)narrow.addEventListener('change',fitSources);
+addEventListener('beforeprint',function(){srcs.open=true});
+fitFilters();fitSortKeys();fitSources();
+var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
+var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
+function say(m){clearTimeout(liveT);clearTimeout(liveClearT);liveT=setTimeout(function(){live.textContent='';liveT=setTimeout(function(){live.textContent=m;liveClearT=setTimeout(function(){live.textContent=''},4000)},60)},300)}
+var skey='keep3',sdir=1,SDEF={keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1};
+function apply(){
+ var lo0=+minEl.min,hi0=+maxEl.max,lo=+minEl.value,hi=+maxEl.value;
+ if(lo>hi){lo=hi;minEl.value=hi}
+ minEl.style.zIndex=lo>=hi?2:1;
+ minOut.textContent='£'+lo;maxOut.textContent='£'+hi;
+ fill.style.left=((lo-lo0)/(hi0-lo0)*100)+'%';
+ fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
+ var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){return x.value}),n=0;
+ function ok(t,plo,phi){return (!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=plo&&+t.dataset.price<=phi)&&
+  (!pw.length||pw.some(function(p){return t.dataset.power.split(' ').indexOf(p)>-1}))}
+ items.forEach(function(t){var show=ok(t,lo,hi);t.hidden=!show;if(show)n++});
+ $('#count').textContent=n; $('#empty').hidden=n>0;
+ var near=null;
+ if(!n){
+  var bestD=Infinity;
+  items.forEach(function(t){
+   if(!ok(t,lo0,hi0))return;
+   var p=+t.dataset.price,d=p<lo?lo-p:p>hi?p-hi:0;
+   if(d<bestD||(d===bestD&&p<+(near?near.dataset.price:Infinity))){bestD=d;near=t}
+  });
+ }
+ nearPick=near;
+ var nb=$('#near');
+ nb.hidden=!near;
+ if(near){
+  var nm=near.querySelector('.brand').textContent+' '+near.querySelector('.mname').textContent;
+  var pr='£'+(+near.dataset.price).toFixed(2).replace(/\\.00$/,'');
+  nb.textContent='Show '+nm+' at '+pr;
+ }
+ if(announce&&n!==lastN)say(n?n+' of '+items.length+' doorbells shown':'No doorbells match those filters');
+ lastN=n;
+ var s=items.slice().sort(function(a,b){
+  var x=skey==='model'?a.dataset.model:+a.dataset[skey],y=skey==='model'?b.dataset.model:+b.dataset[skey];
+  if(x<y)return -sdir;if(x>y)return sdir;return +a.dataset.keep3-+b.dataset.keep3;
+ });
+ s.forEach(function(t){tbl.appendChild(t)});
+ $$('#tbl thead th[data-sort]').forEach(function(th){th.setAttribute('aria-sort',th.dataset.sort===skey?(sdir>0?'ascending':'descending'):'none')});
+ $('#sort').value=skey;
+}
+$$('#controls input').forEach(function(el){el.addEventListener('input',apply);el.addEventListener('change',apply)});
+// The track is decorative and its inputs ignore pointer events, so a click
+// there is a shortcut for "move the handle nearest this spot".
+$('.dual-track').addEventListener('click',function(ev){
+ var r=this.getBoundingClientRect();
+ if(!r.width)return;
+ var v=+minEl.min+Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width))*(+maxEl.max-+minEl.min);
+ var el=Math.abs(v-+minEl.value)<=Math.abs(v-+maxEl.value)?minEl:maxEl;
+ el.value=v;apply();el.focus({preventScroll:true});
+});
+$('#sort').onchange=function(){skey=this.value;sdir=SDEF[skey];apply()};
+$$('#tbl thead th[data-sort] button').forEach(function(b){b.onclick=function(){
+ var k=b.parentNode.dataset.sort;
+ if(k===skey)sdir=-sdir;else{skey=k;sdir=SDEF[k]}
+ apply();
+}});
+$('#reset').onclick=function(){$$('#controls input[type=checkbox]').forEach(function(c){c.checked=false});minEl.value=minEl.min;maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()};
+$$('button.more').forEach(function(b){b.onclick=function(){var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}});
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+$$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
+ var rows=a.dataset.ids.split(' ').map(function(id){return document.getElementById('m-'+id)});
+ if(rows.some(function(r){return r.hidden}))$('#reset').click();
+ rows.sort(function(x,y){return x.compareDocumentPosition(y)&4?-1:1});
+ ev.preventDefault();
+ rows[0].scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'center'});
+ if(history.replaceState)history.replaceState(null,'',location.pathname+location.search+'#'+rows[0].id);
+ rows.forEach(function(r){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');clearTimeout(r._ft);r._ft=setTimeout(function(){r.classList.remove('flash')},1900)});
+ var vis=$$('#tbl tbody.item:not([hidden])'),pos=vis.indexOf(rows[0]),vt=rows[0].querySelector('.vtag');
+ say(D[rows[0].dataset.id].name+(vt?', '+vt.textContent.toLowerCase():'')+', row '+(pos+1)+' of '+vis.length);
+ var cb=rows[0].querySelector('input.cmp'); if(cb)cb.focus({preventScroll:true});
+})});
+var PINNED=['Records free?','Price','3 yrs, no plan','3 yrs, with plan'],diffOnly=false;
+var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
+function cmpIds(){return sel().slice(0,3)}
+function shareUrl(){var s=cmpIds();return location.origin+location.pathname+(s.length?'?cmp='+s.join(','):'')}
+function syncUrl(){
+ var s=cmpIds(),u=location.pathname+(s.length?'?cmp='+s.join(','):'')+location.hash;
+ try{if(history.replaceState)history.replaceState(null,'',u)}catch(e){}
+}
+function tray(){
+ var s=sel(); $$('input.cmp').forEach(function(c){c.disabled=!c.checked&&s.length>=3});
+ $('#tray').hidden=s.length===0||!$('#compare').hidden;
+ $('#tray-txt').textContent=s.length===1?'1 selected (tick 1 or 2 more)':s.length>=3?'3 selected (maximum, untick one to swap)':s.length?'2 selected':'';
+ $('#tray-go').disabled=s.length<2;
+ var ib=$('#cmp-inline');$('#cmp-sep').hidden=ib.hidden=s.length<2;ib.textContent='Compare '+s.length;
+ // Unticking below two closes the panel without stealing focus from the box
+ // the reader is on, so this path never touches focus.
+ if(!$('#compare').hidden){
+  if(s.length>=2)render();
+  else{$('#compare').hidden=true;$('#tray').hidden=s.length===0}
+ }
+ say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
+ syncUrl();
+}
+function render(){
+ var s=sel(),h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
+  var d=D[id];
+  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
+ }).join('')+'</tr></thead><tbody>';
+ var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
+ h+='<tr class="cmp-cost" data-pin="1"><th scope="row">3 years, cheapest</th>'+s.map(function(id){var v=D[id].keep3;
+  if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
+  return '<td>'+(Math.abs(v-low)<0.005?'£'+v.toFixed(2)+' · cheapest':'+£'+(v-low).toFixed(2))+'</td>';
+ }).join('')+'</tr>';
+ var dupes=0;
+ ROWS.forEach(function(r){
+  var vals=s.map(function(id){return D[id][r[1]]}),pin=PINNED.indexOf(r[0])>-1,same=vals.every(function(v){return v===vals[0]});
+  if(same&&!pin)dupes++;
+  h+='<tr'+(pin?' data-pin="1"':'')+(same&&!pin?' data-same="1"':'')+'><th scope="row">'+r[0]+'</th>'+s.map(function(id){var v=D[id][r[1]];
+   // A plan figure bought in euros is not a UK quote, so the comparison says so
+   // in the row rather than leaving the caveat to a footnote.
+   if(r[1]==='plan'&&D[id].region==='EU')v+=' (EU price)';
+   return '<td>'+esc(v)+'</td>'}).join('')+'</tr>';
+ });
+ $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
+ if(!dupes)diffOnly=false;
+ $('#cmp-diff-w').hidden=!dupes;
+ $('#cmp-dupes').textContent=dupes?'('+dupes+' identical)':'';
+ $('#cmp-diff').checked=diffOnly;
+ applyDiff();
+}
+// Identical rows are the one part of a comparison that carries no decision, so
+// they can go. The four that do carry one stay even when they match.
+function applyDiff(){$$('#cmp-table tbody tr[data-same]').forEach(function(tr){tr.hidden=diffOnly})}
+$('#cmp-diff').onchange=function(){diffOnly=this.checked;applyDiff()};
+$$('input.cmp').forEach(function(c){c.addEventListener('change',tray)});
+function showCompare(){
+ // Already open: take the reader back to it rather than rebuilding it.
+ if(!$('#compare').hidden){$('#compare').scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'});$('#cmp-h').focus({preventScroll:true});return}
+ // The tray leaves and its place is taken by the compare header: the same box
+ // stops being one control and starts being another. Scroll first, so both
+ // snapshots are taken from the reader's final position.
+ function go(smooth){
+  render();tray();
+  $('#compare').scrollIntoView({behavior:smooth?'smooth':'auto',block:'start'});
+  // The button that opened this is hidden now, so hand focus to the panel's
+  // heading. Not the section: its name would be every cell in the table.
+  $('#cmp-h').focus({preventScroll:true});
+ }
+ if(document.startViewTransition&&!reduce.matches)document.startViewTransition(function(){go(false)});else go(!reduce.matches);
+ say('Side-by-side comparison of '+sel().length+' doorbells');
+}
+function closeCompare(){
+ if($('#compare').hidden)return;
+ var go=function(){
+  $('#compare').hidden=true;tray();
+  if(!$('#tray').hidden)$('#tray-go').focus({preventScroll:true});
+ };
+ if(document.startViewTransition&&!reduce.matches)document.startViewTransition(go);else go();
+}
+function clearAll(){
+ // Both Clear buttons are about to be hidden, so focus needs somewhere real.
+ var inside=$('#compare').contains(document.activeElement)||$('#tray').contains(document.activeElement);
+ $$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray();
+ if(inside){var f=document.querySelector('input.cmp');if(f)f.focus({preventScroll:true})}
+}
+$('#tray-go').onclick=showCompare;
+$('#cmp-inline').onclick=showCompare;
+$('#tray-clear').onclick=clearAll;
+$('#cmp-clear').onclick=clearAll;
+$('#cmp-close').onclick=closeCompare;
+function m3(x){return '£'+(+x).toFixed(2)}
+function shortlist(){
+ return 'SubFree UK shortlist, checked '+CHECKED+'\n'+shareUrl()+'\n\n'+sel().map(function(id){var d=D[id];
+  return d.name+'\n'+d.price+' · 3-year cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\nBest for: '+d.best+'\nMain catch: '+d.catch;
+ }).join('\n\n');
+}
+function legacyCopy(text){
+ var t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.top='-1000px';
+ document.body.appendChild(t);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+ document.body.removeChild(t);return ok;
+}
+var copyBtn=$('#cmp-copy'),noteEl=$('#cmp-note'),noteT,noteT2;
+function copyNote(m){
+ noteEl.textContent=m;noteEl.hidden=false;noteEl.classList.remove('out');
+ clearTimeout(noteT);clearTimeout(noteT2);
+ noteT=setTimeout(function(){
+  if(reduce.matches){noteEl.hidden=true;return}
+  noteEl.classList.add('out');
+  noteT2=setTimeout(function(){noteEl.hidden=true;noteEl.classList.remove('out')},400);
+ },6000);
+}
+copyBtn.onclick=function(){
+ var text=shortlist(),n=sel().length;
+ function ok(){copyNote('Copied '+n+' model'+(n===1?'':'s')+' as Markdown, with prices and the date checked. Paste it into a message or a note.')}
+ function fail(){copyNote('Copying is blocked in this browser. Select the table text and copy it by hand instead.')}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(ok,function(){legacyCopy(text)?ok():fail()});
+ else legacyCopy(text)?ok():fail();
+};
+$('#empty-reset').onclick=function(){$('#reset').click()};
+$('#near').onclick=function(){
+ if(!nearPick)return;
+ var p=+nearPick.dataset.price,st=+minEl.step||5,base=+minEl.min;
+ if(p<+minEl.value)minEl.value=base+Math.floor((p-base)/st)*st;
+ else if(p>+maxEl.value)maxEl.value=base+Math.ceil((p-base)/st)*st;
+ apply();
+};
+var lb=$('#lightbox'),lbBox=$('#lb-img'),lbName=$('#lb-name'),lbImg;
+document.addEventListener('click',function(ev){
+ var b=ev.target.closest('.zoom');
+ if(!b)return;
+ if(!lbImg){
+  lbImg=document.createElement('img');
+  lbImg.width=360;lbImg.height=480;lbImg.decoding='async';
+  lbBox.appendChild(lbImg);
+ }
+ lbImg.src=b.dataset.full;
+ lbImg.alt=b.dataset.name;
+ lbName.textContent=b.dataset.name;
+ if(lb.showModal)lb.showModal();
+});
+$('#lb-close').onclick=function(){lb.close()};
+lb.addEventListener('click',function(ev){
+ if(ev.target!==lb)return;
+ var r=lb.getBoundingClientRect();
+ if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)lb.close();
+});
+apply();announce=true;
+var shared='';
+try{shared=decodeURIComponent((location.search.match(/[?&]cmp=([^&]*)/)||[])[1]||'')}catch(e){shared=''}
+if(shared){
+ var ids=[];
+ shared.split(',').forEach(function(id){if(D[id]&&ids.indexOf(id)<0&&ids.length<3)ids.push(id)});
+ if(ids.length){
+  $$('input.cmp').forEach(function(c){c.checked=ids.indexOf(c.value)>-1});
+  if(ids.length>1)render();
+  tray();
+ }
+ syncUrl();
+}
+})();
