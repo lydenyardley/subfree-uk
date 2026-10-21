@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
-"""Verification for the site: rebuild, then audit structure and accessibility.
+"""Verification for the site: rebuild, recompute, then audit structure and behaviour.
 
 Runs build/build.py first and reports any generated file it changed, so a stale
-page fails here instead of shipping. Serves the repo root on a loopback port,
-drives the page with Chromium, and runs axe-core in both themes at 1280px,
-820px and 390px, failing on WCAG 2.2 A and AA and reporting the
-best-practice rules alongside them. Also checks internal anchors, image
-files, duplicate ids, headings, labels, target sizes, the type floor, the phone
-layout, the price range slider, the filter panel resize, the live announcements,
-the three-row compare cap, the empty-state recovery, the compare cost row,the shortlist copy, the differences-only view, the jump announcement, the tray
-to compare-header transition, the theme motion, the static score bars, the
-contained phone cards, the contained desktop rows and their column alignment,
-the sticky table header, the muted-text contrast, the record and plan labels, the phone label column,
-the host-grouped source list, the closing line, the performance budget, the
-no-JavaScript fallback, the skip link, the photo lightbox and horizontal overflow
-at the breakpoints the stylesheet defines.
+page fails here instead of shipping. Recomputes every derived figure from ROWS
+and compares it with the CSV, and refuses an open fact that does not name its
+blocker. Serves the repo root on a loopback port and drives the page with
+Chromium and Firefox: axe-core in both themes at 1280px, 820px and 390px,
+internal anchors, image files, duplicate ids, headings, labels, target sizes,
+the type floor, the phone layout, the price range slider, the filter panel, the
+live announcements, the three-row compare cap, the empty-state recovery, the
+compare cost row, the shortlist copy, the differences-only view, the focusable
+comparison scroller, the jump announcement, the tray-to-comparison transition,
+the theme motion, the static score bars, the contained phone cards and desktop
+rows with their column alignment, the sticky table header, the muted-text
+contrast, the record and plan labels, the phone label column, the plan region
+marker, the host-grouped source list, the closing line, the performance budget,
+the no-JavaScript fallback, the skip link, the photo lightbox and horizontal
+overflow at the breakpoints the stylesheet defines.
+
+Each result is named and timed; --list prints the names and --only runs a
+matching subset. A full run also starts Firefox and repeats the structural,
+layout and axe pass there, because Chromium alone cannot prove a fallback.
 
     python build/check.py
+    python build/check.py --only "derived figures,labels"
+    python build/check.py --list
     python build/check.py --external   # also request every outbound URL
     python build/check.py --headed
 
@@ -26,17 +34,23 @@ import argparse
 import csv
 import functools
 import http.server
+import importlib.util
 import os
 import statistics
 import subprocess
 import sys
 import threading
+import time
+from datetime import date
 import urllib.error
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ["index.html", "doorbells.html"]
-GENERATED = PAGES + ["data/doorbells.csv", "data/doorbells.md"]
+GENERATED = PAGES + [
+    "data/doorbells.csv", "data/doorbells.md",
+    "assets/page.css", "assets/page.js",
+]
 WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390]
 AXE_WIDTHS = [1280, 820, 390]
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
@@ -184,6 +198,15 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
 
     def log_message(self, *args):
         pass
+
+    def copyfile(self, source, outputfile):
+        # A page that closes early (a reload, or the browser quitting) aborts
+        # the socket mid-file; that is not an audit failure, and the traceback
+        # it prints from the serving thread looks like one.
+        try:
+            super().copyfile(source, outputfile)
+        except (ConnectionError, OSError):
+            pass
 
 
 def serve():
@@ -381,7 +404,7 @@ def recovery_check(page):
     return problems
 
 
-def costrow_check(page):
+def costrow_check(page, row_count, cells):
     """The compare table opens with a row that does the 3-year subtraction."""
     problems = []
     state = page.evaluate(
@@ -396,15 +419,16 @@ def costrow_check(page):
     )
     if state["label"] != "3 years, cheapest":
         problems.append(f"the compare cost row is labelled {state['label']!r}")
-    expected = ["£54.99 · cheapest", "+£25.00", "+£25.00"]
-    if state["cells"] != expected:
-        problems.append(f"compare cost row reads {state['cells']}, expected {expected}")
-    if state["rows"] != 18:
-        problems.append(f"the compare table has {state['rows']} body rows, expected 18")
+    if state["cells"] != cells:
+        problems.append(f"compare cost row reads {state['cells']}, expected {cells}")
+    if state["rows"] != row_count:
+        problems.append(
+            f"the compare table has {state['rows']} body rows, expected {row_count}"
+        )
     return problems
 
 
-def labels_check(page):
+def labels_check(page, rec_label="Only briefly (3 hrs)"):
     """The record column names a time limit, the plan column names its absence,
     PoE is defined at the filter, and the phone card uses one label column."""
     problems = []
@@ -421,7 +445,7 @@ def labels_check(page):
             const power = hint ? hint.closest('fieldset') : null;
             const pseudo = (el) => getComputedStyle(el, '::before');
             return {
-                nestText: nest.textContent.trim(),
+                nestText: nest.querySelector('.rec').textContent.trim(),
                 nestClass: nest.querySelector('.rec').className,
                 planWords: subs.filter((td) => /No plan/.test(td.textContent)).length,
                 planRows: Array.from(document.querySelectorAll('#tbl tbody.item'))
@@ -439,7 +463,7 @@ def labels_check(page):
             };
         }"""
     )
-    if state["nestText"] != "Only briefly (3 hrs)":
+    if state["nestText"] != rec_label:
         problems.append(f"the Nest record cell reads {state['nestText']!r}")
     if "rec-brief" not in state["nestClass"]:
         problems.append(f"the Nest record marker has the class {state['nestClass']!r}")
@@ -469,7 +493,7 @@ def labels_check(page):
     return problems
 
 
-def sources_check(page):
+def sources_check(page, source_count):
     """The source list is a disclosure grouped by host, with stable numbers."""
     problems = []
 
@@ -511,19 +535,19 @@ def sources_check(page):
         problems.append("the source list is open on a 390px screen")
     if not wide["open"]:
         problems.append("the source list is closed on a 1280px screen")
-    if phone["count"] != 52:
-        problems.append(f"the source list holds {phone['count']} entries, expected 52")
-    if phone["values"] != list(range(1, 53)):
+    if phone["count"] != source_count:
+        problems.append(f"the source list holds {phone['count']} entries, expected {source_count}")
+    if phone["values"] != list(range(1, source_count + 1)):
         problems.append(f"the footnote numbers are not 1 to 52: {phone['values'][:6]}")
     if phone["headingInSummary"] is False:
         problems.append("the Sources heading is no longer a heading inside the summary")
-    if "52 links" not in phone["summary"]:
+    if f"{source_count} links" not in phone["summary"]:
         problems.append(f"the summary reads {phone['summary']!r}")
     if phone["summaryHeight"] < 24:
         problems.append(f"the summary is {phone['summaryHeight']}px tall")
     if len(phone["groups"]) < 10:
         problems.append(f"the list has {len(phone['groups'])} host groups")
-    if sum(group["n"] for group in phone["groups"]) != 52:
+    if sum(group["n"] for group in phone["groups"]) != source_count:
         problems.append(f"the groups hold {[g['n'] for g in phone['groups']]}")
     foreign = [link for group in phone["groups"] for link in group["foreign"]]
     if foreign:
@@ -531,7 +555,7 @@ def sources_check(page):
     return problems
 
 
-def footer_check(page):
+def footer_check(page, checked=None):
     """The page ends on one line with the date, a contact route and a way back."""
     state = page.evaluate(
         """() => {
@@ -550,7 +574,8 @@ def footer_check(page):
     if not state:
         return ["the page has no closing line"]
     problems = []
-    if not state["text"].startswith("Last checked 19 October 2026"):
+    expected = f"Last checked {checked}" if checked else "Last checked "
+    if not state["text"].startswith(expected):
         problems.append(f"the closing line reads {state['text'][:40]!r}")
     if "#tbl" not in state["links"]:
         problems.append(f"the closing line has no way back: {state['links']}")
@@ -595,7 +620,7 @@ def chrome_check(page):
     return problems
 
 
-def shortlist_check(page):
+def shortlist_check(page, checked=None):
     """Copy shortlist puts the selected models and the URL on the clipboard."""
     problems = []
     before = page.inner_text("#cmp-copy")
@@ -623,7 +648,7 @@ def shortlist_check(page):
     if after["role"] != "status":
         problems.append(f"the copy confirmation has role {after['role']!r}")
     required = [
-        "SubFree UK shortlist, checked 19 October 2026",
+        f"SubFree UK shortlist, checked {checked}" if checked else "SubFree UK shortlist, checked",
         "TP-Link Tapo TD21",
         "Reolink Video Doorbell PoE",
         "EZVIZ EP3x Pro",
@@ -635,7 +660,12 @@ def shortlist_check(page):
     missing = [part for part in required if part not in text]
     if missing:
         problems.append(f"the shortlist is missing {missing}")
-    links = [line for line in text.split("\n") if "?cmp=" in line]
+    lines = text.split("\n")
+    if "\\n" in text:
+        problems.append("the shortlist contains literal backslash-n text instead of line breaks")
+    if len(lines) < 10 or not lines[1].startswith("http"):
+        problems.append(f"the shortlist is not laid out as lines: {lines[:3]}")
+    links = [line for line in lines if "?cmp=" in line]
     if len(links) != 1 or not all(
         model in links[0] for model in ("tapo-td21", "reo-poe", "ezviz-ep3x")
     ):
@@ -650,7 +680,7 @@ def shortlist_check(page):
     return problems
 
 
-def diff_check(page):
+def diff_check(page, compare_rows):
     """A differences-only view hides identical spec rows but keeps the decisions."""
     problems = []
     page.evaluate(
@@ -690,7 +720,7 @@ def diff_check(page):
         problems.append(f"the control counts {off['dupes']} identical rows for the Reolink trio")
     if f"({off['dupes']} identical)" not in off["label"]:
         problems.append(f"the control reads {off['label']!r}")
-    if off["rows"] != 18 or off["shown"] != 18:
+    if off["rows"] != compare_rows or off["shown"] != compare_rows:
         problems.append(f"the compare table starts at {off['shown']} of {off['rows']} rows")
     if off["live"]:
         problems.append(
@@ -720,7 +750,7 @@ def diff_check(page):
     )
     if on["hidden"] != off["dupes"]:
         problems.append(f"the toggle hides {on['hidden']} rows, not {off['dupes']}")
-    if on["shown"] + on["hidden"] != 18:
+    if on["shown"] + on["hidden"] != compare_rows:
         problems.append(f"the table holds {on['shown'] + on['hidden']} rows after the toggle")
     if not on["allIdentical"]:
         problems.append("the toggle hides a row that is not identical")
@@ -731,7 +761,7 @@ def diff_check(page):
 
     page.uncheck("#cmp-diff")
     page.wait_for_timeout(120)
-    if page.evaluate("() => document.querySelectorAll('#cmp-table tbody tr:not([hidden])').length") != 18:
+    if page.evaluate("() => document.querySelectorAll('#cmp-table tbody tr:not([hidden])').length") != compare_rows:
         problems.append("unticking differences only does not restore the rows")
 
     page.evaluate(
@@ -944,7 +974,7 @@ def morph_check(page):
     return problems
 
 
-def rule_check(page):
+def rule_check(page, row_count):
     """A hairline along the table reports scroll position; it never hijacks it."""
     problems = []
     page.evaluate("() => scrollTo(0, 0)")
@@ -963,7 +993,7 @@ def rule_check(page):
             };
         }"""
     )
-    if not box["inWrapper"] or box["rows"] != 14:
+    if not box["inWrapper"] or box["rows"] != row_count:
         problems.append(f"the rule is not the first child of the table's box: {box}")
     if box["static"] != {"h": "2px", "pe": "none", "hidden": "true"}:
         problems.append(f"the rule is not a silent 2px hairline: {box['static']}")
@@ -1065,6 +1095,51 @@ def head_check(page):
         }"""
     )
     page.wait_for_timeout(250)
+    return problems
+
+
+def scroller_check(page):
+    """The comparison's sideways scroll can be reached and moved by keyboard.
+
+    At 390px the panel is 516px of table in 356px, so the third column is only
+    readable by scrolling it. A named, focusable region gives a keyboard user
+    the same scroll a mouse user gets for free.
+    """
+    problems = []
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(150)
+    if page.evaluate("() => document.getElementById('compare').hidden"):
+        open_compare(page)
+        page.wait_for_timeout(250)
+    state = page.evaluate(
+        """() => {
+            const s = document.querySelector('.cmp-scroll');
+            return {
+                tab: s.tabIndex,
+                role: s.getAttribute('role'),
+                label: (s.getAttribute('aria-label') || '').trim(),
+                over: s.scrollWidth - s.clientWidth,
+                left: Math.round(s.scrollLeft)
+            };
+        }"""
+    )
+    if state["tab"] != 0:
+        problems.append(f"the comparison scroller has tabIndex {state['tab']}")
+    if state["role"] != "region" or not state["label"]:
+        problems.append(f"the comparison scroller is unnamed: {state}")
+    if state["over"] <= 0:
+        problems.append("the comparison does not overflow at 390px, so it cannot be scrolled")
+    else:
+        page.focus(".cmp-scroll")
+        page.keyboard.press("ArrowRight")
+        page.wait_for_timeout(250)
+        moved = page.evaluate(
+            "() => Math.round(document.querySelector('.cmp-scroll').scrollLeft)"
+        )
+        if moved <= state["left"]:
+            problems.append(f"ArrowRight on the scroller left it at {moved}px")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
     return problems
 
 
@@ -1192,13 +1267,13 @@ BARS_JS = r"""() => {
 }"""
 
 
-def bars_check(page):
+def bars_check(page, row_count):
     """Score bars are painted once at their score and never redrawn on a sort."""
     problems = []
     page.wait_for_timeout(800)
     initial = page.evaluate(BARS_JS)
-    if initial["n"] != 14:
-        problems.append(f"{initial['n']} score bars are visible, expected 14")
+    if initial["n"] != row_count:
+        problems.append(f"{initial['n']} score bars are visible, expected {row_count}")
     if initial["transition"] != "0s":
         problems.append(
             f"the score bar still transitions {initial['property']} over {initial['transition']!r}"
@@ -1243,7 +1318,7 @@ def bars_check(page):
     return problems
 
 
-def contain_check(page):
+def contain_check(page, row_count):
     """Off-screen phone cards skip layout, with an intrinsic size to stand in."""
     problems = []
     got = page.evaluate(
@@ -1261,8 +1336,10 @@ def contain_check(page):
         problems.append(f"a phone card's content-visibility is {got['visibility']!r}, expected auto")
     if got["size"] != "auto 330px":
         problems.append(f"the phone card's intrinsic size is {got['size']!r}, expected 'auto 330px'")
-    if got["n"] != 14 or got["hidden"]:
-        problems.append(f"{got['n']} cards with {got['hidden']} hidden, expected 14 shown")
+    if got["n"] != row_count or got["hidden"]:
+        problems.append(
+            f"{got['n']} cards with {got['hidden']} hidden, expected {row_count} shown"
+        )
     return problems
 
 
@@ -1306,7 +1383,7 @@ STUCK_JS = r"""() => {
 }"""
 
 
-def desktop_rows_check(page):
+def desktop_rows_check(page, row_count):
     """At desktop widths a row is a contained grid track, and its columns line up.
 
     The table's own column widths cannot survive a sort cheaply, so the rows are
@@ -1329,8 +1406,10 @@ def desktop_rows_check(page):
             problems.append(
                 f"at {width}px the rows are not contained: {got['visibility']!r} {got['size']!r}"
             )
-        if len(got["rows"]) != 14:
-            problems.append(f"at {width}px {len(got['rows'])} of 14 rows are showing")
+        if len(got["rows"]) != row_count:
+            problems.append(
+                f"at {width}px {len(got['rows'])} of {row_count} rows are showing"
+            )
             continue
         skew = max(
             abs(left - head)
@@ -1832,7 +1911,7 @@ def request_status(url):
         return error.code
 
 
-def nojs_check(browser, url):
+def nojs_check(browser, url, row_count):
     """Without JavaScript the inert filters are hidden and the table still stands."""
     problems = []
     context = browser.new_context(java_script_enabled=False)
@@ -1859,8 +1938,571 @@ def nojs_check(browser, url):
         problems.append("the inert Details buttons stay visible without JavaScript")
     if "need JavaScript" not in state["note"]:
         problems.append(f"no no-JavaScript note: {state['note']!r}")
-    if state["rows"] < 14:
+    if state["rows"] < row_count:
         problems.append(f"only {state['rows']} rows render without JavaScript")
+    return problems
+
+
+# ---------- named checks ----------
+
+BLOCKER_CUES = (
+    "app", "support", "docs", "page", "terms", "datasheet", "retailer",
+    "listing", "pdf", "faq", "manual", "release notes",
+)
+WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verified"}
+# The compare table prints these spec rows under one cost row. The count is a
+# property of that table, not of ROWS, so it is named here rather than counted
+# from the dataset.
+SPEC_ROWS = [
+    "Records free?", "Price", "Free features", "3 yrs, no plan", "3 yrs, with plan",
+    "Best for", "Main catch", "Power", "Storage", "Live view", "Motion alerts",
+    "Smart detection", "History, no plan", "Behind the paywall", "Plans",
+    "Home Assistant", "Wi-Fi",
+]
+COMPARE_ROWS = len(SPEC_ROWS) + 1
+SHORTLIST_IDS = ("tapo-td21", "reo-poe", "ezviz-ep3x")
+CHECK_NAMES = [
+    "rebuild", "dataset", "derived figures", "data freshness", "emitted sources",
+    "generated alias",
+    "phone first paint", "phone cost cells", "phone table header", "filter panel",
+    "price slider", "compare cap", "labels", "closing line", "empty result",
+    "score bars", "phone containment", "source list", "compare header at 390",
+    "skip link", "details hit area", "theme toggle", "muted contrast", "theme motion",
+    "jump announcement", "desktop rows", "compare morph", "scroll rule",
+    "compare header at 1280", "shortlist copy", "compare cost row", "share link",
+    "compare chrome", "differences only", "comparison scroller",
+    "structure at 1280", "verdict tags",
+    "row rule", "price cells", "photo zoom", "contact route", "glossary",
+    "share metadata", "secure links", "link names", "alt text", "form labels",
+    "button names", "target sizes", "table header scope", "heading outline",
+    "footnote set", "image files", "type floor at 390", "type floor at 1280",
+    "cost header name",
+    "compare caption", "photo lightbox", "axe WCAG", "overflow",
+    "performance budget", "no JavaScript", "firefox structural pass",
+    "console errors", "external links",
+]
+PHONE_CHECKS = CHECK_NAMES[
+    CHECK_NAMES.index("phone first paint"):CHECK_NAMES.index("compare header at 390") + 1
+] + ["type floor at 390"]
+DESKTOP_CHECKS = CHECK_NAMES[
+    CHECK_NAMES.index("skip link"):CHECK_NAMES.index("external links") + 1
+]
+
+
+def open_compare(page, ids=SHORTLIST_IDS):
+    """Open every detail row and the comparison for three known models."""
+    page.eval_on_selector_all(
+        "button.more",
+        "els => els.forEach(el => { if (el.getAttribute('aria-expanded') !== 'true') el.click() })",
+    )
+    page.evaluate(
+        """(ids) => {
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }""",
+        list(ids),
+    )
+    page.wait_for_timeout(250)
+    if page.evaluate("() => document.getElementById('compare').hidden"):
+        page.click("#tray-go")
+        page.wait_for_timeout(350)
+
+
+def compare_cells(build):
+    """The cheapest 3-year cost and the two differences, from the dataset."""
+    by_id = {row["id"]: row for row in build.ROWS}
+    keeps = [by_id[id]["keep3"] for id in SHORTLIST_IDS]
+    low = min(keeps)
+    return [
+        f"£{value:.2f} · cheapest" if abs(value - low) < 0.005 else f"+£{value - low:.2f}"
+        for value in keeps
+    ]
+
+
+class Audit:
+    """One named, timed result per check, so a failure names itself.
+
+    --only accepts a comma-separated list of name fragments. A check that does
+    not match is not run at all, which is why the two page phases are skipped
+    whole when nothing in them is wanted.
+    """
+
+    def __init__(self, only=None):
+        self.only = [part.strip() for part in (only or "").split(",") if part.strip()]
+        self.results = []
+        self.skipped = []
+        self.notes = []
+
+    def wants(self, name):
+        return not self.only or any(part in name for part in self.only)
+
+    def add(self, name, problems, ok, seconds=None):
+        if not self.wants(name):
+            self.skipped.append(name)
+            return list(problems)
+        problems = list(problems)
+        self.results.append(
+            {"name": name, "problems": problems, "ok": ok, "seconds": seconds or 0.0}
+        )
+        if not problems:
+            timing = f" ({seconds * 1000:.0f}ms)" if seconds else ""
+            print(f"  ok    {name}{timing}")
+        return problems
+
+    def run(self, name, work, ok):
+        if not self.wants(name):
+            self.skipped.append(name)
+            return []
+        start = time.perf_counter()
+        try:
+            problems = work()
+        except Exception as error:  # a check that crashes still names itself
+            problems = [f"{name} raised {type(error).__name__}: {error}"]
+        return self.add(name, problems, ok, time.perf_counter() - start)
+
+    def note(self, text):
+        self.notes.append(text)
+
+    def slowest(self, count=3):
+        finished = [result for result in self.results if result["seconds"]]
+        return sorted(finished, key=lambda result: -result["seconds"])[:count]
+
+    def failed(self):
+        return [problem for result in self.results for problem in result["problems"]]
+
+
+def load_build():
+    path = os.path.join(ROOT, "build", "build.py")
+    spec = importlib.util.spec_from_file_location("subfree_build", path)
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+    except SystemExit as error:
+        return None, str(error)
+    return module, None
+
+
+def unverified_problems(rows):
+    problems = []
+    for row in rows:
+        sentence = (row["unverified"] or "").strip()
+        if not sentence:
+            continue
+        lowered = sentence.lower().strip(" .")
+        if lowered in WEAK_UNVERIFIED:
+            problems.append(f"{row['id']}: {sentence!r} names no blocker")
+        elif not any(cue in lowered for cue in BLOCKER_CUES):
+            problems.append(
+                f"{row['id']}: {sentence!r} names no blocker (an app, support docs, a retailer)"
+            )
+    return problems
+
+
+def data_problems(build, pages):
+    """Recompute every derived figure and compare it with the files that ship."""
+    problems = list(build.row_problems()) + unverified_problems(build.ROWS)
+    with open(os.path.join(ROOT, "data", "doorbells.csv"), newline="", encoding="utf-8") as handle:
+        shipped = list(csv.DictReader(handle))
+    if len(shipped) != len(build.ROWS):
+        return problems + [f"the CSV has {len(shipped)} rows for {len(build.ROWS)} in ROWS"]
+    for row, out in zip(build.ROWS, shipped):
+        price, extra, sub = row["price"], row["extra"], row["sub"]
+        nosub3 = round(price + extra, 2)
+        sub3 = round(price + build.MONTHS * sub, 2) if sub is not None else None
+        options = ([] if not row["free_records"] else [nosub3]) + ([] if sub3 is None else [sub3])
+        keep3 = min(options)
+        wanted = {
+            "Brand": row["brand"],
+            "Model": row["model"],
+            "UK price (£)": f"{price:.2f}",
+            "Free-feature score (/8)": str(sum(row["score"].values())),
+            "3-yr cost without subscription (£)": f"{nosub3:.2f}",
+            "3-yr cost with cheapest plan, monthly (£)": "" if sub3 is None else f"{sub3:.2f}",
+            "Cheapest 3-yr cost to keep recordings (£)": f"{keep3:.2f}",
+            "Plan price region": row["plan_region"],
+            "Last checked": build.CHECKED,
+        }
+        for key, value in wanted.items():
+            if out[key] != value:
+                problems.append(f"{row['id']}: CSV {key} is {out[key]!r}, recomputed {value!r}")
+        if (row["keep3"], row["nosub3"], row["sub3"]) != (keep3, nosub3, sub3):
+            problems.append(f"{row['id']}: a derived figure drifted from price, extra and plan")
+        for key in ("price_src", "rec_src", "history_src", "ha_src"):
+            if row[key] not in build.S:
+                problems.append(f"{row['id']}: {key} {row[key]!r} is not in S")
+        for key in row["src"]:
+            if key not in build.S:
+                problems.append(f"{row['id']}: source {key!r} is not in S")
+        if len(set(row["src"])) != len(row["src"]):
+            problems.append(f"{row['id']}: duplicate source keys")
+    index = pages["index.html"]
+    table_rows = index.count('<tbody class="item"')
+    if table_rows != len(build.ROWS):
+        problems.append(f"the page has {table_rows} rows for {len(build.ROWS)} in ROWS")
+    eu = sum(1 for row in build.ROWS if row["plan_region"] == "EU")
+    if index.count('data-region="EU"') != eu:
+        problems.append("the EU plan rows are not marked as data on the page")
+    return problems
+
+
+def freshness_problems(build):
+    age = (date.today() - build._CHECKED_DATE).days
+    if age < 0:
+        return [f"CHECKED_ISO {build.CHECKED_ISO} is {-age} days in the future"], None
+    if age > 60:
+        return (
+            [f"the data was last checked {age} days ago (limit 60); re-check it and move CHECKED_ISO"],
+            None,
+        )
+    if age > 30:
+        return [], f"the data was last checked {age} days ago; re-check it soon"
+    return [], None
+
+
+def emitted_sources(build, pages):
+    """The page loads the hashed files the build just wrote, not a stale copy."""
+    html = pages["index.html"]
+    problems = []
+    if f'href="{build.CSS_URL}"' not in html:
+        problems.append(f"the page does not load {build.CSS_URL}")
+    if f'src="{build.JS_URL}"' not in html:
+        problems.append(f"the page does not load {build.JS_URL}")
+    if "<style>" in html:
+        problems.append("the page still inlines its stylesheet")
+    if "@@DATA@@" in html or "@@CHECKED@@" in html:
+        problems.append("a build placeholder leaked into the page")
+    for name, text in ((build.CSS_FILE, build.PAGE_CSS), (build.JS_FILE, build.PAGE_JS)):
+        path = os.path.join(ROOT, name)
+        if not os.path.exists(path):
+            problems.append(f"{name} is missing")
+        elif open(path, encoding="utf-8").read() != text:
+            problems.append(f"{name} does not match the build")
+    return problems
+
+
+def alias_problems(pages):
+    alias = pages["doorbells.html"]
+    problems = []
+    if 'http-equiv="refresh"' not in alias or "url=./" not in alias:
+        problems.append("doorbells.html is not a redirect to ./")
+    if len(alias) > 1000:
+        problems.append(f"doorbells.html is {len(alias)} bytes; it should be a redirect, not a copy")
+    if pages["index.html"] == alias:
+        problems.append("index.html and doorbells.html are identical again")
+    return problems
+
+
+def phone_first_paint(phone):
+    if (
+        not phone["open"]
+        and phone["firstRowTop"] < 600
+        and phone["verdict"] == "none"
+        and phone["shortAnswer"] == "block"
+    ):
+        return []
+    return [
+        "phone first paint: "
+        f"filters open={phone['open']}, first product at "
+        f"{phone['firstRowTop']}px of {phone['viewport']}px, "
+        f"verdict={phone['verdict']}, short answer={phone['shortAnswer']}"
+    ]
+
+
+def cost_cells(cost):
+    return [] if cost["aFits"] and cost["bFits"] else [f"phone cost cells overflow: {cost}"]
+
+
+def phone_header(header, roles):
+    if (
+        header["display"] != "none"
+        and header["width"] <= 2
+        and header["headers"] == 8
+        and header["untabbable"]
+        and roles
+    ):
+        return []
+    return [
+        "phone table header: "
+        f"display={header['display']}, width={header['width']}px, "
+        f"headers={header['headers']}, untabbable={header['untabbable']}, "
+        f"columnheader in tree={roles}"
+    ]
+
+
+def share_meta(data):
+    if data["icon"] == "favicon.svg" and data["canonical"].endswith("/subfree-uk/"):
+        return []
+    return [
+        f"share metadata: icon={data['icon']!r}, canonical={data['canonical']!r}, "
+        f"og:title={data['ogTitle']!r}"
+    ]
+
+
+def verdict_tags(data):
+    best = data["tags"].count("Best overall")
+    if best == 1 and "Best with doorbell wiring" in data["tags"]:
+        return []
+    return [f'verdict tags: {best} rows say "Best overall" ({data["tags"]})']
+
+
+def row_rule(data):
+    rule = data["rowRule"]
+    if rule and rule["border"] == 3 and rule["pad"] == 8 and rule["plain"] == 0:
+        return []
+    return [f"verdict row rule: {rule}"]
+
+
+def price_cells(data):
+    return (
+        [f"{data['priceFootnotes']} footnote numbers in price cells"]
+        if data["priceFootnotes"]
+        else []
+    )
+
+
+def zoom_images(data, lightbox):
+    if data["zoomGlyphs"] == lightbox["buttons"] and lightbox["buttons"]:
+        return []
+    return [f"{lightbox['buttons']} photo buttons but {data['zoomGlyphs']} zoom glyphs"]
+
+
+def contact_routes(data):
+    if data["contactLinks"] >= 2:
+        return []
+    return [f"expected a contact link in the header and the method, found {data['contactLinks']}"]
+
+
+def landmarks_and_ids(data):
+    problems = []
+    if data["mains"] != 1:
+        problems.append(f"expected one main landmark, found {data['mains']}")
+    if data["duplicateIds"]:
+        problems.append("duplicate ids: " + ", ".join(sorted(set(data["duplicateIds"]))))
+    if data["brokenAnchors"]:
+        problems.append("broken anchors: " + ", ".join(data["brokenAnchors"]))
+    return problems
+
+
+def image_files(data):
+    missing = [
+        src for src in data["localRefs"]
+        if not os.path.exists(os.path.join(ROOT, src.split("?")[0]))
+    ]
+    return ["missing image files: " + ", ".join(sorted(set(missing)))] if missing else []
+
+
+def link_names(data):
+    return (
+        ["links without an accessible name: " + ", ".join(data["emptyLinks"][:5])]
+        if data["emptyLinks"]
+        else []
+    )
+
+
+def alt_text(data):
+    missing = [img["src"] for img in data["images"] if img["alt"] is None]
+    repeated = [img["src"] for img in data["images"] if img["inRowHeader"] and img["alt"]]
+    if missing:
+        return ["images without an alt attribute: " + ", ".join(missing[:5])]
+    if repeated:
+        return ["thumbnails repeat the row heading in alt text: " + ", ".join(repeated[:5])]
+    return []
+
+
+def control_labels(data):
+    unnamed = [
+        f"{control['tag']}[{control['type']}]"
+        for control in data["controls"]
+        if control["visible"] and not control["name"]
+    ]
+    return ["form controls without a label: " + ", ".join(unnamed)] if unnamed else []
+
+
+def button_names(data):
+    unnamed = [button["name"] or "(empty)" for button in data["buttons"] if button["visible"] and not button["name"]]
+    return [f"buttons without a name: {len(unnamed)}"] if unnamed else []
+
+
+def target_sizes(data):
+    small_buttons = [
+        f"{button['name']} ({button['width']}x{button['height']})"
+        for button in data["buttons"]
+        if button["visible"] and (button["width"] < 24 or button["height"] < 24)
+    ]
+    small_controls = [
+        f"{control['tag']}[{control['type']}] ({control['width']}x{control['height']})"
+        for control in data["controls"]
+        if control["visible"] and control["type"] != "checkbox"
+        and (control["width"] < 24 or control["height"] < 24)
+    ]
+    return ["targets under 24px: " + ", ".join(small_buttons + small_controls)] if (
+        small_buttons or small_controls
+    ) else []
+
+
+def header_scope(data):
+    return [f"{data['thNoScope']} table headers missing scope"] if data["thNoScope"] else []
+
+
+def heading_outline(data):
+    problems = []
+    if data["headings"].count(1) != 1:
+        problems.append(f"{data['headings'].count(1)} h1 elements")
+    for previous, current in zip(data["headings"], data["headings"][1:]):
+        if current > previous + 1:
+            problems.append(f"h{previous} jumps to h{current}")
+    return problems
+
+
+def footnote_set(data):
+    if set(data["footRefs"]) == set(data["footTargets"]):
+        return []
+    orphaned = sorted(set(data["footTargets"]) - set(data["footRefs"]))
+    broken = sorted(set(data["footRefs"]) - set(data["footTargets"]))
+    return [f"footnote mismatch, unreferenced: {orphaned}, missing: {broken}"]
+
+
+def secure_links(data):
+    plain = [link for link in data["externals"] if link.startswith("http://")]
+    return ["external links over plain http: " + ", ".join(plain[:5])] if plain else []
+
+
+def axe_problems(axe_results):
+    problems = []
+    best_practice = {}
+    for theme in ("dark", "light"):
+        for width in AXE_WIDTHS:
+            violations = axe_results[(theme, width)]
+            wcag = [v for v in violations if set(v["tags"]) & set(WCAG_TAGS)]
+            wcag_ids = {v["id"] for v in wcag}
+            for violation in violations:
+                if violation["id"] in wcag_ids:
+                    continue
+                entry = best_practice.setdefault(
+                    violation["id"],
+                    {"impact": violation["impact"], "help": violation["help"],
+                     "targets": set(), "where": set()},
+                )
+                entry["targets"].update(node["target"][0] for node in violation["nodes"])
+                entry["where"].add(f"{theme} {width}px")
+            if not wcag:
+                continue
+            for violation in wcag:
+                nodes = violation["nodes"]
+                problems.append(
+                    f"axe {theme} at {width}px: {violation['id']} ({violation['impact']}), "
+                    f"{len(nodes)} node(s). {violation['help']}"
+                )
+                for node in nodes[:4]:
+                    summary = node.get("failureSummary", "").replace("\n", " ").strip()
+                    print(f"        {', '.join(node['target'])}  {summary[:150]}")
+    for rule, entry in sorted(best_practice.items()):
+        print(
+            f"  note  axe best-practice {rule} ({entry['impact']}): {entry['help']} On "
+            f"{', '.join(sorted(entry['targets'])[:3])}, in {len(entry['where'])} of "
+            f"{len(AXE_WIDTHS) * 2} theme and width passes"
+        )
+    return problems
+
+
+def overflow_problems(widths):
+    overflow = [f"{width}px" for width, result in widths if result["over"] > 0]
+    if not overflow:
+        return []
+    detail = "; ".join(
+        f"{width}px: {result['over']}px past {', '.join(result['offenders'])}"
+        for width, result in widths
+        if result["over"] > 0
+    )
+    return [f"horizontal page overflow at {', '.join(overflow)} ({detail})"]
+
+
+def firefox_check(playwright, url, row_count):
+    """The structural half in Firefox: the engine whose fallbacks differ.
+
+    Chromium alone cannot prove content-visibility, the grid rows or the
+    accessibility tree behave elsewhere; this loads the same page in Firefox and
+    runs the same structure audit, axe and overflow checks.
+    """
+    problems = []
+    from axe_playwright_python.sync_playwright import Axe
+    try:
+        browser = playwright.firefox.launch(headless=True)
+    except Exception as error:
+        return [f"Firefox did not start ({error}). Run: python -m playwright install firefox"]
+    context = None
+    try:
+        context = browser.new_context(viewport={"width": 390, "height": 844})
+        page = context.new_page()
+        errors = []
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        page.on(
+            "console",
+            lambda message: errors.append(message.text) if message.type == "error" else None,
+        )
+        page.goto(url, wait_until="load")
+        page.wait_for_timeout(500)
+        phone = page.evaluate(AUDIT_JS)
+        if phone["rows"] != row_count:
+            problems.append(f"Firefox rendered {phone['rows']} rows")
+        if phone["duplicateIds"] or phone["brokenAnchors"]:
+            problems.append("Firefox: duplicate ids or broken anchors")
+        if phone["emptyLinks"]:
+            problems.append(f"Firefox: {len(phone['emptyLinks'])} links without a name")
+        if set(phone["footRefs"]) != set(phone["footTargets"]):
+            problems.append("Firefox: footnote references do not match their targets")
+        if len(phone["headings"]) < 5:
+            problems.append(f"Firefox: heading outline has {len(phone['headings'])} entries")
+        if "columnheader" not in page.locator("#tbl").aria_snapshot():
+            problems.append("Firefox: the table header is missing from the accessibility tree")
+        card = page.evaluate(
+            """() => ({
+                visibility: getComputedStyle(document.querySelector('#tbl tbody.item')).contentVisibility,
+                size: getComputedStyle(document.querySelector('#tbl tbody.item')).containIntrinsicSize,
+                overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+            })"""
+        )
+        if card["visibility"] != "auto" or not card["size"].startswith("auto "):
+            problems.append(f"Firefox: the phone cards are not contained: {card}")
+        if card["overflow"] > 0:
+            problems.append(f"Firefox: {card['overflow']}px of horizontal overflow at 390px")
+
+        axe = Axe()
+        results = {}
+        for theme in ("dark", "light"):
+            for width in (390, 1280):
+                page.set_viewport_size({"width": width, "height": 900})
+                page.wait_for_timeout(150)
+                results[(theme, width)] = axe_violations(axe, page)
+            page.click("#theme")
+            page.wait_for_timeout(150)
+        for (theme, width), violations in results.items():
+            for violation in violations:
+                if set(violation["tags"]) & set(WCAG_TAGS):
+                    problems.append(
+                        f"Firefox axe {theme} at {width}px: {violation['id']} "
+                        f"({violation['impact']}), {len(violation['nodes'])} node(s)"
+                    )
+
+        page.set_viewport_size({"width": 1280, "height": 900})
+        page.wait_for_timeout(200)
+        wide = page.evaluate(DESKTOP_ROWS_JS)
+        if wide["display"] != "grid" or wide["tracks"] != 8:
+            problems.append(
+                f"Firefox at 1280px: a row is {wide['display']!r} with {wide['tracks']} tracks"
+            )
+        if wide["visibility"] != "auto":
+            problems.append(f"Firefox at 1280px: rows are not contained ({wide['visibility']!r})")
+        if wide["clipped"]:
+            problems.append(f"Firefox at 1280px clips a cell: {wide['clipped'][0]}")
+        if errors:
+            problems.append(f"Firefox page errors: {errors[:3]}")
+    finally:
+        if context:
+            context.close()
+        browser.close()
     return problems
 
 
@@ -1868,7 +2510,18 @@ def main():
     parser = argparse.ArgumentParser(description="Accessibility and link audit for the built site.")
     parser.add_argument("--external", action="store_true", help="also request every outbound URL")
     parser.add_argument("--headed", action="store_true", help="show the browser window")
+    parser.add_argument(
+        "--only",
+        metavar="NAME",
+        help="run only checks whose name contains NAME (comma-separated)",
+    )
+    parser.add_argument("--list", action="store_true", help="list the check names and exit")
     args = parser.parse_args()
+
+    if args.list:
+        for name in CHECK_NAMES:
+            print(name)
+        return 0
 
     try:
         from playwright.sync_api import sync_playwright
@@ -1877,42 +2530,89 @@ def main():
         print("Missing audit dependencies. Run: pip install -r build/requirements.txt")
         return 2
 
-    issues = []
-    notes = []
-
+    audit = Audit(args.only)
     print("SubFree UK audit")
+    if audit.only:
+        print(f"  note  only checks matching {', '.join(audit.only)!r}")
 
+    start = time.perf_counter()
     changed, build = rebuild()
     if changed is None:
         print("Rebuild failed:")
         print((build.stderr or build.stdout).strip())
         return 1
-    if changed:
-        issues.append(
+    audit.add(
+        "rebuild",
+        [] if not changed else [
             "rebuild changed " + ", ".join(changed) + "; commit the regenerated files"
-        )
-    else:
-        print("  ok    rebuild reproduces the committed pages")
+        ],
+        "rebuild reproduces the committed pages",
+        time.perf_counter() - start,
+    )
 
     pages = load_pages()
+    build_mod, build_error = load_build()
+    audit.add(
+        "dataset",
+        [build_error] if build_error else [],
+        "the dataset loads and every row has the keys it needs",
+    )
 
-    with open(os.path.join(ROOT, "data", "doorbells.csv"), newline="", encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-    pending = [r for r in rows if r["Unverified / re-check"].strip()]
-    print(f"  note  {len(pending)} of {len(rows)} rows still carry an unverified note")
+    rows = build_mod.ROWS if build_mod else []
+    source_count = len(build_mod.FN) if build_mod else 0
+    if build_mod:
+        audit.run(
+            "derived figures",
+            lambda: data_problems(build_mod, pages),
+            "every derived figure recomputes, every source resolves, every open fact names its blocker",
+        )
+
+        def fresh():
+            problems, note = freshness_problems(build_mod)
+            if note:
+                audit.note(note)
+            return problems
+
+        audit.run(
+            "data freshness",
+            fresh,
+            f"the data is dated {build_mod.CHECKED} and is inside its 60-day limit",
+        )
+    else:
+        print("  skip  derived figures and freshness: the dataset did not load")
+
+    if build_mod:
+        audit.run(
+            "emitted sources",
+            lambda: emitted_sources(build_mod, pages),
+            "the page loads the hashed CSS and JavaScript this build wrote",
+        )
+    audit.run(
+        "generated alias",
+        lambda: alias_problems(pages),
+        "doorbells.html is a small redirect to the canonical index.html",
+    )
+
+    with open(os.path.join(ROOT, "data", "doorbells.csv"), newline="", encoding="utf-8") as handle:
+        csv_rows = list(csv.DictReader(handle))
+    pending = [row for row in csv_rows if row["Unverified / re-check"].strip()]
+    audit.note(f"{len(pending)} of {len(csv_rows)} rows still carry an unverified note")
     for row in pending:
         why = row["Unverified / re-check"].replace("£", "GBP ")
-        print(f"        {row['Brand']} {row['Model']}: {why}")
-
-    if pages["index.html"] == pages["doorbells.html"]:
-        print("  ok    generated pages are identical")
-    else:
-        issues.append("index.html and doorbells.html differ; rebuild the site")
+        audit.note(f"{row['Brand']} {row['Model']}: {why}")
 
     httpd = serve()
     port = httpd.server_address[1]
     url = f"http://127.0.0.1:{port}/index.html"
     console_errors = []
+
+    phone_phase = not audit.only or any(audit.wants(name) for name in PHONE_CHECKS)
+    desktop_phase = (
+        not audit.only
+        or any(audit.wants(name) for name in DESKTOP_CHECKS)
+        or args.external
+        or audit.wants("console errors")
+    )
 
     try:
         with sync_playwright() as playwright:
@@ -1935,562 +2635,355 @@ def main():
                 if message.type == "error"
                 else None,
             )
-            page.goto(url, wait_until="load")
 
-            # Measure the phone first paint before any detail row or the compare
-            # table pushes the products down.
-            phone = page.evaluate(PHONE_JS)
-            cost = page.evaluate(COST_JS)
-            phone_data = page.evaluate(AUDIT_JS)
-            header = page.evaluate(HEADER_JS)
-            header_roles = "columnheader" in page.locator("#tbl").aria_snapshot()
-            resize = filters_check(page)
-            prices = price_check(page)
-            copy = copy_check(page)
-            labels = labels_check(page)
-            footer = footer_check(page)
-            recovery = recovery_check(page)
-            bars = bars_check(page)
-            contain = contain_check(page)
-            sources = sources_check(page)
-            head = head_check(page)
+            data = None
+            phone_data = None
+            if phone_phase:
+                page.goto(url, wait_until="load")
+                # Measure the phone first paint before any detail row or the
+                # compare table pushes the products down.
+                phone = page.evaluate(PHONE_JS)
+                audit.add("phone first paint", phone_first_paint(phone), "")
+                cost = page.evaluate(COST_JS)
+                audit.add("phone cost cells", cost_cells(cost), "")
+                phone_data = page.evaluate(AUDIT_JS)
+                header = page.evaluate(HEADER_JS)
+                header_roles = "columnheader" in page.locator("#tbl").aria_snapshot()
+                audit.add(
+                    "phone table header",
+                    phone_header(header, header_roles),
+                    "8 column headers stay in the accessibility tree and the sort buttons leave the tab order",
+                )
+                audit.run(
+                    "filter panel",
+                    lambda: filters_check(page),
+                    "the phone filter panel reopens when the window grows past 520px",
+                )
+                audit.run(
+                    "price slider",
+                    lambda: price_check(page),
+                    "the price slider is one labelled handle per end, fills to the handles, and filters",
+                )
+                audit.run(
+                    "compare cap",
+                    lambda: copy_check(page),
+                    "the 3-row cap is explained and announced; Compare sits by the count",
+                )
+                audit.run(
+                    "labels",
+                    lambda: labels_check(page, build_mod.REC_LABEL["brief"] if build_mod else None),
+                    "Nest names its 3-hour limit, no-plan reads as words, PoE is defined at the filter",
+                )
+                audit.run(
+                    "closing line",
+                    lambda: footer_check(page, build_mod.CHECKED if build_mod else None),
+                    "the page ends on one line with the date, an issue link and a way back",
+                )
+                audit.run(
+                    "empty result",
+                    lambda: recovery_check(page),
+                    "filtering announces its count; an empty result offers the nearest match",
+                )
+                audit.run(
+                    "score bars",
+                    lambda: bars_check(page, len(rows) or 14),
+                    "score bars are painted at their score and a sort never redraws them",
+                )
+                audit.run(
+                    "phone containment",
+                    lambda: contain_check(page, len(rows) or 14),
+                    "off-screen phone cards skip layout, with a 330px estimate standing in",
+                )
+                audit.run(
+                    "source list",
+                    lambda: sources_check(page, source_count),
+                    "the sources sit in a host-grouped disclosure, closed below 821px and open above it",
+                )
+                page.set_viewport_size({"width": 390, "height": 844})
+                page.wait_for_timeout(150)
+                audit.run(
+                    "compare header at 390",
+                    lambda: head_check(page),
+                    "the compare heading stays on one line and its links in one row",
+                )
+                audit.add(
+                    "type floor at 390",
+                    [] if not phone_data["tiny"] else [
+                        "text below 11px: " + "; ".join(sorted(set(phone_data["tiny"]))[:6])
+                    ],
+                    "no rendered text is below 11px at 390",
+                )
+                page.wait_for_timeout(100)
 
-            page.set_viewport_size({"width": 1280, "height": 900})
-            page.reload(wait_until="load")
+            if desktop_phase:
+                page.set_viewport_size({"width": 1280, "height": 900})
+                page.goto(url, wait_until="load")
+                page.wait_for_timeout(200)
+                # Focus starts at the top of a fresh document, so this is the only
+                # point where the skip link can be reached with one Tab.
+                audit.run(
+                    "skip link",
+                    lambda: skip_check(page),
+                    "the skip link is the first Tab stop and Enter lands on the table",
+                )
+                audit.run(
+                    "details hit area",
+                    lambda: hit_check(page),
+                    "Details takes a click 8px outside its visible box",
+                )
+                audit.run(
+                    "theme toggle",
+                    lambda: theme_check(page),
+                    "the theme toggle names its action and takes a 44px click",
+                )
+                audit.run(
+                    "muted contrast",
+                    lambda: ink_check(page),
+                    "muted text clears 4.5:1 on paper and on a tinted row, in both themes",
+                )
+                audit.run(
+                    "theme motion",
+                    lambda: motion_check(page),
+                    "the theme disc turns and the page fades over 180ms, off under reduced motion",
+                )
+                audit.run(
+                    "jump announcement",
+                    lambda: jump_check(page),
+                    "a jump announces its model, verdict and row, then clears",
+                )
+                audit.run(
+                    "desktop rows",
+                    lambda: desktop_rows_check(page, len(rows) or 14),
+                    "desktop rows are contained grid tracks: columns line up with the header, no cell clips, 900 to 1440px",
+                )
+                audit.run(
+                    "compare morph",
+                    lambda: morph_check(page),
+                    "the tray becomes the compare header in one named pair over 240ms",
+                )
+                audit.run(
+                    "scroll rule",
+                    lambda: rule_check(page, len(rows) or 14),
+                    "a hairline along the table follows scroll, with a plain rule where timelines are missing",
+                )
+                audit.run(
+                    "compare header at 1280",
+                    lambda: head_check(page),
+                    "the compare heading stays on one line and its links in one row at 1280",
+                )
 
-            # Focus starts at the top of a fresh document, so this is the only
-            # point where the skip link can be reached with one Tab.
-            skip = skip_check(page)
-            hit = hit_check(page)
-            theme = theme_check(page)
-            ink = ink_check(page)
-            motion = motion_check(page)
-            jump = jump_check(page)
-            desktop_rows = desktop_rows_check(page)
-            morph = morph_check(page)
-            rule = rule_check(page)
-            head = head + head_check(page)
+                def ready_for_compare():
+                    open_compare(page)
 
-            # Hidden detail rows and the compare table are part of the page, so
-            # open them before auditing instead of testing only the first paint.
-            page.eval_on_selector_all("button.more", "els => els.forEach(el => el.click())")
-            page.eval_on_selector_all(
-                "input.cmp",
-                """els => els.slice(0, 3).forEach(el => {
-                    el.checked = true;
-                    el.dispatchEvent(new Event("change", { bubbles: true }));
-                })""",
-            )
-            page.click("#tray-go")
-            page.wait_for_timeout(200)
-            shortlist = shortlist_check(page)
-            costrow = costrow_check(page)
-            share = share_check(page)
-            chrome = chrome_check(page)
-            diff = diff_check(page)
+                if any(audit.wants(name) for name in (
+                    "shortlist copy", "compare cost row", "share link", "compare chrome",
+                    "differences only", "compare caption", "axe", "structure at 1280",
+                )):
+                    ready_for_compare()
+                audit.run(
+                    "shortlist copy",
+                    lambda: shortlist_check(page, build_mod.CHECKED if build_mod else None),
+                    "Copy shortlist writes the models, costs, catches and a ?cmp= link",
+                )
+                audit.run(
+                    "compare cost row",
+                    lambda: costrow_check(page, COMPARE_ROWS, compare_cells(build_mod) if build_mod else []),
+                    "the compare table names the cheapest 3-year cost and each difference",
+                )
+                audit.run(
+                    "share link",
+                    lambda: share_check(page),
+                    "a ?cmp= link restores the three models and drops unknown ids",
+                )
+                audit.run(
+                    "compare chrome",
+                    lambda: chrome_check(page),
+                    "the sort select is 44px and compare rows use 8/16px padding and aligned labels",
+                )
+                audit.run(
+                    "differences only",
+                    lambda: diff_check(page, COMPARE_ROWS),
+                    "differences only hides identical spec rows, keeps the decision rows, and names its count",
+                )
+                audit.run(
+                    "comparison scroller",
+                    lambda: scroller_check(page),
+                    "the comparison's sideways scroll is a named, focusable region and the arrow keys move it",
+                )
 
-            data = page.evaluate(AUDIT_JS)
-            foot = page.locator(
-                "#tbl thead th[data-sort=nosub3] button"
-            ).aria_snapshot()
-            compare = page.evaluate(
-                """() => ({
-                    caption: (document.querySelector("#cmp-table caption") || {}).textContent || "",
-                    rows: document.querySelectorAll("#cmp-table tbody tr").length
-                })"""
-            )
-            lightbox = lightbox_check(page)
+                data = page.evaluate(AUDIT_JS)
+                audit.add("structure at 1280", landmarks_and_ids(data), "")
+                lightbox = (
+                    lightbox_check(page)
+                    if audit.wants("photo lightbox") or audit.wants("photo zoom")
+                    else {"problems": [], "buttons": 0}
+                )
+                for name, work, ok in (
+                    ("verdict tags", lambda: verdict_tags(data),
+                     'one row owns "Best overall"; the Reolink variants name their own case'),
+                    ("row rule", lambda: row_rule(data),
+                     "the verdict rule is a 3px border outside the first cell's 8px padding"),
+                    ("price cells", lambda: price_cells(data),
+                     "price cells carry no footnote numbers"),
+                    ("photo zoom", lambda: zoom_images(data, lightbox),
+                     "every photo shows a zoom glyph"),
+                    ("contact route", lambda: contact_routes(data),
+                     "contact route linked in the header and the method"),
+                    ("glossary", lambda: [] if data["hasGlossary"] else [
+                        "method does not gloss PoE, NVR, microSD and Home Assistant"],
+                     "method defines PoE, NVR, microSD and Home Assistant"),
+                    ("share metadata", lambda: share_meta(data),
+                     "favicon, canonical URL and Open Graph title are present"),
+                    ("secure links", lambda: secure_links(data),
+                     "every external link uses https"),
+                    ("link names", lambda: link_names(data),
+                     "every link has an accessible name"),
+                    ("alt text", lambda: alt_text(data),
+                     "images carry usable alt text"),
+                    ("form labels", lambda: control_labels(data),
+                     "every form control is labelled"),
+                    ("button names", lambda: button_names(data),
+                     "every button has a name"),
+                    ("target sizes", lambda: target_sizes(data),
+                     "buttons and inputs meet 24px targets"),
+                    ("table header scope", lambda: header_scope(data),
+                     "every table header declares scope"),
+                    ("heading outline", lambda: heading_outline(data),
+                     "the heading outline is intact"),
+                    ("footnote set", lambda: footnote_set(data),
+                     "footnotes are referenced and present"),
+                    ("image files", lambda: image_files(data),
+                     "every local image file exists"),
+                    ("type floor at 1280", lambda: [] if not data["tiny"] else [
+                        "text below 11px: " + "; ".join(sorted(set(data["tiny"]))[:6])],
+                     "no rendered text is below 11px at 1280"),
+                ):
+                    if audit.wants(name):
+                        audit.add(name, work(), ok)
 
-            axe = Axe()
-            axe_results = {}
-            for mode in ("dark", "light"):
-                for width in AXE_WIDTHS:
-                    page.set_viewport_size({"width": width, "height": 900})
+                foot = page.locator("#tbl thead th[data-sort=nosub3] button").aria_snapshot()
+                audit.add(
+                    "cost header name",
+                    [] if "footnote a" in foot else [f"cost header name: {foot.strip()}"],
+                    "the cost header reads its footnote letter to screen readers",
+                )
+                compare = page.evaluate(
+                    """() => ({
+                        caption: (document.querySelector("#cmp-table caption") || {}).textContent || "",
+                        rows: document.querySelectorAll("#cmp-table tbody tr").length
+                    })"""
+                )
+                audit.add(
+                    "compare caption",
+                    [] if "Side-by-side comparison of 3 doorbells" in compare["caption"]
+                    and compare["rows"] == COMPARE_ROWS else [f"compare table: {compare}"],
+                    "the compare table is captioned with its model count",
+                )
+
+                audit.add(
+                    "photo lightbox",
+                    lightbox["problems"],
+                    f"{lightbox['buttons']} photos open in the lightbox, named, sized from the large file, and Esc closes it",
+                )
+
+                axe = Axe()
+                axe_results = {}
+                for mode in ("dark", "light"):
+                    for width in AXE_WIDTHS:
+                        page.set_viewport_size({"width": width, "height": 900})
+                        page.wait_for_timeout(120)
+                        axe_results[(mode, width)] = axe_violations(axe, page)
+                    page.click("#theme")
                     page.wait_for_timeout(120)
-                    axe_results[(mode, width)] = axe_violations(axe, page)
-                page.click("#theme")
-                page.wait_for_timeout(120)
+                audit.run(
+                    "axe WCAG",
+                    lambda: axe_problems(axe_results),
+                    "axe-core finds no WCAG 2.2 A/AA violation in either theme at 390, 820 and 1280",
+                )
 
-            widths = []
-            for width in WIDTHS:
-                page.set_viewport_size({"width": width, "height": 900})
-                page.wait_for_timeout(80)
-                widths.append((width, page.evaluate(OVERFLOW_JS)))
+                widths = []
+                for width in WIDTHS:
+                    page.set_viewport_size({"width": width, "height": 900})
+                    page.wait_for_timeout(80)
+                    widths.append((width, page.evaluate(OVERFLOW_JS)))
+                audit.add(
+                    "overflow",
+                    overflow_problems(widths),
+                    "no horizontal overflow at " + ", ".join(f"{w}px" for w in WIDTHS),
+                )
 
-            perf, perf_note = perf_check(page)
-            fallback = nojs_check(browser, url)
+                def run_perf():
+                    problems, note = perf_check(page)
+                    audit.note(note)
+                    return problems
+
+                audit.run(
+                    "performance budget",
+                    run_perf,
+                    "a sort and the compare respond inside the budget at 4x throttle, with no shift",
+                )
+
+            audit.run(
+                "no JavaScript",
+                lambda: nojs_check(browser, url, len(rows) or 14),
+                "without JavaScript the inert controls are hidden and every row remains",
+            )
+            audit.run(
+                "firefox structural pass",
+                lambda: firefox_check(playwright, url, len(rows) or 14),
+                "Firefox renders the same structure, layout and axe results",
+            )
             browser.close()
     finally:
         httpd.shutdown()
         httpd.server_close()
 
-    if console_errors:
-        for message in console_errors[:5]:
-            issues.append(f"console error: {message}")
-    else:
-        print("  ok    no console or page errors")
+    audit.add(
+        "console errors",
+        [f"console error: {message}" for message in console_errors[:5]],
+        "no console or page errors",
+    )
 
-    if data["lang"] and data["title"] and data["viewport"]:
-        print(f"  ok    document language, title and viewport set")
-    else:
-        issues.append("missing html lang, page title or viewport meta")
-
-    if resize:
-        issues.extend(resize)
-    else:
-        print("  ok    the phone filter panel reopens when the window grows past 520px")
-
-    if prices:
-        issues.extend(prices)
-    else:
-        print(
-            "  ok    the price slider is one labelled handle per end, full width, "
-            "fills to the handles, and filters"
-        )
-
-    if copy:
-        issues.extend(copy)
-    else:
-        print("  ok    the 3-row cap is explained and announced; Compare sits by the count")
-
-    if labels:
-        issues.extend(labels)
-    else:
-        print(
-            "  ok    Nest names its 3-hour limit, no-plan reads as words, PoE is defined "
-            "at the filter, and the phone card shares one label column"
-        )
-
-    if footer:
-        issues.extend(footer)
-    else:
-        print("  ok    the page ends on one line with the date, an issue link and a way back")
-
-    if recovery:
-        issues.extend(recovery)
-    else:
-        print("  ok    filtering announces its count; an empty result offers the nearest match")
-
-    if bars:
-        issues.extend(bars)
-    else:
-        print("  ok    score bars are painted at their score and a sort never redraws them")
-
-    if contain:
-        issues.extend(contain)
-    else:
-        print("  ok    off-screen phone cards skip layout, with a 330px estimate standing in")
-
-    if desktop_rows:
-        issues.extend(desktop_rows)
-    else:
-        print(
-            "  ok    desktop rows are contained grid tracks: columns line up with the "
-            "header, no cell clips, no rule breaks, 900 to 1440px"
-        )
-
-    if sources:
-        issues.extend(sources)
-    else:
-        print(
-            "  ok    the 52 sources sit in a host-grouped disclosure, closed below "
-            "821px and open above it"
-        )
-
-    if hit:
-        issues.extend(hit)
-    else:
-        print("  ok    Details takes a click 8px outside its visible box")
-
-    if theme:
-        issues.extend(theme)
-    else:
-        print("  ok    the theme toggle names its action and takes a 44px click")
-
-    if ink:
-        issues.extend(ink)
-    else:
-        print("  ok    muted text clears 4.5:1 on paper and on a tinted row, in both themes")
-
-    if fallback:
-        issues.extend(fallback)
-    else:
-        print("  ok    without JavaScript the inert filters are hidden and 14 rows remain")
-
-    if skip:
-        issues.extend(skip)
-    else:
-        print("  ok    the skip link is the first Tab stop and Enter lands on the table")
-
-    if lightbox["problems"]:
-        issues.extend(lightbox["problems"])
-    else:
-        print(
-            f"  ok    {lightbox['buttons']} photos open in the lightbox, "
-            "named, sized from the large file, and Esc closes it"
-        )
-
-    if perf:
-        issues.extend(perf)
-    else:
-        print(
-            "  ok    a sort and the compare respond in under 100ms at 4x throttle, "
-            "with no shift when the tray appears"
-        )
-    if perf_note:
-        notes.append(perf_note)
-
-    if data["rows"] == 0:
-        issues.append("no product rows rendered; the page may be blank")
-
-    if (
-        not phone["open"]
-        and phone["firstRowTop"] < 600
-        and phone["verdict"] == "none"
-        and phone["shortAnswer"] == "block"
-    ):
-        print(
-            f"  ok    phone: compact short answer, filters collapsed, first product at "
-            f"{phone['firstRowTop']}px of {phone['viewport']}px"
-        )
-    else:
-        issues.append(
-            "phone first paint: "
-            f"filters open={phone['open']}, first product at "
-            f"{phone['firstRowTop']}px of {phone['viewport']}px, "
-            f"verdict={phone['verdict']}, short answer={phone['shortAnswer']}"
-        )
-
-    if cost["aFits"] and cost["bFits"]:
-        print("  ok    phone: both 3-year cost cells fit their columns")
-    else:
-        issues.append(f"phone cost cells overflow: {cost}")
-
-    if data["icon"] == "favicon.svg" and data["canonical"].endswith("/subfree-uk/"):
-        print("  ok    favicon, canonical URL and Open Graph title are present")
-    else:
-        issues.append(
-            f"share metadata: icon={data['icon']!r}, canonical={data['canonical']!r}, "
-            f"og:title={data['ogTitle']!r}"
-        )
-
-    if "footnote a" in foot:
-        print("  ok    the cost header reads its footnote letter to screen readers")
-    else:
-        issues.append(f"cost header name: {foot.strip()}")
-
-    if "Side-by-side comparison of 3 doorbells" in compare["caption"] and compare["rows"] == 18:
-        print("  ok    the compare table is captioned with its model count")
-    else:
-        issues.append(f"compare table: {compare}")
-
-    if costrow:
-        issues.extend(costrow)
-    else:
-        print("  ok    the compare table names the cheapest 3-year cost and each difference")
-
-    if shortlist:
-        issues.extend(shortlist)
-    else:
-        print("  ok    Copy shortlist writes both models, costs, catches and a ?cmp= link")
-
-    if share:
-        issues.extend(share)
-    else:
-        print("  ok    a ?cmp= link restores the three models and drops unknown ids")
-
-    if diff:
-        issues.extend(diff)
-    else:
-        print(
-            "  ok    differences only hides identical spec rows, keeps the decision rows, "
-            "and names its count"
-        )
-
-    if chrome:
-        issues.extend(chrome)
-    else:
-        print("  ok    the sort select is 44px and compare rows use 8/16px padding and aligned labels")
-
-    if motion:
-        issues.extend(motion)
-    else:
-        print("  ok    the theme disc turns and the page fades over 180ms, off under reduced motion")
-
-    if jump:
-        issues.extend(jump)
-    else:
-        print("  ok    a jump announces its model, verdict and row, then clears")
-
-    if morph:
-        issues.extend(morph)
-    else:
-        print(
-            "  ok    the tray becomes the compare header in one named pair over 240ms, "
-            "skipped under reduced motion and without the API"
-        )
-
-    if rule:
-        issues.extend(rule)
-    else:
-        print("  ok    a hairline along the table follows scroll, with a plain rule where timelines are missing")
-
-    if head:
-        issues.extend(head)
-    else:
-        print("  ok    the compare header keeps its heading on one line and its links in one row at 390 and 1280")
-
-    if (
-        header["display"] != "none"
-        and header["width"] <= 2
-        and header["headers"] == 8
-        and header["untabbable"]
-        and header_roles
-    ):
-        print(
-            "  ok    phone: 8 column headers stay in the accessibility tree; "
-            "sort buttons leave the tab order"
-        )
-    else:
-        issues.append(
-            "phone table header: "
-            f"display={header['display']}, width={header['width']}px, "
-            f"headers={header['headers']}, untabbable={header['untabbable']}, "
-            f"columnheader in tree={header_roles}"
-        )
-
-    tiny = data["tiny"] + phone_data["tiny"]
-    if tiny:
-        issues.append("text below 11px: " + "; ".join(sorted(set(tiny))[:6]))
-    else:
-        print("  ok    no rendered text is below 11px")
-
-    best = data["tags"].count("Best overall")
-    if best == 1 and "Best with doorbell wiring" in data["tags"]:
-        print('  ok    one row owns "Best overall"; the Reolink variants name their own case')
-    else:
-        issues.append(f'verdict tags: {best} rows say "Best overall" ({data["tags"]})')
-
-    rule = data["rowRule"]
-    if rule and rule["border"] == 3 and rule["pad"] == 8 and rule["plain"] == 0:
-        print("  ok    the verdict rule is a 3px border outside the first cell's 8px padding")
-    else:
-        issues.append(f"verdict row rule: {rule}")
-
-    if data["priceFootnotes"]:
-        issues.append(f"{data['priceFootnotes']} footnote numbers in price cells")
-    else:
-        print("  ok    price cells carry no footnote numbers")
-
-    if data["zoomGlyphs"] == lightbox["buttons"] and lightbox["buttons"]:
-        print(f"  ok    all {lightbox['buttons']} photos show a zoom glyph")
-    else:
-        issues.append(
-            f"{lightbox['buttons']} photo buttons but {data['zoomGlyphs']} zoom glyphs"
-        )
-
-    if data["contactLinks"] >= 2:
-        print(f"  ok    contact route linked in {data['contactLinks']} places")
-    else:
-        issues.append(
-            "expected a contact link in the header and the method, "
-            f"found {data['contactLinks']}"
-        )
-
-    if data["hasGlossary"]:
-        print("  ok    method defines PoE, NVR, microSD and Home Assistant")
-    else:
-        issues.append("method does not gloss PoE, NVR, microSD and Home Assistant")
-
-    if data["mains"] == 1:
-        print("  ok    one main landmark")
-    else:
-        issues.append(f"expected one main landmark, found {data['mains']}")
-
-    if data["duplicateIds"]:
-        issues.append("duplicate ids: " + ", ".join(sorted(set(data["duplicateIds"]))))
-    else:
-        print("  ok    ids are unique")
-
-    if data["brokenAnchors"]:
-        issues.append("broken anchors: " + ", ".join(data["brokenAnchors"]))
-    else:
-        print(f"  ok    {len(data['footRefs'])} footnote references resolve")
-
-    missing_files = [
-        src
-        for src in data["localRefs"]
-        if not os.path.exists(os.path.join(ROOT, src.split("?")[0]))
-    ]
-    if missing_files:
-        issues.append("missing image files: " + ", ".join(sorted(set(missing_files))))
-    else:
-        print(f"  ok    {len(data['localRefs'])} image files exist")
-
-    if data["emptyLinks"]:
-        issues.append("links without an accessible name: " + ", ".join(data["emptyLinks"][:5]))
-    else:
-        print("  ok    every link has an accessible name")
-
-    missing_alt = [img["src"] for img in data["images"] if img["alt"] is None]
-    repeated_alt = [img["src"] for img in data["images"] if img["inRowHeader"] and img["alt"]]
-    if missing_alt:
-        issues.append("images without an alt attribute: " + ", ".join(missing_alt[:5]))
-    elif repeated_alt:
-        issues.append("thumbnails repeat the row heading in alt text: " + ", ".join(repeated_alt[:5]))
-    else:
-        print(f"  ok    {len(data['images'])} images carry usable alt text")
-
-    unnamed = [
-        f"{control['tag']}[{control['type']}]"
-        for control in data["controls"]
-        if control["visible"] and not control["name"]
-    ]
-    if unnamed:
-        issues.append("form controls without a label: " + ", ".join(unnamed))
-    else:
-        print(f"  ok    {len(data['controls'])} form controls are labelled")
-
-    unnamed_buttons = [button["name"] or "(empty)" for button in data["buttons"] if button["visible"] and not button["name"]]
-    if unnamed_buttons:
-        issues.append(f"buttons without a name: {len(unnamed_buttons)}")
-    else:
-        print(f"  ok    {len(data['buttons'])} buttons have a name")
-
-    small_buttons = [
-        f"{button['name']} ({button['width']}x{button['height']})"
-        for button in data["buttons"]
-        if button["visible"] and (button["width"] < 24 or button["height"] < 24)
-    ]
-    small_controls = [
-        f"{control['tag']}[{control['type']}] ({control['width']}x{control['height']})"
-        for control in data["controls"]
-        if control["visible"] and control["type"] != "checkbox" and (control["width"] < 24 or control["height"] < 24)
-    ]
-    if small_buttons or small_controls:
-        issues.append("targets under 24px: " + ", ".join(small_buttons + small_controls))
-    else:
-        print("  ok    buttons and inputs meet 24px targets")
-    checkboxes = [
-        control
-        for control in data["controls"]
-        if control["visible"] and control["type"] == "checkbox" and control["height"] < 24
-    ]
-    if checkboxes:
-        print(
-            f"  note  {len(checkboxes)} checkboxes are under 24px; the spacing exception covers them"
-        )
-
-    if data["thNoScope"]:
-        issues.append(f"{data['thNoScope']} table headers missing scope")
-    else:
-        print("  ok    every table header declares scope")
-
-    heading_problems = []
-    if data["headings"].count(1) != 1:
-        heading_problems.append(f"{data['headings'].count(1)} h1 elements")
-    for previous, current in zip(data["headings"], data["headings"][1:]):
-        if current > previous + 1:
-            heading_problems.append(f"h{previous} jumps to h{current}")
-    if heading_problems:
-        issues.append("heading outline: " + ", ".join(heading_problems))
-    else:
-        print(f"  ok    heading outline is {data['headings']}")
-
-    if set(data["footRefs"]) == set(data["footTargets"]):
-        print(f"  ok    all {len(data['footTargets'])} footnotes are referenced and present")
-    else:
-        orphaned = sorted(set(data["footTargets"]) - set(data["footRefs"]))
-        broken = sorted(set(data["footRefs"]) - set(data["footTargets"]))
-        issues.append(f"footnote mismatch, unreferenced: {orphaned}, missing: {broken}")
-
-    plain_http = [link for link in data["externals"] if link.startswith("http://")]
-    if plain_http:
-        issues.append("external links over plain http: " + ", ".join(plain_http[:5]))
-    else:
-        print(f"  ok    {len(data['externals'])} external links use https")
-
-    best_practice = {}
-    for theme in ("dark", "light"):
-        for width in AXE_WIDTHS:
-            violations = axe_results[(theme, width)]
-            wcag = [v for v in violations if set(v["tags"]) & set(WCAG_TAGS)]
-            wcag_ids = {v["id"] for v in wcag}
-            for violation in violations:
-                if violation["id"] in wcag_ids:
-                    continue
-                entry = best_practice.setdefault(
-                    violation["id"],
-                    {
-                        "impact": violation["impact"],
-                        "help": violation["help"],
-                        "targets": set(),
-                        "where": set(),
-                    },
-                )
-                entry["targets"].update(node["target"][0] for node in violation["nodes"])
-                entry["where"].add(f"{theme} {width}px")
-            if not wcag:
-                print(f"  ok    axe-core ({theme}, {width}px): no WCAG 2.2 A/AA violations")
-                continue
-            for violation in wcag:
-                nodes = violation["nodes"]
-                issues.append(
-                    f"axe {theme} at {width}px: {violation['id']} ({violation['impact']}), "
-                    f"{len(nodes)} node(s). {violation['help']}"
-                )
-                for node in nodes[:4]:
-                    summary = node.get("failureSummary", "").replace("\n", " ").strip()
-                    print(f"        {', '.join(node['target'])}  {summary[:150]}")
-
-    for rule, entry in sorted(best_practice.items()):
-        notes.append(
-            f"axe best-practice {rule} ({entry['impact']}): {entry['help']} On "
-            f"{', '.join(sorted(entry['targets'])[:3])}, in {len(entry['where'])} of "
-            f"{len(AXE_WIDTHS) * 2} theme and width passes"
-        )
-    if best_practice:
-        print(
-            f"  note  {len(best_practice)} axe best-practice rule(s) reported below; "
-            "only WCAG failures block the build"
-        )
-
-    overflow = [f"{width}px" for width, result in widths if result["over"] > 0]
-    if overflow:
-        detail = "; ".join(
-            f"{width}px: {result['over']}px past {', '.join(result['offenders'])}"
-            for width, result in widths
-            if result["over"] > 0
-        )
-        issues.append(f"horizontal page overflow at {', '.join(overflow)} ({detail})")
-    else:
-        print("  ok    no horizontal overflow at " + ", ".join(f"{w}px" for w in WIDTHS))
-
-    if args.external:
+    if args.external and data:
+        start = time.perf_counter()
+        external = []
         for link in sorted(set(data["externals"])):
             try:
                 status = request_status(link)
             except Exception as error:  # network policy or timeout
-                notes.append(f"{link}: {error}")
+                audit.note(f"{link}: {error}")
                 continue
             if status in (404, 410):
-                issues.append(f"{link} returns {status}")
+                external.append(f"{link} returns {status}")
             elif status >= 400:
-                notes.append(f"{link} returns {status} (may block automated requests)")
-        print(f"  ok    requested {len(set(data['externals']))} external links")
-    else:
-        print("  note  external links not requested; pass --external to check them")
+                audit.note(f"{link} returns {status} (may block automated requests)")
+        audit.add(
+            "external links",
+            external,
+            f"requested {len(set(data['externals']))} external links",
+            time.perf_counter() - start,
+        )
 
-    for note in notes:
+    for note in audit.notes:
         print(f"  note  {note}")
 
+    slowest = audit.slowest()
+    if slowest and len(audit.results) > 3:
+        print(
+            "  note  slowest: "
+            + ", ".join(f"{result['name']} {result['seconds'] * 1000:.0f}ms" for result in slowest)
+        )
+    if audit.skipped:
+        print(f"  note  skipped {len(audit.skipped)} check(s) outside --only")
+
+    issues = audit.failed()
     print()
     if issues:
         print(f"Result: FAIL, {len(issues)} issue(s)")
         for issue in issues:
             print(f"  - {issue}")
         return 1
-    print("Result: PASS")
+    print(f"Result: PASS, {len(audit.results)} checks")
     return 0
 
 
