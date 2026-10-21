@@ -4,21 +4,24 @@ A hand-checked comparison of UK video doorbells: what's free, what's paywalled, 
 
 Live page: https://lydenyardley.github.io/subfree-uk/
 
-A single static HTML page plus self-hosted product photos in `img/` (sources in `IMAGE_SOURCES.md`). No tracking, cookies, external fonts or scripts. Prices change often, so check the linked sources before buying.
+A single static HTML page, one content-versioned stylesheet and one content-versioned script, plus self-hosted product photos in `img/` (sources in `IMAGE_SOURCES.md`). No tracking, cookies, external fonts or third-party scripts. Prices change often, so check the linked sources before buying.
 
 The compare selection lives in the URL. Tick two or three models and the address carries `?cmp=`, so the link and the shortlist text both reopen the same table.
 
 ## Repo layout
 
 ```
-index.html, doorbells.html   the published page (GitHub Pages serves the repo root of main)
+index.html                   the published page (GitHub Pages serves the repo root of main)
+doorbells.html               a redirect to index.html, kept for old links
+assets/page.css, page.js     the stylesheet and script, versioned by the build
 favicon.svg                  tab icon, hand-written SVG in the site palette
 img/                         product photos (WebP), generated
 IMAGE_SOURCES.md             where every photo came from, generated
 .nojekyll                    serve files as-is
 build/
-  build.py                   THE single source: all doorbell data (ROWS), sources (S) and the page template
-  check.py                   rebuild plus structure, accessibility and link audit (Playwright and axe-core)
+  build.py                   THE single source: all doorbell data (ROWS), sources (S) and the page assembly
+  page.css, page.js          the page's stylesheet and script, emitted as hashed assets
+  check.py                   rebuild, data recomputation, structure, accessibility and link audit (Playwright, axe-core)
   check_commits.py           commit message format check (run by CI on pull requests)
   make_images.py             downloads, crops and converts the official product photos
   images.json                image source URLs (written by make_images.py, read by build.py)
@@ -42,15 +45,15 @@ cd subfree-uk
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r build/requirements.txt
-python -m playwright install chromium   # needed for screenshots and the audit
+python -m playwright install chromium firefox   # needed for screenshots and the audit
 
-python build/build.py            # rewrites index.html, doorbells.html, data/doorbells.csv, data/doorbells.md
+python build/build.py            # rewrites index.html, the alias, assets/page.*, data/doorbells.csv, data/doorbells.md
 python build/make_images.py      # only if photos changed: rewrites img/, build/images.json, IMAGE_SOURCES.md
 python build/shots2.py           # optional: screenshots at 1280/1000/900/820/390 + 1280 dark into screenshots/
 python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
 ```
 
-`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the price range slider, the theme toggle's state, the filter and selection announcements, the empty-state nearest match, the no-JavaScript fallback, the phone first screen and header association, the photo lightbox, the compare table caption and its 3-year cost row, the differences-only view, the shortlist copy and its ?cmp= share link, the jump announcement, the tray-to-comparison transition and its focus handover, the hairline rule that follows the table's own scroll, the theme motion, the score-bar animation, the record and plan labels, the phone label column, the host-grouped source list, the closing line, the performance budget at 4x CPU throttle, and horizontal overflow at every breakpoint. It fails on axe's WCAG 2.2 A and AA violations; the best-practice rules axe also finds are reported as notes at the end of the run, so `region` and friends stay visible without turning a design decision into a red build. Add `--external` to request each outbound link over the network.
+`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, recomputes every derived figure from `ROWS` and compares it with the CSV, and checks that every open fact names its blocker. It then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the price range slider, the theme toggle's state, the filter and selection announcements, the empty-state nearest match, the no-JavaScript fallback, the phone first screen and header association, the photo lightbox, the compare table caption and its 3-year cost row, the differences-only view, the focusable comparison scroller, the shortlist copy and its ?cmp= share link, the jump announcement, the tray-to-comparison transition and its focus handover, the hairline rule that follows the table's own scroll, the theme motion, the score-bar animation, the record and plan labels, the phone label column, the host-grouped source list, the closing line, the performance budget at 4x CPU throttle, and horizontal overflow at every breakpoint. Firefox then repeats the structural, layout and axe pass, so a Chromium-only fallback cannot hide a regression. It fails on axe's WCAG 2.2 A and AA violations; the best-practice rules axe also finds are reported as notes at the end of the run, so `region` and friends stay visible without turning a design decision into a red build. Add `--external` to request each outbound link over the network, `--list` to print the check names, and `--only "<name>"` to run one of them.
 
 Spotted a mistake or a paywall change? [Open an issue](https://github.com/lydenyardley/subfree-uk/issues/new).
 

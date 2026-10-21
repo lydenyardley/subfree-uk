@@ -155,3 +155,33 @@ the line at which the capture has become a stall rather than a frame; a change
 that doubles the page's share lands well past it. With the desktop rows
 uncontained the same open measured 187ms, since the transition captures a page
 that has just laid every row out.
+
+## Why the stylesheet and script are separate files
+
+The page used to carry 25KB of CSS and 27KB of JavaScript inside its HTML, so
+a repeat visit downloaded both again and no cache header could help. The two
+sources are now `build/page.css` and `build/page.js`, and the build emits them
+as `assets/page.css` and `assets/page.js`, linked with a content version in the
+query. A price change produces a new URL, so the cache is busted, but the path
+stays stable: GitHub Pages caches HTML for ten minutes, and deleting an old
+hashed filename would break a page that cached copy still points at.
+
+Measured with `gzip -9` on the built page, which is the conservative bound for
+what GitHub Pages serves:
+
+| | First visit | Repeat visit |
+|---|---|---|
+| Inlined (before) | 29,020 bytes | 29,020 bytes |
+| Separate files (after) | 29,840 bytes | 13,516 bytes |
+
+The split files are 6,945 bytes of CSS and 9,379 bytes of JavaScript; the HTML
+alone is 13,516 bytes compressed. A first visit costs 820 bytes more than the
+inlined page, because the files compress slightly worse apart than inside the
+document. A repeat visit drops from 29,020 to 13,516 bytes, because the
+versioned assets come from cache instead of being downloaded again. That is the
+trade: 2.8% more on a cold cache for 53% less on every visit after it. It also
+costs two more requests, both same-origin.
+
+`check.py` asserts that the page loads the versions the build wrote, that no
+`<style>` block remains, and that both files match the build's text, so a stale
+inline copy cannot come back.

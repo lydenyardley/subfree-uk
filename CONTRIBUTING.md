@@ -42,20 +42,24 @@ to close a "Not yet verified" note, are in [AGENTS.md](AGENTS.md).
 
 ## Generated files
 
-`index.html`, `doorbells.html`, `data/doorbells.csv` and `data/doorbells.md`
-come from `build/build.py`. Run the build and commit the regenerated files in
-the same commit as the source change, so every commit can be deployed as it
-stands.
+`index.html`, the `doorbells.html` redirect, `assets/page.css`,
+`assets/page.js`, `data/doorbells.csv` and `data/doorbells.md` come from
+`build/build.py`. Run the build and commit the regenerated files in the same
+commit as the source change, so every commit can be deployed as it stands.
+The asset URLs carry a content version; the files themselves keep their names,
+so an old cached page can still load them.
 
 ## Before committing
 
 - Run `python build/check.py`. It rebuilds the site, fails if a generated file
-  is stale, then runs the accessibility, anchor, image, target-size, type-floor,
-  phone-layout, compare and differences-only, shareable-shortlist,
-  jump-announcement, the tray-to-comparison transition, the table's scroll
-  rule, motion, score-bar, label, source-list, closing-line, performance-budget,
-  no-JavaScript and overflow audit at every breakpoint.
-  Fix anything it reports.
+  is stale, recomputes every figure in the CSV from `ROWS`, and then runs the
+  accessibility, anchor, image, target-size, type-floor, phone-layout, compare
+  and differences-only, shareable-shortlist, jump-announcement, the
+  tray-to-comparison transition, the table's scroll rule, motion, score-bar,
+  label, source-list, closing-line, performance-budget, no-JavaScript and
+  overflow audit at every breakpoint, plus the structural half in Firefox.
+  Fix anything it reports. `--only "<name>"` runs one named check and `--list`
+  prints their names.
 - Check the page at desktop and phone widths, and keep the numbers in
   [docs/performance-budget.md](docs/performance-budget.md) honest if you touch
   sorting, filtering or the compare table.
