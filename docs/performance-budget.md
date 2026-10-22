@@ -14,8 +14,9 @@ they always are.
 |---|---|---|---|---|
 | Sort, script plus the layout it causes | 390px | under 50ms | 9 to 15ms, six sorts per run | Met |
 | Sort, script plus the layout it causes | 1280px | under 50ms | 9.6 to 21ms, six sorts per run | Met |
-| Compare open, transition included | 1280px | under 150ms, best of 3 | 84 to 150ms | Met |
-| Longest task inside the compare open | 1280px | under 50ms, median of 3 | 0ms | Met |
+| Compare open with the flight, transition included | 1280px | under 500ms, best of 3 | 115 to 237ms | Met |
+| Compare open without the transition | 1280px | under 150ms, best of 3 | 16 to 75ms | Met |
+| Longest task inside the compare open | 1280px | under 120ms, median of 3 | 0ms | Met |
 | Table movement when the tray opens | 1280px | 0px | 0px | Met |
 
 ## How to measure
@@ -24,7 +25,8 @@ they always are.
 loads a clean page at 1280px, times six sorts with `offsetHeight` read inside
 the same task, times the same six again with the containment switched off in
 the page, then repeats both at 390px, and finally opens the comparison three
-times. All four figures fail the build.
+times with the flight and three times without it. Every figure above fails the
+build.
 
 `offsetHeight` is doing the work here on purpose. A long-task observer only
 reports what the browser chooses to schedule: at 1280px in one run it reported
@@ -180,6 +182,11 @@ measured 310 to 630ms, and the page cannot make a capture cheaper. What holds
 the cost down is the count — seven boxes and no more — and that is a structural
 claim, so `compare morph` asserts a captured group for every name and photo and
 fails if anything else joins them, where this check would only see a number.
+
+Closing runs the same seven captures the other way, so the same ceiling applies
+there. `compare morph` asserts the reverse frames too: six pairs named on the
+header before the close, six on the rows after it, and nothing left named once
+the panel has gone.
 
 That figure is about waiting, and it is not enough on its own: an open that
 painted late after a long task still feels like a stall. The second line is
