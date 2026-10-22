@@ -17,6 +17,8 @@ CHECKED_ISO = "2026-10-19"
 _CHECKED_DATE = date.fromisoformat(CHECKED_ISO)
 CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
 GITHUB = "https://github.com/lydenyardley/subfree-uk"
+SITE = "/subfree-uk/"   # where the site is published; the 404 page needs root-relative links
+EMAIL = "lydenyardley+subfreeuk@posteo.net"
 CARD = 10.00   # ASSUMPTION (not cited): typical price of a 64 GB microSD card / USB stick
 MINP = 40      # lower end of the price slider; the cheapest doorbell here is £44.99
 MONTHS = 36
@@ -299,7 +301,7 @@ REQUIRED_ROW_KEYS = (
 OPTIONAL_ROW_KEYS = ("power_note", "cards", "plan_price_region")
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
-    "plan_region",
+    "plan_region", "keep_basis", "keep_note",
 )
 
 def row_problems():
@@ -346,6 +348,12 @@ for r in ROWS:
     if r["free_records"]: opts.append(r["nosub3"])
     if r["sub3"] is not None: opts.append(r["sub3"])
     r["keep3"] = min(opts)
+    # Which of the two 3-year figures the sort uses, and what to call it. The
+    # page says so in words and bolds that cell, so the order never looks broken.
+    if r["free_records"] and (r["sub3"] is None or r["nosub3"] <= r["sub3"]):
+        r["keep_basis"], r["keep_note"] = "nosub", "records free, no plan"
+    else:
+        r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
     m_free = f"{money(r['price'])}" + (f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})" if r["extra"] else "") + f" = {money(r['nosub3'])}"
     if not r["free_records"]: m_free += " (but no recordings)" if r["rec"]=="no" else " (3 hours of history only)"
     m_sub = (f"{money(r['price'])} + {MONTHS} × {money(r['sub'])} ({r['sub_name']}) = {money(r['sub3'])}" if r["sub3"] is not None else "No subscription offered or needed")
@@ -401,6 +409,9 @@ open(os.path.join(ROOT,"data","doorbells.md"),"w",encoding="utf-8").write("\n".j
 # ---------- HTML ----------
 e=html.escape
 def fn(keys): return ", ".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{FN[k]}</a>' for k in keys)
+def fnames(keys):
+    """The same footnotes, named. A row says which shop or page, not just a number."""
+    return ", ".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{e(S[k][0])}</a>' for k in keys)
 
 
 # Product photos: manufacturers' own images, processed by make_images.py into img/*.webp; sources in images.json
@@ -434,6 +445,45 @@ V_LABEL = {"best":"Best overall","wired":"Best with doorbell wiring","batt":"Bes
 V_TONE = {"best":"best","wired":"best","batt":"batt","easy":"batt","avoid":"avoid"}
 def vlink(ids, text): return f'<a class="jump" href="#m-{ids[0]}" data-ids="{" ".join(ids)}">{text}</a>'
 
+# The details panel in plain sentences. The table and the comparison keep the
+# terse values, which are for someone who already knows the words; this is the
+# version for someone who has never fitted a doorbell. No new facts: each
+# sentence says the same thing as the row it stands in for.
+PLAIN = {
+ "ring": ("Runs on the battery, or you can wire it to your existing chime.",
+          "None. The doorbell has no storage of its own and no hub to hold the footage."),
+ "nest": ("Runs on the battery, or you can wire it to your existing chime.",
+          "None. The doorbell has no storage of its own and no hub to hold the footage."),
+ "eufy-e340": ("Runs on the battery, or you can wire it to your existing chime.",
+          "8 GB is built into the doorbell, so it records on its own. The optional HomeBase S380 (16 GB, expandable) holds more."),
+ "reo-wifi": ("Wired to your existing doorbell chime.",
+          "A microSD card in the doorbell (up to 256 GB), or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video."),
+ "reo-poe": ("Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.",
+          "A microSD card in the doorbell, or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video."),
+ "reo-batt": ("Runs on the battery, or you can wire it to your existing chime.",
+          "A microSD card in the doorbell, or a Reolink Home Hub indoors (up to 1 TB)."),
+ "tapo-d230": ("Battery only.",
+          "A microSD card (up to 512 GB) in the indoor H200 hub, so the footage stays in the house."),
+ "tapo-td21": ("Battery only.",
+          "A microSD card (up to 512 GB) in the doorbell itself, so the card comes out with the doorbell if it is stolen."),
+ "arlo": ("Battery only, though you can wire it to an existing chime for trickle charging.",
+          "Recording needs an Arlo SmartHub (VMB4540, with a USB stick) or a Base Station."),
+ "aqara-g4": ("Runs on AA batteries, or you can wire it to your existing chime.",
+          "A microSD card (up to 512 GB) in the indoor chime."),
+ "blink": ("Battery only.",
+          "Recording needs a Sync Module 2 and a USB stick (1–256 GB). The clips are not encrypted."),
+ "ezviz-ep3x": ("Battery only.",
+          "32 GB is built in, so no card is needed."),
+ "ezviz-db2": ("Battery only.",
+          "A microSD card (up to 256 GB) in the indoor chime that comes with it."),
+ "hik": ("Wired to your existing doorbell chime.",
+          "A microSD card (up to 128 GB), and it can stream to an NVR over RTSP."),
+}
+_missing=[r["id"] for r in ROWS if r["id"] not in PLAIN]
+if _missing: raise SystemExit(f"PLAIN has no entry for: {_missing}")
+_stale=[k for k in PLAIN if k not in {r["id"] for r in ROWS}]
+if _stale: raise SystemExit(f"PLAIN has an entry for a row that does not exist: {_stale}")
+
 rows_html=[]
 for i,r in enumerate(ROWS):
     pw=" ".join(r["power"])
@@ -444,41 +494,52 @@ for i,r in enumerate(ROWS):
     vtag=f'<span class="vtag v-{tone}">{V_LABEL[v]}</span>' if v else ""
     unv=f'<p class="unverified"><b>Not yet verified:</b> {e(r["unverified"])}</p>' if r["unverified"] else ""
     pnote='. ' + e(r["power_note"]) if r.get("power_note") else ""
-    rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 0}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
+    # The price is the link to the page the price came from, so the promise in
+    # the intro ("each one links to its source") is kept in the row itself.
+    pm=money(r["price"], None);psrc=S[r["price_src"]]
+    price=f'<a class="buy" href="{e(psrc[1])}" rel="nofollow noopener noreferrer" title="Check the price at {e(psrc[0])}" aria-label="{pm} at {e(psrc[0])}">{pm}</a>'
+    ncls=" keep" if r["keep_basis"]=="nosub" else ""
+    scls=" keep" if r["keep_basis"]=="sub" else ""
+    # The bold figure follows the sort. The default sort is the 3-year cost to
+    # keep recordings, so the cell that figure comes from starts bold, and the
+    # sort note says so. Where the plan is the cheapest way to record, the
+    # cell says so too, or the bold number reads as the wrong figure.
+    knote='<span class="note">cheapest: with a plan</span>' if r["keep_basis"]=="sub" else ""
+    rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}" data-keep="{r['keep_basis']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 0}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
-<td class="c-cmp"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"></td>
+<td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span>{fn([r['rec_src']])}</td>
-<td class="c-price num">{money(r['price'], None)}</td>
+<td class="c-price num" data-label="Price">{price}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
-<td class="c-nosub num" data-label="3 yrs, no plan">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
-<td class="c-sub num" data-label="3 yrs, with plan" data-region="{r['plan_region']}">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</td>
+<td class="c-nosub num{ncls}" data-label="3 years, no plan">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
+<td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{knote}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</td>
 <td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
 <figure class="dimg">{zoom(r,"lg")}</figure>
-<dl>
-<dt>Power</dt><dd>{" / ".join(POWER_LABEL[p] for p in r['power'])}; Wi-Fi: {e(r['wifi'])}{pnote}</dd>
-<dt>Storage</dt><dd>{e(r['storage'])}</dd>
-<dt>Live view</dt><dd>{e(r['live'])}</dd>
-<dt>Motion alerts</dt><dd>{e(r['alerts'])}</dd>
-<dt>Smart detection</dt><dd>{e(r['ai'])}</dd>
-<dt>History without a plan</dt><dd>{e(r['history'])} {fn([r['history_src']])}</dd>
-</dl><dl>
-<dt>Behind the paywall</dt><dd>{e(r['paywalled'])}</dd>
-<dt>Plans</dt><dd>{e(r['sub_text'])}</dd>
-<dt>Home Assistant</dt><dd>{e(r['ha_text'])} {fn([r['ha_src']])}</dd>
-<dt>3 years, no plan</dt><dd class="maths">{e(r['maths_free'])}</dd>
-<dt>3 years, with plan</dt><dd class="maths">{e(r['maths_sub'])}</dd>
-<dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k,lbl,mx in SCORE_PARTS)}</dd>
+<dl class="dspec">
+<div class="pair"><dt>Power</dt><dd>{e(PLAIN[r['id']][0])}{pnote}</dd></div>
+<div class="pair"><dt>Wi-Fi</dt><dd>{e(r['wifi'])}</dd></div>
+<div class="pair"><dt>Storage</dt><dd>{e(PLAIN[r['id']][1])}</dd></div>
+<div class="pair"><dt>Live view</dt><dd>{e(r['live'])}</dd></div>
+<div class="pair"><dt>Motion alerts</dt><dd>{e(r['alerts'])}</dd></div>
+<div class="pair"><dt>Smart detection</dt><dd>{e(r['ai'])}</dd></div>
+<div class="pair"><dt>History without a plan</dt><dd>{e(r['history'])} {fn([r['history_src']])}</dd></div>
+<div class="pair"><dt>Behind the paywall</dt><dd>{e(r['paywalled'])}</dd></div>
+<div class="pair"><dt>Plans</dt><dd>{e(r['sub_text'])}</dd></div>
+<div class="pair"><dt>Home Assistant</dt><dd>{e(r['ha_text'])} {fn([r['ha_src']])}</dd></div>
+<div class="pair"><dt>3 years, no plan</dt><dd class="maths">{e(r['maths_free'])}</dd></div>
+<div class="pair"><dt>3 years, with plan</dt><dd class="maths">{e(r['maths_sub'])}</dd></div>
+<div class="pair"><dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k,lbl,mx in SCORE_PARTS)}</dd></div>
 </dl></div>
 {unv}
-<p class="srcs">Sources {fn(r['src'])}</p></td></tr>
+<p class="srcs">Sources: {fnames(r['src'])}</p></td></tr>
 </tbody>''')
 
 data_js = json.dumps({r["id"]:{
- "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"price":money(r["price"], None),"score":f"{r['score_total']}/8",
- "nosub3":money(r["nosub3"], None),"sub3":money(r["sub3"], None) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"region":r["plan_region"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
+ "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"recCls":r["rec"],"price":money(r["price"], None),"score":f"{r['score_total']}/8",
+ "nosub3":money(r["nosub3"], None),"sub3":money(r["sub3"], None) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"keepNote":r["keep_note"],"region":r["plan_region"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
  "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
@@ -543,13 +604,17 @@ page=f'''<!doctype html>
 </head><body>
 <a class="skip" href="#tbl">Skip to the comparison table</a>
 <div class="wrap">
-<div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
+<div class="mast" id="top"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
 <header class="intro">
 <div>
 <h1>Video doorbells that work without a subscription</h1>
-<p class="dek">{len(ROWS)} doorbells sold in the UK, checked against manufacturer pages and independent reviews: what you get for free, what's behind a paywall, and what each one costs over three years.</p>
-<p class="meta"><b>Last checked {CHECKED}.</b> No affiliate links, no tracking, no cookies. Prices change often, so each one links to its source. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
-<p class="vshort"><b>Short answer:</b> <span class="v-best">{vlink(["reo-poe"],"Reolink PoE")}</span> or <span class="v-batt">{vlink(["tapo-d230"],"Tapo D230S1")}</span>. <span class="v-avoid">{vlink(["ring"],"Ring")}</span> needs a plan to record.</p>
+<p class="dek">{len(ROWS)} UK doorbells, checked against manufacturer pages and independent reviews: free features, paywalls and 3-year costs.</p>
+<p class="meta"><b>Last checked {CHECKED}.</b> No affiliate links, no tracking, no cookies. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
+<p class="vshort"><b class="vlab">Short answer</b>
+<span class="v-best">{vlink(["reo-poe"],"Reolink PoE")} is the best overall without fees.</span>
+<span class="v-batt">{vlink(["tapo-d230"],"Tapo D230S1")} is the easiest battery one.</span>
+<span class="v-avoid">{vlink(["ring"],"Ring")} needs a plan. {vlink(["blink"],"Blink")} and {vlink(["arlo"],"Arlo")} need extra kit.</span>
+</p>
 </div>
 <aside class="verdict">
 <h2>The short answer</h2>
@@ -576,6 +641,7 @@ page=f'''<!doctype html>
 </div><p class="hint">PoE: one cable carries both power and data.</p></fieldset>
 <div class="range">
 <span class="lab">Price</span>
+<p class="range-txt" id="f-range">£{MINP} to £{maxp}</p>
 <div class="dual">
 <div class="dual-track" aria-hidden="true"><i id="f-fill"></i></div>
 <input type="range" id="f-min" min="{MINP}" max="{maxp}" step="5" value="{MINP}" aria-label="Lowest price">
@@ -593,8 +659,8 @@ page=f'''<!doctype html>
 <option value="nosub3">3-year cost, no plan</option>
 <option value="sub3">3-year cost, with plan</option>
 <option value="model">Model, A to Z</option>
-</select></div>
-<p class="count">Tick up to 3 rows to compare. <span id="count">{len(ROWS)}</span> of {len(ROWS)} shown · <button type="button" class="link" id="reset">Reset</button><span id="cmp-sep" hidden> · </span><button type="button" class="link" id="cmp-inline" hidden>Compare</button></p>
+</select><p class="sortnote" id="sortnote">Order: 3-year cost to keep recordings (the bold figure).</p></div>
+<p class="count">Tick up to 3 rows to compare. <span id="count">{len(ROWS)}</span> of {len(ROWS)} shown · <button type="button" class="link" id="reset">Reset</button><span id="cmp-sep" hidden> · </span><button type="button" class="link" id="cmp-inline" hidden>Compare</button><span id="cmp-cap" class="cap" hidden></span></p>
 </form>
 <noscript><p class="nojs">Filters, sorting, compare and the per-model details need JavaScript. All {len(ROWS)} doorbells are listed below.</p></noscript>
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
@@ -602,15 +668,18 @@ page=f'''<!doctype html>
 <section id="compare" hidden>
 <div class="cmp-head"><h2 id="cmp-h" tabindex="-1">Side by side</h2><div class="cmp-actions"><label class="cmpo" id="cmp-diff-w" hidden><input type="checkbox" id="cmp-diff"> Differences only <span id="cmp-dupes"></span></label><span class="cmp-links"><button type="button" class="link" id="cmp-copy">Copy shortlist</button><button type="button" class="link" id="cmp-clear">Clear</button><button type="button" class="link" id="cmp-close">Close</button></span></div></div>
 <p class="cmp-note" id="cmp-note" role="status" hidden></p>
-<div class="cmp-scroll" tabindex="0" role="region" aria-label="Comparison table, scrolls sideways"><table class="cmp-t" id="cmp-table"></table></div>
+<p class="cmp-cue" id="cmp-cue" hidden></p>
+<div class="cmp-wrap"><div class="cmp-scroll" tabindex="0" role="region" aria-label="Comparison table, scrolls sideways"><table class="cmp-t" id="cmp-table"></table></div></div>
 </section>
 
+<p class="vkey" id="vkey"><span class="v-best"><b>Green</b>: a best pick that records without paying</span><span class="v-batt"><b>Blue</b>: the best battery pick</span><span class="v-avoid"><b>Red</b>: avoid if you will not pay a monthly plan</span></p>
+<div id="totop-s" aria-hidden="true"></div>
 <div class="tbl-w"><div class="prog" aria-hidden="true"><i></i></div>
 <table class="main-t" id="tbl" tabindex="-1">
 <thead><tr>
-<th scope="col" class="c-cmp"><span class="vh">Compare</span></th>
+<th scope="col" class="c-cmp"><span class="cmp-h">Compare</span></th>
 <th scope="col" data-sort="model" aria-sort="none"><button type="button">Model</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
-<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3 yrs, no plan, footnote a">3 yrs, no plan<sup aria-hidden="true">a</sup></button></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3 yrs, with plan, footnote b">3 yrs, with plan<sup aria-hidden="true">b</sup></button></th><th scope="col">Main catch</th>
+<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3-year cost, no plan, footnote a">3-year cost, no plan</button><a class="mk" href="#m-a" aria-label="How the 3-year cost without a plan is worked out">a</a></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3-year cost, with plan, footnote b">3-year cost, with plan</button><a class="mk" href="#m-b" aria-label="How the 3-year cost with a plan is worked out">b</a></th><th scope="col">Main catch</th>
 </tr></thead>
 {''.join(rows_html)}
 </table></div>
@@ -619,20 +688,25 @@ page=f'''<!doctype html>
 <section class="method" id="method">
 <div>
 <h2>How we worked it out</h2>
-<p><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
-<p><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
+<p id="m-a"><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
+<p id="m-b"><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
-<p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
+<p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>2.4 GHz only</i> means the doorbell cannot join a 5 GHz network, so it will not show up on a phone that is on 5 GHz. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
 <p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything not yet confirmed is listed under <i>Not yet verified</i> in each model's details.</p>
 <p>Photos are the manufacturers' own, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
 </div>
 <details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
-<footer class="foot"><p>Last checked {CHECKED}. {len(ROWS)} UK doorbells, no affiliate links, no tracking. <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a>.</p></footer>
+<footer class="foot">
+<p>Last checked {CHECKED}. {len(ROWS)} UK doorbells, no affiliate links, no tracking. <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>
+<p>SubFree UK is a personal comparison of UK video doorbells, put together by <a href="{GITHUB}">lydenyardley</a> to show which ones record without a subscription. Every price links to the page it came from, so you can check it yourself. Spotted a mistake? <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
+</footer>
 </main>
 </div>
 <div class="tray" id="tray" hidden><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
+<button type="button" class="totop" id="totop" hidden aria-label="Back to top"><span aria-hidden="true">↑</span></button>
 <dialog id="lightbox" aria-labelledby="lb-name">
+<button type="button" class="lb-x" id="lb-x" aria-label="Close photo">✕</button>
 <div id="lb-img"></div>
 <div class="lb-bar"><span id="lb-name"></span><button type="button" class="link" id="lb-close">Close</button></div>
 </dialog>
@@ -648,6 +722,29 @@ ALIAS = '''<!doctype html>
 <meta http-equiv="refresh" content="0; url=./">
 </head><body><p>This page has moved to the <a href="./">UK doorbell comparison</a>.</p></body></html>'''
 
+# A mistyped link should land on the site's own page, not on a hosting
+# company's. GitHub Pages serves this file for any path it cannot find, so
+# the links in it are root-relative and work at any depth.
+NOT_FOUND = f'''<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>Page not found | SubFree UK</title>
+<meta name="description" content="That page does not exist. The UK video doorbell comparison is on the home page.">
+<link rel="stylesheet" href="{SITE}{CSS_FILE}?v={content_version(PAGE_CSS)}">
+</head><body>
+<div class="wrap">
+<div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div></div>
+<main class="nf">
+<h1>Page not found</h1>
+<p>That link does not lead anywhere. The comparison of UK video doorbells that record without a subscription is on the home page, and it is one page.</p>
+<a class="nf-btn" href="{SITE}">See the doorbell comparison</a>
+</main>
+</div>
+</body></html>'''
+
+
 def write():
     if _CHECKED_DATE > date.today():
         raise SystemExit(
@@ -655,6 +752,7 @@ def write():
         )
     open(os.path.join(ROOT,"index.html"),"w",encoding="utf-8").write(page)
     open(os.path.join(ROOT,"doorbells.html"),"w",encoding="utf-8").write(ALIAS)
+    open(os.path.join(ROOT,"404.html"),"w",encoding="utf-8").write(NOT_FOUND)
     assets = os.path.join(ROOT, "assets")
     os.makedirs(assets, exist_ok=True)
     for name, text in ((CSS_FILE, PAGE_CSS), (JS_FILE, PAGE_JS)):

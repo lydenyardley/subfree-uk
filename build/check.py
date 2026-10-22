@@ -49,7 +49,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ["index.html", "doorbells.html"]
 GENERATED = PAGES + [
     "data/doorbells.csv", "data/doorbells.md",
-    "assets/page.css", "assets/page.js",
+    "assets/page.css", "assets/page.js", "404.html",
 ]
 WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390]
 AXE_WIDTHS = [1280, 820, 390]
@@ -244,13 +244,27 @@ def load_pages():
 
 
 def axe_violations(axe, page):
-    results = axe.run(
-        page,
-        options={
-            "resultTypes": ["violations"],
-            "runOnly": {"type": "tag", "values": WCAG_TAGS + [BEST_PRACTICE_TAG]},
-        },
+    """Every axe rule, on every card laid out.
+
+    A phone card below the fold is contained and not painted, so a control in
+    one overflows a box that is only the 330px estimate. No reader can see
+    that, but axe reads the box and calls the control partially obscured. The
+    style tag lays every card out for the measurement, which is the page a
+    reader gets, and no rule is switched off to get there.
+    """
+    style = page.add_style_tag(
+        content=".main-t tbody.item{content-visibility:visible!important}"
     )
+    try:
+        results = axe.run(
+            page,
+            options={
+                "resultTypes": ["violations"],
+                "runOnly": {"type": "tag", "values": WCAG_TAGS + [BEST_PRACTICE_TAG]},
+            },
+        )
+    finally:
+        style.evaluate("el => el.remove()")
     return results.response["violations"]
 
 
@@ -294,6 +308,26 @@ def lightbox_check(page):
     page.wait_for_timeout(50)
     if page.evaluate("() => document.getElementById('lightbox').open"):
         problems.append("Esc does not close the lightbox")
+
+    # Three ways out: Escape, the button in the corner, and a tap anywhere off
+    # the photo. The bar stays, because the name in it is there to be read.
+    page.click(".zoom")
+    page.wait_for_timeout(150)
+    if not page.evaluate("() => document.getElementById('lightbox').open"):
+        problems.append("the lightbox does not reopen for the close checks")
+    else:
+        page.click("#lb-x")
+        page.wait_for_timeout(150)
+        if page.evaluate("() => document.getElementById('lightbox').open"):
+            problems.append("the close button in the corner does not close the photo")
+        page.click(".zoom")
+        page.wait_for_timeout(200)
+        page.mouse.click(4, 4)
+        page.wait_for_timeout(200)
+        if page.evaluate("() => document.getElementById('lightbox').open"):
+            problems.append("a tap off the photo does not close the lightbox")
+        else:
+            page.keyboard.press("Escape")
     return {"problems": problems, "buttons": counts["buttons"]}
 
 
@@ -314,7 +348,7 @@ def filters_check(page):
 
 
 def copy_check(page):
-    """Three selections explain the cap, announce it, and expose Compare nearby."""
+    """Three selections explain the cap, announce it, and refuse a fourth."""
     problems = []
     page.eval_on_selector_all(
         "input.cmp",
@@ -340,8 +374,34 @@ def copy_check(page):
         problems.append(f"the 3-row cap is not announced: {state['live']!r}")
     if state["inline"] != "Compare 3":
         problems.append(f"the inline compare action reads {state['inline']!r}")
-    if state["disabled"] == 0:
-        problems.append("no checkbox is disabled at three selections")
+    # A box that greys out looks broken. The box stays live and the refusal is
+    # explained where the reader is looking.
+    if state["disabled"]:
+        problems.append(f"{state['disabled']} checkboxes are disabled at three selections")
+    # A real tap, because the refusal is a reader's rule: a script that sets
+    # the selection is not second-guessed. The box is centred first, so the
+    # sticky header and the tray cannot stand in the way of the click.
+    page.evaluate(
+        """() => {
+            const fourth = Array.from(document.querySelectorAll('input.cmp'))
+                .find((el) => !el.checked);
+            fourth.scrollIntoView({ block: 'center' });
+        }"""
+    )
+    page.click("input.cmp:not(:checked)")
+    page.wait_for_timeout(300)
+    refused = page.evaluate(
+        """() => ({
+            ticked: Array.from(document.querySelectorAll("input.cmp"))
+                .filter((c) => c.checked).length,
+            cap: document.getElementById("cmp-cap").textContent.trim(),
+            hidden: document.getElementById("cmp-cap").hidden
+        })"""
+    )
+    if refused["ticked"] != 3:
+        problems.append(f"{refused['ticked']} boxes are ticked after a fourth was tried")
+    if refused["hidden"] or "3" not in refused["cap"]:
+        problems.append(f"the refused fourth box says nothing: {refused['cap']!r}")
     return problems
 
 
@@ -379,6 +439,7 @@ def recovery_check(page):
     empty = page.evaluate(
         """() => ({
             visible: !document.getElementById("empty").hidden,
+            text: document.getElementById("empty-txt").textContent.trim(),
             near: document.getElementById("near").hidden
                 ? null : document.getElementById("near").textContent,
             live: document.getElementById("live").textContent
@@ -388,6 +449,14 @@ def recovery_check(page):
         problems.append(f"the empty state offers no nearest match: {empty}")
     elif "£" not in empty["near"]:
         problems.append(f"the nearest-match label has no price: {empty['near']!r}")
+    # The message says which filter emptied the list, and the button says what
+    # it moves, so one tap is enough to get out of the dead end.
+    if "£" not in empty["text"] or "doorbell" not in empty["text"]:
+        problems.append(f"the empty state does not name the filter: {empty['text']!r}")
+    if empty["near"] and not any(
+        word in empty["near"] for word in ("maximum", "minimum", "Show")
+    ):
+        problems.append(f"the recovery button does not say what it changes: {empty['near']!r}")
     if "No doorbells match" not in empty["live"]:
         problems.append(f"the empty result is not announced: {empty['live']!r}")
     else:
@@ -417,7 +486,7 @@ def costrow_check(page, row_count, cells):
             };
         }"""
     )
-    if state["label"] != "3 years, cheapest":
+    if state["label"] != "Cheapest way to record for 3 years":
         problems.append(f"the compare cost row is labelled {state['label']!r}")
     if state["cells"] != cells:
         problems.append(f"compare cost row reads {state['cells']}, expected {cells}")
@@ -428,19 +497,131 @@ def costrow_check(page, row_count, cells):
     return problems
 
 
+def marks_check(page):
+    """The comparison marks what is missing, and leaves good news unmarked.
+
+    A missing feature is worth a reader's attention, so it is coloured. The
+    two rows where "None" is good news, the plan row and the paywall row, are
+    left alone: a doorbell with no plan and nothing held back is the cheapest
+    option on the page, and painting it red would warn the reader off it.
+    """
+    problems = []
+    page.evaluate(
+        """() => {
+            const ids = ['ring', 'reo-poe', 'aqara-g4'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    if page.evaluate("() => document.getElementById('compare').hidden"):
+        page.click("#cmp-inline")
+        page.wait_for_timeout(300)
+    state = page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
+            const row = (label) => rows.find(
+                (tr) => { const th = tr.querySelector('th'); return th && th.textContent === label; }
+            );
+            const cells = (label) => {
+                const tr = row(label);
+                if (!tr) return null;
+                return Array.from(tr.querySelectorAll('td')).map((td) => {
+                    const rec = td.querySelector('.rec');
+                    return {
+                        text: td.textContent.trim().slice(0, 30),
+                        marked: !!td.querySelector('.cmp-no'),
+                        rec: rec ? rec.className : ''
+                    };
+                });
+            };
+            return {
+                rec: cells('Records free?'),
+                storage: cells('Storage'),
+                history: cells('History, no plan'),
+                plan: cells('Plans'),
+                paywall: cells('Behind the paywall')
+            };
+        }"""
+    )
+    for label in ("rec", "storage", "history", "plan", "paywall"):
+        if state[label] is None:
+            problems.append(f"the comparison has no {label} row to read")
+    if problems:
+        return problems
+    # The columns are in the table's order, not the order they were ticked,
+    # so the assertions read the cells rather than count them.
+    # The record marker is the list's own, so a "No" reads the same in both
+    # places and colour is not the only signal.
+    no = [cell for cell in state["rec"] if cell["rec"] == "rec rec-no"]
+    yes = [cell for cell in state["rec"] if cell["rec"] == "rec rec-yes"]
+    if len(no) != 1 or len(yes) != 2:
+        problems.append(f"the record markers are wrong: {state['rec']}")
+    # One of the three has no storage and no free history, and both are
+    # marked. The other two have both, and neither is marked.
+    for label in ("storage", "history"):
+        marked = [cell for cell in state[label] if cell["marked"]]
+        if len(marked) != 1 or not marked[0]["text"].startswith("None"):
+            problems.append(
+                f"the {label} row does not mark the one that is missing: {state[label]}"
+            )
+    # "None" in the plan row and the paywall row is good news, and is not
+    # marked. Reolink PoE and Aqara are both in this trio.
+    if any(cell["marked"] for cell in state["plan"]):
+        problems.append(f"a plan cell is marked: {state['plan']}")
+    if any(cell["marked"] for cell in state["paywall"]):
+        problems.append(f"a paywall cell is marked: {state['paywall']}")
+    if not any(cell["text"].startswith("None") for cell in state["plan"]):
+        problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
+    # Put the shortlist back for the checks that follow.
+    page.evaluate(
+        """() => {
+            const ids = ['tapo-td21', 'reo-poe', 'ezviz-ep3x'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    return problems
+
+
 def labels_check(page, rec_label="Only briefly (3 hrs)"):
     """The record column names a time limit, the plan column names its absence,
-    PoE is defined at the filter, and the phone card uses one label column."""
+    PoE is defined at the filter, and the phone card labels every figure."""
     problems = []
     state = page.evaluate(
         """() => {
             const all = (s) => Array.from(document.querySelectorAll(s));
-            const spec = ['.c-rec', '.c-score', '.c-nosub', '.c-sub'];
+            const spec = ['.c-rec', '.c-price', '.c-nosub', '.c-sub'];
             const cells = spec.map((cls) => document.querySelector('#tbl tbody.item ' + cls));
             const nest = document.querySelector('#m-nest .c-rec');
             const price = document.querySelector('#tbl tbody.item .c-price');
             const catchCell = document.querySelector('#tbl tbody.item .c-catch');
             const subs = all('#tbl tbody.item .c-sub');
+            // The top of the figure itself, not of its cell: a wrapped label
+            // pushes the number down inside a cell that still starts level.
+            const figureTop = (td) => {
+                const first = td.firstChild;
+                if (!first) return -1;
+                if (first.nodeType === 1) return Math.round(first.getBoundingClientRect().top);
+                const range = document.createRange();
+                range.selectNodeContents(first);
+                return Math.round(range.getBoundingClientRect().top);
+            };
+            const figures = all('#tbl tbody.item')
+                .filter((row) => row.getClientRects().length)
+                .map((row) => {
+                    const nosub = row.querySelector('.c-nosub'), sub = row.querySelector('.c-sub');
+                    return {
+                        id: row.id.slice(2),
+                        nosub: {x: Math.round(nosub.getBoundingClientRect().x), y: figureTop(nosub)},
+                        sub: {x: Math.round(sub.getBoundingClientRect().x), y: figureTop(sub)}
+                    };
+                });
             const hint = document.querySelector('#filters .hint');
             const power = hint ? hint.closest('fieldset') : null;
             const pseudo = (el) => getComputedStyle(el, '::before');
@@ -454,8 +635,8 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
                 priceLabel: pseudo(price).content,
                 catchLabel: pseudo(catchCell).content,
                 displays: cells.map((td) => getComputedStyle(td).display),
-                basis: cells.map((td) => pseudo(td).flexBasis),
-                widths: cells.map((td) => pseudo(td).width),
+                labels: cells.map((td) => pseudo(td).content),
+                figures: figures,
                 hint: hint ? hint.textContent.trim() : '',
                 hintPower: !!(power && /Power/.test(power.querySelector('legend').textContent)),
                 hintSize: hint ? getComputedStyle(hint).fontSize : '',
@@ -473,17 +654,30 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
             f"{state['planRows']} rows without a plan, and "
             f"{state['planDashes']} bare dashes"
         )
-    if state["priceLabel"] not in ("normal", "none"):
-        problems.append(f"the phone price cell still carries the label {state['priceLabel']}")
+    if "Price" not in state["priceLabel"]:
+        problems.append(f"the phone price cell carries the label {state['priceLabel']}")
     if "Main catch" not in state["catchLabel"]:
         problems.append(f"the catch cell lost its label: {state['catchLabel']}")
-    if any(display != "flex" for display in state["displays"]):
-        problems.append(f"the phone spec cells are {state['displays']}, expected flex rows")
-    basis = state["basis"]
-    if len(set(basis)) != 1 or not basis[0].endswith("px") or float(basis[0][:-2]) < 100:
-        problems.append(f"the phone labels do not share one column: {basis}")
-    if len(set(state["widths"])) != 1:
-        problems.append(f"the phone labels render at different widths: {state['widths']}")
+    if any(display != "block" for display in state["displays"]):
+        problems.append(f"the phone spec cells are {state['displays']}, expected block rows")
+    for want in ("Records free?", "Price", "3 years, no plan", "3 years, with plan"):
+        if not any(want in label for label in state["labels"]):
+            problems.append(f"the phone labels read {state['labels']}, missing {want!r}")
+    # The two 3-year figures are read against each other, so they sit side by
+    # side and their numbers start on the same line in every card, whichever of
+    # the two labels wraps.
+    if len(state["figures"]) < 10:
+        problems.append(f"only {len(state['figures'])} phone cards to measure")
+    crooked = [
+        f"{fig['id']} {fig['nosub']['y']}/{fig['sub']['y']}px"
+        for fig in state["figures"]
+        if abs(fig["nosub"]["y"] - fig["sub"]["y"]) > 2
+    ]
+    if crooked:
+        problems.append(f"the two 3-year figures start on different lines: {crooked[:3]}")
+    stacked = [fig["id"] for fig in state["figures"] if fig["nosub"]["x"] >= fig["sub"]["x"]]
+    if stacked:
+        problems.append(f"{len(stacked)} cards stack the two 3-year figures")
     if not state["hint"].startswith("PoE"):
         problems.append(f"the Power filter has no PoE note: {state['hint']!r}")
     if not state["hintPower"]:
@@ -556,7 +750,7 @@ def sources_check(page, source_count):
 
 
 def footer_check(page, checked=None):
-    """The page ends on one line with the date, a contact route and a way back."""
+    """The page ends with the date, an owner, a contact route and a way back."""
     state = page.evaluate(
         """() => {
             const f = document.querySelector('footer.foot');
@@ -566,6 +760,7 @@ def footer_check(page, checked=None):
                 size: getComputedStyle(f).fontSize,
                 border: parseFloat(getComputedStyle(f).borderTopWidth),
                 links: Array.from(f.querySelectorAll('a')).map((a) => a.getAttribute('href')),
+                paragraphs: f.querySelectorAll('p').length,
                 height: Math.round(f.getBoundingClientRect().height),
                 last: f === document.querySelector('main').lastElementChild
             };
@@ -579,13 +774,68 @@ def footer_check(page, checked=None):
         problems.append(f"the closing line reads {state['text'][:40]!r}")
     if "#tbl" not in state["links"]:
         problems.append(f"the closing line has no way back: {state['links']}")
+    if not any((link or "").startswith("mailto:") for link in state["links"]):
+        problems.append(f"the closing line has no email address: {state['links']}")
+    if state["paragraphs"] < 2:
+        problems.append("the closing line does not say who runs the site")
+    if "SubFree UK is" not in state["text"]:
+        problems.append("the closing line does not name the site")
     if state["size"] != "13px" or state["border"] != 1:
         problems.append(
             f"the closing line is {state['size']} with a {state['border']}px rule, "
             "expected 13px and 1px"
         )
-    if not state["last"] or state["height"] > 120:
+    if not state["last"] or state["height"] > 320:
         problems.append(f"the closing line sits at {state['height']}px and is not last")
+
+    # Back to top: out of the way above the table, offered once the reader is
+    # into it, and it returns the reader and the keyboard to the heading.
+    page.evaluate("() => window.scrollTo(0, 0)")
+    page.wait_for_timeout(300)
+    top = page.evaluate(
+        """() => {
+            const b = document.getElementById('totop');
+            return b ? { hidden: b.hidden, label: b.getAttribute('aria-label') } : null;
+        }"""
+    )
+    if not top:
+        problems.append("the page has no back-to-top button")
+    else:
+        if not top["hidden"]:
+            problems.append("the back-to-top button is offered at the top of the page")
+        if not (top["label"] or "").lower().startswith("back to top"):
+            problems.append(f"the back-to-top button is named {top['label']!r}")
+        # Past the sentinel, which sits above the table, so the button has a
+        # reason to appear whatever the page's height happens to be.
+        page.evaluate(
+            """() => {
+                const s = document.getElementById('totop-s');
+                const y = s.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo(0, y + 600);
+            }"""
+        )
+        shown = True
+        try:
+            page.wait_for_function(
+                "() => !document.getElementById('totop').hidden", timeout=2000
+            )
+        except Exception:
+            shown = False
+        if not shown:
+            problems.append("the back-to-top button never appears once the table has scrolled")
+        else:
+            page.click("#totop")
+            page.wait_for_timeout(900)
+            back = page.evaluate(
+                """() => ({
+                    y: Math.round(window.scrollY),
+                    focus: document.activeElement ? document.activeElement.tagName : ''
+                })"""
+            )
+            if back["y"] > 40:
+                problems.append(f"Back to top left the page at {back['y']}px")
+            if back["focus"] != "H1":
+                problems.append(f"Back to top leaves focus on {back['focus'] or 'nothing'}")
     return problems
 
 
@@ -798,6 +1048,7 @@ def morph_check(page):
         """() => ({
             tray: getComputedStyle(document.getElementById('tray')).viewTransitionName,
             head: getComputedStyle(document.querySelector('.cmp-head')).viewTransitionName,
+            page: getComputedStyle(document.documentElement).viewTransitionName,
             named: Array.from(document.querySelectorAll('body *')).filter(
                 (e) => getComputedStyle(e).viewTransitionName !== 'none'
             ).map((e) => e.id || e.className)
@@ -807,6 +1058,13 @@ def morph_check(page):
         problems.append(f"the tray and the compare header do not share one name: {names}")
     if len(names["named"]) != 2:
         problems.append(f"{len(names['named'])} elements are named for the transition: {names['named']}")
+    # The page behind the pair is not captured. The root snapshot is the whole
+    # document rendered as a picture, and it is most of the cost of opening the
+    # comparison; only the pair needs to be caught.
+    if names["page"] != "none":
+        problems.append(
+            f"the whole page is captured for the transition, not just the pair: {names['page']!r}"
+        )
 
     # Opening: one transition, 240ms, and the tray's box is now the panel's.
     page.evaluate(
@@ -852,7 +1110,7 @@ def morph_check(page):
         problems.append(f"opening did not hand the tray's place to the panel: {opened}")
     if during["dur"] != "0.24s" or not during["keyframes"]:
         problems.append(f"the named group does not run 240ms: {during}")
-    if during["root"] != "none":
+    if during["root"] not in ("none", ""):
         problems.append(f"the page cross-fades behind the pair: root old animation {during['root']}")
     if during["named"] < 3:
         problems.append(f"only {during['named']} animations of the named pair ran")
@@ -1130,6 +1388,45 @@ def scroller_check(page):
     if state["over"] <= 0:
         problems.append("the comparison does not overflow at 390px, so it cannot be scrolled")
     else:
+        # The cue says the table scrolls, so it has to be where the reader looks:
+        # above the table, not a screen and a half below the column it names.
+        cue = page.evaluate(
+            """() => {
+                const cue = document.getElementById('cmp-cue');
+                const s = document.querySelector('.cmp-scroll');
+                const box = s.getBoundingClientRect();
+                const cols = Array.from(
+                    document.querySelectorAll('#cmp-table thead th')
+                ).slice(1).map((th) => {
+                    const r = th.getBoundingClientRect();
+                    return {
+                        name: (th.textContent || '').trim(),
+                        left: Math.round(r.left),
+                        right: Math.round(r.right)
+                    };
+                });
+                return {
+                    hidden: cue.hidden,
+                    text: (cue.textContent || '').trim(),
+                    top: Math.round(cue.getBoundingClientRect().top),
+                    tableTop: Math.round(box.top),
+                    edge: Math.round(box.right),
+                    cols: cols
+                };
+            }"""
+        )
+        if cue["hidden"] or not cue["text"]:
+            problems.append(f"the comparison does not say it scrolls: {cue['text']!r}")
+        else:
+            if cue["top"] > cue["tableTop"]:
+                problems.append("the scroll cue is below the table it names")
+            # It names a column that is out of sight, not one that is half in
+            # view and already readable.
+            gone = [c["name"] for c in cue["cols"] if c["left"] >= cue["edge"] - 1]
+            if gone and cue["text"] != "Swipe to see " + gone[0]:
+                problems.append(
+                    f"the scroll cue names {cue['text']!r}, not the column out of sight {gone[0]!r}"
+                )
         page.focus(".cmp-scroll")
         page.keyboard.press("ArrowRight")
         page.wait_for_timeout(250)
@@ -1140,6 +1437,396 @@ def scroller_check(page):
             problems.append(f"ArrowRight on the scroller left it at {moved}px")
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(150)
+    return problems
+
+
+def compare_label_check(page):
+    """The compare box is named, on a wide screen and on a phone.
+
+    A bare box in a column of boxes is a puzzle. The wide layout names the
+    column in the header; the phone card has no header, so the box carries its
+    own caption, in the same muted style as the other figures in the card. The
+    caption is inside the label, so a tap on the word counts the row.
+    """
+    problems = []
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    head = page.evaluate(
+        """() => {
+            const span = document.querySelector('thead th.c-cmp .cmp-h');
+            if (!span) return null;
+            const s = getComputedStyle(span);
+            return {
+                text: (span.textContent || '').trim(),
+                display: s.display,
+                size: parseFloat(s.fontSize),
+                clipped: span.scrollWidth > span.clientWidth + 1
+            };
+        }"""
+    )
+    if head is None:
+        problems.append("the compare column has no name in its header")
+    else:
+        if head["text"].lower() != "compare":
+            problems.append(f"the compare column header reads {head['text']!r}")
+        if head["display"] == "none":
+            problems.append("the compare column header is hidden")
+        if head["size"] < 12:
+            problems.append(f"the compare column header is {head['size']}px")
+        if head["clipped"]:
+            problems.append("the compare column header clips its text")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(200)
+    cap = page.evaluate(
+        """() => {
+            const cap = document.querySelector('tbody.item .cmp-cap');
+            if (!cap) return null;
+            const s = getComputedStyle(cap);
+            const label = cap.closest('.cmp-w');
+            const r = label.getBoundingClientRect();
+            return {
+                text: (cap.textContent || '').trim(),
+                display: s.display,
+                size: parseFloat(s.fontSize),
+                width: Math.round(r.width),
+                height: Math.round(r.height)
+            };
+        }"""
+    )
+    if cap is None:
+        problems.append("the compare box has no caption on a phone")
+    else:
+        if cap["text"].lower() != "compare":
+            problems.append(f"the compare caption reads {cap['text']!r}")
+        if cap["display"] == "none":
+            problems.append("the compare caption is hidden on a phone")
+        if cap["size"] < 12:
+            problems.append(f"the compare caption is {cap['size']}px")
+        if cap["height"] < 44:
+            problems.append(f"the compare target is {cap['height']}px tall, expected 44px")
+        if cap["width"] < 44:
+            problems.append(f"the compare target is {cap['width']}px wide, expected 44px")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    return problems
+
+
+def sort_figure_check(page):
+    """The order follows a figure the row bolds, and the note names it.
+
+    The default sort is by the 3-year cost to keep recordings, which is not a
+    column of its own: Ring's figure comes from its plan and Reolink PoE's from
+    the card in its box. Without the bold cell and the note under the control,
+    the list reads as mis-sorted. The other sorts bold what they order by, or
+    nothing when the figure is a column of its own.
+    """
+    problems = []
+    state = page.evaluate(
+        """() => {
+            const read = () => {
+                const note = document.getElementById('sortnote');
+                return {
+                    note: (note.textContent || '').trim(),
+                    rows: Array.from(document.querySelectorAll('#tbl tbody.item')).map((t) => ({
+                        id: t.id.slice(2),
+                        basis: t.dataset.keep,
+                        bold: Array.from(t.querySelectorAll('.c-nosub,.c-sub'))
+                            .filter((c) => c.classList.contains('keep'))
+                            .map((c) => (c.classList.contains('c-sub') ? 'sub' : 'nosub'))
+                    }))
+                };
+            };
+            const sort = document.getElementById('sort');
+            const pick = (value) => {
+                sort.value = value;
+                sort.dispatchEvent(new Event('change', { bubbles: true }));
+            };
+            const states = {};
+            pick('keep3');
+            states.keep = read();
+            pick('price');
+            states.price = read();
+            pick('nosub3');
+            states.nosub = read();
+            pick('sub3');
+            states.sub = read();
+            pick('keep3');
+            return states;
+        }"""
+    )
+    keep = state["keep"]
+    if "3-year cost to keep recordings" not in keep["note"]:
+        problems.append(f"the note under the sort control reads {keep['note']!r}")
+    for row in keep["rows"]:
+        if len(row["bold"]) != 1:
+            problems.append(
+                f"{row['id']} bolds {len(row['bold'])} cost cells at the default sort"
+            )
+        elif row["bold"][0] != row["basis"]:
+            problems.append(
+                f"{row['id']} bolds its {row['bold'][0]} figure but keeps records on the {row['basis']} one"
+            )
+    if state["price"]["note"] != "Order: price, low to high.":
+        problems.append(f"the price sort note reads {state['price']['note']!r}")
+    still = [r["id"] for r in state["price"]["rows"] if r["bold"]]
+    if still:
+        problems.append(f"{len(still)} rows keep a bold cost cell when sorting by price")
+    for key, cell, words in (
+        ("nosub", "nosub", "no plan"),
+        ("sub", "sub", "with a plan"),
+    ):
+        wrong = [r["id"] for r in state[key]["rows"] if r["bold"] != [cell]]
+        if wrong:
+            problems.append(
+                f"{len(wrong)} rows do not bold their {cell} figure when sorting by it"
+            )
+        if words not in state[key]["note"].lower():
+            problems.append(f"the {cell} sort note reads {state[key]['note']!r}")
+    return problems
+
+
+def price_link_check(page):
+    """Each price is the link to the page it came from.
+
+    The intro promises that every price links to its source. A plain number
+    under that promise is the one thing a reader checking a price cannot use,
+    and the details name their sources by shop rather than by number.
+    """
+    problems = []
+    state = page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll('#tbl tbody.item'));
+            return {
+                rows: rows.length,
+                prices: rows.map((t) => {
+                    const cell = t.querySelector('.c-price');
+                    const a = cell.querySelector('a');
+                    return {
+                        id: t.id.slice(2),
+                        text: (cell.textContent || '').trim(),
+                        href: a ? a.getAttribute('href') : '',
+                        rel: a ? (a.getAttribute('rel') || '') : '',
+                        name: a ? (a.getAttribute('aria-label') || '') : '',
+                        target: a ? (a.getAttribute('target') || '') : ''
+                    };
+                }),
+                sourceNames: Array.from(document.querySelectorAll('#m-reo-poe .srcs a'))
+                    .map((a) => a.textContent.trim())
+            };
+        }"""
+    )
+    if len(state["prices"]) < 2:
+        return [f"found {len(state['prices'])} price cells to check"]
+    unlinked = [p["id"] for p in state["prices"] if not p["href"].startswith("http")]
+    if unlinked:
+        problems.append(f"prices with no link to their source: {unlinked[:3]}")
+    unpriced = [p["id"] for p in state["prices"] if "£" not in p["text"]]
+    if unpriced:
+        problems.append(f"price cells with no figure in them: {unpriced[:3]}")
+    unnamed = [p["id"] for p in state["prices"] if " at " not in p["name"]]
+    if unnamed:
+        problems.append(f"price links without a shop in their name: {unnamed[:3]}")
+    loose = [p["id"] for p in state["prices"]
+             if "nofollow" not in p["rel"] or "noopener" not in p["rel"]]
+    if loose:
+        problems.append(f"price links without nofollow noopener: {loose[:3]}")
+    numeric = [name for name in state["sourceNames"] if len(name) < 4 or name.isdigit()]
+    if numeric:
+        problems.append(f"the details name their sources by number: {numeric[:3]}")
+    return problems
+
+
+def page_key_check(page):
+    """The row colours are explained in words, where the rows are.
+
+    A green, blue and red rule down the left of a row carries a verdict, and a
+    reader who cannot tell the three apart still needs to know what the colour
+    beside the badge means. On a phone the three coloured lines of the short
+    answer say the same thing, so the key would only repeat them.
+    """
+    problems = []
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    wide = page.evaluate(
+        """() => {
+            const k = document.getElementById('vkey');
+            if (!k) return null;
+            const cs = getComputedStyle(k);
+            return {
+                display: cs.display,
+                text: k.textContent.replace(/\\s+/g, ' ').trim(),
+                marks: k.querySelectorAll('span').length
+            };
+        }"""
+    )
+    if wide is None:
+        problems.append("the page has no key to its row colours")
+    elif wide["display"] == "none":
+        problems.append("the row-colour key is hidden at 1280px")
+    else:
+        for word in ("Green", "Blue", "Red"):
+            if word not in wide["text"]:
+                problems.append(f"the row-colour key never says {word!r}: {wide['text']!r}")
+        if wide["marks"] != 3:
+            problems.append(f"the row-colour key has {wide['marks']} entries, expected 3")
+        if "colour" in wide["text"].lower() or "bold" in wide["text"].lower():
+            problems.append("the row-colour key describes the styling rather than the verdict")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(200)
+    narrow = page.evaluate(
+        """() => {
+            const k = document.getElementById('vkey');
+            const short = document.querySelector('.vshort');
+            const lines = short ? Array.from(short.querySelectorAll('span')) : [];
+            return {
+                key: k ? getComputedStyle(k).display : 'missing',
+                short: short ? getComputedStyle(short).display : 'missing',
+                lines: lines.filter((s) => !s.classList.contains('vlab')).length,
+                text: short ? short.textContent.replace(/\\s+/g, ' ').trim() : ''
+            };
+        }"""
+    )
+    if narrow["key"] != "none":
+        problems.append(f"the key is {narrow['key']!r} at 390px, where the short answer carries it")
+    if narrow["short"] == "none" or narrow["lines"] < 3:
+        problems.append(f"the phone short answer has {narrow['lines']} lines: {narrow['short']!r}")
+    for word in ("best", "battery", "plan"):
+        if word not in narrow["text"].lower():
+            problems.append(f"the phone short answer never says {word!r}")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    return problems
+
+
+def details_check(page):
+    """The details panel says each row in a sentence, in two aligned columns."""
+    problems = []
+    page.evaluate(
+        """() => {
+            const b = document.querySelector('#m-reo-poe .more');
+            if (b.getAttribute('aria-expanded') !== 'true') b.click();
+        }"""
+    )
+    page.wait_for_timeout(200)
+    state = page.evaluate(
+        """() => {
+            const panel = document.querySelector('#m-reo-poe tr.detail');
+            const pairs = Array.from(panel.querySelectorAll('.dspec .pair'));
+            const left = (el) => Math.round(el.getBoundingClientRect().left);
+            const value = (i) => (pairs[i] ? pairs[i].querySelector('dd').textContent.trim() : '');
+            return {
+                hidden: panel.hidden,
+                pairs: pairs.length,
+                columns: Array.from(new Set(pairs.map(left))).sort((a, b) => a - b),
+                power: value(0),
+                storage: value(2),
+                labels: pairs.map((p) => p.querySelector('dt').textContent.trim())
+            };
+        }"""
+    )
+    if state["hidden"]:
+        problems.append("Details did not open")
+    if state["pairs"] < 12:
+        problems.append(f"the details panel lists {state['pairs']} rows, expected 13")
+    if len(state["columns"]) != 2:
+        problems.append(
+            f"the details panel's pairs sit at {state['columns']}, expected two columns"
+        )
+    # A sentence rather than a data string: long, punctuated, and not a list of
+    # terms joined by punctuation.
+    for name, text in (("power", state["power"]), ("storage", state["storage"])):
+        if len(text) < 40 or not text.rstrip().endswith("."):
+            problems.append(f"the {name} line reads {text!r}")
+        if " / " in text or ";" in text:
+            problems.append(f"the {name} line is still a list of terms: {text!r}")
+    for want in ("Power", "Storage", "Wi-Fi", "History without a plan"):
+        if want not in state["labels"]:
+            problems.append(f"the details panel has no {want!r} row")
+    page.evaluate(
+        """() => {
+            const b = document.querySelector('#m-reo-poe .more');
+            if (b.getAttribute('aria-expanded') === 'true') b.click();
+        }"""
+    )
+    page.wait_for_timeout(120)
+    return problems
+
+
+def print_check(page):
+    """On paper each figure sits under its own heading.
+
+    Printing drops the compare box. A grid cell that is hidden leaves its
+    track behind, so the seven cells that remain start one track left of where
+    the seven remaining headings start, and every value prints under the
+    heading of the column before it. The page is also narrower on paper than
+    on screen, so this is measured at 1123px: A4 landscape, the width at which
+    the numbered columns are laid out as columns at all.
+    """
+    problems = []
+    page.set_viewport_size({"width": 1123, "height": 900})
+    page.emulate_media(media="print")
+    try:
+        page.wait_for_timeout(200)
+        state = page.evaluate(
+            """() => {
+                const row = document.querySelector('#tbl tbody.item tr.main');
+                const left = (el) => Math.round(el.getBoundingClientRect().left);
+                const shown = (el) => getComputedStyle(el).display !== 'none';
+                const headings = Array.from(document.querySelectorAll('#tbl thead th')).filter(shown);
+                const values = Array.from(row.children).filter(shown);
+                const th = document.querySelector('#tbl thead th.c-cmp');
+                const td = row.querySelector('td.c-cmp');
+                return {
+                    headings: headings.map(left),
+                    values: values.map(left),
+                    box: [th, td].map((el) => (el ? getComputedStyle(el).display : 'missing')),
+                    badge: getComputedStyle(document.querySelector('.zi')).display
+                };
+            }"""
+        )
+    finally:
+        page.emulate_media(media="screen")
+        page.set_viewport_size({"width": 1280, "height": 900})
+        page.wait_for_timeout(150)
+    if state["box"] != ["none", "none"]:
+        problems.append(f"the compare column prints as {state['box']}")
+    if len(state["headings"]) != len(state["values"]):
+        problems.append(
+            f"{len(state['headings'])} headings print over {len(state['values'])} cells"
+        )
+    else:
+        shifted = [
+            heading
+            for heading, value in zip(state["headings"], state["values"])
+            if abs(heading - value) > 1
+        ]
+        if shifted:
+            problems.append(
+                f"printed cells start at {state['values']}, headings at {state['headings']}"
+            )
+    if state["badge"] != "none":
+        problems.append("the photo's magnifier badge prints beside every photo")
+    return problems
+
+
+def notfound_check():
+    """A mistyped address lands on the site's own page, not on GitHub's."""
+    path = os.path.join(ROOT, "404.html")
+    if not os.path.exists(path):
+        return ["404.html is missing"]
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    problems = []
+    if "<h1>Page not found</h1>" not in text:
+        problems.append("the 404 page has no 'Page not found' heading")
+    if 'href="/subfree-uk/"' not in text:
+        problems.append("the 404 page does not link back to the comparison")
+    if "github.com" in text:
+        problems.append("the 404 page still points at GitHub")
+    if 'name="robots" content="noindex"' not in text:
+        problems.append("the 404 page can be indexed")
+    if "assets/page.css?v=" not in text:
+        problems.append("the 404 page does not wear the site's stylesheet")
     return problems
 
 
@@ -1348,11 +2035,17 @@ DESKTOP_ROWS_JS = r"""() => {
     const head = Array.from(table.querySelectorAll('thead th')).map((th) => th.getBoundingClientRect().left);
     const row = table.querySelector('tr.main');
     const card = table.querySelector('tbody.item');
-    const rows = Array.from(table.querySelectorAll('tbody.item:not([hidden])')).map((item) => ({
-        id: item.id,
-        lefts: Array.from(item.querySelector('tr.main').children).map((cell) => cell.getBoundingClientRect().left),
-        heights: Array.from(item.querySelector('tr.main').children).map((cell) => Math.round(cell.getBoundingClientRect().height)),
-    }));
+    const    rows = Array.from(table.querySelectorAll('tbody.item:not([hidden])')).map((item) => {
+        const main = item.querySelector('tr.main');
+        const n = main.querySelector('.c-nosub').getBoundingClientRect();
+        const s = main.querySelector('.c-sub').getBoundingClientRect();
+        return {
+            id: item.id,
+            lefts: Array.from(main.children).map((cell) => cell.getBoundingClientRect().left),
+            heights: Array.from(main.children).map((cell) => Math.round(cell.getBoundingClientRect().height)),
+            pair: {ny: Math.round(n.top), sy: Math.round(s.top), nx: Math.round(n.left), sx: Math.round(s.left)},
+        };
+    });
     const clipped = [];
     table.querySelectorAll('th, td').forEach((cell) => {
         if (cell.scrollWidth > cell.clientWidth + 1) clipped.push(cell.className || cell.tagName);
@@ -1438,8 +2131,15 @@ def desktop_rows_check(page, row_count):
     page.set_viewport_size({"width": 390, "height": 844})
     page.wait_for_timeout(160)
     cards = page.evaluate(DESKTOP_ROWS_JS)
-    if cards["tracks"] != 2:
-        problems.append(f"at 390px a row has {cards['tracks']} tracks, expected the 2-column card")
+    # A phone card is three tracks: the compare box, then two columns of
+    # figures. The two 3-year costs share a row, so a card is a third shorter
+    # than it was when each figure had a line of its own.
+    if cards["tracks"] != 3:
+        problems.append(f"at 390px a row has {cards['tracks']} tracks, expected the 3-track card")
+    for row in cards["rows"]:
+        if abs(row["pair"]["ny"] - row["pair"]["sy"]) > 2 or row["pair"]["nx"] == row["pair"]["sx"]:
+            problems.append(f"at 390px the two 3-year figures in {row['id']} are not side by side")
+            break
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(120)
     return problems
@@ -1532,6 +2232,27 @@ def theme_check(page):
         problems.append(f"the theme button still claims aria-pressed={state['pressed']}")
     if not (state["label"] or "").startswith("Switch to "):
         problems.append(f"the theme button is named {state['label']!r}")
+    # White photo tiles glare against the near-black page, so dark mode dims the
+    # tile behind each photo as well as the photo itself.
+    was = page.evaluate("() => document.documentElement.getAttribute('data-theme')")
+    page.evaluate("() => document.documentElement.setAttribute('data-theme', 'dark')")
+    page.wait_for_timeout(120)
+    tile = page.evaluate(
+        """() => {
+            const el = document.querySelector('.ph');
+            return el ? getComputedStyle(el).backgroundColor : '';
+        }"""
+    )
+    page.evaluate(
+        """(was) => {
+            if (was === null) document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', was);
+        }""",
+        was,
+    )
+    numbers = [int(part) for part in tile.replace("rgb(", "").replace(")", "").replace(" ", "").split(",") if part.isdigit()]
+    if len(numbers) < 3 or max(numbers[:3]) > 90:
+        problems.append(f"the photo tile in dark mode is {tile!r}, expected a dim tile")
     before = state["text"]
     toggle = page.locator("#theme")
     toggle.scroll_into_view_if_needed()
@@ -1563,7 +2284,8 @@ def price_check(page):
                 outputs: [
                     document.getElementById("f-min-out").textContent,
                     document.getElementById("f-max-out").textContent
-                ]
+                ],
+                range: (document.getElementById("f-range") || {}).textContent || ""
             };
         }"""
     )
@@ -1577,6 +2299,11 @@ def price_check(page):
         problems.append(
             f"the labels read {shapes['outputs']} for handles at {shapes['values']}"
         )
+    # Two thumbs on top of each other read as one grey track, so the range is
+    # also printed as words above the slider.
+    expected_range = f"£{shapes['values'][0]} to £{shapes['values'][1]}"
+    if shapes["range"] != expected_range:
+        problems.append(f"the range reads {shapes['range']!r}, expected {expected_range!r}")
 
     page.eval_on_selector("#filters", "el => { el.open = true }")
     page.wait_for_timeout(80)
@@ -1617,6 +2344,9 @@ def price_check(page):
             f"the lower handle does not filter: {filtered['shown']} of "
             f"{filtered['total']} rows shown, cheapest £{filtered['cheapest']}"
         )
+    moved = page.evaluate("() => (document.getElementById('f-range') || {}).textContent || ''")
+    if "£200" not in moved:
+        problems.append(f"the range text does not follow the handles: {moved!r}")
 
     page.eval_on_selector(
         "#f-max",
@@ -1970,7 +2700,9 @@ CHECK_NAMES = [
     "skip link", "details hit area", "theme toggle", "muted contrast", "theme motion",
     "jump announcement", "desktop rows", "compare morph", "scroll rule",
     "compare header at 1280", "shortlist copy", "compare cost row", "share link",
-    "compare chrome", "differences only", "comparison scroller",
+    "compare chrome", "differences only", "compare markers", "comparison scroller",
+    "compare label", "sort figure", "price links", "page key", "details panel",
+    "not found",
     "structure at 1280", "verdict tags",
     "row rule", "price cells", "photo zoom", "contact route", "glossary",
     "share metadata", "secure links", "link names", "alt text", "form labels",
@@ -1978,7 +2710,7 @@ CHECK_NAMES = [
     "footnote set", "image files", "type floor at 390", "type floor at 1280",
     "cost header name",
     "compare caption", "photo lightbox", "axe WCAG", "overflow",
-    "performance budget", "no JavaScript", "firefox structural pass",
+    "performance budget", "no JavaScript", "print", "firefox structural pass",
     "console errors", "external links",
 ]
 PHONE_CHECKS = CHECK_NAMES[
@@ -2011,13 +2743,16 @@ def open_compare(page, ids=SHORTLIST_IDS):
 
 
 def compare_cells(build):
-    """The cheapest 3-year cost and the two differences, from the dataset."""
+    """The cheapest 3-year cost, what it is made of, and the two differences."""
     by_id = {row["id"]: row for row in build.ROWS}
     keeps = [by_id[id]["keep3"] for id in SHORTLIST_IDS]
     low = min(keeps)
     return [
-        f"£{value:.2f} · cheapest" if abs(value - low) < 0.005 else f"+£{value - low:.2f}"
-        for value in keeps
+        f"£{value:.2f} "
+        + ("cheapest" if abs(value - low) < 0.005 else f"+£{value - low:.2f}")
+        + " "
+        + by_id[id]["keep_note"]
+        for id, value in zip(SHORTLIST_IDS, keeps)
     ]
 
 
@@ -2777,7 +3512,8 @@ def main():
 
                 if any(audit.wants(name) for name in (
                     "shortlist copy", "compare cost row", "share link", "compare chrome",
-                    "differences only", "compare caption", "axe", "structure at 1280",
+                    "differences only", "compare markers", "compare caption", "axe",
+                    "structure at 1280",
                 )):
                     ready_for_compare()
                 audit.run(
@@ -2806,9 +3542,49 @@ def main():
                     "differences only hides identical spec rows, keeps the decision rows, and names its count",
                 )
                 audit.run(
+                    "compare markers",
+                    lambda: marks_check(page),
+                    "the comparison marks what is missing and leaves the good news alone",
+                )
+                audit.run(
                     "comparison scroller",
                     lambda: scroller_check(page),
                     "the comparison's sideways scroll is a named, focusable region and the arrow keys move it",
+                )
+                audit.run(
+                    "compare label",
+                    lambda: compare_label_check(page),
+                    "the compare box is named in the column header and on a phone card",
+                )
+                audit.run(
+                    "sort figure",
+                    lambda: sort_figure_check(page),
+                    "the note under the sort control names the figure, and each row bolds the cell the order uses",
+                )
+                audit.run(
+                    "price links",
+                    lambda: price_link_check(page),
+                    "every price opens the page it came from, and the details name their sources by shop",
+                )
+                audit.run(
+                    "page key",
+                    lambda: page_key_check(page),
+                    "the row colours are explained in words at 1280 and by the phone's three lines at 390",
+                )
+                audit.run(
+                    "details panel",
+                    lambda: details_check(page),
+                    "a details panel says power and storage in sentences, in two aligned columns",
+                )
+                audit.add(
+                    "not found",
+                    notfound_check(),
+                    "a mistyped address lands on the site's own 404, not on GitHub's",
+                )
+                audit.run(
+                    "print",
+                    lambda: print_check(page),
+                    "on paper each figure prints under its own heading, with no compare box",
                 )
 
                 data = page.evaluate(AUDIT_JS)
@@ -2862,10 +3638,59 @@ def main():
                         audit.add(name, work(), ok)
 
                 foot = page.locator("#tbl thead th[data-sort=nosub3] button").aria_snapshot()
+                # The two cost headers are the columns a reader has to decode, so
+                # they are written out at the same size as the rest, and the
+                # footnote letter is a link to the working, in place.
+                heads = page.evaluate(
+                    """() => {
+                        const read = (sort) => {
+                            const th = document.querySelector('#tbl thead th[data-sort=' + sort + ']');
+                            if (!th) return null;
+                            const button = th.querySelector('button');
+                            const mark = th.querySelector('.mk');
+                            const target = mark ? document.querySelector(mark.getAttribute('href')) : null;
+                            return {
+                                text: (button.textContent || '').trim(),
+                                size: parseFloat(getComputedStyle(button).fontSize),
+                                mark: mark ? (mark.textContent || '').trim() : '',
+                                href: mark ? mark.getAttribute('href') : '',
+                                landed: !!target
+                            };
+                        };
+                        return { nosub: read('nosub3'), sub: read('sub3') };
+                    }"""
+                )
+                header_problems = (
+                    [] if "footnote a" in foot else [f"cost header name: {foot.strip()}"]
+                )
+                for key, letter, words in (
+                    ("nosub", "a", "no plan"),
+                    ("sub", "b", "with plan"),
+                ):
+                    head = heads[key]
+                    if not head:
+                        header_problems.append(f"the {key} cost header is missing")
+                        continue
+                    if head["text"].lower() != f"3-year cost, {words}":
+                        header_problems.append(
+                            f"the {key} cost header reads {head['text']!r}"
+                        )
+                    if head["size"] < 12:
+                        header_problems.append(
+                            f"the {key} cost header is {head['size']}px"
+                        )
+                    if head["mark"] != letter or head["href"] != f"#m-{letter}":
+                        header_problems.append(
+                            f"the {key} cost header's marker is {head['mark']!r} to {head['href']!r}"
+                        )
+                    elif not head["landed"]:
+                        header_problems.append(
+                            f"the {key} cost header's marker points at nothing"
+                        )
                 audit.add(
                     "cost header name",
-                    [] if "footnote a" in foot else [f"cost header name: {foot.strip()}"],
-                    "the cost header reads its footnote letter to screen readers",
+                    header_problems,
+                    "the cost headers are written out at 12px, and their letters link to the working",
                 )
                 compare = page.evaluate(
                     """() => ({
