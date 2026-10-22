@@ -63,7 +63,9 @@ without a flight for that model, rather than flying to a box that is not there.
   before it, six on the rows after it, and none left once the panel has gone.
 - A model with no photo pairs one name only.
 - `prefers-reduced-motion` and browsers without the API skip the whole thing:
-  the rows are never named, and the panel opens without movement.
+  the rows are never named, and the panel opens and closes without movement.
+  The close is asserted in that state too: no view transition, no row name or
+  hidden half left behind, and the tray back with focus on its Compare button.
 - The flight costs paint. Seven boxes are captured where the open used to
   capture two, so `performance budget` measures the open twice — once with the
   transition and once with it switched off by reduced motion — and holds the

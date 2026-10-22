@@ -659,6 +659,41 @@ def morph_check(page):
         problems.append("reduced motion does not open the comparison")
     page.evaluate("() => document.getElementById('cmp-close').click()")
     page.wait_for_timeout(250)
+    # The close under reduced motion is the instant swap the open was: no
+    # transition, no row half left named or hidden, and the tray back in the
+    # bar with focus on it. The tray and the header keep the one name they
+    # share, which is a dormant style rule while no transition runs.
+    reduced_close = page.evaluate(
+        """() => ({
+            calls: window.__vt.calls,
+            tray: !document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden,
+            focus: document.activeElement.id,
+            named: Array.from(new Set(Array.from(document.querySelectorAll('body *'))
+                .map((e) => getComputedStyle(e).viewTransitionName)
+                .filter((name) => name !== 'none'))).sort(),
+            hidden: Array.from(document.querySelectorAll(
+                '#tbl .mname, #tbl .ph-sm, #cmp-table thead .cmp-name, #cmp-table thead .cmp-photo img'
+            )).filter((e) => getComputedStyle(e).visibility === 'hidden').length
+        })"""
+    )
+    if reduced_close["calls"]:
+        problems.append("reduced motion runs a view transition on the way back")
+    if reduced_close["panel"] or not reduced_close["tray"]:
+        problems.append(f"reduced motion does not give the tray back: {reduced_close}")
+    if reduced_close["named"] not in ([], ["cmp-tray"]):
+        problems.append(
+            f"reduced motion leaves row names behind on the close: {reduced_close['named']}"
+        )
+    if reduced_close["hidden"]:
+        problems.append(
+            f"reduced motion leaves {reduced_close['hidden']} row parts hidden after the close"
+        )
+    if reduced_close["focus"] != "tray-go":
+        problems.append(
+            f"the reduced-motion close puts focus on {reduced_close['focus'] or 'nothing'}, "
+            "not the tray's Compare button"
+        )
 
     # No API at all: the old instant swap, and the reader still gets the panel.
     page.emulate_media(reduced_motion="no-preference")
