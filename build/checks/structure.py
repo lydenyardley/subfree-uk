@@ -190,6 +190,7 @@ def cost_header_check(page):
                 const style = getComputedStyle(button);
                 return {
                     text: (button.textContent || '').trim(),
+                    button: Math.round(button.getBoundingClientRect().width),
                     size: parseFloat(style.fontSize),
                     lines: Math.round(
                         button.getBoundingClientRect().height / parseFloat(style.lineHeight)
@@ -216,9 +217,21 @@ def cost_header_check(page):
             problems.append(f"the {key} cost header is {head['size']}px")
         # The heading is the tallest in the table, so every extra line it takes
         # is a line off every row's first paint. Three is the most the words fit
-        # in, and a marker that reserves its own box pushes it to five.
+        # in at 1280px, where each cost column is 152px: the widest common
+        # fallback font needs about 100px of button, and the marker takes 16 of
+        # the rest. A narrower track wrapped the words onto a fifth line.
         if head["lines"] > 3:
             problems.append(f"the {key} cost header takes {head['lines']} lines")
+        # The line count above only fails on a font wide enough to run out of
+        # room, so it passes on this machine's default and failed on CI's. The
+        # button's width does not depend on the font: it is the column less the
+        # marker's 16 and the padding's 32, so it states the same floor in the
+        # unit the line count is decided by.
+        if head["button"] < 100:
+            problems.append(
+                f"the {key} cost header has {head['button']}px for its words; "
+                "the widest common fallback font needs 100"
+            )
         if head["markSize"] > 12:
             problems.append(
                 f"the {key} cost header's marker is {head['markSize']}px, not a footnote"
@@ -344,7 +357,7 @@ CHECKS = [
     ),
     Check(
         "cost header name", "compare", 74,
-        "the cost headers are written out at 12px in three lines, and their letters link to the working",
+        "the cost headers are written out at 12px in at most three lines at 1280px, and their letters link to the working",
         lambda ctx: cost_header_check(ctx.page),
     ),
     Check(

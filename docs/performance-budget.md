@@ -100,12 +100,13 @@ table's own widths it still measured 64.7ms against 70.9ms: the cost is per
 row of text, not per column decision, which is why only laying out fewer rows
 moves it.
 
-The grid tracks reproduce the widths the table chose, so the desktop layout
-does not move. At 1280px the table is 1,675px tall either way, all fourteen
-rows are the same height, and the columns are 34, 337, 120, 84, 102, 109, 114
-and 348px against the table's 33, 337, 120, 84, 102, 109, 114 and 349px. The
-2px on the first track is where the collapsed table border used to be; without
-it every column after the compare box sat 2px left.
+The grid tracks started as the widths the table chose, so the desktop layout
+did not move: the columns were 34, 337, 120, 84, 102, 109, 114 and 348px
+against the table's 33, 337, 120, 84, 102, 109, 114 and 349px. The 2px on the
+first track is where the collapsed table border used to be; without it every
+column after the compare box sat 2px left. ADR 10 has since put a floor under
+every header word and takes the two cost columns to 152px from 1280px, so the
+columns are the table's own only where no word forces them wider.
 
 Measured on fresh pages at every breakpoint the stylesheet defines, with every
 card scrolled through first so contained rows settle:
@@ -121,13 +122,16 @@ card scrolled through first so contained rows settle:
 | 820px | 4,581 → 4,581px | 6,140 → 6,140px | 0 | 0 |
 | 390px | 4,960 → 4,960px | 6,573 → 6,573px | 0 | 0 |
 
-1280px is exact because the tracks were read off the table at 1280px. Between
-900 and 1100 the columns differ by 2 to 6% and a row can be one line of text
-taller or shorter, which is the 1% of table height in the table above; at 821px,
-one pixel above the breakpoint where the layout becomes cards, the catch column
-is 113px against the table's 116 and three rows gain a line, for 2.7% of table
-height. No cell clips at any width, no page scrolls sideways, and every row's
-cells start on the header's columns to the pixel.
+1280px was exact because the tracks were read off the table there; with the
+floors of ADR 10 the table is 1,420px tall against 1,419px before. Between 900
+and 1100 the columns differ by 2 to 6% and a row can be one line of text taller
+or shorter, which is the 1% of table height in the table above; at 821px, one
+pixel above the breakpoint where the layout becomes cards, the catch column is
+113px against the table's 116 and three rows gain a line, for 2.7% of table
+height. No cell clips at 1440, 1280, 1100, 1000 or 900 — the widths the audit
+measures, and under a wide fallback font — no page scrolls sideways, and every
+row's cells start on the header's columns to the pixel. The 821px catch is the
+exception: a long sentence clips there, as it did by more before the floors.
 
 A row's box begins 1px lower than a table row's, because the header block is a
 pixel taller than the header row was; the text sits on the same baseline in

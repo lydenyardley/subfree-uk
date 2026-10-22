@@ -398,17 +398,14 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 }
 /* Above the phone breakpoint a row is a grid row rather than a table row. A
    table lays all fourteen rows out again on every sort and no cell can skip
-   that; a contained block lays out only the rows in view. The tracks are the
-   widths the table itself chose at 1280px, so the columns stay where they
-   were: at 1280px to the pixel, and within about 1% of table height from 900
-   to 1100px. */
+   that; a contained block lays out only the rows in view. The tracks follow
+   the table's own proportions, with a floor under every column that has a
+   word in its header: a wide fallback font is about 15% wider than Arial, and
+   tracks tuned by eye clipped "Free features" on Linux. */
 @media (min-width:821px){
  .main-t{display:block}
  .main-t thead,.main-t tbody{display:block}
- /* The compare column is as wide as the word above it, plus the 2px the
-    collapsed table border used to take, so every column after the compare box
-    starts where the table's own layout put it. */
- .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:calc(2.5rem + 2px) 27% 120px 6.7% 8.2% 10% 10% 1fr}
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:calc(2.5rem + 2px) 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
  /* A sticky cell can only move inside its parent, so the header row sticks as
     a block: fourteen rows of table no longer move it, and the cells still sit
     on one line each. */
@@ -426,8 +423,18 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
    ticked row is rendered instead, from the moment it is ticked, when it is on
    screen and laid out anyway. At most three rows are ever ticked. */
 tbody.item:has(input.cmp:checked){content-visibility:visible}
+/* From 1280px the two cost columns are wide enough for their words. At 12px
+   "3-year cost," is about 100px, and with the footnote marker beside it that
+   is a 152px track: two lines. Narrower than this the same words take four or
+   five, which is what eight columns at 1100px cost, and the catch column
+   cannot spare the width down there. A wide fallback font is what decides
+   this: at 1280px the 10% columns above leave 68px of button and it wrapped
+   the sub header onto a fourth line on Linux. */
+@media (min-width:1280px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
+}
 @media (min-width:821px) and (max-width:1100px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 28% 84px 84px 84px 96px 96px 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% 90px 84px 96px 92px 92px 1fr}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
 }
 @media (max-width:520px){
