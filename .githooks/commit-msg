@@ -1,0 +1,13 @@
+#!/bin/sh
+# Refuse a message the push check would reject, before it becomes a commit.
+# Enable once per clone: git config core.hooksPath .githooks
+set -e
+
+# A merge message is git's own, and the range check skips merge commits too.
+if [ -f "$(git rev-parse --git-path MERGE_HEAD)" ]; then
+    exit 0
+fi
+
+py=python3
+command -v "$py" >/dev/null 2>&1 || py=python
+exec "$py" build/check_commits.py --message-file "$1"

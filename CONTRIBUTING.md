@@ -34,6 +34,8 @@ price ends on the same pixel.
 Every commit is authored by Lyden Yardley
 <lydenyardley@users.noreply.github.com>. Do not add co-author trailers,
 generated-with lines, or tool attribution to commit messages.
+`build/check_commits.py` refuses all three, so a message with one fails in the
+hook below and again on the push.
 
 ## Data
 
@@ -66,12 +68,18 @@ so an old cached page can still load them.
   sorting, filtering or the compare table.
 - Review the diff and fix what that review finds before committing.
 - Keep commits small and logical, one concern each.
+- Enable the message hook once per clone. It runs the same rules as the push,
+  so a bad subject fails while it is still one edit away:
+
+  ```bash
+  git config core.hooksPath .githooks
+  ```
 
 ## Pull requests
 
-CI runs `build/check_commits.py` over every commit in a pull request, and
-`build/check.py` on every pull request and every push to `main`. To run them
-locally:
+CI runs `build/check_commits.py` over every commit in a pull request and over
+every commit a push to `main` brings, and `build/check.py` on every pull request
+and every push to `main`. To run them locally:
 
 ```bash
 python build/check_commits.py origin/main..HEAD

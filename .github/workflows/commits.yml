@@ -3,6 +3,8 @@ name: Commits
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -16,4 +18,24 @@ jobs:
         with:
           fetch-depth: 0
       - name: Check every commit in the pull request
+        if: github.event_name == 'pull_request'
         run: python3 build/check_commits.py "${{ github.event.pull_request.base.sha }}..HEAD"
+      # Every commit here has landed on main directly, so the pull request
+      # trigger alone never sees one. A push checks the commits it pushed.
+      #
+      # Messages written before this check existed are not re-litigated. A
+      # rewrite of published history is not on the table, and a permanently red
+      # run teaches people to ignore the run, so the range starts at the commit
+      # that added the check, or at the previous tip when that is later.
+      - name: Check every commit in the push
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          BASE=$(git log -1 --format=%H -- .github/workflows/commits.yml)
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
+            || git merge-base --is-ancestor "$BEFORE" "$BASE"; then
+            BEFORE=$BASE
+          fi
+          python3 build/check_commits.py "$BEFORE..$AFTER"

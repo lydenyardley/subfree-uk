@@ -1,0 +1,3 @@
+# A shell script with a carriage return in its shebang does not run on macOS
+# or Linux, and core.autocrlf would give a Windows checkout exactly that.
+.githooks/* text eol=lf
