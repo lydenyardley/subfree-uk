@@ -16,26 +16,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # The whole history, so the range below has both ends to walk. A
+          # shallow clone leaves the base commit missing and the check passes
+          # a range it never saw.
           fetch-depth: 0
-      - name: Check every commit in the pull request
-        if: github.event_name == 'pull_request'
-        run: python3 build/check_commits.py "${{ github.event.pull_request.base.sha }}..HEAD"
-      # Every commit here has landed on main directly, so the pull request
-      # trigger alone never sees one. A push checks the commits it pushed.
-      #
-      # Messages written before this check existed are not re-litigated. A
-      # rewrite of published history is not on the table, and a permanently red
-      # run teaches people to ignore the run, so the range starts at the commit
-      # that added the check, or at the previous tip when that is later.
-      - name: Check every commit in the push
-        if: github.event_name == 'push'
+      - name: Check every commit this change brings
         env:
-          BEFORE: ${{ github.event.before }}
-          AFTER: ${{ github.event.after }}
+          PULL_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE: ${{ github.event.before }}
         run: |
-          BASE=$(git log -1 --format=%H -- .github/workflows/commits.yml)
-          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
-            || git merge-base --is-ancestor "$BEFORE" "$BASE"; then
-            BEFORE=$BASE
+          base="${PULL_BASE:-$PUSH_BASE}"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base=$(git rev-list --max-parents=0 HEAD | tail -1)
           fi
-          python3 build/check_commits.py "$BEFORE..$AFTER"
+          # Messages written before this check existed are not re-litigated.
+          # The first push of a branch that predates it would otherwise turn
+          # red on history the rule never saw, and a permanently red run
+          # teaches people to ignore the run. The commit that last touched
+          # this workflow is the floor; a newer base wins over it.
+          floor=$(git log -1 --format=%H -- .github/workflows/commits.yml)
+          if git merge-base --is-ancestor "$base" "$floor"; then
+            base="$floor"
+          fi
+          python3 build/check_commits.py "$base..HEAD"
