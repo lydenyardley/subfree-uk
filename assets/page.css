@@ -81,15 +81,6 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
 select{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}
 .count{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}
 .cap{display:inline-block;margin-left:.4rem;color:var(--v-avoid);font-weight:600}
-/* The key to the row colours. The badge text is the signal; this says what the
-   colour beside it means, so a reader who cannot see the colour still knows.
-   A phone shows the three coloured lines of the short answer instead, where
-   the key would only repeat them. */
-.vkey{display:none;flex-wrap:wrap;gap:.35rem 1.5rem;margin:0 0 .75rem;font:13px/1.45 var(--sans);color:var(--ink2)}
-@media (min-width:521px){.vkey{display:flex}}
-.vkey span{display:inline-flex;align-items:center;gap:.45rem}
-.vkey span::before{content:"";flex:none;width:9px;height:9px;background:var(--vc)}
-.vkey b{font-weight:600;color:var(--ink)}
 .count button.link{position:relative;padding:10px 6px;margin:-10px -6px}
 button.link{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}
 table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
@@ -100,8 +91,8 @@ table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
    a 26px box beside the word took the width the heading needed and left it
    five lines deep. Its box is still 24px, the smallest a target may be, but
    its negative margins give the heading back the 8px the glyph does not use. */
-.main-t thead th .mk{display:grid;place-items:center;flex:none;align-self:flex-end;width:24px;height:24px;margin:-4px -8px -4px 0;font:600 11px/1 var(--sans);color:var(--ink3);text-decoration:none}
-.main-t thead th .mk:hover{color:var(--acc);text-decoration:underline}
+.main-t thead th .mk{display:grid;place-items:center;flex:none;align-self:flex-end;width:24px;height:24px;margin:-4px -8px -4px 0;font:600 11px/1 var(--sans);color:var(--ink3)}
+.main-t thead th .mk:hover{color:var(--acc)}
 .main-t thead th button:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 /* The sort mark: two triangles, the direction the next click takes you in at
    full strength and the other one pale. An unsorted column shows both pale, so
@@ -127,12 +118,12 @@ table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
 .buy:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 td.num{white-space:nowrap}
 /* The compare column is named, so a bare box in a column is not a puzzle. The
-   header carries the name for a screen reader and an icon for the eye, which
-   is narrower than the word and keeps the box in the middle of its cell;
-   on a phone the header is gone and each box carries its own caption. */
+   header carries the name for a screen reader and a ticked box for the eye,
+   which is narrower than the word and keeps the box in the middle of its
+   cell; on a phone the header is gone and each box carries its own caption. */
 .main-t th.c-cmp,.main-t td.c-cmp{text-align:center;width:2.5rem;padding-left:0.5rem!important;padding-right:0.5rem!important}
 .main-t thead th.c-cmp{justify-content:center}
-.cmp-i{display:block;width:18px;height:13px;margin:0 auto;fill:none;stroke:currentColor;stroke-width:1.5}
+.cmp-i{display:block;width:18px;height:18px;margin:0 auto;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .cmp-cap{display:none}
 /* The label is the hit area, not the box: the box stays 15px, the target
    around it is 44px on a phone. */
@@ -230,7 +221,7 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-scroll:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .cmp-t th,.cmp-t td{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}
 .cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{background:var(--tint)}
-.cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}
+.cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:3px solid var(--ink);min-width:200px}
 /* The header's name travels from the row's name, so the two boxes are meant to
    be the same shape. As a block the name is as wide as its column, and the
    flight stretched the row's 130px of text across 320px on the way. */
@@ -239,12 +230,12 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-photo img{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
 .cmp-t tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
 /* The row colours travel into the comparison: the same verdict, on the column
-   that is the model. It is said once, under the column's header: a rule down
-   the side of every cell read as the column before it and repeated the colour
-   fourteen times. The badge above still names the verdict, so colour is not
-   the only signal. */
+   that is the model. It is said once, as the badge under the column's header:
+   a rule down the side of every cell read as the column before it, and a
+   coloured rule under the header made two columns with the same verdict look
+   different weights. The header rule is the page's ink, the same 3px as the
+   verdict lines elsewhere, so colour is not the only signal. */
 .cmp-t [data-v=best]{--vc:var(--v-best)} .cmp-t [data-v=batt]{--vc:var(--v-batt)} .cmp-t [data-v=avoid]{--vc:var(--v-avoid)}
-.cmp-t thead th[data-v]{border-bottom:3px solid var(--vc)}
 .cmp-t thead .vtag{padding-top:.3rem;font-size:11px;white-space:normal}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tray{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}
@@ -282,6 +273,13 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
  @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){animation:none!important}}
 /* footer */
 section.method{display:grid;grid-template-columns:1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
+/* Above the widest layout the sources sit in the second column, beside the
+   working they belong to, rather than adding 900px to the foot of the page. */
+@media (min-width:1101px){
+ section.method{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);align-items:start}
+ section.method>details.srcs{margin-top:0}
+ .srcs .fns-wrap{columns:1}
+}
 section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}
 section.method p{margin:0 0 1rem;max-width:80ch}
 section.method p a{color:var(--ink2)}
@@ -392,7 +390,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  tr.detail td{padding:1rem;margin-top:0}
  .dgrid{grid-template-columns:1fr}
  .ph-lg{width:120px!important;height:160px!important;margin-bottom:1rem}
- section.method{grid-template-columns:1fr} .fns-wrap{columns:1}
+ .fns-wrap{columns:1}
  .cmp-t th,.cmp-t td{padding:0.5rem 1rem;font-size:13px}
  .cmp-t thead th{min-width:140px;font-size:14px}
  .cmp-t tbody th{width:76px;min-width:76px;font-size:11px;position:sticky;left:0;background:var(--paper)}

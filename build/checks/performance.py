@@ -56,7 +56,10 @@ def perf_check(page):
                 for (let i = 0; i < 3; i++) {
                     if (!document.getElementById('compare').hidden) {
                         document.getElementById('cmp-close').click();
-                        await new Promise((r) => setTimeout(r, 500));
+                        // The close flies too, so wait for it to land before
+                        // timing an open: a transition already running is
+                        // skipped whole.
+                        await new Promise((r) => setTimeout(r, 700));
                     }
                     const from = long.length;
                     const t = performance.now();
@@ -84,7 +87,10 @@ def perf_check(page):
                 for (let i = 0; i < 3; i++) {
                     if (!document.getElementById('compare').hidden) {
                         document.getElementById('cmp-close').click();
-                        await new Promise((r) => setTimeout(r, 500));
+                        // The close flies too, so wait for it to land before
+                        // timing an open: a transition already running is
+                        // skipped whole.
+                        await new Promise((r) => setTimeout(r, 700));
                     }
                     const t = performance.now();
                     document.getElementById('tray-go').click();

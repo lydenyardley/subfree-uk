@@ -106,20 +106,25 @@ def marks_check(page):
         problems.append(f"a paywall cell is marked: {state['paywall']}")
     if not any(cell["text"].startswith("None") for cell in state["plan"]):
         problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
-    # The verdict a row carries travels into the comparison once, under its
-    # column's header, and the badge above names it. A rule down the side of
-    # every cell read as the previous column's edge, so no cell carries one.
+    # The verdict a row carries travels into the comparison once, as the badge
+    # under its column's header. The header rule is the page's ink at the 3px of
+    # every other verdict line, so two columns with the same verdict cannot end
+    # up looking like different weights. A rule down the side of every cell read
+    # as the previous column's edge, so no cell carries one.
     tone = page.evaluate(
         """() => {
             const ids = Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value);
             const body = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
             const heads = Array.from(document.querySelectorAll('#cmp-table thead th')).slice(1);
             const sides = (tr) => Array.from(tr.children).slice(1).map((c) => getComputedStyle(c).borderLeftWidth);
+            const rules = Array.from(document.querySelectorAll('#cmp-table thead th')).map((th) => {
+                const s = getComputedStyle(th);
+                return s.borderBottomWidth + ' ' + s.borderBottomColor;
+            });
             return {
                 columns: heads.map((th, i) => {
                     const id = ids[i];
                     const main = document.getElementById('m-' + id);
-                    const s = getComputedStyle(th);
                     const rowTag = main ? main.querySelector('.vtag') : null;
                     const headTag = th.querySelector('.vtag');
                     return {
@@ -127,11 +132,11 @@ def marks_check(page):
                         rowTone: main ? main.getAttribute('data-v') : null,
                         tone: th.getAttribute('data-v'),
                         tag: headTag ? headTag.textContent.trim() : '',
-                        rowTag: rowTag ? rowTag.textContent.trim() : '',
-                        border: s.borderBottomWidth,
-                        colour: s.borderBottomColor
+                        rowTag: rowTag ? rowTag.textContent.trim() : ''
                     };
                 }),
+                ink: getComputedStyle(document.body).color,
+                rules: Array.from(new Set(rules)),
                 cellBorders: Array.from(new Set(body.flatMap(sides)))
             };
         }"""
@@ -141,20 +146,15 @@ def marks_check(page):
             problems.append(
                 f"{column['id']}'s column carries {column['tone']!r}, its row {column['rowTone']!r}"
             )
-        if column["tone"]:
-            if column["tag"] != column["rowTag"]:
-                problems.append(
-                    f"{column['id']}'s column badge reads {column['tag']!r}, its row {column['rowTag']!r}"
-                )
-            if column["border"] != "3px" or "rgba(0, 0, 0, 0)" in column["colour"]:
-                problems.append(
-                    f"{column['id']}'s header carries no colour rule: "
-                    f"{column['border']} {column['colour']}"
-                )
-        elif column["border"] == "3px":
+        if column["tone"] and column["tag"] != column["rowTag"]:
             problems.append(
-                f"{column['id']} has no verdict, so its header should carry no colour rule"
+                f"{column['id']}'s column badge reads {column['tag']!r}, its row {column['rowTag']!r}"
             )
+    if tone["rules"] != [f"3px {tone['ink']}"]:
+        problems.append(
+            f"the comparison's header rules are {tone['rules']}, not one 3px rule "
+            f"in the page's ink {tone['ink']}"
+        )
     if tone["cellBorders"] != ["0px"]:
         problems.append(
             f"cells in the comparison carry a side rule: {tone['cellBorders']}"
@@ -361,7 +361,12 @@ def diff_check(page, compare_rows):
     return problems
 
 def morph_check(page):
-    """The compare panel is the tray, moved: one named pair, 240ms, guarded."""
+    """The compare panel is the tray, moved: one named pair, 240ms, guarded.
+
+    The three ticked rows' names and photos fly into their columns and back out
+    again, so both frames are asserted: which half carries each name, and that
+    the other half is out of the picture for the length of the movement.
+    """
     problems = []
     page.emulate_media(reduced_motion="no-preference")
     page.evaluate(
@@ -400,7 +405,7 @@ def morph_check(page):
     # Opening: one transition, 240ms, and the tray's box is now the panel's.
     page.evaluate(
         """() => {
-            window.__vt = { calls: 0, last: null };
+            window.__vt = { calls: 0, last: null, log: [] };
             window.__vtReal = document.startViewTransition;
             const real = window.__vtReal.bind(document);
             // What the two frames say: which half of each pair carries the name,
@@ -421,6 +426,7 @@ def morph_check(page):
                 return real(() => {
                     cb();
                     window.__vt.last = { before, after: frame() };
+                    window.__vt.log.push(window.__vt.last);
                 });
             };
         }"""
@@ -534,7 +540,17 @@ def morph_check(page):
         )
 
     page.evaluate("() => document.getElementById('cmp-close').click()")
-    page.wait_for_timeout(400)
+    page.wait_for_timeout(60)
+    leaving_anim = page.evaluate(
+        """() => ({
+            groups: Array.from(new Set(document.getAnimations({ subtree: true })
+                .map((a) => a.effect.pseudoElement || '')
+                .filter((p) => p.indexOf('::view-transition-group(cmp-n-') === 0
+                    || p.indexOf('::view-transition-group(cmp-p-') === 0)
+                .map((p) => p.slice('::view-transition-group('.length, -1)))).sort()
+        })"""
+    )
+    page.wait_for_timeout(340)
     closed = page.evaluate(
         """() => ({
             vt: window.__vt.calls,
@@ -546,6 +562,58 @@ def morph_check(page):
         problems.append(f"closing ran {closed['vt']} transitions in total, expected 2")
     if not closed["tray"] or closed["panel"]:
         problems.append(f"closing did not give the tray back: {closed}")
+
+    # Closing runs the same six pairs the other way: the header's copy carries
+    # each name while the open frame is captured, the row's copy in the frame
+    # after the panel goes. A one-way flight would leave the rows to fade in
+    # under names that never left.
+    reverse = page.evaluate("() => window.__vt.log[1]")
+    if not reverse:
+        problems.append("closing ran no transition to record")
+    else:
+        leaving, arriving = reverse["before"], reverse["after"]
+        if len(leaving["head"]) != 6:
+            problems.append(
+                f"{len(leaving['head'])} header parts are named before the close, expected 6"
+            )
+        if [part for part in leaving["table"] if part[0] != "none"]:
+            problems.append(f"the rows are still named before the close: {leaving['table']}")
+        painted = [part for part in leaving["table"] if part[1] != "hidden"]
+        if painted:
+            problems.append(
+                f"{len(painted)} row parts are painted in place while the panel closes"
+            )
+        if len([part for part in arriving["table"] if part[0] != "none"]) != 6:
+            problems.append(
+                f"{len([p for p in arriving['table'] if p[0] != 'none'])} row parts are "
+                "named in the closing frame, expected 6"
+            )
+        if [part for part in arriving["head"] if part[0] != "none"]:
+            problems.append(f"the header is still named after the close: {arriving['head']}")
+        if not leaving["head"] or {part[0] for part in leaving["head"]} != {
+            part[0] for part in arriving["table"] if part[0] != "none"
+        }:
+            problems.append("the names on the header and on the rows do not pair up on the way back")
+        page.wait_for_timeout(400)
+        back = page.evaluate(
+            """() => ({
+                named: Array.from(document.querySelectorAll(
+                    '#tbl .mname, #tbl .ph-sm, #cmp-table thead .cmp-name, #cmp-table thead .cmp-photo img'
+                )).filter((e) => getComputedStyle(e).viewTransitionName !== 'none').length,
+                hidden: Array.from(document.querySelectorAll(
+                    '#tbl .mname, #tbl .ph-sm, #cmp-table thead .cmp-name, #cmp-table thead .cmp-photo img'
+                )).filter((e) => getComputedStyle(e).visibility === 'hidden').length
+            })"""
+        )
+        if back["named"] or back["hidden"]:
+            problems.append(f"closing left names or hidden parts behind: {back}")
+    # A name on the right element and no captured group is a flight that never
+    # happened, so the close is held to the same evidence as the open.
+    if leaving_anim["groups"] != expected:
+        problems.append(
+            f"the rows' names and photos were not captured on the way back: "
+            f"{leaving_anim['groups']}, expected {expected}"
+        )
 
     # Clear lives in the panel because the tray is not on screen while it is open,
     # and the button that is about to vanish cannot keep focus.
@@ -730,9 +798,9 @@ def compare_label_check(page):
     """The compare box is named, on a wide screen and on a phone.
 
     A bare box in a column of boxes is a puzzle. The wide layout names the
-    column for a screen reader and shows an icon, and the column is no wider
-    than that icon needs: a word there took width from every other column. The
-    phone card has no header, so the box carries its own caption, in the same
+    column for a screen reader and shows the box it stands for, ticked, and the
+    column is no wider than that mark needs: a word there took width from every
+    other column. The phone card has no header, so the box has its own caption, in the same
     muted style as the other figures in the card. The caption is inside the
     label, so a tap on the word counts the row.
     """
@@ -751,9 +819,11 @@ def compare_label_check(page):
                 const r = el.getBoundingClientRect();
                 return (r.left + r.right) / 2;
             };
+            const box2 = icon ? icon.getBoundingClientRect() : null;
             return {
                 text: name ? (name.textContent || '').trim() : '',
-                icon: icon ? Math.round(icon.getBoundingClientRect().width) : 0,
+                icon: box2 ? Math.round(box2.width) : 0,
+                iconHeight: box2 ? Math.round(box2.height) : 0,
                 iconHidden: icon ? icon.getAttribute('aria-hidden') : '',
                 width: Math.round(th.getBoundingClientRect().width),
                 off: box && cell ? Math.round(mid(box) - mid(cell)) : 99
@@ -767,6 +837,12 @@ def compare_label_check(page):
             problems.append(f"the compare column header is named {head['text']!r}")
         if head["icon"] < 12:
             problems.append(f"the compare column's icon is {head['icon']}px wide")
+        # The mark is a box, not the two panels it used to be: a square reads as
+        # the checkbox the column is made of.
+        if abs(head["icon"] - head["iconHeight"]) > 2:
+            problems.append(
+                f"the compare column's icon is {head['icon']}x{head['iconHeight']}px, not a square"
+            )
         if head["iconHidden"] != "true":
             problems.append("the compare column's icon is not marked decorative")
         # The column is only as wide as the box and its icon need; the word it
@@ -886,7 +962,7 @@ def compare_cells(rows):
 CHECKS = [
     Check(
         "compare morph", "desktop", 37,
-        "the tray becomes the compare header over 240ms, and the ticked rows' names and photos fly into their columns",
+        "the tray becomes the compare header over 240ms, and the ticked rows' names and photos fly into their columns and back",
         lambda ctx: morph_check(ctx.page),
     ),
     Check(

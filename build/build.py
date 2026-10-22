@@ -297,12 +297,11 @@ page=f'''<!doctype html>
 <div class="cmp-wrap"><div class="cmp-scroll" tabindex="0" role="region" aria-label="Comparison table, scrolls sideways"><table class="cmp-t" id="cmp-table"></table></div></div>
 </section>
 
-<p class="vkey" id="vkey"><span class="v-best"><b>Green</b>: a best pick that records without paying</span><span class="v-batt"><b>Blue</b>: the best battery pick</span><span class="v-avoid"><b>Red</b>: avoid if you will not pay a monthly plan</span></p>
 <div id="totop-s" aria-hidden="true"></div>
 <div class="tbl-w"><div class="prog" aria-hidden="true"><i></i></div>
 <table class="main-t" id="tbl" tabindex="-1">
 <thead><tr>
-<th scope="col" class="c-cmp"><span class="vh">Compare</span><svg class="cmp-i" viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect x="1.75" y="1.75" width="6" height="10.5" rx="1"/><rect x="12.25" y="1.75" width="6" height="10.5" rx="1"/></svg></th>
+<th scope="col" class="c-cmp"><span class="vh">Compare</span><svg class="cmp-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect x="1.75" y="1.75" width="16.5" height="16.5" rx="2"/><path d="M5.5 10.4l3.1 3.1 5.9-6.3"/></svg></th>
 <th scope="col" data-sort="model" aria-sort="none"><button type="button">Model{SI}</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?{SI}</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price{SI}</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features{SI}</button></th>
 <th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3-year cost, no plan, footnote a">3-year cost, no plan{SI}</button><a class="mk" href="#m-a" aria-label="How the 3-year cost without a plan is worked out">a</a></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3-year cost, with plan, footnote b">3-year cost, with plan{SI}</button><a class="mk" href="#m-b" aria-label="How the 3-year cost with a plan is worked out">b</a></th><th scope="col">Main catch</th>
 </tr></thead>
@@ -311,7 +310,7 @@ page=f'''<!doctype html>
 <p class="empty" id="empty" hidden><span id="empty-txt">Nothing matches those filters.</span> <button type="button" class="link" id="near" hidden></button> <button type="button" class="link" id="empty-reset">Reset filters</button></p>
 
 <section class="method" id="method">
-<div>
+<div class="method-copy">
 <h2>How we worked it out</h2>
 <p id="m-a"><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
 <p id="m-b"><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
@@ -319,8 +318,8 @@ page=f'''<!doctype html>
 <p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>2.4 GHz only</i> means the doorbell cannot join a 5 GHz network, so it will not show up on a phone that is on 5 GHz. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
 <p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything not yet confirmed is listed under <i>Not yet verified</i> in each model's details.</p>
 <p>Photos are the manufacturers' own, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
-<details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </div>
+<details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
 <footer class="foot">
 <p>Last checked {CHECKED}. {len(ROWS)} UK doorbells, no affiliate links, no tracking. <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>

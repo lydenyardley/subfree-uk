@@ -277,14 +277,20 @@ $$('input.cmp').forEach(function(c){c.addEventListener('change',cmpChange)});
 function morphRow(id,mode){
  var row=document.getElementById('m-'+id);
  var th=document.querySelector('#cmp-table thead th[data-id="'+id+'"]');
- if(!row||!th)return;
+ // A row hidden by a filter has no box to name, and a named box that is not
+ // there would only cost a capture that never happens.
+ if(!row||!th||row.hidden)return;
  [[row.querySelector('.mname'),th.querySelector('.cmp-name'),'cmp-n-'+id],
   [row.querySelector('.ph-sm'),th.querySelector('.cmp-photo img'),'cmp-p-'+id]].forEach(function(pair){
   var from=pair[0],to=pair[1],name=pair[2];
   if(!from||!to)return;
   from.style.viewTransitionName=mode==='table'?name:'';
   to.style.viewTransitionName=mode==='head'?name:'';
+  // The half that is not carrying the name is the one painted in place, so it
+  // is taken out of the picture; both sides are cleared by 'off', including the
+  // header's, or the next open would land its name on a hidden box.
   from.style.visibility=mode==='head'?'hidden':'';
+  to.style.visibility=mode==='table'?'hidden':'';
  });
 }
 // A name may sit on one element only, so a transition that starts before the
@@ -323,14 +329,23 @@ function showCompare(){
  }else go(!reduce.matches);
  say('Side-by-side comparison of '+sel().length+' doorbells');
 }
+// Closing runs the same pairs back: the header's copy carries the name while
+// the open frame is captured, the row's copy in the frame after the panel goes.
+// Anything else would have the row fade in under a name that never left.
 function closeCompare(){
  if($('#compare').hidden)return;
+ var ids=sel(),fly=!!(document.startViewTransition&&!reduce.matches);
  landRows();
  var go=function(){
   $('#compare').hidden=true;tray();
   if(!$('#tray').hidden)$('#tray-go').focus({preventScroll:true});
  };
- if(document.startViewTransition&&!reduce.matches)document.startViewTransition(go);else go();
+ if(!fly){go();return}
+ flying=ids.slice();
+ ids.forEach(function(id){morphRow(id,'head')});
+ var vt=document.startViewTransition(function(){ids.forEach(function(id){morphRow(id,'table')});go()});
+ setTimeout(landRows,700);
+ if(vt.finished&&vt.finished.then)vt.finished.then(landRows,landRows);
 }
 function clearAll(){
  // Both Clear buttons are about to be hidden, so focus needs somewhere real.

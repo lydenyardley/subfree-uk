@@ -326,9 +326,15 @@ def sources_check(page, source_count):
                         .filter((a) => !a.href.toLowerCase().includes(g.querySelector('h3').textContent.trim()))
                         .map((a) => a.href)
                 }));
+                const copy = box.closest('section.method').querySelector('.method-copy');
+                const b = box.getBoundingClientRect();
+                const c = copy.getBoundingClientRect();
                 return {
                     inMethod: !!box.closest('section.method'),
-                    lastBlock: !!box.previousElementSibling && box.previousElementSibling.tagName === 'P',
+                    // Above the widest layout the list is a column of its own,
+                    // beside the working; on a phone it follows it.
+                    beside: b.left >= c.right - 1 && Math.abs(b.top - c.top) <= 2,
+                    below: b.top >= c.bottom - 1,
                     visible: box.getClientRects().length > 0,
                     fits,
                     tag: box.tagName,
@@ -396,10 +402,14 @@ def sources_check(page, source_count):
     for where, state in (("1280px", wide), ("390px", phone)):
         if not state["inMethod"]:
             problems.append(f"the source list is not with the working at {where}")
-        if not state["lastBlock"]:
-            problems.append(f"the source list does not end the working at {where}")
         if not state["visible"]:
             problems.append(f"the source list is not on screen at {where}")
+    if not wide["beside"] or wide["below"]:
+        problems.append(
+            f"the source list is not beside the working at 1280px: {wide['beside']}"
+        )
+    if not phone["below"]:
+        problems.append("the source list does not sit under the working on a phone")
     if phone["tag"] != "DETAILS" or wide["tag"] != "DETAILS":
         problems.append(f"the source list is a {phone['tag']}, not a disclosure")
     if phone["open"]:
@@ -797,67 +807,6 @@ def price_link_check(page):
     numeric = [name for name in state["sourceNames"] if len(name) < 4 or name.isdigit()]
     if numeric:
         problems.append(f"the details name their sources by number: {numeric[:3]}")
-    return problems
-
-def page_key_check(page):
-    """The row colours are explained in words, where the rows are.
-
-    A green, blue and red rule down the left of a row carries a verdict, and a
-    reader who cannot tell the three apart still needs to know what the colour
-    beside the badge means. On a phone the three coloured lines of the short
-    answer say the same thing, so the key would only repeat them.
-    """
-    problems = []
-    page.set_viewport_size({"width": 1280, "height": 900})
-    page.wait_for_timeout(150)
-    wide = page.evaluate(
-        """() => {
-            const k = document.getElementById('vkey');
-            if (!k) return null;
-            const cs = getComputedStyle(k);
-            return {
-                display: cs.display,
-                text: k.textContent.replace(/\\s+/g, ' ').trim(),
-                marks: k.querySelectorAll('span').length
-            };
-        }"""
-    )
-    if wide is None:
-        problems.append("the page has no key to its row colours")
-    elif wide["display"] == "none":
-        problems.append("the row-colour key is hidden at 1280px")
-    else:
-        for word in ("Green", "Blue", "Red"):
-            if word not in wide["text"]:
-                problems.append(f"the row-colour key never says {word!r}: {wide['text']!r}")
-        if wide["marks"] != 3:
-            problems.append(f"the row-colour key has {wide['marks']} entries, expected 3")
-        if "colour" in wide["text"].lower() or "bold" in wide["text"].lower():
-            problems.append("the row-colour key describes the styling rather than the verdict")
-    page.set_viewport_size({"width": 390, "height": 844})
-    page.wait_for_timeout(200)
-    narrow = page.evaluate(
-        """() => {
-            const k = document.getElementById('vkey');
-            const short = document.querySelector('.vshort');
-            const lines = short ? Array.from(short.querySelectorAll('span')) : [];
-            return {
-                key: k ? getComputedStyle(k).display : 'missing',
-                short: short ? getComputedStyle(short).display : 'missing',
-                lines: lines.filter((s) => !s.classList.contains('vlab')).length,
-                text: short ? short.textContent.replace(/\\s+/g, ' ').trim() : ''
-            };
-        }"""
-    )
-    if narrow["key"] != "none":
-        problems.append(f"the key is {narrow['key']!r} at 390px, where the short answer carries it")
-    if narrow["short"] == "none" or narrow["lines"] < 3:
-        problems.append(f"the phone short answer has {narrow['lines']} lines: {narrow['short']!r}")
-    for word in ("best", "battery", "plan"):
-        if word not in narrow["text"].lower():
-            problems.append(f"the phone short answer never says {word!r}")
-    page.set_viewport_size({"width": 1280, "height": 900})
-    page.wait_for_timeout(150)
     return problems
 
 def details_check(page):
@@ -1591,11 +1540,6 @@ CHECKS = [
         "price links", "compare", 49,
         "every price opens the page it came from, and the details name their sources by shop",
         lambda ctx: price_link_check(ctx.page),
-    ),
-    Check(
-        "page key", "compare", 50,
-        "the row colours are explained in words at 1280 and by the phone's three lines at 390",
-        lambda ctx: page_key_check(ctx.page),
     ),
     Check(
         "details panel", "compare", 51,

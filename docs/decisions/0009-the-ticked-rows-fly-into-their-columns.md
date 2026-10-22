@@ -42,6 +42,13 @@ so `.cmp-name` is now as wide as its text. The photos already matched at
 
 The pairs run on the tray's 240ms curve, so the open is one movement.
 
+Closing runs the same six pairs in reverse. The header's copies carry the names
+while the open frame is captured; the update callback hides the panel, gives
+the names back to the rows' copies and takes the header's out of the picture.
+The same 700ms backstop clears both sides. A pair whose row is hidden by a
+filter is never named: its header copy stays visible and the panel closes
+without a flight for that model, rather than flying to a box that is not there.
+
 ## Consequences
 
 - `compare morph` asserts the two frames: six parts named on the rows before
@@ -51,7 +58,9 @@ The pairs run on the tray's 240ms curve, so the open is one movement.
   became a snapshot still reads back from the element, and only the group
   proves the pair travelled.
 - A change that skips a frame, names both halves at once, captures fewer
-  parts or leaves a name behind fails the build.
+  parts or leaves a name behind fails the build, on the way in and on the way
+  out. The close is asserted from the recorded frames: six pairs on the header
+  before it, six on the rows after it, and none left once the panel has gone.
 - A model with no photo pairs one name only.
 - `prefers-reduced-motion` and browsers without the API skip the whole thing:
   the rows are never named, and the panel opens without movement.

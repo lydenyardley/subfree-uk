@@ -106,6 +106,11 @@ answer's three coloured lines carry it instead, which is finding 8's fix.
 not describe the styling rather than the verdict, and that at 390 the key is
 gone and the three lines are there.
 
+*Reverted on 22 October 2026, at the owner's request: the key did not earn its
+space, because every badge already names its verdict in words and the
+comparison's header rule is now the page's ink rather than a second colour
+code. `#vkey`, its styles and the `page key` check are gone.*
+
 **Dark mode dims the photo tiles (16).** `--imgbg` is `#2b2a28` in both dark
 rules with `--imgf:brightness(.78)`, and the free-features bar's track uses
 `--rule` rather than `--rule2`. `theme toggle` switches to dark, reads the tile
