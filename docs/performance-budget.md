@@ -147,6 +147,14 @@ only then paints the panel. The panel's first paint therefore waits for one
 snapshot it did not wait for before, which is one to two frames at this
 throttle. The page's own share is the 18-row render, 4 to 20ms.
 
+Only the named pair is captured: the stylesheet turns the root's transition
+name off, so the page behind the tray is not rendered into a picture and no
+whole-page cross-fade runs. That picture is rarely the expensive part of a
+transition, and here it is not measurable either way: four opens per run, with
+and without the rule, give 93 to 249ms and 131 to 212ms, two sets that overlap
+across two runs on a quiet and then a loaded machine. The rule stands on what
+it stops doing, not on a number, and the budget below is unchanged.
+
 Measured over three opens per run: 52 to 122ms warm across twelve runs, and 119
 to 171ms on the first open of a session, which pays the snapshot pipeline's
 warm-up. The spread tracks machine load, which is why the check takes the
@@ -155,6 +163,18 @@ the line at which the capture has become a stall rather than a frame; a change
 that doubles the page's share lands well past it. With the desktop rows
 uncontained the same open measured 187ms, since the transition captures a page
 that has just laid every row out.
+
+## Why the back-to-top button listens to scroll
+
+The button appears once the reader is past the sentinel above the table. An
+`IntersectionObserver` looks like the cheaper way to know, and it was the first
+version: it reports a *change* in intersection, so a jump from above the
+sentinel to below it — End, a link that restores a scroll position, a tab
+switch — never crosses it, and the button stayed hidden exactly when the reader
+had scrolled furthest. The listener reads one rectangle through
+`requestAnimationFrame`, so a burst of scroll events costs one layout read a
+frame, and the boolean it writes is the same on every frame where nothing has
+moved, so the assignment reflects no attribute change.
 
 ## Why the stylesheet and script are separate files
 

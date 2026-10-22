@@ -1,7 +1,7 @@
 # Working notes for agents
 
 This repo is one generated page plus its dataset. `build/build.py` is the only
-source: `index.html`, the `doorbells.html` redirect, `assets/page.css`,
+source: `index.html`, the `doorbells.html` redirect, `404.html`, `assets/page.css`,
 `assets/page.js`, `data/doorbells.csv` and `data/doorbells.md` are generated
 from `ROWS`. Run `python build/check.py` before committing.
 
