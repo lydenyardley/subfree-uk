@@ -1,0 +1,780 @@
+"""The comparison view, from the tray it grows out of to the table it becomes."""
+from .context import SHORTLIST_IDS, open_compare
+from .registry import Check
+
+
+def costrow_check(page, row_count, cells):
+    """The compare table opens with a row that does the 3-year subtraction."""
+    problems = []
+    state = page.evaluate(
+        """() => {
+            const row = document.querySelector('#cmp-table tr.cmp-cost');
+            return {
+                label: row ? row.querySelector('th').textContent : '',
+                cells: row ? Array.from(row.querySelectorAll('td')).map((td) => td.textContent) : [],
+                rows: document.querySelectorAll('#cmp-table tbody tr').length
+            };
+        }"""
+    )
+    if state["label"] != "Cheapest way to record for 3 years":
+        problems.append(f"the compare cost row is labelled {state['label']!r}")
+    if state["cells"] != cells:
+        problems.append(f"compare cost row reads {state['cells']}, expected {cells}")
+    if state["rows"] != row_count:
+        problems.append(
+            f"the compare table has {state['rows']} body rows, expected {row_count}"
+        )
+    return problems
+
+def marks_check(page):
+    """The comparison marks what is missing, and leaves good news unmarked.
+
+    A missing feature is worth a reader's attention, so it is coloured. The
+    two rows where "None" is good news, the plan row and the paywall row, are
+    left alone: a doorbell with no plan and nothing held back is the cheapest
+    option on the page, and painting it red would warn the reader off it.
+    """
+    problems = []
+    page.evaluate(
+        """() => {
+            const ids = ['ring', 'reo-poe', 'aqara-g4'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    if page.evaluate("() => document.getElementById('compare').hidden"):
+        page.click("#cmp-inline")
+        page.wait_for_timeout(300)
+    state = page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
+            const row = (label) => rows.find(
+                (tr) => { const th = tr.querySelector('th'); return th && th.textContent === label; }
+            );
+            const cells = (label) => {
+                const tr = row(label);
+                if (!tr) return null;
+                return Array.from(tr.querySelectorAll('td')).map((td) => {
+                    const rec = td.querySelector('.rec');
+                    return {
+                        text: td.textContent.trim().slice(0, 30),
+                        marked: !!td.querySelector('.cmp-no'),
+                        rec: rec ? rec.className : ''
+                    };
+                });
+            };
+            return {
+                rec: cells('Records free?'),
+                storage: cells('Storage'),
+                history: cells('History, no plan'),
+                plan: cells('Plans'),
+                paywall: cells('Behind the paywall')
+            };
+        }"""
+    )
+    for label in ("rec", "storage", "history", "plan", "paywall"):
+        if state[label] is None:
+            problems.append(f"the comparison has no {label} row to read")
+    if problems:
+        return problems
+    # The columns are in the table's order, not the order they were ticked,
+    # so the assertions read the cells rather than count them.
+    # The record marker is the list's own, so a "No" reads the same in both
+    # places and colour is not the only signal.
+    no = [cell for cell in state["rec"] if cell["rec"] == "rec rec-no"]
+    yes = [cell for cell in state["rec"] if cell["rec"] == "rec rec-yes"]
+    if len(no) != 1 or len(yes) != 2:
+        problems.append(f"the record markers are wrong: {state['rec']}")
+    # One of the three has no storage and no free history, and both are
+    # marked. The other two have both, and neither is marked.
+    for label in ("storage", "history"):
+        marked = [cell for cell in state[label] if cell["marked"]]
+        if len(marked) != 1 or not marked[0]["text"].startswith("None"):
+            problems.append(
+                f"the {label} row does not mark the one that is missing: {state[label]}"
+            )
+    # "None" in the plan row and the paywall row is good news, and is not
+    # marked. Reolink PoE and Aqara are both in this trio.
+    if any(cell["marked"] for cell in state["plan"]):
+        problems.append(f"a plan cell is marked: {state['plan']}")
+    if any(cell["marked"] for cell in state["paywall"]):
+        problems.append(f"a paywall cell is marked: {state['paywall']}")
+    if not any(cell["text"].startswith("None") for cell in state["plan"]):
+        problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
+    # Put the shortlist back for the checks that follow.
+    page.evaluate(
+        """() => {
+            const ids = ['tapo-td21', 'reo-poe', 'ezviz-ep3x'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    return problems
+
+def chrome_check(page):
+    """The sort control and compare table keep their declared metrics."""
+    problems = []
+    m = page.evaluate(
+        """() => {
+            const cs = (el) => el ? getComputedStyle(el) : null;
+            const sel = cs(document.getElementById('sort'));
+            const cell = cs(document.querySelector('#cmp-table tbody td'));
+            const head = cs(document.querySelector('#cmp-table thead th'));
+            const th = cs(document.querySelector('#cmp-table tbody th'));
+            return {
+                select: sel ? sel.minHeight : '',
+                cellPad: cell ? cell.paddingTop + ' ' + cell.paddingRight : '',
+                headPad: head ? head.paddingTop + ' ' + head.paddingRight : '',
+                thLine: th ? th.lineHeight : '',
+                thSize: th ? th.fontSize : ''
+            };
+        }"""
+    )
+    if m["select"] != "44px":
+        problems.append(f"the sort select is {m['select']!r} tall, expected 44px")
+    for name in ("cellPad", "headPad"):
+        if m[name] != "8px 16px":
+            problems.append(f"compare table {name} is {m[name]!r}, expected 8px 16px")
+    if m["thSize"] != "11px" or m["thLine"] != "19.2px":
+        problems.append(
+            f"compare row labels are {m['thSize']}/{m['thLine']}, expected 11px/19.2px"
+        )
+    return problems
+
+def shortlist_check(page, checked=None):
+    """Copy shortlist puts the selected models and the URL on the clipboard."""
+    problems = []
+    before = page.inner_text("#cmp-copy")
+    page.click("#cmp-copy")
+    page.wait_for_timeout(350)
+    after = page.evaluate(
+        """() => {
+            const n = document.getElementById('cmp-note');
+            return { text: n.textContent.trim(), hidden: n.hidden, role: n.getAttribute('role') };
+        }"""
+    )
+    try:
+        text = page.evaluate("() => navigator.clipboard.readText()")
+    except Exception as error:
+        text = ""
+        problems.append(f"could not read the clipboard: {error}")
+    if before != "Copy shortlist":
+        problems.append(f"the copy action reads {before!r}")
+    confirm = (
+        "Copied 3 models as Markdown, with prices and the date checked. "
+        "Paste it into a message or a note."
+    )
+    if after["text"] != confirm or after["hidden"]:
+        problems.append(f"the copy confirmation reads {after['text']!r}")
+    if after["role"] != "status":
+        problems.append(f"the copy confirmation has role {after['role']!r}")
+    required = [
+        f"SubFree UK shortlist, checked {checked}" if checked else "SubFree UK shortlist, checked",
+        "TP-Link Tapo TD21",
+        "Reolink Video Doorbell PoE",
+        "EZVIZ EP3x Pro",
+        "£44.99",
+        "£54.99",
+        "£69.99",
+        "£79.99",
+    ]
+    missing = [part for part in required if part not in text]
+    if missing:
+        problems.append(f"the shortlist is missing {missing}")
+    lines = text.split("\n")
+    if "\\n" in text:
+        problems.append("the shortlist contains literal backslash-n text instead of line breaks")
+    if len(lines) < 10 or not lines[1].startswith("http"):
+        problems.append(f"the shortlist is not laid out as lines: {lines[:3]}")
+    links = [line for line in lines if "?cmp=" in line]
+    if len(links) != 1 or not all(
+        model in links[0] for model in ("tapo-td21", "reo-poe", "ezviz-ep3x")
+    ):
+        problems.append(f"the shortlist link reads {links}")
+    if text.count("Best for:") != 3 or text.count("Main catch:") != 3:
+        problems.append("the shortlist does not give Best for and Main catch for all 3 models")
+    page.wait_for_timeout(6800)
+    if not page.evaluate("() => document.getElementById('cmp-note').hidden"):
+        problems.append("the copy confirmation does not fade after six seconds")
+    if page.inner_text("#cmp-copy") != "Copy shortlist":
+        problems.append("the copy button label changed")
+    return problems
+
+def diff_check(page, compare_rows):
+    """A differences-only view hides identical spec rows but keeps the decisions."""
+    problems = []
+    page.evaluate(
+        """() => {
+            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    # The count line is the open affordance that survives while the tray is
+    # away, so the check does not depend on the panel being closed first.
+    page.click("#cmp-inline")
+    page.wait_for_timeout(150)
+    off = page.evaluate(
+        """() => {
+            const box = document.getElementById('cmp-diff-w');
+            const rows = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
+            return {
+                hidden: box.hidden,
+                label: box.textContent.replace(/\\s+/g, ' ').trim(),
+                checked: document.getElementById('cmp-diff').checked,
+                live: document.getElementById('compare').getAttribute('aria-live'),
+                rows: rows.length,
+                shown: rows.filter((tr) => !tr.hidden).length,
+                dupes: +((document.getElementById('cmp-dupes').textContent.match(/\\d+/) || [0])[0])
+            };
+        }"""
+    )
+    if off["hidden"]:
+        problems.append("the differences-only control is hidden for a trio with identical rows")
+    if off["checked"]:
+        problems.append("the differences-only view is on before anyone asks for it")
+    if off["dupes"] < 1:
+        problems.append(f"the control counts {off['dupes']} identical rows for the Reolink trio")
+    if f"({off['dupes']} identical)" not in off["label"]:
+        problems.append(f"the control reads {off['label']!r}")
+    if off["rows"] != compare_rows or off["shown"] != compare_rows:
+        problems.append(f"the compare table starts at {off['shown']} of {off['rows']} rows")
+    if off["live"]:
+        problems.append(
+            f"the compare panel is a live region ({off['live']}); rendering eighteen rows "
+            "would read them all aloud"
+        )
+
+    page.check("#cmp-diff")
+    page.wait_for_timeout(150)
+    on = page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
+            const hidden = rows.filter((tr) => tr.hidden);
+            const same = hidden.every((tr) => {
+                const cells = Array.from(tr.querySelectorAll('td')).map((td) => td.textContent);
+                return cells.length > 1 && cells.every((v) => v === cells[0]);
+            });
+            return {
+                shown: rows.filter((tr) => !tr.hidden).length,
+                hidden: hidden.length,
+                allIdentical: same,
+                pinnedHidden: rows.filter((tr) => tr.dataset.pin && tr.hidden)
+                    .map((tr) => tr.querySelector('th').textContent),
+                pinned: rows.filter((tr) => tr.dataset.pin).length
+            };
+        }"""
+    )
+    if on["hidden"] != off["dupes"]:
+        problems.append(f"the toggle hides {on['hidden']} rows, not {off['dupes']}")
+    if on["shown"] + on["hidden"] != compare_rows:
+        problems.append(f"the table holds {on['shown'] + on['hidden']} rows after the toggle")
+    if not on["allIdentical"]:
+        problems.append("the toggle hides a row that is not identical")
+    if on["pinnedHidden"]:
+        problems.append(f"the toggle hides a decision row: {on['pinnedHidden']}")
+    if on["pinned"] != 5:
+        problems.append(f"{on['pinned']} rows are pinned, expected the cost row and four decisions")
+
+    page.uncheck("#cmp-diff")
+    page.wait_for_timeout(120)
+    if page.evaluate("() => document.querySelectorAll('#cmp-table tbody tr:not([hidden])').length") != compare_rows:
+        problems.append("unticking differences only does not restore the rows")
+
+    page.evaluate(
+        """() => {
+            const ids = ['tapo-td21', 'reo-poe', 'ezviz-ep3x'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(200)
+    page.click("#cmp-inline")
+    page.wait_for_timeout(150)
+    return problems
+
+def morph_check(page):
+    """The compare panel is the tray, moved: one named pair, 240ms, guarded."""
+    problems = []
+    page.emulate_media(reduced_motion="no-preference")
+    page.evaluate(
+        """() => {
+            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(200)
+
+    names = page.evaluate(
+        """() => ({
+            tray: getComputedStyle(document.getElementById('tray')).viewTransitionName,
+            head: getComputedStyle(document.querySelector('.cmp-head')).viewTransitionName,
+            page: getComputedStyle(document.documentElement).viewTransitionName,
+            named: Array.from(document.querySelectorAll('body *')).filter(
+                (e) => getComputedStyle(e).viewTransitionName !== 'none'
+            ).map((e) => e.id || e.className)
+        })"""
+    )
+    if names["tray"] != "cmp-tray" or names["head"] != "cmp-tray":
+        problems.append(f"the tray and the compare header do not share one name: {names}")
+    if len(names["named"]) != 2:
+        problems.append(f"{len(names['named'])} elements are named for the transition: {names['named']}")
+    # The page behind the pair is not captured. The root snapshot is the whole
+    # document rendered as a picture, and it is most of the cost of opening the
+    # comparison; only the pair needs to be caught.
+    if names["page"] != "none":
+        problems.append(
+            f"the whole page is captured for the transition, not just the pair: {names['page']!r}"
+        )
+
+    # Opening: one transition, 240ms, and the tray's box is now the panel's.
+    page.evaluate(
+        """() => {
+            window.__vt = { calls: 0 };
+            window.__vtReal = document.startViewTransition;
+            const real = window.__vtReal.bind(document);
+            document.startViewTransition = (cb) => {
+                window.__vt.calls++;
+                return real(cb);
+            };
+        }"""
+    )
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(60)
+    during = page.evaluate(
+        """() => {
+            const r = document.documentElement;
+            const anims = document.getAnimations({ subtree: true });
+            return {
+                dur: getComputedStyle(r, '::view-transition-group(cmp-tray)').animationDuration,
+                root: getComputedStyle(r, '::view-transition-old(root)').animationName,
+                named: anims.filter((a) => (a.effect.pseudoElement || '').includes('cmp-tray')).length,
+                keyframes: anims
+                    .filter((a) => a.effect.pseudoElement === '::view-transition-group(cmp-tray)')
+                    .length
+            };
+        }"""
+    )
+    page.wait_for_timeout(320)
+    opened = page.evaluate(
+        """() => ({
+            calls: window.__vt.calls,
+            tray: document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden,
+            focus: document.activeElement.id,
+            top: Math.round(document.getElementById('compare').getBoundingClientRect().top)
+        })"""
+    )
+    if opened["calls"] != 1:
+        problems.append(f"opening ran {opened['calls']} view transitions, expected 1")
+    if not opened["panel"] or not opened["tray"]:
+        problems.append(f"opening did not hand the tray's place to the panel: {opened}")
+    if during["dur"] != "0.24s" or not during["keyframes"]:
+        problems.append(f"the named group does not run 240ms: {during}")
+    if during["root"] not in ("none", ""):
+        problems.append(f"the page cross-fades behind the pair: root old animation {during['root']}")
+    if during["named"] < 3:
+        problems.append(f"only {during['named']} animations of the named pair ran")
+    if abs(opened["top"]) > 2:
+        problems.append(f"the panel opens {opened['top']}px from the top of the viewport")
+    if opened["focus"] != "cmp-h":
+        problems.append(
+            f"opening put focus on {opened['focus'] or 'nothing'}, not the panel's heading"
+        )
+
+    page.evaluate("() => document.getElementById('cmp-close').click()")
+    page.wait_for_timeout(400)
+    closed = page.evaluate(
+        """() => ({
+            vt: window.__vt.calls,
+            tray: !document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden
+        })"""
+    )
+    if closed["vt"] != 2:
+        problems.append(f"closing ran {closed['vt']} transitions in total, expected 2")
+    if not closed["tray"] or closed["panel"]:
+        problems.append(f"closing did not give the tray back: {closed}")
+
+    # Clear lives in the panel because the tray is not on screen while it is open,
+    # and the button that is about to vanish cannot keep focus.
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(350)
+    page.focus("#cmp-clear")
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(250)
+    cleared = page.evaluate(
+        """() => ({
+            checked: document.querySelectorAll('input.cmp:checked').length,
+            tray: !document.getElementById('tray').hidden,
+            panel: !document.getElementById('compare').hidden,
+            focus: document.activeElement.matches('input.cmp')
+        })"""
+    )
+    if cleared["checked"] or cleared["panel"] or cleared["tray"]:
+        problems.append(f"Clear in the panel did not empty the selection: {cleared}")
+    if not cleared["focus"]:
+        problems.append("clearing from the panel left focus on a hidden button")
+
+    # Reduced motion: the swap still happens, but nothing animates.
+    page.emulate_media(reduced_motion="reduce")
+    page.evaluate(
+        """() => {
+            const ids = ['tapo-td21', 'reo-poe'];
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = ids.indexOf(c.value) > -1;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            window.__vt.calls = 0;
+        }"""
+    )
+    page.wait_for_timeout(150)
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(300)
+    reduced = page.evaluate(
+        """() => ({ calls: window.__vt.calls, panel: !document.getElementById('compare').hidden })"""
+    )
+    if reduced["calls"] != 0:
+        problems.append("reduced motion still runs a view transition")
+    if not reduced["panel"]:
+        problems.append("reduced motion does not open the comparison")
+    page.evaluate("() => document.getElementById('cmp-close').click()")
+    page.wait_for_timeout(250)
+
+    # No API at all: the old instant swap, and the reader still gets the panel.
+    page.emulate_media(reduced_motion="no-preference")
+    page.evaluate("() => { document.startViewTransition = undefined }")
+    page.evaluate("() => document.getElementById('tray-go').click()")
+    page.wait_for_timeout(300)
+    fallback = page.evaluate(
+        """() => ({
+            api: typeof document.startViewTransition,
+            panel: !document.getElementById('compare').hidden,
+            tray: !document.getElementById('tray').hidden
+        })"""
+    )
+    if fallback["api"] != "undefined" or not fallback["panel"] or fallback["tray"]:
+        problems.append(f"without the API the panel does not open or the tray stays: {fallback}")
+
+    # Unticking below two closes the panel and leaves focus where the reader is.
+    page.focus("input.cmp[value='tapo-td21']")
+    page.evaluate(
+        """() => {
+            const c = document.querySelector("input.cmp[value='reo-poe']");
+            c.checked = false;
+            c.dispatchEvent(new Event('change', { bubbles: true }));
+        }"""
+    )
+    page.wait_for_timeout(200)
+    implicit = page.evaluate(
+        """() => ({
+            panel: !document.getElementById('compare').hidden,
+            tray: !document.getElementById('tray').hidden,
+            checked: document.querySelectorAll('input.cmp:checked').length,
+            focus: document.activeElement.value
+        })"""
+    )
+    if implicit["panel"] or not implicit["tray"] or implicit["checked"] != 1:
+        problems.append(f"unticking below two did not close the panel: {implicit}")
+    if implicit["focus"] != "tapo-td21":
+        problems.append(f"unticking below two moved focus to {implicit['focus']}")
+
+    page.evaluate(
+        """() => {
+            delete document.startViewTransition;
+            document.getElementById('cmp-close').click();
+            document.querySelectorAll('input.cmp').forEach((c) => {
+                c.checked = false;
+                c.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        }"""
+    )
+    page.wait_for_timeout(250)
+    return problems
+
+def scroller_check(page):
+    """The comparison's sideways scroll can be reached and moved by keyboard.
+
+    At 390px the panel is 516px of table in 356px, so the third column is only
+    readable by scrolling it. A named, focusable region gives a keyboard user
+    the same scroll a mouse user gets for free.
+    """
+    problems = []
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(150)
+    if page.evaluate("() => document.getElementById('compare').hidden"):
+        open_compare(page)
+        page.wait_for_timeout(250)
+    state = page.evaluate(
+        """() => {
+            const s = document.querySelector('.cmp-scroll');
+            return {
+                tab: s.tabIndex,
+                role: s.getAttribute('role'),
+                label: (s.getAttribute('aria-label') || '').trim(),
+                over: s.scrollWidth - s.clientWidth,
+                left: Math.round(s.scrollLeft)
+            };
+        }"""
+    )
+    if state["tab"] != 0:
+        problems.append(f"the comparison scroller has tabIndex {state['tab']}")
+    if state["role"] != "region" or not state["label"]:
+        problems.append(f"the comparison scroller is unnamed: {state}")
+    if state["over"] <= 0:
+        problems.append("the comparison does not overflow at 390px, so it cannot be scrolled")
+    else:
+        # The cue says the table scrolls, so it has to be where the reader looks:
+        # above the table, not a screen and a half below the column it names.
+        cue = page.evaluate(
+            """() => {
+                const cue = document.getElementById('cmp-cue');
+                const s = document.querySelector('.cmp-scroll');
+                const box = s.getBoundingClientRect();
+                const cols = Array.from(
+                    document.querySelectorAll('#cmp-table thead th')
+                ).slice(1).map((th) => {
+                    const r = th.getBoundingClientRect();
+                    return {
+                        name: (th.textContent || '').trim(),
+                        left: Math.round(r.left),
+                        right: Math.round(r.right)
+                    };
+                });
+                return {
+                    hidden: cue.hidden,
+                    text: (cue.textContent || '').trim(),
+                    top: Math.round(cue.getBoundingClientRect().top),
+                    tableTop: Math.round(box.top),
+                    edge: Math.round(box.right),
+                    cols: cols
+                };
+            }"""
+        )
+        if cue["hidden"] or not cue["text"]:
+            problems.append(f"the comparison does not say it scrolls: {cue['text']!r}")
+        else:
+            if cue["top"] > cue["tableTop"]:
+                problems.append("the scroll cue is below the table it names")
+            # It names a column that is out of sight, not one that is half in
+            # view and already readable.
+            gone = [c["name"] for c in cue["cols"] if c["left"] >= cue["edge"] - 1]
+            if gone and cue["text"] != "Swipe to see " + gone[0]:
+                problems.append(
+                    f"the scroll cue names {cue['text']!r}, not the column out of sight {gone[0]!r}"
+                )
+        page.focus(".cmp-scroll")
+        page.keyboard.press("ArrowRight")
+        page.wait_for_timeout(250)
+        moved = page.evaluate(
+            "() => Math.round(document.querySelector('.cmp-scroll').scrollLeft)"
+        )
+        if moved <= state["left"]:
+            problems.append(f"ArrowRight on the scroller left it at {moved}px")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    return problems
+
+def compare_label_check(page):
+    """The compare box is named, on a wide screen and on a phone.
+
+    A bare box in a column of boxes is a puzzle. The wide layout names the
+    column in the header; the phone card has no header, so the box carries its
+    own caption, in the same muted style as the other figures in the card. The
+    caption is inside the label, so a tap on the word counts the row.
+    """
+    problems = []
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    head = page.evaluate(
+        """() => {
+            const span = document.querySelector('thead th.c-cmp .cmp-h');
+            if (!span) return null;
+            const s = getComputedStyle(span);
+            return {
+                text: (span.textContent || '').trim(),
+                display: s.display,
+                size: parseFloat(s.fontSize),
+                clipped: span.scrollWidth > span.clientWidth + 1
+            };
+        }"""
+    )
+    if head is None:
+        problems.append("the compare column has no name in its header")
+    else:
+        if head["text"].lower() != "compare":
+            problems.append(f"the compare column header reads {head['text']!r}")
+        if head["display"] == "none":
+            problems.append("the compare column header is hidden")
+        if head["size"] < 12:
+            problems.append(f"the compare column header is {head['size']}px")
+        if head["clipped"]:
+            problems.append("the compare column header clips its text")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(200)
+    cap = page.evaluate(
+        """() => {
+            const cap = document.querySelector('tbody.item .cmp-cap');
+            if (!cap) return null;
+            const s = getComputedStyle(cap);
+            const label = cap.closest('.cmp-w');
+            const r = label.getBoundingClientRect();
+            return {
+                text: (cap.textContent || '').trim(),
+                display: s.display,
+                size: parseFloat(s.fontSize),
+                width: Math.round(r.width),
+                height: Math.round(r.height)
+            };
+        }"""
+    )
+    if cap is None:
+        problems.append("the compare box has no caption on a phone")
+    else:
+        if cap["text"].lower() != "compare":
+            problems.append(f"the compare caption reads {cap['text']!r}")
+        if cap["display"] == "none":
+            problems.append("the compare caption is hidden on a phone")
+        if cap["size"] < 12:
+            problems.append(f"the compare caption is {cap['size']}px")
+        if cap["height"] < 44:
+            problems.append(f"the compare target is {cap['height']}px tall, expected 44px")
+        if cap["width"] < 44:
+            problems.append(f"the compare target is {cap['width']}px wide, expected 44px")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    return problems
+
+def share_check(page):
+    """A ?cmp= link reopens the same three models and drops unknown ids."""
+    problems = []
+    href = page.evaluate("() => location.href")
+    if "?cmp=" not in href:
+        problems.append(f"selecting three models did not update the URL: {href}")
+    extra = page.context.new_page()
+    try:
+        extra.goto(href, wait_until="load")
+        extra.wait_for_timeout(400)
+        restored = extra.evaluate(
+            """() => ({
+                checked: Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value),
+                compare: !document.getElementById('compare').hidden,
+                names: Array.from(document.querySelectorAll('#cmp-table thead .cmp-name')).map((n) => n.textContent),
+                rows: document.querySelectorAll('#cmp-table tbody tr').length
+            })"""
+        )
+        if restored["checked"] != ["tapo-td21", "reo-poe", "ezviz-ep3x"]:
+            problems.append(f"the shared link restored {restored['checked']}")
+        if restored["rows"] != 18 or not restored["compare"]:
+            problems.append(f"the shared link did not reopen the compare table: {restored}")
+        if len(restored["names"]) != 3:
+            problems.append(f"the shared compare table names {restored['names']}")
+        base = href.split("?")[0]
+        extra.goto(base + "?cmp=reo-poe,bogus,reo-poe", wait_until="load")
+        extra.wait_for_timeout(300)
+        filtered = extra.evaluate(
+            """() => ({
+                checked: Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value),
+                compare: !document.getElementById('compare').hidden,
+                search: location.search
+            })"""
+        )
+        if filtered["checked"] != ["reo-poe"]:
+            problems.append(f"unknown and duplicate ids were kept: {filtered['checked']}")
+        if filtered["compare"]:
+            problems.append("a one-model link opens the compare table")
+        if filtered["search"] != "?cmp=reo-poe":
+            problems.append(f"the link was not cleaned up: {filtered['search']}")
+    finally:
+        extra.close()
+    return problems
+
+# The compare table prints these spec rows under one cost row. The count is a
+# property of that table, not of ROWS, so it is named here rather than counted
+# from the dataset.
+SPEC_ROWS = [
+    "Records free?", "Price", "Free features", "3 yrs, no plan", "3 yrs, with plan",
+    "Best for", "Main catch", "Power", "Storage", "Live view", "Motion alerts",
+    "Smart detection", "History, no plan", "Behind the paywall", "Plans",
+    "Home Assistant", "Wi-Fi",
+]
+
+COMPARE_ROWS = len(SPEC_ROWS) + 1
+
+def compare_cells(rows):
+    """The cheapest 3-year cost, what it is made of, and the two differences."""
+    by_id = {row["id"]: row for row in rows.ROWS}
+    keeps = [by_id[id]["keep3"] for id in SHORTLIST_IDS]
+    low = min(keeps)
+    return [
+        f"£{value:.2f} "
+        + ("cheapest" if abs(value - low) < 0.005 else f"+£{value - low:.2f}")
+        + " "
+        + by_id[id]["keep_note"]
+        for id, value in zip(SHORTLIST_IDS, keeps)
+    ]
+
+CHECKS = [
+    Check(
+        "compare morph", "desktop", 37,
+        "the tray becomes the compare header in one named pair over 240ms",
+        lambda ctx: morph_check(ctx.page),
+    ),
+    Check(
+        "shortlist copy", "compare", 40,
+        "Copy shortlist writes the models, costs, catches and a ?cmp= link",
+        lambda ctx: shortlist_check(ctx.page, ctx.checked),
+    ),
+    Check(
+        "compare cost row", "compare", 41,
+        "the compare table names the cheapest 3-year cost and each difference",
+        lambda ctx: costrow_check(
+            ctx.page, COMPARE_ROWS, compare_cells(ctx.dataset) if ctx.dataset else []
+        ),
+    ),
+    Check(
+        "share link", "compare", 42,
+        "a ?cmp= link restores the three models and drops unknown ids",
+        lambda ctx: share_check(ctx.page),
+    ),
+    Check(
+        "compare chrome", "compare", 43,
+        "the sort select is 44px and compare rows use 8/16px padding and aligned labels",
+        lambda ctx: chrome_check(ctx.page),
+    ),
+    Check(
+        "differences only", "compare", 44,
+        "differences only hides identical spec rows, keeps the decision rows, and names its count",
+        lambda ctx: diff_check(ctx.page, COMPARE_ROWS),
+    ),
+    Check(
+        "compare markers", "compare", 45,
+        "the comparison marks what is missing and leaves the good news alone",
+        lambda ctx: marks_check(ctx.page),
+    ),
+    Check(
+        "comparison scroller", "compare", 46,
+        "the comparison's sideways scroll is a named, focusable region and the arrow keys move it",
+        lambda ctx: scroller_check(ctx.page),
+    ),
+    Check(
+        "compare label", "compare", 47,
+        "the compare box is named in the column header and on a phone card",
+        lambda ctx: compare_label_check(ctx.page),
+    ),
+]
+
