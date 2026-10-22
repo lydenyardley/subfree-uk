@@ -195,18 +195,7 @@ tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom
 .maths{font-variant-numeric:tabular-nums}
 .unverified{font-size:13px;margin:1rem 0 0;color:var(--ink2)}
 .srcs{font-size:12px;color:var(--ink2);margin:1rem 0 0;max-width:100%}
-/* The full list belongs with the comparison: it is the one view that cites
-   every figure side by side, and the row's own details name its sources in
-   the table. */
-#sources{padding:0 1rem;margin:1.25rem 0 .25rem}
-/* Revealing the list takes a script, so with the script off it would never
-   appear. The no-js page keeps the list it was written with; the hidden
-   attribute is the scripted page saying "not yet". It has to outrank the
-   global [hidden] rule above, which is there to beat the display rules. */
-html.no-js #sources[hidden]{display:block!important}
-/* A sentinel at the end of the comparison: the sources below are revealed
-   when the reader gets near it, not when the panel opens. */
-.cmp-end{height:1px}
+
 .srcs .fn{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}
 .empty{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}
 /* jump-to-row highlight */
@@ -295,8 +284,8 @@ section.method p a{color:var(--ink2)}
 .srcs>summary::before{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg);margin-right:0.25rem}
 .srcs[open]>summary::before{transform:rotate(45deg)}
 .srcs-n{font:500 12px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}
-.fns-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:2rem;align-items:start}
-.fns-g{margin:0 0 0.75rem}
+.fns-wrap{columns:2;column-gap:2rem}
+.fns-g{margin:0 0 0.75rem;break-inside:avoid}
 .fns-g h3{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0}
 ol.fns{margin:0;padding-left:1.5rem;columns:1}
 ol.fns li{margin:0}
@@ -396,7 +385,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  tr.detail td{padding:1rem;margin-top:0}
  .dgrid{grid-template-columns:1fr}
  .ph-lg{width:120px!important;height:160px!important;margin-bottom:1rem}
- section.method{grid-template-columns:1fr} .fns-wrap{grid-template-columns:1fr}
+ section.method{grid-template-columns:1fr} .fns-wrap{columns:1}
  .cmp-t th,.cmp-t td{padding:0.5rem 1rem;font-size:13px}
  .cmp-t thead th{min-width:140px;font-size:14px}
  .cmp-t tbody th{width:76px;min-width:76px;font-size:11px;position:sticky;left:0;background:var(--paper)}

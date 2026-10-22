@@ -14,7 +14,7 @@ function fitSortKeys(){$$('#tbl thead th button').forEach(function(b){if(narrow.
 if(small.addEventListener)small.addEventListener('change',fitFilters);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSources);
-addEventListener('beforeprint',function(){srcs.open=true;revealSources()});
+addEventListener('beforeprint',function(){srcs.open=true});
 fitFilters();fitSortKeys();fitSources();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
 var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
@@ -122,26 +122,15 @@ $$('button.more').forEach(function(b){b.onclick=function(){
  var label=b.querySelector('.vh');if(label)label.textContent=o?'Show details':'Hide details';
  d.hidden=o;
 }});
-// The numbered source list lives in the comparison, so it is off screen while
-// the reader is in the main table. A footnote marker there opens the row's own
-// named sources rather than jumping to a target nobody can see.
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+// A footnote marker in a row jumps to its numbered entry, and on a phone the
+// list is a closed disclosure. Chromium opens one for a jump it is asked to
+// make; not every engine does, so the list is opened here and the navigation
+// then scrolls to the entry wherever it has landed.
 document.addEventListener('click',function(ev){
  var link=ev.target.closest('a.fn');
- if(!link)return;
- var target=document.querySelector(link.getAttribute('href'));
- if(!target||target.getClientRects().length)return;
- // A source named inside a row's own list points at its numbered entry, so
- // following it means showing the list and going there. Opening the row it
- // already sits in would take the reader nowhere.
- if(link.closest('.srcs')){revealSources();return}
- var row=link.closest('tbody.item'),src=row?row.querySelector('.srcs'):null;
- if(!src)return;
- var more=row.querySelector('button.more');
- if(more&&more.getAttribute('aria-expanded')!=='true')more.click();
- ev.preventDefault();
- src.scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'center'});
+ if(link&&srcs&&!srcs.open)srcs.open=true;
 });
-var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
  var rows=a.dataset.ids.split(' ').map(function(id){return document.getElementById('m-'+id)});
  if(rows.some(function(r){return r.hidden}))$('#reset').click();
@@ -204,22 +193,6 @@ function syncUrl(){
  try{if(history.replaceState)history.replaceState(null,'',u)}catch(e){}
 }
 function capSay(m){var el=$('#cmp-cap');if(!el)return;el.textContent=m;el.hidden=!m}
-// The numbered sources sit under the comparison, and they cost a layout of 52
-// links. That layout waits until the reader reaches the end of the table: the
-// open pays for the table, not for a list that is still a screen away.
-var srcsWatch=null;
-function revealSources(){if(srcs)srcs.hidden=false}
-function sourcesFollow(){
- if(!srcs)return;
- if($('#compare').hidden){srcs.hidden=true;return}
- if(!('IntersectionObserver' in window)){revealSources();return}
- if(!srcsWatch){
-  srcsWatch=new IntersectionObserver(function(entries){
-   if(entries.some(function(e){return e.isIntersecting}))revealSources();
-  },{rootMargin:'300px 0px'});
-  srcsWatch.observe($('#cmp-end'));
- }
-}
 function tray(){
  var s=sel();
  $('#tray').hidden=s.length===0||!$('#compare').hidden;
@@ -230,7 +203,7 @@ function tray(){
  // the reader is on, so this path never touches focus.
  if(!$('#compare').hidden){
   if(s.length>=2)render();
-  else{$('#compare').hidden=true;$('#tray').hidden=s.length===0;sourcesFollow()}
+  else{$('#compare').hidden=true;$('#tray').hidden=s.length===0}
  }
  say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
  if(s.length<3)capSay('');
@@ -276,7 +249,6 @@ function render(){
  buildCmp();
  $('#compare').hidden=false;
  queueCue();
- sourcesFollow();
 }
 // Identical rows are the one part of a comparison that carries no decision, so
 // they can go. The four that do carry one stay even when they match.
@@ -330,7 +302,7 @@ function closeCompare(){
 function clearAll(){
  // Both Clear buttons are about to be hidden, so focus needs somewhere real.
  var inside=$('#compare').contains(document.activeElement)||$('#tray').contains(document.activeElement);
- $$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray();sourcesFollow();
+ $$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray();
  if(inside){var f=document.querySelector('input.cmp');if(f)f.focus({preventScroll:true})}
 }
 $('#tray-go').onclick=showCompare;

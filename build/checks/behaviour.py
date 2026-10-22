@@ -305,11 +305,10 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
     return problems
 
 def sources_check(page, source_count):
-    """The numbered source list belongs to the comparison, grouped by host.
+    """The numbered sources sit with the working, grouped by host.
 
-    The table's details name their own sources, so the numbered list is the
-    comparison's reference: it is the view that reads every figure side by
-    side, and it is the only one that shows the list at all.
+    They are the list every footnote marker points at, so they stay on the
+    page: with the comparison open or closed, on paper, and without a script.
     """
     problems = []
 
@@ -328,14 +327,14 @@ def sources_check(page, source_count):
                         .map((a) => a.href)
                 }));
                 return {
-                    underCompare: !!box.previousElementSibling && box.previousElementSibling.id === 'compare',
+                    inMethod: !!box.closest('section.method'),
+                    lastBlock: !!box.previousElementSibling && box.previousElementSibling.tagName === 'P',
                     visible: box.getClientRects().length > 0,
                     fits,
                     tag: box.tagName,
                     open: box.open,
-                    summary: summary.textContent.replace(/\\s+/g, ' ').trim(),
+                    summary: summary.textContent.replace(/\s+/g, ' ').trim(),
                     headingInSummary: !!summary.querySelector('h2'),
-                    headingLevel: box.querySelector('h3') ? box.querySelector('h3').tagName : '',
                     summaryHeight: Math.round(summary.getBoundingClientRect().height),
                     count: values.length,
                     values: values.slice().sort((a, b) => a - b),
@@ -344,22 +343,61 @@ def sources_check(page, source_count):
             }"""
         )
 
-    # The list is below the comparison and revealed as the reader reaches it,
-    # so a check of its layout has to scroll there the way a reader would.
-    page.evaluate("document.getElementById('cmp-end').scrollIntoView()")
-    page.wait_for_timeout(500)
-    wide = read()
     page.set_viewport_size({"width": 390, "height": 844})
-    page.wait_for_timeout(150)
-    page.evaluate("document.getElementById('cmp-end').scrollIntoView()")
-    page.wait_for_timeout(500)
+    page.wait_for_timeout(200)
     phone = read()
+
+    # A row's footnote marker points at an entry in this list, and on a phone
+    # the list is closed: following one has to open it and land on the entry,
+    # which a jump into a closed disclosure does not do.
+    followed = page.evaluate(
+        """() => {
+            const toggle = document.querySelector('#tbl tbody.item button.more');
+            if (toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+            const link = document.querySelector('#tbl tbody.item .srcs a.fn');
+            const href = link.getAttribute('href');
+            const wasOpen = document.getElementById('sources').open;
+            link.click();
+            return { href, wasOpen };
+        }"""
+    )
+    page.wait_for_timeout(400)
+    landed = page.evaluate(
+        """(href) => {
+            const box = document.getElementById('sources');
+            const entry = document.querySelector(href);
+            const r = entry ? entry.getBoundingClientRect() : null;
+            const state = {
+                open: box.open,
+                hash: location.hash,
+                inView: !!r && r.bottom > 0 && r.top < window.innerHeight
+            };
+            // Put the phone back the way the check found it.
+            box.open = false;
+            const toggle = document.querySelector('#tbl tbody.item button.more');
+            if (toggle.getAttribute('aria-expanded') === 'true') toggle.click();
+            return state;
+        }""",
+        followed["href"],
+    )
+    if followed["wasOpen"]:
+        problems.append("the source list is already open on a phone")
+    if not landed["open"]:
+        problems.append("following a row's source leaves the list closed")
+    if landed["hash"] != followed["href"] or not landed["inView"]:
+        problems.append(
+            f"following a row's source does not land on {followed['href']}: {landed}"
+        )
+
     page.set_viewport_size({"width": 1280, "height": 900})
-    page.wait_for_timeout(150)
+    page.wait_for_timeout(200)
+    wide = read()
 
     for where, state in (("1280px", wide), ("390px", phone)):
-        if not state["underCompare"]:
-            problems.append(f"the source list is not under the comparison at {where}")
+        if not state["inMethod"]:
+            problems.append(f"the source list is not with the working at {where}")
+        if not state["lastBlock"]:
+            problems.append(f"the source list does not end the working at {where}")
         if not state["visible"]:
             problems.append(f"the source list is not on screen at {where}")
     if phone["tag"] != "DETAILS" or wide["tag"] != "DETAILS":
@@ -371,7 +409,7 @@ def sources_check(page, source_count):
     if wide["count"] != source_count:
         problems.append(f"the source list holds {wide['count']} entries, expected {source_count}")
     if wide["values"] != list(range(1, source_count + 1)):
-        problems.append(f"the footnote numbers are not 1 to 52: {wide['values'][:6]}")
+        problems.append(f"the footnote numbers are not 1 to {source_count}: {wide['values'][:6]}")
     if wide["headingInSummary"] is False:
         problems.append("the Sources heading is no longer a heading inside the summary")
     if f"{source_count} links" not in wide["summary"]:
@@ -388,50 +426,6 @@ def sources_check(page, source_count):
     foreign = [link for group in wide["groups"] for link in group["foreign"]]
     if foreign:
         problems.append(f"links sit under the wrong host: {foreign[:3]}")
-
-    # A source named in a row points at its numbered entry, and the list is
-    # hidden while the comparison is closed: following one has to show the list
-    # and land on the entry. Opening the row the link already sits in would
-    # take the reader nowhere, which is what a dead citation looks like.
-    page.evaluate("document.getElementById('cmp-close').click()")
-    page.wait_for_timeout(500)
-    followed = page.evaluate(
-        """() => {
-            const toggle = document.querySelector('#tbl tbody.item button.more');
-            if (toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
-            const link = document.querySelector('#tbl tbody.item .srcs a.fn');
-            const hiddenBefore = document.getElementById('sources').hidden;
-            const href = link.getAttribute('href');
-            link.click();
-            return { hiddenBefore, href };
-        }"""
-    )
-    page.wait_for_timeout(600)
-    landed = page.evaluate(
-        """(href) => {
-            const box = document.getElementById('sources');
-            const entry = document.querySelector(href);
-            const r = entry ? entry.getBoundingClientRect() : null;
-            return {
-                shown: box.getClientRects().length > 0,
-                hidden: box.hidden,
-                hash: location.hash,
-                inView: !!r && r.bottom > 0 && r.top < window.innerHeight
-            };
-        }""",
-        followed["href"],
-    )
-    if not followed["hiddenBefore"]:
-        problems.append("the source list was on screen before a row's source was followed")
-    if not landed["shown"] or landed["hidden"]:
-        problems.append(f"following a row's source leaves the list hidden: {landed}")
-    if landed["hash"] != followed["href"] or not landed["inView"]:
-        problems.append(
-            f"following a row's source does not land on {followed['href']}: {landed}"
-        )
-    # Put the comparison back for the checks that follow.
-    page.evaluate("document.getElementById('tray-go').click()")
-    page.wait_for_timeout(500)
     return problems
 
 def footer_check(page, checked=None):
@@ -1540,7 +1534,7 @@ CHECKS = [
     ),
     Check(
         "source list", "compare", 72,
-        "the numbered sources sit in the comparison, grouped by host, closed on a phone and open at 1280",
+        "the numbered sources end the working, grouped by host, closed on a phone and open at 1280",
         lambda ctx: sources_check(ctx.page, ctx.source_count),
     ),
     Check(
