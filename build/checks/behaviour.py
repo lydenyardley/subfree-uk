@@ -420,6 +420,22 @@ def sources_check(page, source_count):
     page.wait_for_timeout(200)
     wide = read()
 
+    # The host headings are the one unbreakable word in the list, and the CI
+    # machine's DejaVu is wider than Windows' Segoe UI: a width that fits one
+    # font clips the other. Widen the type for one measurement so a missing
+    # break shows up on either machine, not only on Linux.
+    page.evaluate(
+        "() => document.documentElement.style.setProperty('--sans', 'Verdana, DejaVu Sans, sans-serif')"
+    )
+    page.wait_for_timeout(150)
+    wide_font = read()
+    page.evaluate("() => document.documentElement.style.removeProperty('--sans')")
+    page.wait_for_timeout(150)
+    if wide_font["clipped"]:
+        problems.append(f"a host name clips under a wide font: {wide_font['clipped']}")
+    if not wide_font["fits"]:
+        problems.append("the source list is wider than its column under a wide font")
+
     for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid), ("390px", phone)):
         if not state["inMethod"]:
             problems.append(f"the source list is not with the working at {where}")

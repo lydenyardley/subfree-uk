@@ -136,12 +136,13 @@ exception: a long sentence clips there, as it did by more before the floors.
 The sources column has changed twice since that measurement: `c36b321` put it
 beside the copy above 1100px, and ADR 11 brought it down to 821px and split
 the list above 1100px. Measured today, with every card settled, the page is
-3,163px at 1440, 3,244 at 1280, 3,542 at 1101, 4,465 at 1100, 4,628 at 1000,
-5,459 at 900 and 7,091 at 821. The split list takes about 990px off the height
-at 1101 and above (4,232 to 3,244 at 1280 against the same column in one
-list); the single list beside the copy adds 359px from 821 to 1100 (5,100 to
-5,459 at 900), where two lists would leave the copy 319px wide at 821. The
-820px and 390px pages are below the phone breakpoint and are not affected.
+3,157px at 1440, 3,261 at 1280, 3,622 at 1101, 4,465 at 1100, 4,628 at 1000,
+5,459 at 900 and 7,091 at 821. The split list takes 971px off the height at
+1280 (4,232 to 3,261 against the same column in one list) and 907px at 1101,
+where more host headings wrap; the single list beside the copy adds 359px from
+821 to 1100 (5,100 to 5,459 at 900), where two lists would leave the copy
+319px wide at 821. The 820px and 390px pages are below the phone breakpoint
+and are not affected.
 
 A row's box begins 1px lower than a table row's, because the header block is a
 pixel taller than the header row was; the text sits on the same baseline in
