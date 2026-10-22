@@ -140,47 +140,52 @@ at their score in the markup now and nothing rewrites them. That leaves no
 motion in sorting at all, which the design rules asked for anyway, and removes
 fourteen timers per sort with it.
 
-## Why the compare open allows 150ms
+## Why the compare open allows 500ms
 
 Opening the comparison runs through `document.startViewTransition`: the
 browser captures the old viewport, runs the update, captures the new one, and
 only then paints the panel. The panel's first paint therefore waits for one
-snapshot it did not wait for before, which is one to two frames at this
-throttle.
+snapshot it did not wait for before.
 
 The 18-row table is built before the transition starts, not in its update
 callback. Built inside, the render and the snapshot's layout of it ran as one
 task of 53 to 77ms at this throttle; built first, while the panel is still
 hidden — and therefore hidden in the snapshot of the old frame either way —
-the open runs no task over 50ms, three opens per run. The build is remembered
-by its three column ids, so the `tray()` call inside the transition does not
-build it a second time.
+the build is off the panel's critical path. The build is remembered by its
+three column ids, so the `tray()` call inside the transition does not build it
+a second time.
 
-Only the named pair is captured: the stylesheet turns the root's transition
+Only the named boxes are captured: the stylesheet turns the root's transition
 name off, so the page behind the tray is not rendered into a picture and no
-whole-page cross-fade runs. That picture is rarely the expensive part of a
-transition, and here it is not measurable either way: four opens per run, with
-and without the rule, give 93 to 249ms and 131 to 212ms, two sets that overlap
-across two runs on a quiet and then a loaded machine. The rule stands on what
-it stops doing, not on a number, and the budget below is unchanged.
+whole-page cross-fade runs. Seven are captured instead — the tray, the header,
+and the three ticked rows' names and photos — and every one of them costs a
+paint of its own at this throttle. Measured against the same open without the
+transition, three captures cost 50 to 120ms and six cost 100 to 180ms, so a
+capture is 25 to 30ms: the page cannot make one cheaper, only take fewer.
 
-Measured over three opens per run: 52 to 122ms warm across twelve runs, and 119
-to 171ms on the first open of a session, which pays the snapshot pipeline's
-warm-up. The spread tracks machine load, which is why the check takes the
-fastest of three and prints all three rather than trusting one number. 150ms is
-the line at which the capture has become a stall rather than a frame; a change
-that doubles the page's share lands well past it. With the desktop rows
-uncontained the same open measured 187ms, since the transition captures a page
-that has just laid every row out.
+A ticked row is rendered from the moment it is ticked, not uncontained inside
+the open. A contained row that is off screen has no box to capture, and the
+first version set `content-visibility: visible` on the three rows just before
+capturing them, which laid each row out for the first time inside the open.
+Uncontaining at the tick instead costs 30 to 47ms, runs no task, and happens
+while the reader is looking at the row they just ticked. At most three rows
+are ever ticked, so at most three rows stop being contained.
 
-The 150ms figure is about waiting, and it is not enough on its own: an open
-that painted late after a long task still feels like a stall. The second line
-is about the main thread — the median of the three opens' longest tasks, which
-must stay under the same 50ms a sort gets. Three runs with the build inside
-the transition gave medians of 53, 0 and 0ms — the one failure was a run whose
-second open also ran a task, and it failed the build. Three runs with the
-build in front of it gave 0, 0 and 0ms, with the odd first open still paying
-the snapshot pipeline's warm-up.
+Measured over three opens per run at this throttle: 115 to 237ms with the
+flight, and 42 to 75ms with it switched off, which is the same panel built,
+scrolled and painted on reduced motion. That second figure is the one the
+budget keeps at 150ms, so the panel's own work stays where it was. The flight's
+line is 500ms and deliberately loose: on a machine doing other work it has
+measured 310 to 630ms, and the page cannot make a capture cheaper. What holds
+the cost down is the count — seven boxes and no more — and that is a structural
+claim, so `compare morph` asserts a captured group for every name and photo and
+fails if anything else joins them, where this check would only see a number.
+
+That figure is about waiting, and it is not enough on its own: an open that
+painted late after a long task still feels like a stall. The second line is
+about the main thread — the median of the three opens' longest tasks, which
+must stay under 120ms. The captures are that task, so the line sits above what
+seven of them cost and below what a whole-page capture did.
 
 ## Why the back-to-top button listens to scroll
 

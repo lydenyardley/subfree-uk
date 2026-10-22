@@ -1,6 +1,7 @@
 # 3. The tray becomes the comparison
 
-- Status: Accepted
+- Status: Accepted; the section "The three chosen rows are not named" is
+  superseded by ADR 9.
 - Date: 20 October 2026
 - Source: the overdrive audit of 19 October 2026, items 2, 3 and 4, and its
   tray-to-table prototype. Both are gone; the design they produced is below,

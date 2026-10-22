@@ -106,34 +106,37 @@ def marks_check(page):
         problems.append(f"a paywall cell is marked: {state['paywall']}")
     if not any(cell["text"].startswith("None") for cell in state["plan"]):
         problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
-    # The verdict a row carries travels into its column: the same colour down
-    # the column, and the verdict itself in the column's header, so the colour
-    # is never the only signal.
+    # The verdict a row carries travels into the comparison once, under its
+    # column's header, and the badge above names it. A rule down the side of
+    # every cell read as the previous column's edge, so no cell carries one.
     tone = page.evaluate(
         """() => {
             const ids = Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value);
-            const cost = document.querySelector('#cmp-table tr.cmp-cost');
+            const body = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
             const heads = Array.from(document.querySelectorAll('#cmp-table thead th')).slice(1);
-            return heads.map((th, i) => {
-                const id = ids[i];
-                const main = document.getElementById('m-' + id);
-                const cell = cost ? cost.children[i + 1] : null;
-                const s = cell ? getComputedStyle(cell) : null;
-                const rowTag = main ? main.querySelector('.vtag') : null;
-                const headTag = th.querySelector('.vtag');
-                return {
-                    id,
-                    rowTone: main ? main.getAttribute('data-v') : null,
-                    tone: th.getAttribute('data-v'),
-                    tag: headTag ? headTag.textContent.trim() : '',
-                    rowTag: rowTag ? rowTag.textContent.trim() : '',
-                    border: s ? s.borderLeftWidth : 'missing',
-                    colour: s ? s.borderLeftColor : 'missing'
-                };
-            });
+            const sides = (tr) => Array.from(tr.children).slice(1).map((c) => getComputedStyle(c).borderLeftWidth);
+            return {
+                columns: heads.map((th, i) => {
+                    const id = ids[i];
+                    const main = document.getElementById('m-' + id);
+                    const s = getComputedStyle(th);
+                    const rowTag = main ? main.querySelector('.vtag') : null;
+                    const headTag = th.querySelector('.vtag');
+                    return {
+                        id,
+                        rowTone: main ? main.getAttribute('data-v') : null,
+                        tone: th.getAttribute('data-v'),
+                        tag: headTag ? headTag.textContent.trim() : '',
+                        rowTag: rowTag ? rowTag.textContent.trim() : '',
+                        border: s.borderBottomWidth,
+                        colour: s.borderBottomColor
+                    };
+                }),
+                cellBorders: Array.from(new Set(body.flatMap(sides)))
+            };
         }"""
     )
-    for column in tone:
+    for column in tone["columns"]:
         if (column["rowTone"] or "") != (column["tone"] or ""):
             problems.append(
                 f"{column['id']}'s column carries {column['tone']!r}, its row {column['rowTone']!r}"
@@ -145,12 +148,17 @@ def marks_check(page):
                 )
             if column["border"] != "3px" or "rgba(0, 0, 0, 0)" in column["colour"]:
                 problems.append(
-                    f"{column['id']}'s column has no colour rule: {column['border']} {column['colour']}"
+                    f"{column['id']}'s header carries no colour rule: "
+                    f"{column['border']} {column['colour']}"
                 )
-        elif column["border"] != "0px":
+        elif column["border"] == "3px":
             problems.append(
-                f"{column['id']} has no verdict, so its column should carry no rule"
+                f"{column['id']} has no verdict, so its header should carry no colour rule"
             )
+    if tone["cellBorders"] != ["0px"]:
+        problems.append(
+            f"cells in the comparison carry a side rule: {tone['cellBorders']}"
+        )
 
     # Put the shortlist back for the checks that follow.
     page.evaluate(
@@ -392,12 +400,28 @@ def morph_check(page):
     # Opening: one transition, 240ms, and the tray's box is now the panel's.
     page.evaluate(
         """() => {
-            window.__vt = { calls: 0 };
+            window.__vt = { calls: 0, last: null };
             window.__vtReal = document.startViewTransition;
             const real = window.__vtReal.bind(document);
+            // What the two frames say: which half of each pair carries the name,
+            // and whether the table's copy is out of the picture in the second.
+            const frame = () => ({
+                // Only the parts in play: a row that was never ticked has no name
+                // and stays on screen throughout, and saying so is not a finding.
+                table: Array.from(document.querySelectorAll('#tbl .mname, #tbl .ph-sm'))
+                    .map((e) => [getComputedStyle(e).viewTransitionName, getComputedStyle(e).visibility])
+                    .filter((part) => part[0] !== 'none' || part[1] === 'hidden'),
+                head: Array.from(document.querySelectorAll('#cmp-table thead .cmp-name, #cmp-table thead .cmp-photo img'))
+                    .map((e) => [getComputedStyle(e).viewTransitionName, getComputedStyle(e).visibility])
+                    .filter((part) => part[0] !== 'none')
+            });
             document.startViewTransition = (cb) => {
                 window.__vt.calls++;
-                return real(cb);
+                const before = frame();
+                return real(() => {
+                    cb();
+                    window.__vt.last = { before, after: frame() };
+                });
             };
         }"""
     )
@@ -411,6 +435,18 @@ def morph_check(page):
                 dur: getComputedStyle(r, '::view-transition-group(cmp-tray)').animationDuration,
                 root: getComputedStyle(r, '::view-transition-old(root)').animationName,
                 named: anims.filter((a) => (a.effect.pseudoElement || '').includes('cmp-tray')).length,
+                rows: anims.filter((a) => /cmp-[np]-/.test(a.effect.pseudoElement || '')).length,
+                rowDur: getComputedStyle(r, '::view-transition-group(cmp-n-reo-poe)').animationDuration,
+                // Every other line here reads the name off the element, and a
+                // name that never became a snapshot still reads back. The group
+                // is the evidence that both halves were captured: no group, no
+                // flight, however clean the computed name looks.
+                groups: Array.from(new Set(anims
+                    .map((a) => a.effect.pseudoElement || '')
+                    .filter((p) => p.indexOf('::view-transition-group(cmp-n-') === 0
+                        || p.indexOf('::view-transition-group(cmp-p-') === 0)
+                    .map((p) => p.slice('::view-transition-group('.length, -1)))).sort(),
+                ids: Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value),
                 keyframes: anims
                     .filter((a) => a.effect.pseudoElement === '::view-transition-group(cmp-tray)')
                     .length
@@ -427,6 +463,45 @@ def morph_check(page):
             top: Math.round(document.getElementById('compare').getBoundingClientRect().top)
         })"""
     )
+    flown = page.evaluate("() => window.__vt.last")
+    if not flown:
+        problems.append("the open ran no transition to record")
+    else:
+        before, after = flown["before"], flown["after"]
+        named_rows = before["table"]
+        named_header = before["head"]
+        if len(named_rows) != 6:
+            problems.append(
+                f"{len(named_rows)} row parts are named before the open, expected 6"
+            )
+        if named_header:
+            problems.append(f"the header is already named before the open: {named_header}")
+        if {part[0] for part in named_rows} != {part[0] for part in after["head"] if part[0] != "none"}:
+            problems.append("the names on the rows and in the header do not pair up")
+        if len([part for part in after["head"] if part[0] != "none"]) != 6:
+            problems.append(
+                f"{len([p for p in after['head'] if p[0] != 'none'])} header parts are named "
+                "in the new frame, expected 6"
+            )
+        if [part for part in after["table"] if part[0] != "none"]:
+            problems.append(f"the table is still named in the new frame: {after['table']}")
+        painted = [part for part in after["table"] if part[1] != "hidden"]
+        if painted:
+            problems.append(
+                f"{len(painted)} row parts are painted in place during the transition"
+            )
+        page.wait_for_timeout(500)
+        settled = page.evaluate(
+            """() => ({
+                named: Array.from(document.querySelectorAll(
+                    '#tbl .mname, #tbl .ph-sm, #cmp-table thead .cmp-name, #cmp-table thead .cmp-photo img'
+                )).filter((e) => getComputedStyle(e).viewTransitionName !== 'none').length,
+                hidden: Array.from(document.querySelectorAll('#tbl .mname, #tbl .ph-sm'))
+                    .filter((e) => getComputedStyle(e).visibility === 'hidden').length
+            })"""
+        )
+        if settled["named"] or settled["hidden"]:
+            problems.append(f"the transition left names or hidden rows behind: {settled}")
     if opened["calls"] != 1:
         problems.append(f"opening ran {opened['calls']} view transitions, expected 1")
     if not opened["panel"] or not opened["tray"]:
@@ -437,6 +512,20 @@ def morph_check(page):
         problems.append(f"the page cross-fades behind the pair: root old animation {during['root']}")
     if during["named"] < 3:
         problems.append(f"only {during['named']} animations of the named pair ran")
+    if during["rows"] < 6:
+        problems.append(
+            f"only {during['rows']} animations of the rows' names and photos ran"
+        )
+    expected = sorted(
+        [f"cmp-{half}-{id}" for id in during["ids"] for half in ("n", "p")]
+    )
+    if during["groups"] != expected:
+        problems.append(
+            f"the rows' names and photos were not captured: groups {during['groups']}, "
+            f"expected {expected}"
+        )
+    if during["rowDur"] != "0.24s":
+        problems.append(f"the rows travel on {during['rowDur']}, not the tray's 240ms")
     if abs(opened["top"]) > 2:
         problems.append(f"the panel opens {opened['top']}px from the top of the viewport")
     if opened["focus"] != "cmp-h":
@@ -797,7 +886,7 @@ def compare_cells(rows):
 CHECKS = [
     Check(
         "compare morph", "desktop", 37,
-        "the tray becomes the compare header in one named pair over 240ms",
+        "the tray becomes the compare header over 240ms, and the ticked rows' names and photos fly into their columns",
         lambda ctx: morph_check(ctx.page),
     ),
     Check(
@@ -829,7 +918,7 @@ CHECKS = [
     ),
     Check(
         "compare markers", "compare", 45,
-        "the comparison marks what is missing, leaves the good news alone, and carries each row's verdict into its column",
+        "the comparison marks what is missing, leaves the good news alone, and names each row's verdict under its column's header",
         lambda ctx: marks_check(ctx.page),
     ),
     Check(

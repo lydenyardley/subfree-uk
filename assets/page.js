@@ -218,7 +218,7 @@ function buildCmp(){
  built=s.join();
  var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
   var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
-  return '<th scope="col"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span>'+(d.vtag?'<span class="vtag v-'+esc(d.tone)+'">'+esc(d.vtag)+'</span>':'')+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
+  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span>'+(d.vtag?'<span class="vtag v-'+esc(d.tone)+'">'+esc(d.vtag)+'</span>':'')+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
  h+='<tr class="cmp-cost" data-pin="1"><th scope="row">Cheapest way to record for 3 years</th>'+s.map(function(id){var v=D[id].keep3;
@@ -226,7 +226,7 @@ function buildCmp(){
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
   // the secondary figure, because the total is the one a reader compares.
-  return '<td'+(D[id].tone?' data-v="'+esc(D[id].tone)+'"':'')+'><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest':'+£'+(v-low).toFixed(2))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
+  return '<td><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest':'+£'+(v-low).toFixed(2))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
  }).join('')+'</tr>';
  var dupes=0;
  ROWS.forEach(function(r){
@@ -236,7 +236,7 @@ function buildCmp(){
    // A plan figure bought in euros is not a UK quote, so the comparison says so
    // in the row rather than leaving the caveat to a footnote.
    if(r[1]==='plan'&&D[id].region==='EU')v+=' (EU price)';
-   return '<td'+(D[id].tone?' data-v="'+esc(D[id].tone)+'"':'')+'>'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
+   return '<td>'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
  });
  $('#cmp-table').innerHTML=h+'</tbody>';
  if(!dupes)diffOnly=false;
@@ -269,6 +269,29 @@ function cmpChange(ev){
  if(refused)say('You can compare 3. Untick one to swap.');
 }
 $$('input.cmp').forEach(function(c){c.addEventListener('change',cmpChange)});
+// The three ticked rows fly into their columns. A view-transition name can sit
+// on one element at a time, so each half carries it in turn: the table's copy
+// while the old frame is captured, the header's copy in the frame after the
+// update. The table's copy steps out of the picture for the length of the
+// transition; left in, it would be painted in place and in the air at once.
+function morphRow(id,mode){
+ var row=document.getElementById('m-'+id);
+ var th=document.querySelector('#cmp-table thead th[data-id="'+id+'"]');
+ if(!row||!th)return;
+ [[row.querySelector('.mname'),th.querySelector('.cmp-name'),'cmp-n-'+id],
+  [row.querySelector('.ph-sm'),th.querySelector('.cmp-photo img'),'cmp-p-'+id]].forEach(function(pair){
+  var from=pair[0],to=pair[1],name=pair[2];
+  if(!from||!to)return;
+  from.style.viewTransitionName=mode==='table'?name:'';
+  to.style.viewTransitionName=mode==='head'?name:'';
+  from.style.visibility=mode==='head'?'hidden':'';
+ });
+}
+// A name may sit on one element only, so a transition that starts before the
+// last one cleaned up would be skipped whole. Every path that changes the
+// panel clears the pairs first.
+var flying=[];
+function landRows(){flying.forEach(function(id){morphRow(id,'off')});flying=[]}
 function showCompare(){
  // Already open: take the reader back to it rather than rebuilding it.
  if(!$('#compare').hidden){$('#compare').scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'});$('#cmp-h').focus({preventScroll:true});return}
@@ -278,6 +301,7 @@ function showCompare(){
  // The panel is hidden while this runs, and it is hidden in the snapshot of
  // the old frame either way, so the morph starts from the same picture.
  buildCmp();
+ var ids=sel(),fly=!!(document.startViewTransition&&!reduce.matches);
  // The tray leaves and its place is taken by the compare header: the same box
  // stops being one control and starts being another. Scroll first, so both
  // snapshots are taken from the reader's final position.
@@ -288,13 +312,22 @@ function showCompare(){
   // heading. Not the section: its name would be every cell in the table.
   $('#cmp-h').focus({preventScroll:true});
  }
- if(document.startViewTransition&&!reduce.matches)document.startViewTransition(function(){go(false)});else go(!reduce.matches);
+ if(fly){
+  flying=ids.slice();
+  ids.forEach(function(id){morphRow(id,'table')});
+  var vt=document.startViewTransition(function(){ids.forEach(function(id){morphRow(id,'head')});go(false)});
+  // A skipped or interrupted transition still has to give the table its names
+  // back, so the cleanup does not wait on the promise alone.
+  setTimeout(landRows,700);
+  if(vt.finished&&vt.finished.then)vt.finished.then(landRows,landRows);
+ }else go(!reduce.matches);
  say('Side-by-side comparison of '+sel().length+' doorbells');
 }
 function closeCompare(){
  if($('#compare').hidden)return;
+ landRows();
  var go=function(){
-  $('#compare').hidden=true;tray();sourcesFollow();
+  $('#compare').hidden=true;tray();
   if(!$('#tray').hidden)$('#tray-go').focus({preventScroll:true});
  };
  if(document.startViewTransition&&!reduce.matches)document.startViewTransition(go);else go();
@@ -302,6 +335,7 @@ function closeCompare(){
 function clearAll(){
  // Both Clear buttons are about to be hidden, so focus needs somewhere real.
  var inside=$('#compare').contains(document.activeElement)||$('#tray').contains(document.activeElement);
+ landRows();
  $$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray();
  if(inside){var f=document.querySelector('input.cmp');if(f)f.focus({preventScroll:true})}
 }

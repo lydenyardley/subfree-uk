@@ -231,15 +231,20 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-t th,.cmp-t td{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}
 .cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{background:var(--tint)}
 .cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:2px solid var(--ink);min-width:200px}
-.cmp-name{display:block}
+/* The header's name travels from the row's name, so the two boxes are meant to
+   be the same shape. As a block the name is as wide as its column, and the
+   flight stretched the row's 130px of text across 320px on the way. */
+.cmp-name{display:block;width:max-content;max-width:100%}
 .cmp-photo{display:block;margin-top:1rem}
 .cmp-photo img{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
 .cmp-t tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
 /* The row colours travel into the comparison: the same verdict, on the column
-   that is the model. The rule down the column is the colour, and the badge in
-   the header says which verdict it is, so the colour is not the only signal. */
+   that is the model. It is said once, under the column's header: a rule down
+   the side of every cell read as the column before it and repeated the colour
+   fourteen times. The badge above still names the verdict, so colour is not
+   the only signal. */
 .cmp-t [data-v=best]{--vc:var(--v-best)} .cmp-t [data-v=batt]{--vc:var(--v-batt)} .cmp-t [data-v=avoid]{--vc:var(--v-avoid)}
-.cmp-t th[data-v],.cmp-t td[data-v]{border-left:3px solid var(--vc)}
+.cmp-t thead th[data-v]{border-bottom:3px solid var(--vc)}
 .cmp-t thead .vtag{padding-top:.3rem;font-size:11px;white-space:normal}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tray{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}
@@ -262,9 +267,11 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
   .prog i{animation:rule linear both;animation-timeline:--tbl;animation-range:cover 0% cover 100%}
   @keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
  }
- ::view-transition-group(cmp-tray){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
- /* Hand over rather than dissolve: two bars of text cross-fading in one box
-    reads as a smear, so the old bar goes first and the new one arrives after. */
+/* The tray and the three rows' names and photos travel on one curve, so the
+   open reads as one movement rather than a bar and six boxes in parallel. */
+::view-transition-group(*){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+/* Hand over rather than dissolve: two bars of text cross-fading in one box
+   reads as a smear, so the old bar goes first and the new one arrives after. */
  ::view-transition-old(cmp-tray){animation:vt-out 100ms linear both}
  ::view-transition-new(cmp-tray){animation:vt-in 140ms 100ms linear both}
  @keyframes vt-out{to{opacity:0}}
@@ -415,6 +422,12 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .main-t tr.detail{display:block}
  .main-t tbody.item{content-visibility:auto;contain-intrinsic-size:auto 118px}
 }
+/* A ticked row is one of the rows that fly into the comparison, and a contained
+   row that is off screen has no box to capture: the transition would have to
+   uncontain it, which lays the row out for the first time inside the open. A
+   ticked row is rendered instead, from the moment it is ticked, when it is on
+   screen and laid out anyway. At most three rows are ever ticked. */
+tbody.item:has(input.cmp:checked){content-visibility:visible}
 @media (min-width:821px) and (max-width:1100px){
  .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 28% 84px 84px 84px 96px 96px 1fr}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
