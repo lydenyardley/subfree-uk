@@ -2,9 +2,9 @@
 
 - Status: Accepted
 - Date: 22 October 2026
-- Source: `docs/audits/2026-10-21-critiquito-design-critique.md`, items 1 to
-  18. The measurements are in `docs/performance-budget.md` and in the check
-  names below.
+- Source: the Critiquito design critique of 21 October 2026, items 1 to 18,
+  and the owner's review of 22 October 2026. The measurements are in
+  `docs/performance-budget.md` and in the check names below.
 
 ## Context
 
@@ -207,6 +207,21 @@ defect. `axe_violations()` now lays every card out with a style tag for the
 measurement and removes it afterwards, the same way the performance budget
 measures the uncontained page. No rule is turned off, and the strict state is
 the one a reader scrolls through.
+
+## The document closes
+
+Re-checked on 22 October 2026 against the built page and the named checks:
+all eighteen are either fixed and held by a check, or declined above. Two of
+them are no longer held by the check that closed them. Item 13's colour key
+was reverted at the owner's request, and with it went `page key`, which had
+also been holding item 8's three phone lines. `phone short answer` now asserts
+those three lines, their colours and that each fits in two lines. Item 12 is
+held by `labels`: the plan column prints `No plan` for a model with no plan,
+and a bare dash anywhere in that column fails the build.
+
+The audit document is deleted with this record, as the 20 October audit was,
+so the only surviving account of the before is this file's own description of
+it.
 
 ## Consequences
 

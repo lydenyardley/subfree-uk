@@ -80,6 +80,69 @@ def phone_first_paint(phone):
         f"verdict={phone['verdict']}, short answer={phone['shortAnswer']}"
     ]
 
+def short_answer_check(page):
+    """The phone keeps all three recommendations, each on its own line.
+
+    The desktop's longer verdict block is hidden on a phone. The audit's item 8
+    was that the short answer had shrunk to one condensed sentence, dropping
+    the reasons and the warning, so all three lines have to be there, in their
+    own colours, and each has to fit in two lines.
+    """
+    state = page.evaluate(
+        """() => {
+            const short = document.querySelector('.vshort');
+            const verdict = document.querySelector('.verdict');
+            const spans = Array.from(short.querySelectorAll('span'));
+            return {
+                shown: getComputedStyle(short).display !== 'none',
+                verdict: verdict ? getComputedStyle(verdict).display : 'none',
+                lines: spans.map((s) => {
+                    const cs = getComputedStyle(s);
+                    return {
+                        cls: s.className,
+                        words: s.textContent.replace(/\s+/g, ' ').trim(),
+                        border: parseFloat(cs.borderLeftWidth),
+                        colour: cs.borderLeftColor,
+                        height: s.getBoundingClientRect().height,
+                        line: parseFloat(cs.lineHeight)
+                    };
+                })
+            };
+        }"""
+    )
+    problems = []
+    if not state["shown"] or state["verdict"] != "none":
+        problems.append(
+            f"the phone shows the short answer={state['shown']} and the verdict "
+            f"block={state['verdict']}"
+        )
+    if [line["cls"] for line in state["lines"]] != ["v-best", "v-batt", "v-avoid"]:
+        problems.append(
+            f"the phone's short answer lines are {[line['cls'] for line in state['lines']]}"
+        )
+    wants = (
+        ("Reolink", "best overall"),
+        ("Tapo", "easiest battery"),
+        # The third line is the warning the condensed sentence dropped: Ring
+        # needs a plan, and Blink and Arlo need hardware.
+        ("Ring", "Blink", "Arlo"),
+    )
+    for line, needed in zip(state["lines"], wants):
+        missing = [word for word in needed if word not in line["words"]]
+        if missing:
+            problems.append(f"the {line['cls']} line is missing {missing}: {line['words']!r}")
+        if line["border"] < 2:
+            problems.append(f"the {line['cls']} line has no colour rule: {line['border']}px")
+        if line["line"] and line["height"] > line["line"] * 2 + 1:
+            problems.append(
+                f"the {line['cls']} line takes {line['height'] / line['line']:.1f} lines"
+            )
+    colours = {line["colour"] for line in state["lines"]}
+    if len(colours) != 3:
+        problems.append(f"the three short-answer lines share {len(colours)} colour(s): {colours}")
+    return problems
+
+
 def cost_cells(cost):
     return [] if cost["aFits"] and cost["bFits"] else [f"phone cost cells overflow: {cost}"]
 
@@ -294,6 +357,11 @@ CHECKS = [
     Check(
         "phone cost cells", "phone", 11, "",
         lambda ctx: cost_cells(ctx.phone["cost"]),
+    ),
+    Check(
+        "phone short answer", "phone", 24,
+        "all three recommendations are on the phone, in their own colours, one or two lines each",
+        lambda ctx: short_answer_check(ctx.page),
     ),
     Check(
         "phone table header", "phone", 12,
