@@ -37,8 +37,9 @@ generated-with lines, or tool attribution to commit messages.
 
 ## Data
 
-`ROWS` in `build/build.py` is the dataset. The sourcing rules, including how
-to close a "Not yet verified" note, are in [AGENTS.md](AGENTS.md).
+`ROWS` in `build/rows.py` is the dataset, beside its sources and the figures
+derived from them. The sourcing rules, including how to close a "Not yet
+verified" note, are in [AGENTS.md](AGENTS.md).
 
 ## Generated files
 

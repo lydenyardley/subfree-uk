@@ -20,7 +20,8 @@ img/                         product photos (WebP), generated
 IMAGE_SOURCES.md             where every photo came from, generated
 .nojekyll                    serve files as-is
 build/
-  build.py                   THE single source: all doorbell data (ROWS), sources (S) and the page assembly
+  rows.py                    the doorbell data (ROWS), its sources (S) and every derived figure
+  build.py                   the page assembly: index.html, the alias, 404.html, the assets and the two data files
   page.css, page.js          the page's stylesheet and script, emitted as hashed assets
   check.py                   rebuild, data recomputation, structure, accessibility and link audit (Playwright, axe-core)
   check_commits.py           commit message format check (run by CI on pull requests)
@@ -68,4 +69,4 @@ Scripts work from any directory. To use an installed Chrome instead of Playwrigh
 python build/check_commits.py origin/main..HEAD
 ```
 
-To change data: edit `ROWS` / `S` in `build/build.py`, run it, check the page locally, then commit and push `main`. Pages redeploys in about a minute.
+To change data: edit `ROWS` / `S` in `build/rows.py`, run `python build/build.py`, check the page locally, then commit and push `main`. Pages redeploys in about a minute.

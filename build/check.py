@@ -33,8 +33,8 @@ Needs the venv from README.md. Exit status is 1 when an issue is found.
 import argparse
 import csv
 import functools
+import hashlib
 import http.server
-import importlib.util
 import os
 import statistics
 import subprocess
@@ -2742,9 +2742,9 @@ def open_compare(page, ids=SHORTLIST_IDS):
         page.wait_for_timeout(350)
 
 
-def compare_cells(build):
+def compare_cells(rows):
     """The cheapest 3-year cost, what it is made of, and the two differences."""
-    by_id = {row["id"]: row for row in build.ROWS}
+    by_id = {row["id"]: row for row in rows.ROWS}
     keeps = [by_id[id]["keep3"] for id in SHORTLIST_IDS]
     low = min(keeps)
     return [
@@ -2808,14 +2808,20 @@ class Audit:
         return [problem for result in self.results for problem in result["problems"]]
 
 
-def load_build():
-    path = os.path.join(ROOT, "build", "build.py")
-    spec = importlib.util.spec_from_file_location("subfree_build", path)
-    module = importlib.util.module_from_spec(spec)
+def load_rows():
+    """The dataset module, imported on its own.
+
+    `rows.py` writes nothing and exits for nothing, so importing it cannot
+    disturb the tree the rebuild check has just compared. The page assembly is
+    only ever run as a subprocess, by `rebuild()`.
+    """
+    build_dir = os.path.join(ROOT, "build")
+    if build_dir not in sys.path:
+        sys.path.insert(0, build_dir)
     try:
-        spec.loader.exec_module(module)
-    except SystemExit as error:
-        return None, str(error)
+        import rows as module
+    except Exception as error:
+        return None, f"build/rows.py did not import: {type(error).__name__}: {error}"
     return module, None
 
 
@@ -2835,17 +2841,17 @@ def unverified_problems(rows):
     return problems
 
 
-def data_problems(build, pages):
+def data_problems(rows, pages):
     """Recompute every derived figure and compare it with the files that ship."""
-    problems = list(build.row_problems()) + unverified_problems(build.ROWS)
+    problems = list(rows.row_problems()) + unverified_problems(rows.ROWS)
     with open(os.path.join(ROOT, "data", "doorbells.csv"), newline="", encoding="utf-8") as handle:
         shipped = list(csv.DictReader(handle))
-    if len(shipped) != len(build.ROWS):
-        return problems + [f"the CSV has {len(shipped)} rows for {len(build.ROWS)} in ROWS"]
-    for row, out in zip(build.ROWS, shipped):
+    if len(shipped) != len(rows.ROWS):
+        return problems + [f"the CSV has {len(shipped)} rows for {len(rows.ROWS)} in ROWS"]
+    for row, out in zip(rows.ROWS, shipped):
         price, extra, sub = row["price"], row["extra"], row["sub"]
         nosub3 = round(price + extra, 2)
-        sub3 = round(price + build.MONTHS * sub, 2) if sub is not None else None
+        sub3 = round(price + rows.MONTHS * sub, 2) if sub is not None else None
         options = ([] if not row["free_records"] else [nosub3]) + ([] if sub3 is None else [sub3])
         keep3 = min(options)
         wanted = {
@@ -2857,7 +2863,7 @@ def data_problems(build, pages):
             "3-yr cost with cheapest plan, monthly (£)": "" if sub3 is None else f"{sub3:.2f}",
             "Cheapest 3-yr cost to keep recordings (£)": f"{keep3:.2f}",
             "Plan price region": row["plan_region"],
-            "Last checked": build.CHECKED,
+            "Last checked": rows.CHECKED,
         }
         for key, value in wanted.items():
             if out[key] != value:
@@ -2865,27 +2871,27 @@ def data_problems(build, pages):
         if (row["keep3"], row["nosub3"], row["sub3"]) != (keep3, nosub3, sub3):
             problems.append(f"{row['id']}: a derived figure drifted from price, extra and plan")
         for key in ("price_src", "rec_src", "history_src", "ha_src"):
-            if row[key] not in build.S:
+            if row[key] not in rows.S:
                 problems.append(f"{row['id']}: {key} {row[key]!r} is not in S")
         for key in row["src"]:
-            if key not in build.S:
+            if key not in rows.S:
                 problems.append(f"{row['id']}: source {key!r} is not in S")
         if len(set(row["src"])) != len(row["src"]):
             problems.append(f"{row['id']}: duplicate source keys")
     index = pages["index.html"]
     table_rows = index.count('<tbody class="item"')
-    if table_rows != len(build.ROWS):
-        problems.append(f"the page has {table_rows} rows for {len(build.ROWS)} in ROWS")
-    eu = sum(1 for row in build.ROWS if row["plan_region"] == "EU")
+    if table_rows != len(rows.ROWS):
+        problems.append(f"the page has {table_rows} rows for {len(rows.ROWS)} in ROWS")
+    eu = sum(1 for row in rows.ROWS if row["plan_region"] == "EU")
     if index.count('data-region="EU"') != eu:
         problems.append("the EU plan rows are not marked as data on the page")
     return problems
 
 
-def freshness_problems(build):
-    age = (date.today() - build._CHECKED_DATE).days
+def freshness_problems(rows):
+    age = (date.today() - rows._CHECKED_DATE).days
     if age < 0:
-        return [f"CHECKED_ISO {build.CHECKED_ISO} is {-age} days in the future"], None
+        return [f"CHECKED_ISO {rows.CHECKED_ISO} is {-age} days in the future"], None
     if age > 60:
         return (
             [f"the data was last checked {age} days ago (limit 60); re-check it and move CHECKED_ISO"],
@@ -2896,24 +2902,29 @@ def freshness_problems(build):
     return [], None
 
 
-def emitted_sources(build, pages):
-    """The page loads the hashed files the build just wrote, not a stale copy."""
+def emitted_sources(pages):
+    """The page loads the committed CSS and script by their own content hash.
+
+    The hash is taken from the file, not from the module that wrote it, so a
+    page pointing at an older version fails here even when the build itself is
+    happy. `rebuild` covers the other half: that the committed file is what the
+    build would write.
+    """
     html = pages["index.html"]
     problems = []
-    if f'href="{build.CSS_URL}"' not in html:
-        problems.append(f"the page does not load {build.CSS_URL}")
-    if f'src="{build.JS_URL}"' not in html:
-        problems.append(f"the page does not load {build.JS_URL}")
+    for name, link in (("assets/page.css", "href"), ("assets/page.js", "src")):
+        path = os.path.join(ROOT, name)
+        if not os.path.exists(path):
+            problems.append(f"{name} is missing")
+            continue
+        text = open(path, encoding="utf-8").read()
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:10]
+        if f'{link}="{name}?v={digest}"' not in html:
+            problems.append(f"the page does not load {name}?v={digest}")
     if "<style>" in html:
         problems.append("the page still inlines its stylesheet")
     if "@@DATA@@" in html or "@@CHECKED@@" in html:
         problems.append("a build placeholder leaked into the page")
-    for name, text in ((build.CSS_FILE, build.PAGE_CSS), (build.JS_FILE, build.PAGE_JS)):
-        path = os.path.join(ROOT, name)
-        if not os.path.exists(path):
-            problems.append(f"{name} is missing")
-        elif open(path, encoding="utf-8").read() != text:
-            problems.append(f"{name} does not match the build")
     return problems
 
 
@@ -3286,24 +3297,24 @@ def main():
     )
 
     pages = load_pages()
-    build_mod, build_error = load_build()
+    dataset, dataset_error = load_rows()
     audit.add(
         "dataset",
-        [build_error] if build_error else [],
+        [dataset_error] if dataset_error else [],
         "the dataset loads and every row has the keys it needs",
     )
 
-    rows = build_mod.ROWS if build_mod else []
-    source_count = len(build_mod.FN) if build_mod else 0
-    if build_mod:
+    rows = dataset.ROWS if dataset else []
+    source_count = len(dataset.FN) if dataset else 0
+    if dataset:
         audit.run(
             "derived figures",
-            lambda: data_problems(build_mod, pages),
+            lambda: data_problems(dataset, pages),
             "every derived figure recomputes, every source resolves, every open fact names its blocker",
         )
 
         def fresh():
-            problems, note = freshness_problems(build_mod)
+            problems, note = freshness_problems(dataset)
             if note:
                 audit.note(note)
             return problems
@@ -3311,17 +3322,16 @@ def main():
         audit.run(
             "data freshness",
             fresh,
-            f"the data is dated {build_mod.CHECKED} and is inside its 60-day limit",
+            f"the data is dated {dataset.CHECKED} and is inside its 60-day limit",
         )
     else:
         print("  skip  derived figures and freshness: the dataset did not load")
 
-    if build_mod:
-        audit.run(
-            "emitted sources",
-            lambda: emitted_sources(build_mod, pages),
-            "the page loads the hashed CSS and JavaScript this build wrote",
-        )
+    audit.run(
+        "emitted sources",
+        lambda: emitted_sources(pages),
+        "the page loads the committed CSS and script at their own content hash",
+    )
     audit.run(
         "generated alias",
         lambda: alias_problems(pages),
@@ -3406,12 +3416,12 @@ def main():
                 )
                 audit.run(
                     "labels",
-                    lambda: labels_check(page, build_mod.REC_LABEL["brief"] if build_mod else None),
+                    lambda: labels_check(page, dataset.REC_LABEL["brief"] if dataset else None),
                     "Nest names its 3-hour limit, no-plan reads as words, PoE is defined at the filter",
                 )
                 audit.run(
                     "closing line",
-                    lambda: footer_check(page, build_mod.CHECKED if build_mod else None),
+                    lambda: footer_check(page, dataset.CHECKED if dataset else None),
                     "the page ends on one line with the date, an issue link and a way back",
                 )
                 audit.run(
@@ -3518,12 +3528,12 @@ def main():
                     ready_for_compare()
                 audit.run(
                     "shortlist copy",
-                    lambda: shortlist_check(page, build_mod.CHECKED if build_mod else None),
+                    lambda: shortlist_check(page, dataset.CHECKED if dataset else None),
                     "Copy shortlist writes the models, costs, catches and a ?cmp= link",
                 )
                 audit.run(
                     "compare cost row",
-                    lambda: costrow_check(page, COMPARE_ROWS, compare_cells(build_mod) if build_mod else []),
+                    lambda: costrow_check(page, COMPARE_ROWS, compare_cells(dataset) if dataset else []),
                     "the compare table names the cheapest 3-year cost and each difference",
                 )
                 audit.run(

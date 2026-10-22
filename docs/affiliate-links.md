@@ -160,7 +160,7 @@ simplest first:
    counts or a single place to swap tags. Only worth it if we need reporting
    that the networks do not already give us.
 
-Link data belongs in `build/build.py` with the rest of the sources: add an
+Link data belongs in `build/rows.py` with the rest of the sources: add an
 optional `aff` URL per source or per row, and one helper that emits
 `rel="sponsored nofollow noopener noreferrer"` plus the disclosure marker.
 Everything else on the page stays generated, so the CSV and Markdown exports
