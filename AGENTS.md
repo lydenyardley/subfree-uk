@@ -51,9 +51,10 @@ Move it only after re-checking the data.
 
 - The page's CSS and JavaScript are `build/page.css` and `build/page.js`. They
   are emitted as `assets/page.css` and `assets/page.js`, linked with a content
-  version in the URL, not inlined. A change there needs a
-  matching assertion in `build/check.py`, or the audit will not catch a
-  regression.
+  version in the URL, not inlined. A change there needs a matching assertion in
+  the family that owns it under `build/checks/` (`structure`, `behaviour`,
+  `compare`, `accessibility`, `performance`, `browsers` or `data`), or the
+  audit will not catch a regression. `build/check.py` is the runner.
 - `build/check.py` rebuilds and fails if a committed generated file is stale.
   Commit the regenerated files in the same commit as the source change.
 - `python build/check.py --only "<name>"` runs one named check (or a
