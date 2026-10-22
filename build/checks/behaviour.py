@@ -305,7 +305,12 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
     return problems
 
 def sources_check(page, source_count):
-    """The source list is a disclosure grouped by host, with stable numbers."""
+    """The numbered source list belongs to the comparison, grouped by host.
+
+    The table's details name their own sources, so the numbered list is the
+    comparison's reference: it is the view that reads every figure side by
+    side, and it is the only one that shows the list at all.
+    """
     problems = []
 
     def read():
@@ -313,6 +318,7 @@ def sources_check(page, source_count):
             """() => {
                 const box = document.getElementById('sources');
                 const summary = box.querySelector('summary');
+                const fits = box.scrollWidth <= box.clientWidth + 1;
                 const values = Array.from(box.querySelectorAll('li')).map((li) => +li.getAttribute('value'));
                 const groups = Array.from(box.querySelectorAll('.fns-g')).map((g) => ({
                     host: g.querySelector('h3').textContent.trim(),
@@ -322,6 +328,9 @@ def sources_check(page, source_count):
                         .map((a) => a.href)
                 }));
                 return {
+                    underCompare: !!box.previousElementSibling && box.previousElementSibling.id === 'compare',
+                    visible: box.getClientRects().length > 0,
+                    fits,
                     tag: box.tagName,
                     open: box.open,
                     summary: summary.textContent.replace(/\\s+/g, ' ').trim(),
@@ -335,34 +344,94 @@ def sources_check(page, source_count):
             }"""
         )
 
+    # The list is below the comparison and revealed as the reader reaches it,
+    # so a check of its layout has to scroll there the way a reader would.
+    page.evaluate("document.getElementById('cmp-end').scrollIntoView()")
+    page.wait_for_timeout(500)
+    wide = read()
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(150)
+    page.evaluate("document.getElementById('cmp-end').scrollIntoView()")
+    page.wait_for_timeout(500)
     phone = read()
     page.set_viewport_size({"width": 1280, "height": 900})
-    page.wait_for_timeout(120)
-    wide = read()
+    page.wait_for_timeout(150)
 
+    for where, state in (("1280px", wide), ("390px", phone)):
+        if not state["underCompare"]:
+            problems.append(f"the source list is not under the comparison at {where}")
+        if not state["visible"]:
+            problems.append(f"the source list is not on screen at {where}")
     if phone["tag"] != "DETAILS" or wide["tag"] != "DETAILS":
         problems.append(f"the source list is a {phone['tag']}, not a disclosure")
     if phone["open"]:
         problems.append("the source list is open on a 390px screen")
     if not wide["open"]:
         problems.append("the source list is closed on a 1280px screen")
-    if phone["count"] != source_count:
-        problems.append(f"the source list holds {phone['count']} entries, expected {source_count}")
-    if phone["values"] != list(range(1, source_count + 1)):
-        problems.append(f"the footnote numbers are not 1 to 52: {phone['values'][:6]}")
-    if phone["headingInSummary"] is False:
+    if wide["count"] != source_count:
+        problems.append(f"the source list holds {wide['count']} entries, expected {source_count}")
+    if wide["values"] != list(range(1, source_count + 1)):
+        problems.append(f"the footnote numbers are not 1 to 52: {wide['values'][:6]}")
+    if wide["headingInSummary"] is False:
         problems.append("the Sources heading is no longer a heading inside the summary")
-    if f"{source_count} links" not in phone["summary"]:
-        problems.append(f"the summary reads {phone['summary']!r}")
-    if phone["summaryHeight"] < 24:
-        problems.append(f"the summary is {phone['summaryHeight']}px tall")
-    if len(phone["groups"]) < 10:
-        problems.append(f"the list has {len(phone['groups'])} host groups")
-    if sum(group["n"] for group in phone["groups"]) != source_count:
-        problems.append(f"the groups hold {[g['n'] for g in phone['groups']]}")
-    foreign = [link for group in phone["groups"] for link in group["foreign"]]
+    if f"{source_count} links" not in wide["summary"]:
+        problems.append(f"the summary reads {wide['summary']!r}")
+    for where, state in (("1280px", wide), ("390px", phone)):
+        if state["summaryHeight"] < 24:
+            problems.append(f"the summary is {state['summaryHeight']}px tall at {where}")
+        if not state["fits"]:
+            problems.append(f"the source list is wider than its column at {where}")
+    if len(wide["groups"]) < 10:
+        problems.append(f"the list has {len(wide['groups'])} host groups")
+    if sum(group["n"] for group in wide["groups"]) != source_count:
+        problems.append(f"the groups hold {[g['n'] for g in wide['groups']]}")
+    foreign = [link for group in wide["groups"] for link in group["foreign"]]
     if foreign:
         problems.append(f"links sit under the wrong host: {foreign[:3]}")
+
+    # A source named in a row points at its numbered entry, and the list is
+    # hidden while the comparison is closed: following one has to show the list
+    # and land on the entry. Opening the row the link already sits in would
+    # take the reader nowhere, which is what a dead citation looks like.
+    page.evaluate("document.getElementById('cmp-close').click()")
+    page.wait_for_timeout(500)
+    followed = page.evaluate(
+        """() => {
+            const toggle = document.querySelector('#tbl tbody.item button.more');
+            if (toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+            const link = document.querySelector('#tbl tbody.item .srcs a.fn');
+            const hiddenBefore = document.getElementById('sources').hidden;
+            const href = link.getAttribute('href');
+            link.click();
+            return { hiddenBefore, href };
+        }"""
+    )
+    page.wait_for_timeout(600)
+    landed = page.evaluate(
+        """(href) => {
+            const box = document.getElementById('sources');
+            const entry = document.querySelector(href);
+            const r = entry ? entry.getBoundingClientRect() : null;
+            return {
+                shown: box.getClientRects().length > 0,
+                hidden: box.hidden,
+                hash: location.hash,
+                inView: !!r && r.bottom > 0 && r.top < window.innerHeight
+            };
+        }""",
+        followed["href"],
+    )
+    if not followed["hiddenBefore"]:
+        problems.append("the source list was on screen before a row's source was followed")
+    if not landed["shown"] or landed["hidden"]:
+        problems.append(f"following a row's source leaves the list hidden: {landed}")
+    if landed["hash"] != followed["href"] or not landed["inView"]:
+        problems.append(
+            f"following a row's source does not land on {followed['href']}: {landed}"
+        )
+    # Put the comparison back for the checks that follow.
+    page.evaluate("document.getElementById('tray-go').click()")
+    page.wait_for_timeout(500)
     return problems
 
 def footer_check(page, checked=None):
@@ -616,6 +685,23 @@ def sort_figure_check(page):
             pick('sub3');
             states.sub = read();
             pick('keep3');
+            // The sort mark: one per sortable header, pale until its column is
+            // the one ordering the list, then the direction it is going in.
+            const marks = () => Array.from(document.querySelectorAll('#tbl thead th[data-sort]')).map((th) => {
+                const si = th.querySelector('.si');
+                return {
+                    sort: th.getAttribute('aria-sort'),
+                    has: !!si,
+                    up: si ? getComputedStyle(si, '::before').opacity : '',
+                    down: si ? getComputedStyle(si, '::after').opacity : ''
+                };
+            });
+            states.unsorted = marks();
+            pick('price');
+            states.ascending = marks().find((m) => m.sort === 'ascending');
+            document.querySelector('#tbl thead th[data-sort=price] button').click();
+            states.descending = marks().find((m) => m.sort === 'descending');
+            pick('keep3');
             return states;
         }"""
     )
@@ -647,6 +733,26 @@ def sort_figure_check(page):
             )
         if words not in state[key]["note"].lower():
             problems.append(f"the {cell} sort note reads {state[key]['note']!r}")
+    marks = state["unsorted"]
+    if len(marks) < 6:
+        problems.append(f"{len(marks)} sortable headers, expected 6")
+    if any(not mark["has"] for mark in marks):
+        problems.append("a sortable header has no sort mark")
+    # The default order is the computed 3-year cost, which is no column, so no
+    # header claims a direction. A column that does claim one has to be the
+    # column the list is sorted by.
+    live = [mark for mark in marks if mark["sort"] != "none"]
+    if live:
+        problems.append(f"the default sort marks {[mark['sort'] for mark in marks]}")
+    if not state["ascending"]:
+        problems.append("sorting by price marks no header as ascending")
+    quiet = [mark for mark in marks if mark["sort"] == "none" and mark["has"]]
+    if any(mark["up"] != mark["down"] for mark in quiet):
+        problems.append("an unsorted header leans one way instead of reading as one mark")
+    if state["ascending"] and float(state["ascending"]["up"]) <= float(state["ascending"]["down"]):
+        problems.append("the ascending mark does not lift its up half")
+    if state["descending"] and float(state["descending"]["down"]) <= float(state["descending"]["up"]):
+        problems.append("the descending mark does not lift its down half")
     return problems
 
 def price_link_check(page):
@@ -813,6 +919,24 @@ def details_check(page):
     page.wait_for_timeout(120)
     return problems
 
+PRINT_STATE = """() => {
+    const row = document.querySelector('#tbl tbody.item tr.main');
+    const left = (el) => Math.round(el.getBoundingClientRect().left);
+    const shown = (el) => getComputedStyle(el).display !== 'none';
+    const headings = Array.from(document.querySelectorAll('#tbl thead th')).filter(shown);
+    const values = Array.from(row.children).filter(shown);
+    const th = document.querySelector('#tbl thead th.c-cmp');
+    const td = row.querySelector('td.c-cmp');
+    return {
+        headings: headings.map(left),
+        values: values.map(left),
+        box: [th, td].map((el) => (el ? getComputedStyle(el).display : 'missing')),
+        badge: getComputedStyle(document.querySelector('.zi')).display,
+        marks: getComputedStyle(document.querySelector('#tbl thead th .si')).display,
+        chevron: getComputedStyle(document.querySelector('.more-w')).display
+    };
+}"""
+
 def print_check(page):
     """On paper each figure sits under its own heading.
 
@@ -828,23 +952,17 @@ def print_check(page):
     page.emulate_media(media="print")
     try:
         page.wait_for_timeout(200)
-        state = page.evaluate(
-            """() => {
-                const row = document.querySelector('#tbl tbody.item tr.main');
-                const left = (el) => Math.round(el.getBoundingClientRect().left);
-                const shown = (el) => getComputedStyle(el).display !== 'none';
-                const headings = Array.from(document.querySelectorAll('#tbl thead th')).filter(shown);
-                const values = Array.from(row.children).filter(shown);
-                const th = document.querySelector('#tbl thead th.c-cmp');
-                const td = row.querySelector('td.c-cmp');
-                return {
-                    headings: headings.map(left),
-                    values: values.map(left),
-                    box: [th, td].map((el) => (el ? getComputedStyle(el).display : 'missing')),
-                    badge: getComputedStyle(document.querySelector('.zi')).display
-                };
-            }"""
-        )
+        # Switching to print re-lays the page out, and the first read after the
+        # switch can still describe the screen layout: it reported the first
+        # cell one compare-track right of where the printed page puts it. Read
+        # until two reads agree, then judge the layout that settled.
+        state = page.evaluate(PRINT_STATE)
+        for _ in range(4):
+            page.wait_for_timeout(80)
+            settled = page.evaluate(PRINT_STATE)
+            if settled == state:
+                break
+            state = settled
     finally:
         page.emulate_media(media="screen")
         page.set_viewport_size({"width": 1280, "height": 900})
@@ -867,6 +985,10 @@ def print_check(page):
             )
     if state["badge"] != "none":
         problems.append("the photo's magnifier badge prints beside every photo")
+    if state["marks"] != "none":
+        problems.append("the sort marks print beside every heading")
+    if state["chevron"] != "none":
+        problems.append("the row's chevron prints where there is nothing to open")
     return problems
 
 def jump_check(page):
@@ -1068,17 +1190,54 @@ def desktop_rows_check(page, row_count):
     return problems
 
 def hit_check(page):
-    """A 44px hit area means a click 8px below Details still opens it."""
+    """The row opens from a chevron: 24px, no word, and a 44px hit area."""
     problems = []
     button = page.locator("button.more").first
     button.scroll_into_view_if_needed()
     box = button.bounding_box()
     if not box:
-        return ["no visible Details button"]
+        return ["no visible row toggle"]
+    shape = page.evaluate(
+        """() => {
+            const b = document.querySelector('button.more');
+            const own = Array.from(b.childNodes)
+                .filter((n) => n.nodeType === 3)
+                .map((n) => n.textContent.trim())
+                .join('');
+            const label = b.querySelector('.vh');
+            return {
+                width: Math.round(b.getBoundingClientRect().width),
+                height: Math.round(b.getBoundingClientRect().height),
+                own,
+                label: label ? label.textContent.trim() : '',
+                turn: getComputedStyle(b, '::before').transform
+            };
+        }"""
+    )
+    if shape["own"]:
+        problems.append(f"the row toggle still carries the word {shape['own']!r}")
+    if shape["width"] < 24 or shape["height"] < 24:
+        problems.append(f"the row toggle is {shape['width']}x{shape['height']}px")
+    if shape["label"].lower() != "show details":
+        problems.append(f"the row toggle is named {shape['label']!r}")
     page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
     page.wait_for_timeout(120)
     if button.get_attribute("aria-expanded") != "true":
-        problems.append("a click 8px below Details does not open it")
+        problems.append("a click 8px below the row toggle does not open the row")
+    opened = page.evaluate(
+        """() => {
+            const b = document.querySelector('button.more');
+            const label = b.querySelector('.vh');
+            return {
+                turn: getComputedStyle(b, '::before').transform,
+                label: label ? label.textContent.trim() : ''
+            };
+        }"""
+    )
+    if opened["turn"] == shape["turn"]:
+        problems.append("the chevron does not turn when the row opens")
+    if opened["label"].lower() != "hide details":
+        problems.append(f"the open row toggle is named {opened['label']!r}")
     page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
     page.wait_for_timeout(80)
     return problems
@@ -1380,8 +1539,8 @@ CHECKS = [
         lambda ctx: bars_check(ctx.page, ctx.row_count),
     ),
     Check(
-        "source list", "phone", 21,
-        "the sources sit in a host-grouped disclosure, closed below 821px and open above it",
+        "source list", "compare", 72,
+        "the numbered sources sit in the comparison, grouped by host, closed on a phone and open at 1280",
         lambda ctx: sources_check(ctx.page, ctx.source_count),
     ),
     Check(
@@ -1431,7 +1590,7 @@ CHECKS = [
     ),
     Check(
         "sort figure", "compare", 48,
-        "the note under the sort control names the figure, and each row bolds the cell the order uses",
+        "the note names the figure, each row bolds the cell the order uses, and every sortable header shows its direction",
         lambda ctx: sort_figure_check(ctx.page),
     ),
     Check(
@@ -1455,7 +1614,7 @@ CHECKS = [
         lambda ctx: print_check(ctx.page),
     ),
     Check(
-        "photo lightbox", "compare", 75,
+        "photo lightbox", "compare", 76,
         lambda ctx: f"{ctx.lightbox['buttons']} photos open in the lightbox, named, "
         "sized from the large file, and Esc closes it",
         lambda ctx: ctx.lightbox["problems"],

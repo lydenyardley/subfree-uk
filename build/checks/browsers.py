@@ -20,8 +20,13 @@ def request_status(url):
     except urllib.error.HTTPError as error:
         return error.code
 
-def nojs_check(browser, url, row_count):
-    """Without JavaScript the inert filters are hidden and the table still stands."""
+def nojs_check(browser, url, row_count, source_count):
+    """Without JavaScript the inert filters are hidden and the table still stands.
+
+    The numbered sources are revealed by a script in the comparison, so the
+    no-js page is where a stylesheet rule has to keep them: without JavaScript
+    the list is the only way to reach a citation's URL, and it is in the HTML.
+    """
     problems = []
     context = browser.new_context(java_script_enabled=False)
     try:
@@ -36,6 +41,8 @@ def nojs_check(browser, url, row_count):
             "rows": page.locator("#tbl tbody.item").count(),
             "theme": page.locator("#theme").is_visible(),
             "details": page.locator(".more-w").first.is_visible(),
+            "sources": page.locator("#sources").is_visible(),
+            "sourceEntries": page.locator("#sources .fns li").count(),
         }
     finally:
         context.close()
@@ -49,6 +56,13 @@ def nojs_check(browser, url, row_count):
         problems.append(f"no no-JavaScript note: {state['note']!r}")
     if state["rows"] < row_count:
         problems.append(f"only {state['rows']} rows render without JavaScript")
+    if not state["sources"]:
+        problems.append("the numbered sources are hidden without JavaScript")
+    if state["sourceEntries"] != source_count:
+        problems.append(
+            f"the sources hold {state['sourceEntries']} entries without JavaScript, "
+            f"expected {source_count}"
+        )
     return problems
 
 def firefox_check(playwright, url, row_count):
@@ -160,21 +174,21 @@ def console_errors(ctx):
 
 CHECKS = [
     Check(
-        "no JavaScript", "post", 79,
-        "without JavaScript the inert controls are hidden and every row remains",
-        lambda ctx: nojs_check(ctx.browser, ctx.url, ctx.row_count),
+        "no JavaScript", "post", 80,
+        "without JavaScript the inert controls are hidden, every row remains and the sources stand",
+        lambda ctx: nojs_check(ctx.browser, ctx.url, ctx.row_count, ctx.source_count),
     ),
     Check(
-        "firefox structural pass", "post", 80,
+        "firefox structural pass", "post", 81,
         "Firefox renders the same structure, layout and axe results",
         lambda ctx: firefox_check(ctx.playwright, ctx.url, ctx.row_count),
     ),
     Check(
-        "console errors", "report", 81, "no console or page errors",
+        "console errors", "report", 82, "no console or page errors",
         console_errors,
     ),
     Check(
-        "external links", "report", 82,
+        "external links", "report", 83,
         lambda ctx: f"requested {len(set(ctx.snapshot['externals']))} external links",
         external_links,
     ),

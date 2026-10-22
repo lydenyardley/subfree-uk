@@ -93,18 +93,29 @@ select{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var
 .count button.link{position:relative;padding:10px 6px;margin:-10px -6px}
 button.link{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}
 table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
-.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 12px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);text-align:left;padding:1rem;border-bottom:2px solid var(--ink);vertical-align:middle;white-space:normal}
+.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 12px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);text-align:left;padding:0.5rem 1rem;border-bottom:2px solid var(--ink);vertical-align:middle;white-space:normal}
 .main-t thead th.num{text-align:right}
-.main-t thead th button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit;flex:1 1 auto;min-width:0}
-/* The marker is a link to the explanation, so it is a target: 26px, whatever
-   the letter inside it looks like. */
-.main-t thead th .mk{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:26px;min-height:26px;margin:.1rem 0 0 .35rem;font:600 12px/1 var(--sans);color:var(--ink3);text-decoration:none}
+.main-t thead th button{position:relative;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit;flex:1 1 auto;min-width:0}
+/* The marker reads as a superscript on the heading, not as a column of its own:
+   a 26px box beside the word took the width the heading needed and left it
+   five lines deep. Its box is still 24px, the smallest a target may be, but
+   its negative margins give the heading back the 8px the glyph does not use. */
+.main-t thead th .mk{display:grid;place-items:center;flex:none;align-self:flex-end;width:24px;height:24px;margin:-4px -8px -4px 0;font:600 11px/1 var(--sans);color:var(--ink3);text-decoration:none}
 .main-t thead th .mk:hover{color:var(--acc);text-decoration:underline}
 .main-t thead th button:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.main-t thead th[aria-sort=ascending] button::after{content:"\\00a0\\2191"}
-.main-t thead th[aria-sort=descending] button::after{content:"\\00a0\\2193"}
+/* The sort mark: two triangles, the direction the next click takes you in at
+   full strength and the other one pale. An unsorted column shows both pale, so
+   a header that can be clicked says so before it is clicked. */
+/* The mark sits in the header's own right padding, so it never takes width
+   from the words: a column three words wide stays three lines, not four. */
+.main-t thead th .si{position:absolute;top:.15em;right:-.62rem;display:flex;flex-direction:column;gap:2px}
+.main-t thead th .si::before,.main-t thead th .si::after{content:"";width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent}
+.main-t thead th .si::before{border-bottom:4px solid currentColor;opacity:.3}
+.main-t thead th .si::after{border-top:4px solid currentColor;opacity:.3}
+.main-t thead th[aria-sort=ascending] .si::before{opacity:1}
+.main-t thead th[aria-sort=descending] .si::after{opacity:1}
 .main-t thead sup{text-transform:none}
-.main-t td,.main-t tbody th{padding:1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}
+.main-t td,.main-t tbody th{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}
 .main-t tbody.item:hover tr.main{background:var(--tint)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .main-t td.num,.main-t th.num{text-align:right}
@@ -116,9 +127,12 @@ table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
 .buy:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 td.num{white-space:nowrap}
 /* The compare column is named, so a bare box in a column is not a puzzle. The
-   header carries the name on a wide screen; on a phone the header is gone and
-   each box carries its own caption instead. */
-.c-cmp{width:4.75rem;padding-left:0.5rem!important;padding-right:0.5rem!important}
+   header carries the name for a screen reader and an icon for the eye, which
+   is narrower than the word and keeps the box in the middle of its cell;
+   on a phone the header is gone and each box carries its own caption. */
+.main-t th.c-cmp,.main-t td.c-cmp{text-align:center;width:2.5rem;padding-left:0.5rem!important;padding-right:0.5rem!important}
+.main-t thead th.c-cmp{justify-content:center}
+.cmp-i{display:block;width:18px;height:13px;margin:0 auto;fill:none;stroke:currentColor;stroke-width:1.5}
 .cmp-cap{display:none}
 /* The label is the hit area, not the box: the box stays 15px, the target
    around it is 44px on a phone. */
@@ -131,8 +145,9 @@ span.ph{display:flex;align-items:center;justify-content:center;background:var(--
 span.ph-lg{font-size:12px}
 .brand{font-weight:700} .mname{font-weight:400}
 .best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
-.c-catch{font-size:14px}
-.more-w{margin-top:0.5rem}
+.c-catch{display:flex;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
+.catch-t{min-width:0}
+.more-w{margin-top:0}
 .rec{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}
 .rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
 .rec-yes::before{background:var(--acc)}
@@ -146,10 +161,16 @@ span.ph-lg{font-size:12px}
 .note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
 .fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0.15em;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
 .fn:hover{color:var(--acc);text-decoration:underline}
-button.more{position:relative;background:none;border:1px solid var(--rule);font:12px var(--sans);padding:0 1rem;min-height:24px;cursor:pointer;color:var(--ink);white-space:nowrap}
-button.more::after{content:"";position:absolute;inset:-10px -8px}
+/* The row opens from a chevron rather than a word: the catch is the last thing
+   a reader reads, and a button under it made every row a line taller. The
+   chevron turns to point the way the row is going, and the hit area is 44px. */
+button.more{position:relative;display:grid;place-items:center;flex:none;width:24px;height:24px;padding:0;background:none;border:1px solid var(--rule);cursor:pointer;color:var(--ink)}
+button.more::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-1px) rotate(45deg);transition:transform .15s}
+button.more[aria-expanded=true]::before{transform:translateY(1px) rotate(-135deg)}
+button.more::after{content:"";position:absolute;inset:-10px}
 button.more:hover,button.more[aria-expanded=true]{border-color:var(--ink)}
-tr.detail td{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}
+@media (prefers-reduced-motion:reduce){button.more::before{transition:none}}
+tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}
 .dgrid{display:grid;grid-template-columns:180px minmax(0,1fr);gap:0 2rem}
 .dimg{margin:0}
 .zoom{position:relative;display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}
@@ -173,7 +194,19 @@ tr.detail td{background:var(--tint);padding:1rem 1rem 1rem 3rem;border-bottom:1p
 .dgrid .dspec .pair{display:grid;grid-template-columns:140px minmax(0,1fr);gap:0 1rem;align-items:start}
 .maths{font-variant-numeric:tabular-nums}
 .unverified{font-size:13px;margin:1rem 0 0;color:var(--ink2)}
-.srcs{font-size:12px;color:var(--ink2);margin:1rem 0 0}
+.srcs{font-size:12px;color:var(--ink2);margin:1rem 0 0;max-width:100%}
+/* The full list belongs with the comparison: it is the one view that cites
+   every figure side by side, and the row's own details name its sources in
+   the table. */
+#sources{padding:0 1rem;margin:1.25rem 0 .25rem}
+/* Revealing the list takes a script, so with the script off it would never
+   appear. The no-js page keeps the list it was written with; the hidden
+   attribute is the scripted page saying "not yet". It has to outrank the
+   global [hidden] rule above, which is there to beat the display rules. */
+html.no-js #sources[hidden]{display:block!important}
+/* A sentinel at the end of the comparison: the sources below are revealed
+   when the reader gets near it, not when the panel opens. */
+.cmp-end{height:1px}
 .srcs .fn{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}
 .empty{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}
 /* jump-to-row highlight */
@@ -213,6 +246,12 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-photo{display:block;margin-top:1rem}
 .cmp-photo img{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
 .cmp-t tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
+/* The row colours travel into the comparison: the same verdict, on the column
+   that is the model. The rule down the column is the colour, and the badge in
+   the header says which verdict it is, so the colour is not the only signal. */
+.cmp-t [data-v=best]{--vc:var(--v-best)} .cmp-t [data-v=batt]{--vc:var(--v-batt)} .cmp-t [data-v=avoid]{--vc:var(--v-avoid)}
+.cmp-t th[data-v],.cmp-t td[data-v]{border-left:3px solid var(--vc)}
+.cmp-t thead .vtag{padding-top:.3rem;font-size:11px;white-space:normal}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tray{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}
 .tray button{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}
@@ -246,9 +285,9 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
  ::view-transition-old(root),::view-transition-new(root){animation:none}
  @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){animation:none!important}}
 /* footer */
-section.method{display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
+section.method{display:grid;grid-template-columns:1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
 section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}
-section.method p{margin:0 0 1rem;max-width:none}
+section.method p{margin:0 0 1rem;max-width:80ch}
 section.method p a{color:var(--ink2)}
 .srcs>summary{display:flex;align-items:center;gap:0.5rem;min-height:24px;margin:0 0 1rem;cursor:pointer;list-style:none}
 .srcs>summary::-webkit-details-marker{display:none}
@@ -256,8 +295,8 @@ section.method p a{color:var(--ink2)}
 .srcs>summary::before{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg);margin-right:0.25rem}
 .srcs[open]>summary::before{transform:rotate(45deg)}
 .srcs-n{font:500 12px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}
-.fns-wrap{columns:2;column-gap:2rem}
-.fns-g{margin:0 0 0.75rem;break-inside:avoid}
+.fns-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:2rem;align-items:start}
+.fns-g{margin:0 0 0.75rem}
 .fns-g h3{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0}
 ol.fns{margin:0;padding-left:1.5rem;columns:1}
 ol.fns li{margin:0}
@@ -282,8 +321,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
 }
 /* 821-1100px: the full table must fit without sideways scrolling */
 @media (max-width:1100px){
- .main-t td,.main-t tbody th{padding:1rem}
- .main-t thead th{padding:1rem;letter-spacing:.04em}
+ .main-t thead th{letter-spacing:.04em}
  .c-catch{font-size:13px}
  .mcell{gap:1rem} .ph-sm{width:36px!important;height:48px!important}
  .best{font-size:12.5px}
@@ -297,8 +335,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .dgrid .dspec dt{margin-top:1rem;font-weight:600;font-size:12px} .dgrid .dspec .pair:first-child dt{margin-top:0}
 }
 @media (max-width:900px){
- .main-t td,.main-t tbody th{padding:1rem}
- .main-t thead th{padding:1rem;font-size:12px}
+ .main-t thead th{font-size:12px}
 }
 @media (max-width:820px){
  body{font-size:15px}
@@ -335,7 +372,10 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .c-rec{grid-column:2;grid-row:2} .c-price{grid-column:3;grid-row:2}
  .c-nosub{grid-column:2;grid-row:3} .c-sub{grid-column:3;grid-row:3}
  .c-score{grid-column:2 / span 2;grid-row:4}
- .c-catch{grid-column:2 / span 2;grid-row:5;padding-top:0.75rem;font-size:14px}
+ .main-t td.c-catch{grid-column:2 / span 2;grid-row:5;padding-top:0.75rem;font-size:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
+ /* The caption sits above the text and its chevron, not beside them. */
+ .main-t td.c-catch[data-label]::before{flex:1 0 100%;margin-bottom:0}
+ .main-t td.c-catch .catch-t{flex:1 1 0;min-width:0}
  .main-t td.c-rec,.main-t td.c-price,.main-t td.c-nosub,.main-t td.c-sub,.main-t td.c-score{display:block;padding:0.5rem 0 0}
  .main-t td.c-price{font:700 17px/1.2 var(--sans)}
  .main-t td.c-score .bar{margin:0.25rem 0 0}
@@ -356,7 +396,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  tr.detail td{padding:1rem;margin-top:0}
  .dgrid{grid-template-columns:1fr}
  .ph-lg{width:120px!important;height:160px!important;margin-bottom:1rem}
- section.method{grid-template-columns:1fr} .fns-wrap{columns:1}
+ section.method{grid-template-columns:1fr} .fns-wrap{grid-template-columns:1fr}
  .cmp-t th,.cmp-t td{padding:0.5rem 1rem;font-size:13px}
  .cmp-t thead th{min-width:140px;font-size:14px}
  .cmp-t tbody th{width:76px;min-width:76px;font-size:11px;position:sticky;left:0;background:var(--paper)}
@@ -374,12 +414,12 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  /* The compare column is as wide as the word above it, plus the 2px the
     collapsed table border used to take, so every column after the compare box
     starts where the table's own layout put it. */
- .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:calc(4.75rem + 2px) 27% 120px 6.7% 8.2% 8.7% 9.1% 1fr}
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:calc(2.5rem + 2px) 27% 120px 6.7% 8.2% 10% 10% 1fr}
  /* A sticky cell can only move inside its parent, so the header row sticks as
     a block: fourteen rows of table no longer move it, and the cells still sit
     on one line each. */
  .main-t thead{position:sticky;top:0;z-index:2;background:var(--paper)}
- .main-t thead th{position:static;display:flex;align-items:center}
+ .main-t thead th{position:relative;display:flex;align-items:center}
  /* The column rules above are track widths now; a percentage width on a grid
     item would resolve against its own track and shrink the cell inside it. */
  .main-t tr.main>*{width:auto;min-width:0;max-width:none}
@@ -387,7 +427,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .main-t tbody.item{content-visibility:auto;contain-intrinsic-size:auto 118px}
 }
 @media (min-width:821px) and (max-width:1100px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2rem + 2px) 28% 84px 84px 84px 84px 84px 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 28% 84px 84px 84px 96px 96px 1fr}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
 }
 @media (max-width:520px){
@@ -417,12 +457,14 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:
  .fbody .opts{gap:0.5rem 1rem}
  .range{flex:none;width:100%;max-width:none}
 }
-@media print{.skip,.controls,.tray,.prog,.c-cmp,.more-w,#theme,.srcs>summary,.cmp-note,.zi{display:none} tr.detail{display:table-row!important}}
+@media print{.skip,.controls,.tray,.prog,.c-cmp,.more-w,.si,#theme,.srcs>summary,.cmp-note,.zi{display:none}
+ .main-t thead th .si{display:none}
+ tr.detail{display:table-row!important}}
 /* There is no box to tick on paper, and a hidden grid cell would leave its
    track behind: the cells after it move one column left and print under the
    heading before them. The heading and the track go with the box, so the
    seven columns that are left still start where they started. */
 @media print and (min-width:821px){
  .main-t thead th.c-cmp,.main-t td.c-cmp{display:none}
- .main-t thead tr,.main-t tr.main{grid-template-columns:27% 120px 6.7% 8.2% 8.7% 9.1% 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:27% 120px 6.7% 8.2% 10% 10% 1fr}
 }

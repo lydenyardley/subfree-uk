@@ -53,7 +53,7 @@ AUDIT_JS = r"""() => {
       return { border: parseFloat(a.borderLeftWidth), pad: parseFloat(a.paddingLeft),
                plain: parseFloat(b.borderLeftWidth) };
     })(),
-    tags: all(".vtag").map(text),
+    tags: all("#tbl tbody .vtag").map(text),
     priceFootnotes: all(".c-price .fn").length,
     zoomGlyphs: all(".zoom .zi").length,
     icon: document.querySelector('link[rel="icon"]')

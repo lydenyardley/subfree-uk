@@ -134,7 +134,7 @@ for i,r in enumerate(ROWS):
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
 <td class="c-nosub num{ncls}" data-label="3 years, no plan">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
 <td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{knote}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</td>
-<td class="c-catch" data-label="Main catch">{e(r['catch'])}<div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}">Details</button></div></td>
+<td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="vh">Show details</span></button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
 <figure class="dimg">{zoom(r,"lg")}</figure>
@@ -159,6 +159,7 @@ for i,r in enumerate(ROWS):
 
 data_js = json.dumps({r["id"]:{
  "name":f"{r['brand']} {r['model']}","rec":REC_LABEL[r["rec"]],"recCls":r["rec"],"price":money(r["price"], None),"score":f"{r['score_total']}/8",
+ "tone":V_TONE[VERDICT[r["id"]]] if VERDICT.get(r["id"]) else "","vtag":V_LABEL[VERDICT[r["id"]]] if VERDICT.get(r["id"]) else "",
  "nosub3":money(r["nosub3"], None),"sub3":money(r["sub3"], None) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"keepNote":r["keep_note"],"region":r["plan_region"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
@@ -198,6 +199,10 @@ PAGE_JS = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
 def content_version(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]
 
+
+# The sort indicator is drawn by the stylesheet, so the button keeps its word
+# as its name and the mark carries no text of its own.
+SI = '<span class="si" aria-hidden="true"></span>'
 
 CSS_FILE, JS_FILE = "assets/page.css", "assets/page.js"
 CSS_URL = f"{CSS_FILE}?v={content_version(PAGE_CSS)}"
@@ -290,16 +295,18 @@ page=f'''<!doctype html>
 <p class="cmp-note" id="cmp-note" role="status" hidden></p>
 <p class="cmp-cue" id="cmp-cue" hidden></p>
 <div class="cmp-wrap"><div class="cmp-scroll" tabindex="0" role="region" aria-label="Comparison table, scrolls sideways"><table class="cmp-t" id="cmp-table"></table></div></div>
+<div class="cmp-end" id="cmp-end" aria-hidden="true"></div>
 </section>
+<details class="srcs" id="sources" open hidden><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 
 <p class="vkey" id="vkey"><span class="v-best"><b>Green</b>: a best pick that records without paying</span><span class="v-batt"><b>Blue</b>: the best battery pick</span><span class="v-avoid"><b>Red</b>: avoid if you will not pay a monthly plan</span></p>
 <div id="totop-s" aria-hidden="true"></div>
 <div class="tbl-w"><div class="prog" aria-hidden="true"><i></i></div>
 <table class="main-t" id="tbl" tabindex="-1">
 <thead><tr>
-<th scope="col" class="c-cmp"><span class="cmp-h">Compare</span></th>
-<th scope="col" data-sort="model" aria-sort="none"><button type="button">Model</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features</button></th>
-<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3-year cost, no plan, footnote a">3-year cost, no plan</button><a class="mk" href="#m-a" aria-label="How the 3-year cost without a plan is worked out">a</a></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3-year cost, with plan, footnote b">3-year cost, with plan</button><a class="mk" href="#m-b" aria-label="How the 3-year cost with a plan is worked out">b</a></th><th scope="col">Main catch</th>
+<th scope="col" class="c-cmp"><span class="vh">Compare</span><svg class="cmp-i" viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect x="1.75" y="1.75" width="6" height="10.5" rx="1"/><rect x="12.25" y="1.75" width="6" height="10.5" rx="1"/></svg></th>
+<th scope="col" data-sort="model" aria-sort="none"><button type="button">Model{SI}</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?{SI}</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price{SI}</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features{SI}</button></th>
+<th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3-year cost, no plan, footnote a">3-year cost, no plan{SI}</button><a class="mk" href="#m-a" aria-label="How the 3-year cost without a plan is worked out">a</a></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3-year cost, with plan, footnote b">3-year cost, with plan{SI}</button><a class="mk" href="#m-b" aria-label="How the 3-year cost with a plan is worked out">b</a></th><th scope="col">Main catch</th>
 </tr></thead>
 {''.join(rows_html)}
 </table></div>
@@ -315,7 +322,6 @@ page=f'''<!doctype html>
 <p>Batteries, electricity, installation (except Hikvision, where the price includes fitting) and future price rises are left out. Anything not yet confirmed is listed under <i>Not yet verified</i> in each model's details.</p>
 <p>Photos are the manufacturers' own, from their product pages: {photo_credits}.{f" No reliable official photo for: {no_photo}." if no_photo else ""}</p>
 </div>
-<details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
 <footer class="foot">
 <p>Last checked {CHECKED}. {len(ROWS)} UK doorbells, no affiliate links, no tracking. <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>

@@ -14,7 +14,7 @@ function fitSortKeys(){$$('#tbl thead th button').forEach(function(b){if(narrow.
 if(small.addEventListener)small.addEventListener('change',fitFilters);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSortKeys);
 if(narrow.addEventListener)narrow.addEventListener('change',fitSources);
-addEventListener('beforeprint',function(){srcs.open=true});
+addEventListener('beforeprint',function(){srcs.open=true;revealSources()});
 fitFilters();fitSortKeys();fitSources();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
 var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
@@ -114,7 +114,33 @@ $$('#tbl thead th[data-sort] button').forEach(function(b){b.onclick=function(){
  apply();
 }});
 $('#reset').onclick=function(){$$('#controls input[type=checkbox]').forEach(function(c){c.checked=false});minEl.value=minEl.min;maxEl.value=maxEl.max;skey='keep3';sdir=1;apply()};
-$$('button.more').forEach(function(b){b.onclick=function(){var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);b.textContent=o?'Details':'Hide';d.hidden=o}});
+// The chevron is the whole control now, so its name has to say what it does:
+// an icon alone leaves a screen reader with a nameless button.
+$$('button.more').forEach(function(b){b.onclick=function(){
+ var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';
+ b.setAttribute('aria-expanded',!o);
+ var label=b.querySelector('.vh');if(label)label.textContent=o?'Show details':'Hide details';
+ d.hidden=o;
+}});
+// The numbered source list lives in the comparison, so it is off screen while
+// the reader is in the main table. A footnote marker there opens the row's own
+// named sources rather than jumping to a target nobody can see.
+document.addEventListener('click',function(ev){
+ var link=ev.target.closest('a.fn');
+ if(!link)return;
+ var target=document.querySelector(link.getAttribute('href'));
+ if(!target||target.getClientRects().length)return;
+ // A source named inside a row's own list points at its numbered entry, so
+ // following it means showing the list and going there. Opening the row it
+ // already sits in would take the reader nowhere.
+ if(link.closest('.srcs')){revealSources();return}
+ var row=link.closest('tbody.item'),src=row?row.querySelector('.srcs'):null;
+ if(!src)return;
+ var more=row.querySelector('button.more');
+ if(more&&more.getAttribute('aria-expanded')!=='true')more.click();
+ ev.preventDefault();
+ src.scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'center'});
+});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
  var rows=a.dataset.ids.split(' ').map(function(id){return document.getElementById('m-'+id)});
@@ -152,7 +178,7 @@ function cmpCueUpdate(){
  if(cmpScroll.scrollWidth-cmpScroll.clientWidth<=2){cmpCue.hidden=true;wrap.classList.remove('more');return}
  var box=cmpScroll.getBoundingClientRect(),ths=cmpScroll.querySelectorAll('#cmp-table thead th'),name='',part='';
  for(var i=1;i<ths.length;i++){
-  var r=ths[i].getBoundingClientRect(),t=(ths[i].textContent||'').trim();
+  var r=ths[i].getBoundingClientRect(),nameEl=ths[i].querySelector('.cmp-name'),t=((nameEl||ths[i]).textContent||'').trim();
   // A column that starts past the edge is out of sight altogether, and that is
   // the one worth naming. A column that is half in view is already readable.
   if(r.left>=box.right-1){name=t;break}
@@ -178,6 +204,22 @@ function syncUrl(){
  try{if(history.replaceState)history.replaceState(null,'',u)}catch(e){}
 }
 function capSay(m){var el=$('#cmp-cap');if(!el)return;el.textContent=m;el.hidden=!m}
+// The numbered sources sit under the comparison, and they cost a layout of 52
+// links. That layout waits until the reader reaches the end of the table: the
+// open pays for the table, not for a list that is still a screen away.
+var srcsWatch=null;
+function revealSources(){if(srcs)srcs.hidden=false}
+function sourcesFollow(){
+ if(!srcs)return;
+ if($('#compare').hidden){srcs.hidden=true;return}
+ if(!('IntersectionObserver' in window)){revealSources();return}
+ if(!srcsWatch){
+  srcsWatch=new IntersectionObserver(function(entries){
+   if(entries.some(function(e){return e.isIntersecting}))revealSources();
+  },{rootMargin:'300px 0px'});
+  srcsWatch.observe($('#cmp-end'));
+ }
+}
 function tray(){
  var s=sel();
  $('#tray').hidden=s.length===0||!$('#compare').hidden;
@@ -188,16 +230,22 @@ function tray(){
  // the reader is on, so this path never touches focus.
  if(!$('#compare').hidden){
   if(s.length>=2)render();
-  else{$('#compare').hidden=true;$('#tray').hidden=s.length===0}
+  else{$('#compare').hidden=true;$('#tray').hidden=s.length===0;sourcesFollow()}
  }
  say(s.length===0?'Comparison cleared':s.length===3?'3 selected. That is the maximum; untick one to swap.':s.length+' selected');
  if(s.length<3)capSay('');
  syncUrl();
 }
-function render(){
- var s=sel(),h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
-  var d=D[id];
-  return '<th scope="col"><span class="cmp-name">'+esc(d.name)+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
+// What the table was last built from. Rebuilding the same three columns costs a
+// layout of 72 cells, and the open already asks for that once.
+var built='';
+function buildCmp(){
+ var s=sel();
+ if(s.join()===built)return;
+ built=s.join();
+ var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
+  var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
+  return '<th scope="col"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span>'+(d.vtag?'<span class="vtag v-'+esc(d.tone)+'">'+esc(d.vtag)+'</span>':'')+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
  h+='<tr class="cmp-cost" data-pin="1"><th scope="row">Cheapest way to record for 3 years</th>'+s.map(function(id){var v=D[id].keep3;
@@ -205,7 +253,7 @@ function render(){
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
   // the secondary figure, because the total is the one a reader compares.
-  return '<td><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest':'+£'+(v-low).toFixed(2))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
+  return '<td'+(D[id].tone?' data-v="'+esc(D[id].tone)+'"':'')+'><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest':'+£'+(v-low).toFixed(2))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
  }).join('')+'</tr>';
  var dupes=0;
  ROWS.forEach(function(r){
@@ -215,15 +263,20 @@ function render(){
    // A plan figure bought in euros is not a UK quote, so the comparison says so
    // in the row rather than leaving the caveat to a footnote.
    if(r[1]==='plan'&&D[id].region==='EU')v+=' (EU price)';
-   return '<td>'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
+   return '<td'+(D[id].tone?' data-v="'+esc(D[id].tone)+'"':'')+'>'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
  });
- $('#cmp-table').innerHTML=h+'</tbody>'; $('#compare').hidden=false;
+ $('#cmp-table').innerHTML=h+'</tbody>';
  if(!dupes)diffOnly=false;
  $('#cmp-diff-w').hidden=!dupes;
  $('#cmp-dupes').textContent=dupes?'('+dupes+' identical)':'';
  $('#cmp-diff').checked=diffOnly;
  applyDiff();
+}
+function render(){
+ buildCmp();
+ $('#compare').hidden=false;
  queueCue();
+ sourcesFollow();
 }
 // Identical rows are the one part of a comparison that carries no decision, so
 // they can go. The four that do carry one stay even when they match.
@@ -247,6 +300,12 @@ $$('input.cmp').forEach(function(c){c.addEventListener('change',cmpChange)});
 function showCompare(){
  // Already open: take the reader back to it rather than rebuilding it.
  if(!$('#compare').hidden){$('#compare').scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'});$('#cmp-h').focus({preventScroll:true});return}
+ // The table is built before the transition starts, not inside it. The build
+ // is the expensive half of the open, and a view transition lays the new frame
+ // out for its snapshot: doing the two together ran a task over the budget.
+ // The panel is hidden while this runs, and it is hidden in the snapshot of
+ // the old frame either way, so the morph starts from the same picture.
+ buildCmp();
  // The tray leaves and its place is taken by the compare header: the same box
  // stops being one control and starts being another. Scroll first, so both
  // snapshots are taken from the reader's final position.
@@ -263,7 +322,7 @@ function showCompare(){
 function closeCompare(){
  if($('#compare').hidden)return;
  var go=function(){
-  $('#compare').hidden=true;tray();
+  $('#compare').hidden=true;tray();sourcesFollow();
   if(!$('#tray').hidden)$('#tray-go').focus({preventScroll:true});
  };
  if(document.startViewTransition&&!reduce.matches)document.startViewTransition(go);else go();
@@ -271,7 +330,7 @@ function closeCompare(){
 function clearAll(){
  // Both Clear buttons are about to be hidden, so focus needs somewhere real.
  var inside=$('#compare').contains(document.activeElement)||$('#tray').contains(document.activeElement);
- $$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray();
+ $$('input.cmp').forEach(function(c){c.checked=false});$('#compare').hidden=true;tray();sourcesFollow();
  if(inside){var f=document.querySelector('input.cmp');if(f)f.focus({preventScroll:true})}
 }
 $('#tray-go').onclick=showCompare;

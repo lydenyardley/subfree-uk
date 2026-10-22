@@ -187,10 +187,16 @@ def cost_header_check(page):
                 const button = th.querySelector('button');
                 const mark = th.querySelector('.mk');
                 const target = mark ? document.querySelector(mark.getAttribute('href')) : null;
+                const style = getComputedStyle(button);
                 return {
                     text: (button.textContent || '').trim(),
-                    size: parseFloat(getComputedStyle(button).fontSize),
+                    size: parseFloat(style.fontSize),
+                    lines: Math.round(
+                        button.getBoundingClientRect().height / parseFloat(style.lineHeight)
+                    ),
                     mark: mark ? (mark.textContent || '').trim() : '',
+                    markSize: mark ? parseFloat(getComputedStyle(mark).fontSize) : 0,
+                    markBox: mark ? Math.round(mark.getBoundingClientRect().width) : 0,
                     href: mark ? mark.getAttribute('href') : '',
                     landed: !!target
                 };
@@ -208,6 +214,19 @@ def cost_header_check(page):
             problems.append(f"the {key} cost header reads {head['text']!r}")
         if head["size"] < 12:
             problems.append(f"the {key} cost header is {head['size']}px")
+        # The heading is the tallest in the table, so every extra line it takes
+        # is a line off every row's first paint. Three is the most the words fit
+        # in, and a marker that reserves its own box pushes it to five.
+        if head["lines"] > 3:
+            problems.append(f"the {key} cost header takes {head['lines']} lines")
+        if head["markSize"] > 12:
+            problems.append(
+                f"the {key} cost header's marker is {head['markSize']}px, not a footnote"
+            )
+        if head["markBox"] < 24:
+            problems.append(
+                f"the {key} cost header's marker is a {head['markBox']}px target"
+            )
         if head["mark"] != letter or head["href"] != f"#m-{letter}":
             problems.append(
                 f"the {key} cost header's marker is {head['mark']!r} to {head['href']!r}"
@@ -324,17 +343,17 @@ CHECKS = [
         lambda ctx: image_files(ctx.snapshot),
     ),
     Check(
-        "cost header name", "compare", 73,
-        "the cost headers are written out at 12px, and their letters link to the working",
+        "cost header name", "compare", 74,
+        "the cost headers are written out at 12px in three lines, and their letters link to the working",
         lambda ctx: cost_header_check(ctx.page),
     ),
     Check(
-        "compare caption", "compare", 74,
+        "compare caption", "compare", 75,
         "the compare table is captioned with its model count",
         lambda ctx: compare_caption_check(ctx.page),
     ),
     Check(
-        "overflow", "compare", 77,
+        "overflow", "compare", 78,
         lambda ctx: "no horizontal overflow at " + ", ".join(f"{w}px" for w in WIDTHS),
         lambda ctx: overflow_check(ctx.page),
     ),

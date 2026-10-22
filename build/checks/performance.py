@@ -130,7 +130,7 @@ def performance(ctx):
 
 CHECKS = [
     Check(
-        "performance budget", "compare", 78,
+        "performance budget", "compare", 79,
         "a sort and the compare respond inside the budget at 4x throttle, with no shift",
         performance,
     ),

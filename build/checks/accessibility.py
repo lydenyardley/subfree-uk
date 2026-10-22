@@ -211,11 +211,11 @@ CHECKS = [
         lambda ctx: footnote_set(ctx.snapshot),
     ),
     Check(
-        "type floor at 1280", "compare", 72, "no rendered text is below 11px at 1280",
+        "type floor at 1280", "compare", 73, "no rendered text is below 11px at 1280",
         lambda ctx: tiny(ctx.snapshot, 1280),
     ),
     Check(
-        "axe WCAG", "compare", 76,
+        "axe WCAG", "compare", 77,
         "axe-core finds no WCAG 2.2 A/AA violation in either theme at 390, 820 and 1280",
         lambda ctx: axe_problems(axe_audit(ctx.page)),
     ),

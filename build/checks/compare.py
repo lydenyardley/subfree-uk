@@ -33,6 +33,8 @@ def marks_check(page):
     two rows where "None" is good news, the plan row and the paywall row, are
     left alone: a doorbell with no plan and nothing held back is the cheapest
     option on the page, and painting it red would warn the reader off it.
+    The verdict a row carries comes with it, as a rule down its column and the
+    verdict in the column's header.
     """
     problems = []
     page.evaluate(
@@ -104,6 +106,52 @@ def marks_check(page):
         problems.append(f"a paywall cell is marked: {state['paywall']}")
     if not any(cell["text"].startswith("None") for cell in state["plan"]):
         problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
+    # The verdict a row carries travels into its column: the same colour down
+    # the column, and the verdict itself in the column's header, so the colour
+    # is never the only signal.
+    tone = page.evaluate(
+        """() => {
+            const ids = Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value);
+            const cost = document.querySelector('#cmp-table tr.cmp-cost');
+            const heads = Array.from(document.querySelectorAll('#cmp-table thead th')).slice(1);
+            return heads.map((th, i) => {
+                const id = ids[i];
+                const main = document.getElementById('m-' + id);
+                const cell = cost ? cost.children[i + 1] : null;
+                const s = cell ? getComputedStyle(cell) : null;
+                const rowTag = main ? main.querySelector('.vtag') : null;
+                const headTag = th.querySelector('.vtag');
+                return {
+                    id,
+                    rowTone: main ? main.getAttribute('data-v') : null,
+                    tone: th.getAttribute('data-v'),
+                    tag: headTag ? headTag.textContent.trim() : '',
+                    rowTag: rowTag ? rowTag.textContent.trim() : '',
+                    border: s ? s.borderLeftWidth : 'missing',
+                    colour: s ? s.borderLeftColor : 'missing'
+                };
+            });
+        }"""
+    )
+    for column in tone:
+        if (column["rowTone"] or "") != (column["tone"] or ""):
+            problems.append(
+                f"{column['id']}'s column carries {column['tone']!r}, its row {column['rowTone']!r}"
+            )
+        if column["tone"]:
+            if column["tag"] != column["rowTag"]:
+                problems.append(
+                    f"{column['id']}'s column badge reads {column['tag']!r}, its row {column['rowTag']!r}"
+                )
+            if column["border"] != "3px" or "rgba(0, 0, 0, 0)" in column["colour"]:
+                problems.append(
+                    f"{column['id']}'s column has no colour rule: {column['border']} {column['colour']}"
+                )
+        elif column["border"] != "0px":
+            problems.append(
+                f"{column['id']} has no verdict, so its column should carry no rule"
+            )
+
     # Put the shortlist back for the checks that follow.
     page.evaluate(
         """() => {
@@ -593,37 +641,55 @@ def compare_label_check(page):
     """The compare box is named, on a wide screen and on a phone.
 
     A bare box in a column of boxes is a puzzle. The wide layout names the
-    column in the header; the phone card has no header, so the box carries its
-    own caption, in the same muted style as the other figures in the card. The
-    caption is inside the label, so a tap on the word counts the row.
+    column for a screen reader and shows an icon, and the column is no wider
+    than that icon needs: a word there took width from every other column. The
+    phone card has no header, so the box carries its own caption, in the same
+    muted style as the other figures in the card. The caption is inside the
+    label, so a tap on the word counts the row.
     """
     problems = []
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(150)
     head = page.evaluate(
         """() => {
-            const span = document.querySelector('thead th.c-cmp .cmp-h');
-            if (!span) return null;
-            const s = getComputedStyle(span);
+            const th = document.querySelector('#tbl thead th.c-cmp');
+            if (!th) return null;
+            const name = th.querySelector('.vh');
+            const icon = th.querySelector('.cmp-i');
+            const box = document.querySelector('#tbl tbody td.c-cmp input');
+            const cell = box ? box.closest('td') : null;
+            const mid = (el) => {
+                const r = el.getBoundingClientRect();
+                return (r.left + r.right) / 2;
+            };
             return {
-                text: (span.textContent || '').trim(),
-                display: s.display,
-                size: parseFloat(s.fontSize),
-                clipped: span.scrollWidth > span.clientWidth + 1
+                text: name ? (name.textContent || '').trim() : '',
+                icon: icon ? Math.round(icon.getBoundingClientRect().width) : 0,
+                iconHidden: icon ? icon.getAttribute('aria-hidden') : '',
+                width: Math.round(th.getBoundingClientRect().width),
+                off: box && cell ? Math.round(mid(box) - mid(cell)) : 99
             };
         }"""
     )
     if head is None:
-        problems.append("the compare column has no name in its header")
+        problems.append("the compare column has no header")
     else:
         if head["text"].lower() != "compare":
-            problems.append(f"the compare column header reads {head['text']!r}")
-        if head["display"] == "none":
-            problems.append("the compare column header is hidden")
-        if head["size"] < 12:
-            problems.append(f"the compare column header is {head['size']}px")
-        if head["clipped"]:
-            problems.append("the compare column header clips its text")
+            problems.append(f"the compare column header is named {head['text']!r}")
+        if head["icon"] < 12:
+            problems.append(f"the compare column's icon is {head['icon']}px wide")
+        if head["iconHidden"] != "true":
+            problems.append("the compare column's icon is not marked decorative")
+        # The column is only as wide as the box and its icon need; the word it
+        # used to carry is what made the column wider than the others.
+        if head["width"] > 48:
+            problems.append(
+                f"the compare column is {head['width']}px wide, more than its icon needs"
+            )
+        if abs(head["off"]) > 1:
+            problems.append(
+                f"the compare box sits {head['off']}px off the middle of its cell"
+            )
     page.set_viewport_size({"width": 390, "height": 844})
     page.wait_for_timeout(200)
     cap = page.evaluate(
@@ -763,7 +829,7 @@ CHECKS = [
     ),
     Check(
         "compare markers", "compare", 45,
-        "the comparison marks what is missing and leaves the good news alone",
+        "the comparison marks what is missing, leaves the good news alone, and carries each row's verdict into its column",
         lambda ctx: marks_check(ctx.page),
     ),
     Check(
@@ -773,7 +839,7 @@ CHECKS = [
     ),
     Check(
         "compare label", "compare", 47,
-        "the compare box is named in the column header and on a phone card",
+        "the compare box is named by an icon and a hidden name in a narrow column, and by a caption on a phone card",
         lambda ctx: compare_label_check(ctx.page),
     ),
 ]

@@ -10,11 +10,12 @@ the closest a desktop browser gets to a mid-range phone. A sort is measured at
 tracks; the comparison is measured at 1280px, where its 18 rows are the table
 they always are.
 
-| Budget | Where | Target | Measured 20 October 2026 | Status |
+| Budget | Where | Target | Measured 20 to 22 October 2026 | Status |
 |---|---|---|---|---|
 | Sort, script plus the layout it causes | 390px | under 50ms | 9 to 15ms, six sorts per run | Met |
 | Sort, script plus the layout it causes | 1280px | under 50ms | 9.6 to 21ms, six sorts per run | Met |
 | Compare open, transition included | 1280px | under 150ms, best of 3 | 84 to 150ms | Met |
+| Longest task inside the compare open | 1280px | under 50ms, median of 3 | 0ms | Met |
 | Table movement when the tray opens | 1280px | 0px | 0px | Met |
 
 ## How to measure
@@ -145,7 +146,15 @@ Opening the comparison runs through `document.startViewTransition`: the
 browser captures the old viewport, runs the update, captures the new one, and
 only then paints the panel. The panel's first paint therefore waits for one
 snapshot it did not wait for before, which is one to two frames at this
-throttle. The page's own share is the 18-row render, 4 to 20ms.
+throttle.
+
+The 18-row table is built before the transition starts, not in its update
+callback. Built inside, the render and the snapshot's layout of it ran as one
+task of 53 to 77ms at this throttle; built first, while the panel is still
+hidden — and therefore hidden in the snapshot of the old frame either way —
+the open runs no task over 50ms, three opens per run. The build is remembered
+by its three column ids, so the `tray()` call inside the transition does not
+build it a second time.
 
 Only the named pair is captured: the stylesheet turns the root's transition
 name off, so the page behind the tray is not rendered into a picture and no
@@ -163,6 +172,15 @@ the line at which the capture has become a stall rather than a frame; a change
 that doubles the page's share lands well past it. With the desktop rows
 uncontained the same open measured 187ms, since the transition captures a page
 that has just laid every row out.
+
+The 150ms figure is about waiting, and it is not enough on its own: an open
+that painted late after a long task still feels like a stall. The second line
+is about the main thread — the median of the three opens' longest tasks, which
+must stay under the same 50ms a sort gets. Three runs with the build inside
+the transition gave medians of 53, 0 and 0ms — the one failure was a run whose
+second open also ran a task, and it failed the build. Three runs with the
+build in front of it gave 0, 0 and 0ms, with the odd first open still paying
+the snapshot pipeline's warm-up.
 
 ## Why the back-to-top button listens to scroll
 
