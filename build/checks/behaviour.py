@@ -329,12 +329,23 @@ def sources_check(page, source_count):
                 const copy = box.closest('section.method').querySelector('.method-copy');
                 const b = box.getBoundingClientRect();
                 const c = copy.getBoundingClientRect();
+                // How many lists of groups the reader sees, read off the boxes
+                // rather than the column-count the stylesheet asked for.
+                const cols = new Set(Array.from(box.querySelectorAll('.fns-g'))
+                    .map((g) => Math.round(g.getBoundingClientRect().left))).size;
+                // A host name is one unbreakable word, so a list narrower than
+                // the longest one paints it across the gap.
+                const clipped = Array.from(box.querySelectorAll('.fns-g h3'))
+                    .filter((h) => h.scrollWidth > h.clientWidth + 1)
+                    .map((h) => h.textContent.trim());
                 return {
                     inMethod: !!box.closest('section.method'),
-                    // Above the widest layout the list is a column of its own,
+                    clipped,
+                    // Above the phone layout the list is a column of its own,
                     // beside the working; on a phone it follows it.
                     beside: b.left >= c.right - 1 && Math.abs(b.top - c.top) <= 2,
                     below: b.top >= c.bottom - 1,
+                    cols,
                     visible: box.getClientRects().length > 0,
                     fits,
                     tag: box.tagName,
@@ -395,21 +406,39 @@ def sources_check(page, source_count):
             f"following a row's source does not land on {followed['href']}: {landed}"
         )
 
+    page.set_viewport_size({"width": 900, "height": 900})
+    page.wait_for_timeout(200)
+    mid = read()
+
+    # The tightest two-list case: the second column is fixed at 486px from here,
+    # so this is where the longest host name is closest to the column edge.
+    page.set_viewport_size({"width": 1101, "height": 900})
+    page.wait_for_timeout(200)
+    tight = read()
+
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(200)
     wide = read()
 
-    for where, state in (("1280px", wide), ("390px", phone)):
+    for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid), ("390px", phone)):
         if not state["inMethod"]:
             problems.append(f"the source list is not with the working at {where}")
         if not state["visible"]:
             problems.append(f"the source list is not on screen at {where}")
-    if not wide["beside"] or wide["below"]:
-        problems.append(
-            f"the source list is not beside the working at 1280px: {wide['beside']}"
-        )
+        if state["clipped"]:
+            problems.append(f"a host name is clipped at {where}: {state['clipped']}")
+    for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid)):
+        if not state["beside"] or state["below"]:
+            problems.append(
+                f"the source list is not beside the working at {where}: {state['beside']}"
+            )
     if not phone["below"]:
         problems.append("the source list does not sit under the working on a phone")
+    for where, state in (("1280px", wide), ("1101px", tight)):
+        if state["cols"] != 2:
+            problems.append(f"the sources run in {state['cols']} list(s) at {where}, expected 2")
+    if mid["cols"] != 1:
+        problems.append(f"the sources run in {mid['cols']} list(s) at 900px, expected 1")
     if phone["tag"] != "DETAILS" or wide["tag"] != "DETAILS":
         problems.append(f"the source list is a {phone['tag']}, not a disclosure")
     if phone["open"]:
@@ -424,7 +453,7 @@ def sources_check(page, source_count):
         problems.append("the Sources heading is no longer a heading inside the summary")
     if f"{source_count} links" not in wide["summary"]:
         problems.append(f"the summary reads {wide['summary']!r}")
-    for where, state in (("1280px", wide), ("390px", phone)):
+    for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid), ("390px", phone)):
         if state["summaryHeight"] < 24:
             problems.append(f"the summary is {state['summaryHeight']}px tall at {where}")
         if not state["fits"]:

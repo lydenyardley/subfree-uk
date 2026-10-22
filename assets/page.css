@@ -273,12 +273,23 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
  @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){animation:none!important}}
 /* footer */
 section.method{display:grid;grid-template-columns:1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
-/* Above the widest layout the sources sit in the second column, beside the
-   working they belong to, rather than adding 900px to the foot of the page. */
-@media (min-width:1101px){
+/* Above the phone layout the sources sit in the second column, beside the
+   working they belong to, rather than adding 900px to the foot of the page.
+   The 821-1100 band is too narrow to split that column, so its entries stay in
+   one list; from 1101px there is room for two lists of groups, which halves
+   the height the sources take beside the working. */
+@media (min-width:821px){
  section.method{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);align-items:start}
  section.method>details.srcs{margin-top:0}
  .srcs .fns-wrap{columns:1}
+}
+@media (min-width:1101px){
+ /* The two lists need room for the longest host name in the list
+    (`eaglesecuritysolutions.co.uk`, about 207px at 12px), or the heading
+    paints across the gap. The copy keeps more than its 80ch measure, so the
+    width it gives up was whitespace. */
+ section.method{grid-template-columns:minmax(0,1.618fr) minmax(0,486px)}
+ .srcs .fns-wrap{columns:2;column-gap:1.5rem}
 }
 section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}
 section.method p{margin:0 0 1rem;max-width:80ch}
