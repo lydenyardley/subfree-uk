@@ -1248,10 +1248,19 @@ def desktop_rows_check(page, row_count):
         # hanging indent, so the track's width decides whether it reads as
         # words or one word a line: 92px gave "Only with extra kit" a line
         # each, 118px gives it two, here and under a fallback 15% wider.
-        if width >= 1280 and got["rows"][0]["recW"] < 118:
+        # From 1200 the catch pays for that width without a row growing; below
+        # 1200 the same 28px comes out of the catch's own rows, so the track
+        # stays at 90 and the labels take four lines.
+        rec = got["rows"][0]["recW"]
+        if width >= 1200 and rec < 118:
             found.append(
-                f"at {where} the record track is {got['rows'][0]['recW']}px, "
-                "under the 118 its two-word lines need"
+                f"at {where} the record track is {rec}px, under the 118 its "
+                "two-word lines need"
+            )
+        if width < 1200 and rec >= 118:
+            found.append(
+                f"at {where} the record track is {rec}px, wider than the 90 the "
+                "catch's rows can pay for below 1200"
             )
         # A footnote number belongs to the sentence it cites. Left outside the
         # label's block it has no room after a wrapped label's last line, so it
@@ -1317,7 +1326,7 @@ def desktop_rows_check(page, row_count):
         return page.evaluate(DESKTOP_ROWS_JS)
 
     problems = []
-    widths = (1440, 1280, 1100, 1000, 901, 900, 821)
+    widths = (1440, 1280, 1200, 1199, 1101, 1100, 1000, 901, 900, 821)
     for width in widths:
         problems += judge(width, read_at(width), "")
     # A sticky cell cannot outrun its parent, so the header row has to stick as

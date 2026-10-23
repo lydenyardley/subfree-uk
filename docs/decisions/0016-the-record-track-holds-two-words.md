@@ -69,6 +69,7 @@ wider stand-in, which is why 110px is not the number.
 
 - `desktop rows` asserts the record track is at least 118px at 1280 and 1440,
   so a later track change fails the audit instead of quietly stacking words.
+  ADR 17 extends the same width down to 1200 and moves the assertion's floor.
 - `docs/performance-budget.md` carries the new heights at 1440, 1300 and 1280.
 - At 821 to 940px the record and price columns are unchanged from ADR 15: the
   label reads in four short lines, the number ends the last one, and nothing

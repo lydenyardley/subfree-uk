@@ -139,7 +139,7 @@ The sources column has changed three times since that measurement: `c36b321`
 put it beside the copy above 1100px, ADR 11 brought it down to 821px and split
 the list above 1100px, and ADR 14 capped the copy at 80ch and split the list
 again at 1200 and 1300px. Measured today, with every card settled, the page is
-2,680px at 1440, 2,818 at 1300, 2,920 at 1280, 3,081 at 1200, 3,552 at 1101,
+2,680px at 1440, 2,818 at 1300, 2,920 at 1280, 3,064 at 1200, 3,552 at 1101,
 4,465 at 1100, 4,628 at 1000, 4,874 at 940, 5,100 at 900 and 5,454 at 821. ADR
 11's second list took 971px off 1280 (4,232 to 3,261 against the same column in
 one list) and 907px off 1101, and the single list beside the copy added 359px
@@ -150,9 +150,9 @@ copy 319px wide at 821. ADR 13's catch band took 323px off 900 and 1,736px off
 468 and the list 196 instead of 289. ADR 15's record footnote then takes 20px
 off 1440, 17 off 1280 and 36 off 900. ADR 16's 118px record track takes a
 further 11px off 1440, 17 off 1300 and 17 off 1280, and gives the wrapped
-labels their words back at both widths. ADR 18's first track takes 19 off 940,
-the one width where the catch's extra 2px removes a line. The table is 2,191px
-at 900 against
+labels their words back at both widths. ADR 17's record band takes 17px off
+1200, and ADR 18's first track takes 19 off 940, the one width where the
+catch's extra 2px removes a line. The table is 2,191px at 900 against
 2,513, and 2,330 at 821 against 4,066. The 820px and 390px pages are below the
 phone breakpoint and are not affected.
 

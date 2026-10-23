@@ -454,6 +454,15 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
    ticked row is rendered instead, from the moment it is ticked, when it is on
    screen and laid out anyway. At most three rows are ever ticked. */
 tbody.item:has(input.cmp:checked){content-visibility:visible}
+/* The record track reads in two words a line from 1200px, where the catch can
+   pay for it. From 1200 to 1279 the cost columns stay at 10% and only the
+   record widens: the same change at 1199 makes the table 17px shorter (1,488
+   to 1,471) and no row grows. Lower down the 28px comes out of the catch's
+   rows: one row grows at 1150 and the page is 76px taller at 1101, so the band
+   starts where the page's other desktop breakpoint already is. */
+@media (min-width:1200px) and (max-width:1279px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:40px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+}
 /* From 1280px the two cost columns are wide enough for their words. At 12px
    "3-year cost," is about 100px, and with the footnote marker beside it that
    is a 152px track: two lines. Narrower than this the same words take four or
