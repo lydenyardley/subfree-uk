@@ -275,16 +275,23 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 section.method{display:grid;grid-template-columns:1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
 /* Above the phone layout the sources sit in the second column, beside the
    working they belong to, rather than adding 900px to the foot of the page.
-   The 821-1100 band is too narrow to split that column, so its entries stay in
-   one list; from 1101px there is room for two lists of groups, which halves
-   the height the sources take beside the working. */
+   The copy keeps its 80ch measure and the sources take the rest of the row, so
+   every pixel the paragraphs leave empty widens the list. The entries start as
+   one list, split at 1101px, and split again at 1200 and 1300 as the sources
+   column widens, with a 2rem gap in every multi-list width. */
 @media (min-width:821px){
- section.method{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);align-items:start}
+ section.method{grid-template-columns:minmax(0,80ch) minmax(0,1fr);align-items:start}
  section.method>details.srcs{margin-top:0}
  .srcs .fns-wrap{columns:1}
 }
 @media (min-width:1101px){
- .srcs .fns-wrap{columns:2;column-gap:1.5rem}
+ .srcs .fns-wrap{columns:2;column-gap:2rem}
+}
+@media (min-width:1200px){
+ .srcs .fns-wrap{columns:3;column-gap:2rem}
+}
+@media (min-width:1300px){
+ .srcs .fns-wrap{columns:4;column-gap:2rem}
 }
 section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}
 section.method p{margin:0 0 1rem;max-width:80ch}
@@ -305,7 +312,7 @@ section.method p a{color:var(--ink2)}
 .fns-g h3{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0;overflow-wrap:anywhere}
 ol.fns{margin:0;padding-left:1.5rem;columns:1}
 ol.fns li{margin:0}
-ol.fns a{display:inline-flex;align-items:center;min-height:24px;text-decoration:underline;color:var(--ink2)}
+ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:anywhere;text-decoration:underline;color:var(--ink2)}
 .foot{border-top:1px solid var(--rule);padding:1rem 0 2rem;font-size:13px;color:var(--ink2)}
 .foot p{margin:0;max-width:none}
 .foot a{color:var(--ink2)}

@@ -326,9 +326,20 @@ def sources_check(page, source_count):
                         .filter((a) => !a.href.toLowerCase().includes(g.querySelector('h3').textContent.trim()))
                         .map((a) => a.href)
                 }));
-                const copy = box.closest('section.method').querySelector('.method-copy');
+                const method = box.closest('section.method');
+                const copy = method.querySelector('.method-copy');
                 const b = box.getBoundingClientRect();
                 const c = copy.getBoundingClientRect();
+                // The copy's cap is 80ch of its own font, and a ch measured the
+                // same way is the only comparable width: a pixel cap would be
+                // one font's cap.
+                const probe = document.createElement('span');
+                probe.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;width:80ch;height:0';
+                method.appendChild(probe);
+                const ch80 = probe.getBoundingClientRect().width;
+                probe.remove();
+                const m = method.getBoundingClientRect();
+                const gap = parseFloat(getComputedStyle(box.querySelector('.fns-wrap')).columnGap);
                 // How many lists of groups the reader sees, read off the boxes
                 // rather than the column-count the stylesheet asked for.
                 const cols = new Set(Array.from(box.querySelectorAll('.fns-g'))
@@ -345,6 +356,11 @@ def sources_check(page, source_count):
                     // beside the working; on a phone it follows it.
                     beside: b.left >= c.right - 1 && Math.abs(b.top - c.top) <= 2,
                     below: b.top >= c.bottom - 1,
+                    ch80,
+                    copyWidth: c.width,
+                    methodRight: m.right,
+                    boxRight: b.right,
+                    gap,
                     cols,
                     visible: box.getClientRects().length > 0,
                     fits,
@@ -406,24 +422,34 @@ def sources_check(page, source_count):
             f"following a row's source does not land on {followed['href']}: {landed}"
         )
 
+    page.set_viewport_size({"width": 821, "height": 900})
+    page.wait_for_timeout(200)
+    narrow = read()
+
     page.set_viewport_size({"width": 900, "height": 900})
     page.wait_for_timeout(200)
     mid = read()
 
-    # The tightest two-list case: the second column is fixed at 486px from here,
-    # so this is where the longest host name is closest to the column edge.
     page.set_viewport_size({"width": 1101, "height": 900})
     page.wait_for_timeout(200)
     tight = read()
+
+    page.set_viewport_size({"width": 1200, "height": 900})
+    page.wait_for_timeout(200)
+    three = read()
 
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(200)
     wide = read()
 
+    page.set_viewport_size({"width": 1300, "height": 900})
+    page.wait_for_timeout(200)
+    four = read()
+
     # The host headings are the one unbreakable word in the list, and the CI
     # machine's DejaVu is wider than Windows' Segoe UI: a width that fits one
-    # font clips the other. Widen the type for one measurement so a missing
-    # break shows up on either machine, not only on Linux.
+    # font clips the other. Widen the type at the narrowest four-list width so
+    # a missing break shows up on either machine, not only on Linux.
     page.evaluate(
         "() => document.documentElement.style.setProperty('--sans', 'Verdana, DejaVu Sans, sans-serif')"
     )
@@ -436,31 +462,54 @@ def sources_check(page, source_count):
     if not wide_font["fits"]:
         problems.append("the source list is wider than its column under a wide font")
 
-    for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid), ("390px", phone)):
+    desktop = (("1300px", four), ("1280px", wide), ("1200px", three), ("1101px", tight), ("900px", mid), ("821px", narrow))
+    for where, state in desktop + (("390px", phone),):
         if not state["inMethod"]:
             problems.append(f"the source list is not with the working at {where}")
         if not state["visible"]:
             problems.append(f"the source list is not on screen at {where}")
         if state["clipped"]:
             problems.append(f"a host name is clipped at {where}: {state['clipped']}")
-    for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid)):
+    for where, state in desktop:
+        if not state["open"]:
+            problems.append(f"the source list is closed at {where}, so nothing was measured")
         if not state["beside"] or state["below"]:
             problems.append(
                 f"the source list is not beside the working at {where}: {state['beside']}"
             )
+        if state["copyWidth"] > state["ch80"] + 1:
+            problems.append(
+                f"the copy runs {state['copyWidth']:.0f}px wide at {where}, past its "
+                f"80ch measure of {state['ch80']:.0f}px"
+            )
+        if abs(state["boxRight"] - state["methodRight"]) > 1:
+            problems.append(
+                f"the sources leave {state['methodRight'] - state['boxRight']:.0f}px of "
+                f"the working's row unused at {where}"
+            )
     if not phone["below"]:
         problems.append("the source list does not sit under the working on a phone")
-    for where, state in (("1280px", wide), ("1101px", tight)):
-        if state["cols"] != 2:
-            problems.append(f"the sources run in {state['cols']} list(s) at {where}, expected 2")
-    if mid["cols"] != 1:
-        problems.append(f"the sources run in {mid['cols']} list(s) at 900px, expected 1")
+    for where, state, expected in (
+        ("1300px", four, 4),
+        ("1280px", wide, 3),
+        ("1200px", three, 3),
+        ("1101px", tight, 2),
+        ("900px", mid, 1),
+        ("821px", narrow, 1),
+    ):
+        if state["cols"] != expected:
+            problems.append(
+                f"the sources run in {state['cols']} list(s) at {where}, expected {expected}"
+            )
+    for where, state in (("1300px", four), ("1200px", three), ("1101px", tight)):
+        if round(state["gap"]) != 32:
+            problems.append(
+                f"the source columns sit {state['gap']:.0f}px apart at {where}, expected 32px"
+            )
     if phone["tag"] != "DETAILS" or wide["tag"] != "DETAILS":
         problems.append(f"the source list is a {phone['tag']}, not a disclosure")
     if phone["open"]:
         problems.append("the source list is open on a 390px screen")
-    if not wide["open"]:
-        problems.append("the source list is closed on a 1280px screen")
     if wide["count"] != source_count:
         problems.append(f"the source list holds {wide['count']} entries, expected {source_count}")
     if wide["values"] != list(range(1, source_count + 1)):
@@ -469,7 +518,7 @@ def sources_check(page, source_count):
         problems.append("the Sources heading is no longer a heading inside the summary")
     if f"{source_count} links" not in wide["summary"]:
         problems.append(f"the summary reads {wide['summary']!r}")
-    for where, state in (("1280px", wide), ("1101px", tight), ("900px", mid), ("390px", phone)):
+    for where, state in desktop + (("390px", phone),):
         if state["summaryHeight"] < 24:
             problems.append(f"the summary is {state['summaryHeight']}px tall at {where}")
         if not state["fits"]:
@@ -1587,7 +1636,7 @@ CHECKS = [
     ),
     Check(
         "source list", "compare", 72,
-        "the numbered sources end the working, grouped by host, closed on a phone and open at 1280",
+        "the numbered sources sit beside the working in 1 to 4 lists by width, under the copy's 80ch measure, closed on a phone",
         lambda ctx: sources_check(ctx.page, ctx.source_count),
     ),
     Check(
