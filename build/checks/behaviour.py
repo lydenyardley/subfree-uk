@@ -1329,6 +1329,19 @@ def desktop_rows_check(page, row_count):
     widths = (1440, 1280, 1200, 1199, 1101, 1100, 1000, 901, 900, 821)
     for width in widths:
         problems += judge(width, read_at(width), "")
+    # The tracks are fixed pixels, so a wide fallback font moves words with no
+    # box changing: at 821 the catch once painted 51px under its chevron with
+    # every cell reporting fit. Every width is measured again at Verdana, about
+    # 15% wider than Arial, so a font this machine has and CI's does not cannot
+    # hide a break the other sees.
+    page.evaluate(
+        "() => document.documentElement.style.setProperty('--sans', 'Verdana, DejaVu Sans, sans-serif')"
+    )
+    page.wait_for_timeout(150)
+    for width in widths:
+        problems += judge(width, read_at(width), " under the wider fallback")
+    page.evaluate("() => document.documentElement.style.removeProperty('--sans')")
+    page.wait_for_timeout(150)
     # A sticky cell cannot outrun its parent, so the header row has to stick as
     # a block here; sticking the cells leaves the table header behind on scroll.
     page.evaluate("document.getElementById('tbl').scrollIntoView()")
