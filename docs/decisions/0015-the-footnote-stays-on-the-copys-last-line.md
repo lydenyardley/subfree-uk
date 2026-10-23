@@ -53,7 +53,8 @@ above its bottom, on the last line, for all three wrapped rows.
 - **Moving the indent onto the cell.** `padding-left` on a `td` changes the
   track the table computes, so a text position would move a column.
 - **Widening the record column.** It is the narrowest column on purpose; 9px
-  of footnote is not worth a track.
+  of footnote is not worth a track. Reversed by ADR 16, which weighs the line
+  count the footnote moved and pays for it from the catch at 1280 and up.
 
 ## Consequences
 

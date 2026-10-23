@@ -167,6 +167,7 @@ DESKTOP_ROWS_JS = r"""() => {
         const n = main.querySelector('.c-nosub').getBoundingClientRect();
         const s = main.querySelector('.c-sub').getBoundingClientRect();
         const rec = main.querySelector('.c-rec .rec');
+        const recCell = main.querySelector('.c-rec').getBoundingClientRect();
         const mark = main.querySelector('.c-rec a.fn');
         const rr = rec.getBoundingClientRect(), mr = mark.getBoundingClientRect();
         // The catch is a column of the row, or a band under it. Measure the
@@ -184,6 +185,7 @@ DESKTOP_ROWS_JS = r"""() => {
             lefts: Array.from(main.children).map((cell) => cell.getBoundingClientRect().left),
             bottoms: Array.from(main.children).map((cell) => cell.getBoundingClientRect().bottom),
             heights: Array.from(main.children).map((cell) => Math.round(cell.getBoundingClientRect().height)),
+            recW: Math.round(recCell.width),
             pair: {ny: Math.round(n.top), sy: Math.round(s.top), nx: Math.round(n.left), sx: Math.round(s.left)},
             // Where the footnote number sits against the label it cites.
             mark: {

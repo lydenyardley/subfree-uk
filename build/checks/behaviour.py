@@ -1234,6 +1234,15 @@ def desktop_rows_check(page, row_count):
                 f"at {width}px a word in the catch of {wide[0][0]} is "
                 f"{wide[0][1]:.0f}px wider than its text box"
             )
+        # A record label is a bulleted phrase, and its lines lose 1rem to the
+        # hanging indent, so the track's width decides whether it reads as
+        # words or one word a line: 92px gave "Only with extra kit" a line
+        # each, 118px gives it two, here and under a fallback 15% wider.
+        if width >= 1280 and got["rows"][0]["recW"] < 118:
+            problems.append(
+                f"at {width}px the record track is {got['rows'][0]['recW']}px, "
+                "under the 118 its two-word lines need"
+            )
         # A footnote number belongs to the sentence it cites. Left outside the
         # label's block it has no room after a wrapped label's last line, so it
         # drops to a new line at the hanging indent and reads as a note on the

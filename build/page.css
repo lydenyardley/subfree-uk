@@ -454,7 +454,12 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    this: at 1280px the 10% columns above leave 68px of button and it wrapped
    the sub header onto a fourth line on Linux. */
 @media (min-width:1280px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
+/* The record track holds the label, and its lines lose 1rem to the hanging
+   indent: at 92px the three wrapped rows read one word a line. At 118px
+   "Only with extra kit" takes two lines, here and at a fallback 15% wider,
+   where 110px split it again. The catch gives up 26px at 1280 and 14px at
+   1440, and the page is 17px and 11px shorter for it. */
+ .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
 }
 @media (min-width:821px) and (max-width:1100px){
  .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% 90px 84px 96px 92px 92px 1fr}
