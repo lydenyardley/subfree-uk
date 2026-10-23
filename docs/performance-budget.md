@@ -134,18 +134,22 @@ row, no cell clips at any measured width, no page scrolls sideways, and every
 row's cells start on the header's columns to the pixel. The audit measures 821,
 900 and 901 as well.
 
-The sources column has changed twice since that measurement: `c36b321` put it
-beside the copy above 1100px, and ADR 11 brought it down to 821px and split
-the list above 1100px. Measured today, with every card settled, the page is
-3,157px at 1440, 3,261 at 1280, 3,622 at 1101, 4,465 at 1100, 4,628 at 1000,
-4,893 at 940, 5,136 at 900 and 5,355 at 821. The split list takes 971px off the
-height at 1280 (4,232 to 3,261 against the same column in one list) and 907px
-at 1101, where more host headings wrap; the single list beside the copy added
-359px from 821 to 1100 when ADR 11 measured it (5,100 to 5,459 at 900), where
-two lists would leave the copy 319px wide at 821. ADR 13 has since taken 323px
-off the 900px page and 1,736px off 821 by giving the catch its own row: the
-table is 2,191px at 900 against 2,513, and 2,330 at 821 against 4,066. The
-820px and 390px pages are below the phone breakpoint and are not affected.
+The sources column has changed three times since that measurement: `c36b321`
+put it beside the copy above 1100px, ADR 11 brought it down to 821px and split
+the list above 1100px, and ADR 14 capped the copy at 80ch and split the list
+again at 1200 and 1300px. Measured today, with every card settled, the page is
+2,711px at 1440, 2,852 at 1300, 2,954 at 1280, 3,082 at 1200, 3,552 at 1101,
+4,465 at 1100, 4,628 at 1000, 4,893 at 940, 5,136 at 900 and 5,456 at 821. ADR
+11's second list took 971px off 1280 (4,232 to 3,261 against the same column in
+one list) and 907px off 1101, and the single list beside the copy added 359px
+from 821 to 1100 (5,100 to 5,459 at 900), where two lists would have left the
+copy 319px wide at 821. ADR 13's catch band took 323px off 900 and 1,736px off
+821 before that;
+ADR 14's 80ch cap and extra lists then take 446px off 1440 and 307px off 1280,
+and add 101px at 821, where the copy is 561px wide instead of 468 and the list
+196 instead of 289. The table is 2,191px at 900 against 2,513, and 2,330 at 821
+against 4,066. The 820px and 390px pages are below the phone breakpoint and are
+not affected.
 
 A row's box begins 1px lower than a table row's, because the header block is a
 pixel taller than the header row was; the text sits on the same baseline in

@@ -1,6 +1,7 @@
 # 11. The sources keep the working in sight
 
-- Status: Accepted
+- Status: Accepted; the `1.618fr` copy split and the 1.5rem gap at 1101 are
+  superseded by ADR 14.
 - Date: 22 October 2026
 - Source: the owner's review of 22 October 2026, which asked for the second
   column from 821px and for the list inside it to split into two above 1100px.
