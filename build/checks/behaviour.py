@@ -1210,7 +1210,10 @@ def desktop_rows_check(page, row_count):
                 problems.append(f"at {width}px a row's columns sit {skew:.0f}px off the header's")
         # The catch is the one cell with a sentence in it, and a cell narrower
         # than its longest word paints across the chevron without clipping its
-        # own box, so measure where the words end.
+        # own box, so measure where the words end. A word the font makes wider
+        # than the box leaves the box itself unbroken: on a wider fallback the
+        # ink crosses the chevron while the box says it fits, so both halves
+        # are measured.
         over = [
             (row["id"], row["catch"]["textRight"] - (row["catch"]["moreLeft"] - 2))
             for row in got["rows"]
@@ -1220,6 +1223,16 @@ def desktop_rows_check(page, row_count):
             problems.append(
                 f"at {width}px the catch in {over[0][0]} paints {over[0][1]:.0f}px "
                 "under its chevron"
+            )
+        wide = [
+            (row["id"], row["catch"]["textRight"] - row["catch"]["textBoxRight"])
+            for row in got["rows"]
+        ]
+        wide = [item for item in wide if item[1] > 0.5]
+        if wide:
+            problems.append(
+                f"at {width}px a word in the catch of {wide[0][0]} is "
+                f"{wide[0][1]:.0f}px wider than its text box"
             )
         # A footnote number belongs to the sentence it cites. Left outside the
         # label's block it has no room after a wrapped label's last line, so it

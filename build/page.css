@@ -137,7 +137,9 @@ span.ph-lg{font-size:12px}
 .brand{font-weight:700} .mname{font-weight:400}
 .best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
 .c-catch{display:flex;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
-.catch-t{min-width:0}
+/* At 901px this cell's text box is 70px, narrower than "£7.99/month" at 74px,
+   and a wider fallback font pushes an unbreakable word across the chevron. */
+.catch-t{min-width:0;overflow-wrap:anywhere}
 .more-w{margin-top:0}
 /* The label and its footnote share this block. A marker left outside it has no
    room after a wrapped label's last line, so it drops to a new line at the

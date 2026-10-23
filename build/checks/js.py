@@ -174,6 +174,7 @@ DESKTOP_ROWS_JS = r"""() => {
         // box reports no overflow while its words paint across the chevron.
         const catchCell = main.querySelector('.c-catch');
         const cr = catchCell.getBoundingClientRect();
+        const textBox = catchCell.querySelector('.catch-t').getBoundingClientRect();
         const more = catchCell.querySelector('.more-w').getBoundingClientRect();
         const range = document.createRange();
         range.selectNodeContents(catchCell.querySelector('.catch-t'));
@@ -196,6 +197,7 @@ DESKTOP_ROWS_JS = r"""() => {
                 right: cr.right,
                 top: cr.top,
                 textRight: words.length ? Math.max(...words.map((w) => w.right)) : cr.left,
+                textBoxRight: textBox.right,
                 textLines: words.length,
                 moreLeft: more.left,
                 caption: getComputedStyle(catchCell, '::before').content,
