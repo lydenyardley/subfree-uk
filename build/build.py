@@ -132,8 +132,8 @@ for i,r in enumerate(ROWS):
 <td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}"><span class="rec-t">{REC_LABEL[r['rec']]}</span>{fn([r['rec_src']])}</span></td>
 <td class="c-price num" data-label="Price">{price}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
-<td class="c-nosub num{ncls}" data-label="3 years, no plan">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>
-<td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{knote}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</td>
+<td class="c-nosub num{ncls}" data-label="3 years, no plan"><span class="figv">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</span></td>
+<td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}"><span class="figv">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{knote}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="vh">Show details</span></button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">

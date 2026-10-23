@@ -278,8 +278,12 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
         problems.append(f"the phone price cell carries the label {state['priceLabel']}")
     if "Main catch" not in state["catchLabel"]:
         problems.append(f"the catch cell lost its label: {state['catchLabel']}")
-    if any(display != "block" for display in state["displays"]):
-        problems.append(f"the phone spec cells are {state['displays']}, expected block rows")
+    # The two 3-year cells are subgrids on a phone, so their labels and figures
+    # can share rows with the cell beside them; the rest are block rows.
+    if any(display not in ("block", "grid") for display in state["displays"]):
+        problems.append(
+            f"the phone spec cells are {state['displays']}, expected block rows"
+        )
     for want in ("Records free?", "Price", "3 years, no plan", "3 years, with plan"):
         if not any(want in label for label in state["labels"]):
             problems.append(f"the phone labels read {state['labels']}, missing {want!r}")

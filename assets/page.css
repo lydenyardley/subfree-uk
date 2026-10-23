@@ -155,6 +155,10 @@ span.ph-lg{font-size:12px}
 /* scaleX paints on the compositor; animating width forced a layout each frame */
 .bar i{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center}
 .note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
+/* The wrapper around a 3-year figure, so a phone can put the figure in the
+   subgrid row under its label. A text node cannot take a grid position. On a
+   desktop the span disappears and the figure sits where it always did. */
+.figv{display:contents}
 .fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0.15em;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
 .fn:hover{color:var(--acc);text-decoration:underline}
 /* The row opens from a chevron rather than a word: the catch is the last thing
@@ -390,9 +394,9 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
  /* Two columns of figures under the name. The two 3-year costs sit side by
     side, so a card is a third shorter than it was. */
  .c-rec{grid-column:2;grid-row:2} .c-price{grid-column:3;grid-row:2}
- .c-nosub{grid-column:2;grid-row:3} .c-sub{grid-column:3;grid-row:3}
- .c-score{grid-column:2 / span 2;grid-row:4}
- .main-t td.c-catch{grid-column:2 / span 2;grid-row:5;padding-top:0.75rem;font-size:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
+ .c-nosub{grid-column:2;grid-row:3 / span 2} .c-sub{grid-column:3;grid-row:3 / span 2}
+ .c-score{grid-column:2 / span 2;grid-row:5}
+ .main-t td.c-catch{grid-column:2 / span 2;grid-row:6;padding-top:0.75rem;font-size:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
  /* The caption sits above the text and its chevron, not beside them. */
  .main-t td.c-catch[data-label]::before{flex:1 0 100%;margin-bottom:0}
  .main-t td.c-catch .catch-t{flex:1 1 0;min-width:0}
@@ -401,14 +405,17 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
  .main-t td.c-score .bar{margin:0.25rem 0 0}
  .main-t td.c-nosub .note,.main-t td.c-sub .note{white-space:normal}
  .main-t td[data-label]::before{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0.25rem;white-space:normal}
- /* The two 3-year figures are read against each other, so the numbers start on
-    the same line even when only one of the labels wraps to two lines. At 390px
-    "3 years, no plan" fits one line and "3 years, with plan" takes two, so
-    without this the left figure starts 15 to 16px higher; the row is as tall
-    as the taller of the two cells either way, so the card does not grow. At
-    414px both labels fit one line and the reserved line sits empty on both
-    sides, which is the cost of keeping the pair level where they split. */
- .main-t td.c-nosub::before,.main-t td.c-sub::before{min-height:2.6em}
+ /* The two 3-year figures are read against each other, so their numbers start
+    on the same line whatever their labels do. Each cell is a two-row subgrid
+    of the card: the label sits at the bottom of the first row and the figure
+    at the top of the second, so a label that wraps takes its extra line from
+    the space above itself rather than pushing its figure below the other's.
+    At 390px "3 years, no plan" fits one line and "3 years, with plan" takes
+    two, and both figures still start on row 4. The label keeps 8px above it
+    as a margin, because the cell no longer has the padding to sit in. */
+ .main-t td.c-nosub,.main-t td.c-sub{display:grid;grid-template-rows:subgrid;padding:0}
+ .main-t td.c-nosub .figv,.main-t td.c-sub .figv{display:block;grid-row:2}
+ .main-t td.c-nosub::before,.main-t td.c-sub::before{grid-row:1;align-self:end;margin-top:0.5rem}
  .main-t td.num,.main-t th.num{text-align:left} .bar{margin-left:0}
  /* The compare box keeps its 15px, but the target around it is 44px, and it
     carries the same muted caption the other figures in the card use. A caption
