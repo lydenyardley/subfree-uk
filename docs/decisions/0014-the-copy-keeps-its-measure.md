@@ -70,7 +70,8 @@ its column, under Segoe or Verdana.
   (3,261 to 2,954). At 821 it is 101px taller (5,355 to 5,456), because the
   copy widened from 468 to 561 while the list narrowed from 289 to 196, and the
   extra lines in the list outweigh the copy's saving. The 900px and 1100px
-  pages are unchanged at 5,136 and 4,465.
+  pages are unchanged at 5,136 and 4,465. ADR 15's footnote move later takes
+  20px off 1440, 17 off 1280 and 36 off 900.
 - `source list` measures 821, 900, 1101, 1200, 1280 and 1300. It asserts the
   list count at each, the 2rem gap at 1101, 1200 and 1300, the copy at no more
   than 80ch measured in the page's own font, and the list ending at the
