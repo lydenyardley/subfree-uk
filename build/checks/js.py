@@ -166,6 +166,9 @@ DESKTOP_ROWS_JS = r"""() => {
         const main = item.querySelector('tr.main');
         const n = main.querySelector('.c-nosub').getBoundingClientRect();
         const s = main.querySelector('.c-sub').getBoundingClientRect();
+        const rec = main.querySelector('.c-rec .rec');
+        const mark = main.querySelector('.c-rec a.fn');
+        const rr = rec.getBoundingClientRect(), mr = mark.getBoundingClientRect();
         // The catch is a column of the row, or a band under it. Measure the
         // words the reader sees rather than the box they sit in: a shrinkable
         // box reports no overflow while its words paint across the chevron.
@@ -181,6 +184,13 @@ DESKTOP_ROWS_JS = r"""() => {
             bottoms: Array.from(main.children).map((cell) => cell.getBoundingClientRect().bottom),
             heights: Array.from(main.children).map((cell) => Math.round(cell.getBoundingClientRect().height)),
             pair: {ny: Math.round(n.top), sy: Math.round(s.top), nx: Math.round(n.left), sx: Math.round(s.left)},
+            // Where the footnote number sits against the label it cites.
+            mark: {
+                left: Math.round(mr.left),
+                top: Math.round(mr.top),
+                recLeft: Math.round(rr.left),
+                recBottom: Math.round(rr.bottom),
+            },
             catch: {
                 left: cr.left,
                 right: cr.right,

@@ -244,7 +244,9 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
             const power = hint ? hint.closest('fieldset') : null;
             const pseudo = (el) => getComputedStyle(el, '::before');
             return {
-                nestText: nest.querySelector('.rec').textContent.trim(),
+                // The footnote number sits inside the label's block, so the
+                // label is read from its own span, not the block's text.
+                nestText: (nest.querySelector('.rec-t') || nest.querySelector('.rec')).textContent.trim(),
                 nestClass: nest.querySelector('.rec').className,
                 planWords: subs.filter((td) => /No plan/.test(td.textContent)).length,
                 planRows: Array.from(document.querySelectorAll('#tbl tbody.item'))
@@ -1218,6 +1220,22 @@ def desktop_rows_check(page, row_count):
             problems.append(
                 f"at {width}px the catch in {over[0][0]} paints {over[0][1]:.0f}px "
                 "under its chevron"
+            )
+        # A footnote number belongs to the sentence it cites. Left outside the
+        # label's block it has no room after a wrapped label's last line, so it
+        # drops to a new line at the hanging indent and reads as a note on the
+        # cell instead. Both halves of that are the defect: back at the indent,
+        # or below the label's own box.
+        loose = [
+            f"{row['id']} at {row['mark']['left']},{row['mark']['top']} "
+            f"against the label box {row['mark']['recLeft']},{row['mark']['recBottom']}"
+            for row in got["rows"]
+            if row["mark"]["left"] <= row["mark"]["recLeft"] + 1
+            or row["mark"]["top"] > row["mark"]["recBottom"] - 4
+        ]
+        if loose:
+            problems.append(
+                f"at {width}px a record footnote is not on its label's last line: {loose[0]}"
             )
         if band:
             if len(heads) == tracks:

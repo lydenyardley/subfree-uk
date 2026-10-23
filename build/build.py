@@ -129,7 +129,7 @@ for i,r in enumerate(ROWS):
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{REC_LABEL[r['rec']]}</span>{fn([r['rec_src']])}</td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}"><span class="rec-t">{REC_LABEL[r['rec']]}</span>{fn([r['rec_src']])}</span></td>
 <td class="c-price num" data-label="Price">{price}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
 <td class="c-nosub num{ncls}" data-label="3 years, no plan">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</td>

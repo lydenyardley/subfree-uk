@@ -139,6 +139,9 @@ span.ph-lg{font-size:12px}
 .c-catch{display:flex;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
 .catch-t{min-width:0}
 .more-w{margin-top:0}
+/* The label and its footnote share this block. A marker left outside it has no
+   room after a wrapped label's last line, so it drops to a new line at the
+   hanging indent, which the three wrapped labels did at 1280px. */
 .rec{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}
 .rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
 .rec-yes::before{background:var(--acc)}
