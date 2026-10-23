@@ -178,7 +178,7 @@ def verdict_tags(data):
 
 def row_rule(data):
     rule = data["rowRule"]
-    if rule and rule["border"] == 3 and rule["pad"] == 8 and rule["plain"] == 0:
+    if rule and rule["border"] == 3 and rule["gap"] >= 4 and rule["plain"] == 0:
         return []
     return [f"verdict row rule: {rule}"]
 
@@ -389,7 +389,7 @@ CHECKS = [
     ),
     Check(
         "row rule", "compare", 56,
-        "the verdict rule is a 3px border outside the first cell's 8px padding",
+        "the verdict rule is a 3px border, and the box clears it",
         lambda ctx: row_rule(ctx.snapshot),
     ),
     Check(

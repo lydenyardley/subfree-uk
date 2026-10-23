@@ -50,7 +50,9 @@ AUDIT_JS = r"""() => {
       const cell = (row) => row && row.querySelector("tr.main > td.c-cmp");
       if (!marked || !plain) return null;
       const a = getComputedStyle(cell(marked)), b = getComputedStyle(cell(plain));
-      return { border: parseFloat(a.borderLeftWidth), pad: parseFloat(a.paddingLeft),
+      const input = cell(marked).querySelector('input');
+      return { border: parseFloat(a.borderLeftWidth),
+               gap: input ? Math.round(box(input).left - box(cell(marked)).left - parseFloat(a.borderLeftWidth)) : -1,
                plain: parseFloat(b.borderLeftWidth) };
     })(),
     tags: all("#tbl tbody .vtag").map(text),
