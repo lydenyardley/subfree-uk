@@ -152,9 +152,12 @@ off 1440, 17 off 1280 and 36 off 900. ADR 16's 118px record track takes a
 further 11px off 1440, 17 off 1300 and 17 off 1280, and gives the wrapped
 labels their words back at both widths. ADR 17's record band takes 17px off
 1200, and ADR 18's first track takes 19 off 940, the one width where the
-catch's extra 2px removes a line. The table is 2,191px at 900 against
-2,513, and 2,330 at 821 against 4,066. The 820px and 390px pages are below the
-phone breakpoint and are not affected.
+catch's extra 2px removes a line. ADR 20's filter row then takes 36px off
+1440, 1280 and 901 and gives 4px back at 821, where the row has no width to
+gain: the option groups that wrapped at every desktop width now share a line,
+and the price slider is 285px at 1280 where it was 178. The table is 2,191px
+at 900 against 2,513, and 2,330 at 821 against 4,066. The 820px and 390px
+pages are below the phone breakpoint and are not affected.
 
 A row's box begins 1px lower than a table row's, because the header block is a
 pixel taller than the header row was; the text sits on the same baseline in

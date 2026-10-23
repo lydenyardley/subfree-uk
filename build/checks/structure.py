@@ -182,6 +182,43 @@ def row_rule(data):
         return []
     return [f"verdict row rule: {rule}"]
 
+def filters_row_check(page):
+    """The filter groups share a line at 1440, and the slider takes the rest.
+
+    The details box used to size itself to its own content, which came up a
+    few pixels short of the option groups, so both wrapped and the price
+    slider stopped at 178px with half the row unused. Measured at 1440 rather
+    than 1280 because 1440 is the width that still has slack for a fallback
+    font 15% wider: there the groups are one line each and the slider is
+    337px, against 2, 2 and 178px on the old stylesheet.
+    """
+    problems = []
+    page.set_viewport_size({"width": 1440, "height": 900})
+    page.wait_for_timeout(150)
+    state = page.evaluate(
+        """() => {
+            const body = document.querySelector('.fbody');
+            const top = (el) => el.getBoundingClientRect().top;
+            return {
+                rows: Array.from(body.querySelectorAll('.opts')).map(
+                    (group) => new Set(Array.from(group.children).map(top)).size
+                ),
+                slider: Math.round(document.querySelector('.dual').getBoundingClientRect().width)
+            };
+        }"""
+    )
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(120)
+    if state["rows"] != [1, 1]:
+        problems.append(
+            f"at 1440px the option groups read in {state['rows']} rows, expected one each"
+        )
+    if state["slider"] < 300:
+        problems.append(
+            f"at 1440px the price slider is {state['slider']}px wide, expected 300 or more"
+        )
+    return problems
+
 def price_cells(data):
     return (
         [f"{data['priceFootnotes']} footnote numbers in price cells"]
@@ -391,6 +428,11 @@ CHECKS = [
         "row rule", "compare", 56,
         "the verdict rule is a 3px border, and the box clears it",
         lambda ctx: row_rule(ctx.snapshot),
+    ),
+    Check(
+        "filters row", "compare", 50,
+        "the filter groups share a line at 1440 and the price slider takes the spare width",
+        lambda ctx: filters_row_check(ctx.page),
     ),
     Check(
         "price cells", "compare", 57, "price cells carry no footnote numbers",

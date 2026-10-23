@@ -20,9 +20,9 @@ a{color:var(--acc)}
 p{max-width:65ch}
 sup{font-size:11px}
 .wrap{max-width:1440px;margin:0 auto;padding:0 1rem}
-.mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:1rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:0.5rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .mast>div>span{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}
-#theme{position:relative;font:500 12px/1 var(--sans);letter-spacing:.02em;text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:24px}
+#theme{position:relative;font:500 12px/1 var(--sans);text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:44px}
 #theme:hover{border-color:var(--ink)}
 #theme i{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}
 :root[data-theme=dark] #theme i{transform:rotate(180deg)}
@@ -457,6 +457,16 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
    ticked row is rendered instead, from the moment it is ticked, when it is on
    screen and laid out anyway. At most three rows are ever ticked. */
 tbody.item:has(input.cmp:checked){content-visibility:visible}
+/* The filters take the width the sort control leaves them. Left to their own
+   max-content width the row came up a few pixels short of its own options: at
+   1280 the details box was 794px in a 909px line, the two option groups
+   measured 351px and 201px against the 356 and 205 their labels need, and so
+   both wrapped. Growing the box fits each group on one line and hands the
+   spare width to the price slider, which was pinned at 178px in that space. */
+@media (min-width:821px){
+ .filters{flex:1 1 auto}
+ .range{max-width:none}
+}
 /* The record track reads in two words a line from 1200px, where the catch can
    pay for it. From 1200 to 1279 the cost columns stay at 10% and only the
    record widens: the same change at 1199 makes the table 17px shorter (1,488
