@@ -125,24 +125,27 @@ card scrolled through first so contained rows settle:
 1280px was exact because the tracks were read off the table there; with the
 floors of ADR 10 the table is 1,420px tall against 1,419px before. Between 900
 and 1100 the columns differ by 2 to 6% and a row can be one line of text taller
-or shorter, which is the 1% of table height in the table above; at 821px, one
-pixel above the breakpoint where the layout becomes cards, the catch column is
-113px against the table's 116 and three rows gain a line, for 2.7% of table
-height. No cell clips at 1440, 1280, 1100, 1000 or 900 — the widths the audit
-measures, and under a wide fallback font — no page scrolls sideways, and every
-row's cells start on the header's columns to the pixel. The 821px catch is the
-exception: a long sentence clips there, as it did by more before the floors.
+or shorter, which is the 1% of table height in the table above. The "cells
+clipping" column counts a cell's own overflow, which misses a sentence painted
+across its chevron: the 821px and 900px rows carried that defect until ADR 13,
+where at 821 the catch track was 68px, its words ended 51px past the chevron's
+left edge and the sentence ran to 20 lines. Below 901px the catch now takes the
+row, no cell clips at any measured width, no page scrolls sideways, and every
+row's cells start on the header's columns to the pixel. The audit measures 821,
+900 and 901 as well.
 
 The sources column has changed twice since that measurement: `c36b321` put it
 beside the copy above 1100px, and ADR 11 brought it down to 821px and split
 the list above 1100px. Measured today, with every card settled, the page is
 3,157px at 1440, 3,261 at 1280, 3,622 at 1101, 4,465 at 1100, 4,628 at 1000,
-5,459 at 900 and 7,091 at 821. The split list takes 971px off the height at
-1280 (4,232 to 3,261 against the same column in one list) and 907px at 1101,
-where more host headings wrap; the single list beside the copy adds 359px from
-821 to 1100 (5,100 to 5,459 at 900), where two lists would leave the copy
-319px wide at 821. The 820px and 390px pages are below the phone breakpoint
-and are not affected.
+4,893 at 940, 5,136 at 900 and 5,355 at 821. The split list takes 971px off the
+height at 1280 (4,232 to 3,261 against the same column in one list) and 907px
+at 1101, where more host headings wrap; the single list beside the copy added
+359px from 821 to 1100 when ADR 11 measured it (5,100 to 5,459 at 900), where
+two lists would leave the copy 319px wide at 821. ADR 13 has since taken 323px
+off the 900px page and 1,736px off 821 by giving the catch its own row: the
+table is 2,191px at 900 against 2,513, and 2,330 at 821 against 4,066. The
+820px and 390px pages are below the phone breakpoint and are not affected.
 
 A row's box begins 1px lower than a table row's, because the header block is a
 pixel taller than the header row was; the text sits on the same baseline in
