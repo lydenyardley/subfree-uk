@@ -227,6 +227,10 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-t th,.cmp-t td{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}
 .cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{background:var(--tint)}
 .cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:3px solid var(--ink);min-width:200px}
+/* The header rule takes the column's verdict colour, because it is that
+   column's line and the badge below it already words the verdict. The spec
+   column holds no model, so it keeps the page's ink. */
+.cmp-t thead th[data-v]{border-bottom-color:var(--vc)}
 /* The header's name travels from the row's name, so the two boxes are meant to
    be the same shape. As a block the name is as wide as its column, and the
    flight stretched the row's 130px of text across 320px on the way. */
@@ -235,11 +239,10 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-photo img{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
 .cmp-t tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
 /* The row colours travel into the comparison: the same verdict, on the column
-   that is the model. It is said once, as the badge under the column's header:
-   a rule down the side of every cell read as the column before it, and a
-   coloured rule under the header made two columns with the same verdict look
-   different weights. The header rule is the page's ink, the same 3px as the
-   verdict lines elsewhere, so colour is not the only signal. */
+   that is the model. It is said once, as the badge under the column's header
+   and the rule under that header, and never down the side of a cell, where it
+   reads as the previous column's edge. The rule keeps the 3px of every verdict
+   line on the page, so colour is not the only signal. */
 .cmp-t [data-v=best]{--vc:var(--v-best)} .cmp-t [data-v=batt]{--vc:var(--v-batt)} .cmp-t [data-v=avoid]{--vc:var(--v-avoid)}
 .cmp-t thead .vtag{padding-top:.3rem;font-size:11px;white-space:normal}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -424,11 +427,16 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
    that; a contained block lays out only the rows in view. The tracks follow
    the table's own proportions, with a floor under every column that has a
    word in its header: a wide fallback font is about 15% wider than Arial, and
-   tracks tuned by eye clipped "Free features" on Linux. */
+   tracks tuned by eye clipped "Free features" on Linux.
+   The first track is the compare box, which is 2.5rem wide, so the track is
+   40px. It carried 2px more for the collapsed table border that sat there in
+   ADR 6. A grid row has no collapsed border to pay for: the 2px was a hole
+   under the compare header, which painted its own 40px box inside a 42px
+   track and left the next column's rule 2px away. */
 @media (min-width:821px){
  .main-t{display:block}
  .main-t thead,.main-t tbody{display:block}
- .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:calc(2.5rem + 2px) 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:40px 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
  /* A sticky cell can only move inside its parent, so the header row sticks as
     a block: fourteen rows of table no longer move it, and the cells still sit
     on one line each. */
@@ -459,10 +467,10 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    "Only with extra kit" takes two lines, here and at a fallback 15% wider,
    where 110px split it again. The catch gives up 26px at 1280 and 14px at
    1440, and the page is 17px and 11px shorter for it. */
- .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:40px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
 }
 @media (min-width:821px) and (max-width:1100px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% 90px 84px 96px 92px 92px 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:40px 27% 90px 84px 96px 92px 92px 1fr}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
 }
 /* Eight tracks cannot hold the catch below 901px: the fixed figures and the
@@ -476,7 +484,7 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    shorter than this band at 940, so the band stops where the clip does. The
    901 depends on no font: the tracks are fixed. */
 @media screen and (min-width:821px) and (max-width:900px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) minmax(0,1fr) 90px 84px 96px 92px 92px}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:40px minmax(0,1fr) 90px 84px 96px 92px 92px}
  .main-t thead th:last-child{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%)}
  .main-t tr.main>*{border-bottom:0}
  .main-t tbody.item{border-bottom:1px solid var(--rule2)}

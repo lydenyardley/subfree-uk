@@ -1172,34 +1172,28 @@ def desktop_rows_check(page, row_count):
     becomes a band from the model column to the table's edge, captioned by its
     own cell, and the model column takes the width the band freed.
     """
-    problems = []
-    for width in (1440, 1280, 1100, 1000, 901, 900, 821):
-        page.set_viewport_size({"width": width, "height": 900})
-        page.wait_for_timeout(120)
-        got = page.evaluate(DESKTOP_ROWS_JS)
+    def judge(width, got, fallback):
+        where = f"{width}px{fallback}"
+        found = []
         band = width <= 900
         tracks = 7 if band else 8
         if got["display"] != "grid" or got["tracks"] != tracks:
-            problems.append(
-                f"at {width}px a row is {got['display']!r} with {got['tracks']} tracks, "
+            found.append(
+                f"at {where} a row is {got['display']!r} with {got['tracks']} tracks, "
                 f"expected a grid of {tracks}"
             )
         if got["cardDisplay"] != "block":
-            problems.append(f"at {width}px a row group is {got['cardDisplay']!r}, expected block")
+            found.append(f"at {where} a row group is {got['cardDisplay']!r}, expected block")
         if got["visibility"] != "auto" or not got["size"].startswith("auto "):
-            problems.append(
-                f"at {width}px the rows are not contained: {got['visibility']!r} {got['size']!r}"
+            found.append(
+                f"at {where} the rows are not contained: {got['visibility']!r} {got['size']!r}"
             )
         if len(got["rows"]) != row_count:
-            problems.append(
-                f"at {width}px {len(got['rows'])} of {row_count} rows are showing"
-            )
-            continue
+            found.append(f"at {where} {len(got['rows'])} of {row_count} rows are showing")
+            return found
         heads = [th for th in got["head"] if th["width"] > 2]
         if len(heads) != tracks:
-            problems.append(
-                f"at {width}px {len(heads)} header cells are showing, expected {tracks}"
-            )
+            found.append(f"at {where} {len(heads)} header cells are showing, expected {tracks}")
         if heads:
             skew = max(
                 abs(left - head["left"])
@@ -1207,7 +1201,23 @@ def desktop_rows_check(page, row_count):
                 for left, head in zip(row["lefts"], heads)
             )
             if skew > 1:
-                problems.append(f"at {width}px a row's columns sit {skew:.0f}px off the header's")
+                found.append(f"at {where} a row's columns sit {skew:.0f}px off the header's")
+        # The header's rule is drawn cell by cell, so a cell that stops short of
+        # its track leaves a hole in the line. The compare box painted 40px into
+        # a 42px track and every rule under the header was broken by 2px.
+        if heads:
+            gaps = [
+                (i, nxt["left"] - (th["left"] + th["width"]))
+                for i, (th, nxt) in enumerate(zip(heads, heads[1:]))
+                if nxt["left"] - (th["left"] + th["width"]) > 0.6
+            ]
+            if gaps:
+                found.append(
+                    f"at {where} the header rule has a {gaps[0][1]:.0f}px hole after "
+                    f"column {gaps[0][0]}"
+                )
+            if not band and abs(heads[-1]["left"] + heads[-1]["width"] - got["right"]) > 0.6:
+                found.append(f"at {where} the header's last cell stops short of the table edge")
         # The catch is the one cell with a sentence in it, and a cell narrower
         # than its longest word paints across the chevron without clipping its
         # own box, so measure where the words end. A word the font makes wider
@@ -1220,27 +1230,27 @@ def desktop_rows_check(page, row_count):
         ]
         over = [item for item in over if item[1] > 0]
         if over:
-            problems.append(
-                f"at {width}px the catch in {over[0][0]} paints {over[0][1]:.0f}px "
+            found.append(
+                f"at {where} the catch in {over[0][0]} paints {over[0][1]:.0f}px "
                 "under its chevron"
             )
-        wide = [
+        outside = [
             (row["id"], row["catch"]["textRight"] - row["catch"]["textBoxRight"])
             for row in got["rows"]
         ]
-        wide = [item for item in wide if item[1] > 0.5]
-        if wide:
-            problems.append(
-                f"at {width}px a word in the catch of {wide[0][0]} is "
-                f"{wide[0][1]:.0f}px wider than its text box"
+        outside = [item for item in outside if item[1] > 0.5]
+        if outside:
+            found.append(
+                f"at {where} a word in the catch of {outside[0][0]} is "
+                f"{outside[0][1]:.0f}px wider than its text box"
             )
         # A record label is a bulleted phrase, and its lines lose 1rem to the
         # hanging indent, so the track's width decides whether it reads as
         # words or one word a line: 92px gave "Only with extra kit" a line
         # each, 118px gives it two, here and under a fallback 15% wider.
         if width >= 1280 and got["rows"][0]["recW"] < 118:
-            problems.append(
-                f"at {width}px the record track is {got['rows'][0]['recW']}px, "
+            found.append(
+                f"at {where} the record track is {got['rows'][0]['recW']}px, "
                 "under the 118 its two-word lines need"
             )
         # A footnote number belongs to the sentence it cites. Left outside the
@@ -1256,49 +1266,60 @@ def desktop_rows_check(page, row_count):
             or row["mark"]["top"] > row["mark"]["recBottom"] - 4
         ]
         if loose:
-            problems.append(
-                f"at {width}px a record footnote is not on its label's last line: {loose[0]}"
+            found.append(
+                f"at {where} a record footnote is not on its label's last line: {loose[0]}"
             )
         if band:
             if len(heads) == tracks:
                 for row in got["rows"]:
                     catch = row["catch"]
                     if abs(catch["left"] - heads[1]["left"]) > 1 or abs(catch["right"] - got["right"]) > 1:
-                        problems.append(
-                            f"at {width}px the catch band in {row['id']} does not run from "
+                        found.append(
+                            f"at {where} the catch band in {row['id']} does not run from "
                             "the model column to the table edge"
                         )
                         break
                     if catch["top"] < max(row["bottoms"][:tracks]) - 1:
-                        problems.append(
-                            f"at {width}px the catch band in {row['id']} is not below the figures"
+                        found.append(
+                            f"at {where} the catch band in {row['id']} is not below the figures"
                         )
                         break
                     if "Main catch" not in catch["caption"]:
-                        problems.append(
-                            f"at {width}px the catch band in {row['id']} is uncaptioned: "
+                        found.append(
+                            f"at {where} the catch band in {row['id']} is uncaptioned: "
                             f"{catch['caption']!r}"
                         )
                         break
                     if catch["textLines"] > 3:
-                        problems.append(
-                            f"at {width}px the catch in {row['id']} still reads in "
+                        found.append(
+                            f"at {where} the catch in {row['id']} still reads in "
                             f"{catch['textLines']} lines"
                         )
                         break
         else:
             ragged = [row["id"] for row in got["rows"] if max(row["heights"]) - min(row["heights"]) > 1]
             if ragged:
-                problems.append(f"at {width}px the row rule breaks in {ragged[0]}")
+                found.append(f"at {where} the row rule breaks in {ragged[0]}")
             if got["rows"][0]["catch"]["caption"] != "none":
-                problems.append(
-                    f"at {width}px the catch column repeats its own caption: "
+                found.append(
+                    f"at {where} the catch column repeats its own caption: "
                     f"{got['rows'][0]['catch']['caption']!r}"
                 )
         if got["clipped"]:
-            problems.append(f"at {width}px a cell clips its text: {got['clipped'][0]}")
+            found.append(f"at {where} a cell clips its text: {got['clipped'][0]}")
         if got["overflow"] > 1:
-            problems.append(f"at {width}px the table overflows by {got['overflow']}px")
+            found.append(f"at {where} the table overflows by {got['overflow']}px")
+        return found
+
+    def read_at(width):
+        page.set_viewport_size({"width": width, "height": 900})
+        page.wait_for_timeout(120)
+        return page.evaluate(DESKTOP_ROWS_JS)
+
+    problems = []
+    widths = (1440, 1280, 1100, 1000, 901, 900, 821)
+    for width in widths:
+        problems += judge(width, read_at(width), "")
     # A sticky cell cannot outrun its parent, so the header row has to stick as
     # a block here; sticking the cells leaves the table header behind on scroll.
     page.evaluate("document.getElementById('tbl').scrollIntoView()")

@@ -23,7 +23,7 @@ typographic, not vertical.
 From 1280px the record track is 118px:
 
 ```
-grid-template-columns:calc(2.5rem + 2px) 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr
+grid-template-columns:40px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr
 ```
 
 Nothing changes from 821 to 1279px. There the catch needs every pixel it has

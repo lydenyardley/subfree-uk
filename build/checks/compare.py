@@ -106,37 +106,39 @@ def marks_check(page):
         problems.append(f"a paywall cell is marked: {state['paywall']}")
     if not any(cell["text"].startswith("None") for cell in state["plan"]):
         problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
-    # The verdict a row carries travels into the comparison once, as the badge
-    # under its column's header. The header rule is the page's ink at the 3px of
-    # every other verdict line, so two columns with the same verdict cannot end
-    # up looking like different weights. A rule down the side of every cell read
-    # as the previous column's edge, so no cell carries one.
+    # The verdict a row carries travels into the comparison as the badge under
+    # its column's header and the rule under that header, both in the verdict's
+    # colour at the 3px of every other verdict line on the page. The spec column
+    # holds no model and keeps the page's ink. A rule down the side of every cell
+    # read as the previous column's edge, so no cell carries one.
     tone = page.evaluate(
         """() => {
             const ids = Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value);
             const body = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
             const heads = Array.from(document.querySelectorAll('#cmp-table thead th')).slice(1);
             const sides = (tr) => Array.from(tr.children).slice(1).map((c) => getComputedStyle(c).borderLeftWidth);
-            const rules = Array.from(document.querySelectorAll('#cmp-table thead th')).map((th) => {
-                const s = getComputedStyle(th);
-                return s.borderBottomWidth + ' ' + s.borderBottomColor;
-            });
+            const spec = getComputedStyle(document.querySelector('#cmp-table thead th'));
             return {
                 columns: heads.map((th, i) => {
                     const id = ids[i];
                     const main = document.getElementById('m-' + id);
                     const rowTag = main ? main.querySelector('.vtag') : null;
                     const headTag = th.querySelector('.vtag');
+                    const rule = getComputedStyle(th);
                     return {
                         id,
                         rowTone: main ? main.getAttribute('data-v') : null,
                         tone: th.getAttribute('data-v'),
                         tag: headTag ? headTag.textContent.trim() : '',
-                        rowTag: rowTag ? rowTag.textContent.trim() : ''
+                        rowTag: rowTag ? rowTag.textContent.trim() : '',
+                        ruleWidth: rule.borderBottomWidth,
+                        rule: rule.borderBottomColor,
+                        toneColor: headTag ? getComputedStyle(headTag).color : ''
                     };
                 }),
                 ink: getComputedStyle(document.body).color,
-                rules: Array.from(new Set(rules)),
+                specWidth: spec.borderBottomWidth,
+                specRule: spec.borderBottomColor,
                 cellBorders: Array.from(new Set(body.flatMap(sides)))
             };
         }"""
@@ -150,10 +152,16 @@ def marks_check(page):
             problems.append(
                 f"{column['id']}'s column badge reads {column['tag']!r}, its row {column['rowTag']!r}"
             )
-    if tone["rules"] != [f"3px {tone['ink']}"]:
+        want = column["toneColor"] or tone["ink"]
+        if column["ruleWidth"] != "3px" or column["rule"] != want:
+            problems.append(
+                f"{column['id']}'s header rule is {column['ruleWidth']} "
+                f"{column['rule']}, expected a 3px {want} for its {column['tone'] or 'no'} verdict"
+            )
+    if tone["specWidth"] != "3px" or tone["specRule"] != tone["ink"]:
         problems.append(
-            f"the comparison's header rules are {tone['rules']}, not one 3px rule "
-            f"in the page's ink {tone['ink']}"
+            f"the spec column's header rule is {tone['specWidth']} {tone['specRule']}, "
+            f"expected a 3px rule in the page's ink {tone['ink']}"
         )
     if tone["cellBorders"] != ["0px"]:
         problems.append(
