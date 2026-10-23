@@ -1115,16 +1115,23 @@ def desktop_rows_check(page, row_count):
     The table's own column widths cannot survive a sort cheaply, so the rows are
     grid tracks with the widths the table chose; a mistyped track silently
     squeezes a column or breaks the row rule, which nothing else catches.
+
+    Below 901px the catch leaves the tracks. Eight columns there leave it 68px
+    at 821, where its words paint under the chevron and a row grows to 394px; it
+    becomes a band from the model column to the table's edge, captioned by its
+    own cell, and the model column takes the width the band freed.
     """
     problems = []
-    for width in (1440, 1280, 1100, 1000, 900):
+    for width in (1440, 1280, 1100, 1000, 901, 900, 821):
         page.set_viewport_size({"width": width, "height": 900})
         page.wait_for_timeout(120)
         got = page.evaluate(DESKTOP_ROWS_JS)
-        if got["display"] != "grid" or got["tracks"] != 8:
+        band = width <= 900
+        tracks = 7 if band else 8
+        if got["display"] != "grid" or got["tracks"] != tracks:
             problems.append(
                 f"at {width}px a row is {got['display']!r} with {got['tracks']} tracks, "
-                "expected a grid of 8"
+                f"expected a grid of {tracks}"
             )
         if got["cardDisplay"] != "block":
             problems.append(f"at {width}px a row group is {got['cardDisplay']!r}, expected block")
@@ -1137,16 +1144,68 @@ def desktop_rows_check(page, row_count):
                 f"at {width}px {len(got['rows'])} of {row_count} rows are showing"
             )
             continue
-        skew = max(
-            abs(left - head)
+        heads = [th for th in got["head"] if th["width"] > 2]
+        if len(heads) != tracks:
+            problems.append(
+                f"at {width}px {len(heads)} header cells are showing, expected {tracks}"
+            )
+        if heads:
+            skew = max(
+                abs(left - head["left"])
+                for row in got["rows"]
+                for left, head in zip(row["lefts"], heads)
+            )
+            if skew > 1:
+                problems.append(f"at {width}px a row's columns sit {skew:.0f}px off the header's")
+        # The catch is the one cell with a sentence in it, and a cell narrower
+        # than its longest word paints across the chevron without clipping its
+        # own box, so measure where the words end.
+        over = [
+            (row["id"], row["catch"]["textRight"] - (row["catch"]["moreLeft"] - 2))
             for row in got["rows"]
-            for left, head in zip(row["lefts"], got["head"])
-        )
-        if skew > 1:
-            problems.append(f"at {width}px a row's columns sit {skew:.0f}px off the header's")
-        ragged = [row["id"] for row in got["rows"] if max(row["heights"]) - min(row["heights"]) > 1]
-        if ragged:
-            problems.append(f"at {width}px the row rule breaks in {ragged[0]}")
+        ]
+        over = [item for item in over if item[1] > 0]
+        if over:
+            problems.append(
+                f"at {width}px the catch in {over[0][0]} paints {over[0][1]:.0f}px "
+                "under its chevron"
+            )
+        if band:
+            if len(heads) == tracks:
+                for row in got["rows"]:
+                    catch = row["catch"]
+                    if abs(catch["left"] - heads[1]["left"]) > 1 or abs(catch["right"] - got["right"]) > 1:
+                        problems.append(
+                            f"at {width}px the catch band in {row['id']} does not run from "
+                            "the model column to the table edge"
+                        )
+                        break
+                    if catch["top"] < max(row["bottoms"][:tracks]) - 1:
+                        problems.append(
+                            f"at {width}px the catch band in {row['id']} is not below the figures"
+                        )
+                        break
+                    if "Main catch" not in catch["caption"]:
+                        problems.append(
+                            f"at {width}px the catch band in {row['id']} is uncaptioned: "
+                            f"{catch['caption']!r}"
+                        )
+                        break
+                    if catch["textLines"] > 3:
+                        problems.append(
+                            f"at {width}px the catch in {row['id']} still reads in "
+                            f"{catch['textLines']} lines"
+                        )
+                        break
+        else:
+            ragged = [row["id"] for row in got["rows"] if max(row["heights"]) - min(row["heights"]) > 1]
+            if ragged:
+                problems.append(f"at {width}px the row rule breaks in {ragged[0]}")
+            if got["rows"][0]["catch"]["caption"] != "none":
+                problems.append(
+                    f"at {width}px the catch column repeats its own caption: "
+                    f"{got['rows'][0]['catch']['caption']!r}"
+                )
         if got["clipped"]:
             problems.append(f"at {width}px a cell clips its text: {got['clipped'][0]}")
         if got["overflow"] > 1:
@@ -1563,7 +1622,7 @@ CHECKS = [
     ),
     Check(
         "desktop rows", "desktop", 36,
-        "desktop rows are contained grid tracks: columns line up with the header, no cell clips, 900 to 1440px",
+        "desktop rows are contained grid tracks: columns line up with the header, no cell clips or paints under its chevron, 821 to 1440px, and the catch takes the row below 901px",
         lambda ctx: desktop_rows_check(ctx.page, ctx.row_count),
     ),
     Check(

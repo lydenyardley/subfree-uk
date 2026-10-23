@@ -156,22 +156,47 @@ BARS_JS = r"""() => {
 
 DESKTOP_ROWS_JS = r"""() => {
     const table = document.getElementById('tbl');
-    const head = Array.from(table.querySelectorAll('thead th')).map((th) => th.getBoundingClientRect().left);
+    const head = Array.from(table.querySelectorAll('thead th')).map((th) => {
+        const r = th.getBoundingClientRect();
+        return {left: r.left, width: r.width};
+    });
     const row = table.querySelector('tr.main');
     const card = table.querySelector('tbody.item');
-    const    rows = Array.from(table.querySelectorAll('tbody.item:not([hidden])')).map((item) => {
+    const rows = Array.from(table.querySelectorAll('tbody.item:not([hidden])')).map((item) => {
         const main = item.querySelector('tr.main');
         const n = main.querySelector('.c-nosub').getBoundingClientRect();
         const s = main.querySelector('.c-sub').getBoundingClientRect();
+        // The catch is a column of the row, or a band under it. Measure the
+        // words the reader sees rather than the box they sit in: a shrinkable
+        // box reports no overflow while its words paint across the chevron.
+        const catchCell = main.querySelector('.c-catch');
+        const cr = catchCell.getBoundingClientRect();
+        const more = catchCell.querySelector('.more-w').getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(catchCell.querySelector('.catch-t'));
+        const words = Array.from(range.getClientRects());
         return {
             id: item.id,
             lefts: Array.from(main.children).map((cell) => cell.getBoundingClientRect().left),
+            bottoms: Array.from(main.children).map((cell) => cell.getBoundingClientRect().bottom),
             heights: Array.from(main.children).map((cell) => Math.round(cell.getBoundingClientRect().height)),
             pair: {ny: Math.round(n.top), sy: Math.round(s.top), nx: Math.round(n.left), sx: Math.round(s.left)},
+            catch: {
+                left: cr.left,
+                right: cr.right,
+                top: cr.top,
+                textRight: words.length ? Math.max(...words.map((w) => w.right)) : cr.left,
+                textLines: words.length,
+                moreLeft: more.left,
+                caption: getComputedStyle(catchCell, '::before').content,
+            },
         };
     });
     const clipped = [];
     table.querySelectorAll('th, td').forEach((cell) => {
+        // A header kept for assistive technology is 1px wide and clipped on
+        // purpose; its scrollWidth says nothing about the reader's page.
+        if (cell.getBoundingClientRect().width <= 2) return;
         if (cell.scrollWidth > cell.clientWidth + 1) clipped.push(cell.className || cell.tagName);
     });
     return {
@@ -180,6 +205,7 @@ DESKTOP_ROWS_JS = r"""() => {
         cardDisplay: getComputedStyle(card).display,
         visibility: getComputedStyle(card).contentVisibility,
         size: getComputedStyle(card).containIntrinsicSize,
+        right: table.getBoundingClientRect().right,
         head,
         rows,
         clipped,

@@ -448,6 +448,25 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) 27% 90px 84px 96px 92px 92px 1fr}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
 }
+/* Eight tracks cannot hold the catch below 901px: the fixed figures and the
+   27% model column leave it 68px at 821, where the sentence paints under its
+   chevron and a row grows to 394px. There the catch takes the row for itself,
+   from the model column to the table edge, captioned by its own cell like a
+   phone card, and the model column takes the width the catch gave up. The
+   catch's header stays for the table's structure and is clipped, not removed,
+   so the seven figures still name their columns. At 901px the tracks leave the
+   catch 138px, which clears the chevron in every row, and the column is 215px
+   shorter than this band at 940, so the band stops where the clip does. The
+   901 depends on no font: the tracks are fixed. */
+@media screen and (min-width:821px) and (max-width:900px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:calc(2.5rem + 2px) minmax(0,1fr) 90px 84px 96px 92px 92px}
+ .main-t thead th:last-child{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%)}
+ .main-t tr.main>*{border-bottom:0}
+ .main-t tbody.item{border-bottom:1px solid var(--rule2)}
+ .main-t tbody.item tr.detail td{border-bottom:0}
+ .main-t td.c-catch{grid-column:2/-1;grid-row:2;flex-wrap:wrap;row-gap:0}
+ .main-t td.c-catch[data-label]::before{content:attr(data-label);flex:1 0 100%;margin-bottom:.25rem;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3)}
+}
 @media (max-width:520px){
  .mast>div>span{display:none}
  .mast{padding:.75rem 0}
