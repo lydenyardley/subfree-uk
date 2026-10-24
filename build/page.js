@@ -104,7 +104,12 @@ $('.dual-track').addEventListener('click',function(ev){
  var r=this.getBoundingClientRect();
  if(!r.width)return;
  var v=+minEl.min+Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width))*(+maxEl.max-+minEl.min);
- var el=Math.abs(v-+minEl.value)<=Math.abs(v-+maxEl.value)?minEl:maxEl;
+ var lo=+minEl.value,hi=+maxEl.value;
+ // Two handles on one spot cannot be told apart by distance, so a click to
+ // the right of them moves the maximum and a click to the left moves the
+ // minimum. Without that, a range dragged shut could not be opened by the
+ // pointer again: both sat at the minimum and the nearest one always won.
+ var el=lo>=hi?(v>hi?maxEl:minEl):Math.abs(v-lo)<=Math.abs(v-hi)?minEl:maxEl;
  el.value=v;apply();el.focus({preventScroll:true});
 });
 $('#sort').onchange=function(){skey=this.value;sdir=SDEF[skey];apply()};
@@ -119,8 +124,9 @@ $('#reset').onclick=function(){$$('#controls input[type=checkbox]').forEach(func
 $$('button.more').forEach(function(b){b.onclick=function(){
  var d=document.getElementById(b.getAttribute('aria-controls')),o=b.getAttribute('aria-expanded')==='true';
  b.setAttribute('aria-expanded',!o);
- var label=b.querySelector('.vh');if(label)label.textContent=o?'Show details':'Hide details';
- d.hidden=o;
+ // The panel is hidden by the `js` class rather than the `hidden`
+ // attribute, so a reader without JavaScript gets every panel open.
+ d.classList.toggle('open',!o);
 }});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 // A footnote marker in a row jumps to its numbered entry, and on a phone the
@@ -143,8 +149,10 @@ $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
  say(D[rows[0].dataset.id].name+(vt?', '+vt.textContent.toLowerCase():'')+', row '+(pos+1)+' of '+vis.length);
  var cb=rows[0].querySelector('input.cmp'); if(cb)cb.focus({preventScroll:true});
 })});
-var PINNED=['Records free?','Price','3 yrs, no plan','3 yrs, with plan'],diffOnly=false;
-var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3 yrs, no plan','nosub3'],['3 yrs, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
+// The row labels are the table's own words, so the second view does not make
+// the reader relearn the two cost columns.
+var PINNED=['Records free?','Price','3-year cost, no plan','3-year cost, with plan'],diffOnly=false;
+var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3-year cost, no plan','nosub3'],['3-year cost, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 // The records-free marker is the one the list uses, so a "No" reads the same
 // in both places. A missing feature is marked, not left to the wording.
@@ -165,15 +173,16 @@ function cmpCueUpdate(){
  if(!cmpScroll||!cmpCue)return;
  var wrap=cmpScroll.parentNode;
  if(cmpScroll.scrollWidth-cmpScroll.clientWidth<=2){cmpCue.hidden=true;wrap.classList.remove('more');return}
- var box=cmpScroll.getBoundingClientRect(),ths=cmpScroll.querySelectorAll('#cmp-table thead th'),name='',part='';
+ var box=cmpScroll.getBoundingClientRect(),ths=cmpScroll.querySelectorAll('#cmp-table thead th'),name='';
  for(var i=1;i<ths.length;i++){
   var r=ths[i].getBoundingClientRect(),nameEl=ths[i].querySelector('.cmp-name'),t=((nameEl||ths[i]).textContent||'').trim();
-  // A column that starts past the edge is out of sight altogether, and that is
-  // the one worth naming. A column that is half in view is already readable.
-  if(r.left>=box.right-1){name=t;break}
-  if(!part&&r.right>box.right+1)part=t;
+  // The column worth naming is the first one the reader cannot read: one cut
+  // off by the edge with less than 60% of itself showing. Counting any column
+  // that merely starts past the edge named the third model while the second
+  // was a 47px sliver, and a column that is half in view is already readable.
+  var seen=Math.min(r.right,box.right)-Math.max(r.left,box.left);
+  if(r.right>box.right+1&&seen<r.width*0.6){name=t;break}
  }
- if(!name)name=part;
  if(name){cmpCue.textContent='Swipe to see '+name;cmpCue.hidden=false;wrap.classList.add('more')}
  else{cmpCue.hidden=true;wrap.classList.remove('more')}
 }
@@ -218,15 +227,19 @@ function buildCmp(){
  built=s.join();
  var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
   var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
-  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span>'+(d.vtag?'<span class="vtag v-'+esc(d.tone)+'">'+esc(d.vtag)+'</span>':'')+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo full size"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
+  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span>'+(d.vtag?'<span class="vtag v-'+esc(d.tone)+'">'+esc(d.vtag)+'</span>':'')+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
+ // The cheapest column can be scrolled out of view, so a delta names the model
+ // it is measured against. "+£15.00" without a baseline is not a comparison.
+ var lowId=null;
+ s.forEach(function(id){var v=D[id].keep3;if(typeof v==='number'&&isFinite(v)&&(lowId===null||v<D[lowId].keep3))lowId=id});
  h+='<tr class="cmp-cost" data-pin="1"><th scope="row">Cheapest way to record for 3 years</th>'+s.map(function(id){var v=D[id].keep3;
   if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
   // the secondary figure, because the total is the one a reader compares.
-  return '<td><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest':'+£'+(v-low).toFixed(2))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
+  return '<td><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest of these 3':'+£'+(v-low).toFixed(2)+' more than '+esc(cmpName(lowId)))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
  }).join('')+'</tr>';
  var dupes=0;
  ROWS.forEach(function(r){
@@ -360,6 +373,10 @@ $('#tray-clear').onclick=clearAll;
 $('#cmp-clear').onclick=clearAll;
 $('#cmp-close').onclick=closeCompare;
 function m3(x){return '£'+(+x).toFixed(2)}
+// The delta's baseline, in the shortest name that still says which model: the
+// cheapest cell is often off the phone's edge, and every brand here ships a
+// "Video Doorbell", which is the part worth dropping.
+function cmpName(id){return id?D[id].name.replace(' Video Doorbell',''):''}
 function shortlist(){
  return 'SubFree UK shortlist, checked '+CHECKED+'\n'+shareUrl()+'\n\n'+sel().map(function(id){var d=D[id];
   return d.name+'\n'+d.price+' · 3-year cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\nBest for: '+d.best+'\nMain catch: '+d.catch;

@@ -195,6 +195,20 @@ def recovery_check(page):
     if "No doorbells match" not in empty["live"]:
         problems.append(f"the empty result is not announced: {empty['live']!r}")
     else:
+        # The two ways out read as one sentence when a single space separates
+        # them, so they keep a gap while sharing the line.
+        acts = page.evaluate(
+            """() => {
+                const a = document.getElementById('near').getBoundingClientRect();
+                const b = document.getElementById('empty-reset').getBoundingClientRect();
+                return { gap: Math.round(b.left - a.right), same: Math.abs(a.top - b.top) < 2 };
+            }"""
+        )
+        if not acts["same"] or acts["gap"] < 8:
+            problems.append(
+                f"the two recovery actions sit {acts['gap']}px apart on "
+                f"{'one' if acts['same'] else 'two'} lines, expected 8px on one"
+            )
         page.click("#near")
         page.wait_for_timeout(400)
         after = page.evaluate(
@@ -926,7 +940,7 @@ def details_check(page):
             const left = (el) => Math.round(el.getBoundingClientRect().left);
             const value = (i) => (pairs[i] ? pairs[i].querySelector('dd').textContent.trim() : '');
             return {
-                hidden: panel.hidden,
+                open: panel.classList.contains('open'),
                 pairs: pairs.length,
                 columns: Array.from(new Set(pairs.map(left))).sort((a, b) => a - b),
                 power: value(0),
@@ -935,7 +949,7 @@ def details_check(page):
             };
         }"""
     )
-    if state["hidden"]:
+    if not state["open"]:
         problems.append("Details did not open")
     if state["pairs"] < 12:
         problems.append(f"the details panel lists {state['pairs']} rows, expected 13")
@@ -1156,8 +1170,8 @@ def contain_check(page, row_count):
     )
     if got["visibility"] != "auto":
         problems.append(f"a phone card's content-visibility is {got['visibility']!r}, expected auto")
-    if got["size"] != "auto 410px":
-        problems.append(f"the phone card's intrinsic size is {got['size']!r}, expected 'auto 410px'")
+    if got["size"] != "auto 445px":
+        problems.append(f"the phone card's intrinsic size is {got['size']!r}, expected 'auto 445px'")
     if got["n"] != row_count or got["hidden"]:
         problems.append(
             f"{got['n']} cards with {got['hidden']} hidden, expected {row_count} shown"
@@ -1222,21 +1236,20 @@ def desktop_rows_check(page, row_count):
                 )
             if not band and abs(heads[-1]["left"] + heads[-1]["width"] - got["right"]) > 0.6:
                 found.append(f"at {where} the header's last cell stops short of the table edge")
-        # The catch is the one cell with a sentence in it, and a cell narrower
-        # than its longest word paints across the chevron without clipping its
-        # own box, so measure where the words end. A word the font makes wider
-        # than the box leaves the box itself unbroken: on a wider fallback the
-        # ink crosses the chevron while the box says it fits, so both halves
-        # are measured.
+        # The catch is the one cell with a sentence in it, and the button that
+        # opens its costs sits on the line below the words, not beside them: a
+        # word wider than a narrow column paints across the button without the
+        # box reporting it. A word the font makes wider than the box leaves the
+        # box itself unbroken, so both the words' end and the box are measured.
         over = [
-            (row["id"], row["catch"]["textRight"] - (row["catch"]["moreLeft"] - 2))
+            (row["id"], row["catch"]["textBottom"] - row["catch"]["moreTop"] - 2)
             for row in got["rows"]
         ]
         over = [item for item in over if item[1] > 0]
         if over:
             found.append(
-                f"at {where} the catch in {over[0][0]} paints {over[0][1]:.0f}px "
-                "under its chevron"
+                f"at {where} the catch in {over[0][0]} runs {over[0][1]:.0f}px "
+                "into its button"
             )
         outside = [
             (row["id"], row["catch"]["textRight"] - row["catch"]["textBoxRight"])
@@ -1330,6 +1343,23 @@ def desktop_rows_check(page, row_count):
         return page.evaluate(DESKTOP_ROWS_JS)
 
     problems = []
+    # The panels are hidden by a class rather than the `hidden` attribute, so
+    # the desktop rule that shows an open one (`.main-t tr.detail`) has to be
+    # beaten on load. It was not: every panel printed open at 821 and wider,
+    # which doubled the page and left nothing to open.
+    shut = page.evaluate(
+        """() => ({
+            shown: Array.from(document.querySelectorAll('#tbl tr.detail'))
+                .filter((row) => row.getBoundingClientRect().height > 0).length,
+            expanded: Array.from(document.querySelectorAll('button.more'))
+                .filter((b) => b.getAttribute('aria-expanded') === 'true').length
+        })"""
+    )
+    if shut["shown"] or shut["expanded"]:
+        problems.append(
+            f"the page loads with {shut['shown']} of the costs-and-sources panels "
+            f"open and {shut['expanded']} buttons expanded"
+        )
     widths = (1440, 1280, 1200, 1199, 1101, 1100, 1000, 901, 900, 821)
     for width in widths:
         problems += judge(width, read_at(width), "")
@@ -1373,7 +1403,14 @@ def desktop_rows_check(page, row_count):
     return problems
 
 def hit_check(page):
-    """The row opens from a chevron: 24px, no word, and a 44px hit area."""
+    """The row's button names the panel it opens, and is a 44px target.
+
+    The trust layer used to open from a bare chevron: a 24px icon with a hidden
+    name, two clicks deep, and the details themselves were gone without
+    JavaScript. The button says what is behind it now, and the panel is hidden
+    by a class rather than the `hidden` attribute, so the no-JS reader keeps
+    every panel open. This measures the name, the target and the class.
+    """
     problems = []
     button = page.locator("button.more").first
     button.scroll_into_view_if_needed()
@@ -1383,45 +1420,37 @@ def hit_check(page):
     shape = page.evaluate(
         """() => {
             const b = document.querySelector('button.more');
-            const own = Array.from(b.childNodes)
-                .filter((n) => n.nodeType === 3)
-                .map((n) => n.textContent.trim())
-                .join('');
-            const label = b.querySelector('.vh');
             return {
                 width: Math.round(b.getBoundingClientRect().width),
                 height: Math.round(b.getBoundingClientRect().height),
-                own,
-                label: label ? label.textContent.trim() : '',
+                text: (b.textContent || '').replace(/\\s+/g, ' ').trim(),
                 turn: getComputedStyle(b, '::before').transform
             };
         }"""
     )
-    if shape["own"]:
-        problems.append(f"the row toggle still carries the word {shape['own']!r}")
-    if shape["width"] < 24 or shape["height"] < 24:
-        problems.append(f"the row toggle is {shape['width']}x{shape['height']}px")
-    if shape["label"].lower() != "show details":
-        problems.append(f"the row toggle is named {shape['label']!r}")
-    page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
-    page.wait_for_timeout(120)
+    if shape["text"].lower() != "costs & sources":
+        problems.append(f"the row toggle reads {shape['text']!r}, expected 'Costs & sources'")
+    if shape["width"] < 44 or shape["height"] < 44:
+        problems.append(f"the row toggle is {shape['width']}x{shape['height']}px, expected 44x44")
+    page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+    page.wait_for_timeout(150)
     if button.get_attribute("aria-expanded") != "true":
-        problems.append("a click 8px below the row toggle does not open the row")
+        problems.append("a click on the row toggle does not open the row")
     opened = page.evaluate(
         """() => {
             const b = document.querySelector('button.more');
-            const label = b.querySelector('.vh');
+            const panel = document.getElementById(b.getAttribute('aria-controls'));
             return {
                 turn: getComputedStyle(b, '::before').transform,
-                label: label ? label.textContent.trim() : ''
+                open: !!panel && panel.classList.contains('open')
             };
         }"""
     )
     if opened["turn"] == shape["turn"]:
         problems.append("the chevron does not turn when the row opens")
-    if opened["label"].lower() != "hide details":
-        problems.append(f"the open row toggle is named {opened['label']!r}")
-    page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+    if not opened["open"]:
+        problems.append("the row's panel does not take the open class")
+    page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
     page.wait_for_timeout(80)
     return problems
 
@@ -1637,6 +1666,25 @@ def price_check(page):
             "expected the upper one near 235"
         )
 
+    # A range dragged shut still has to open by the pointer: with both handles
+    # on one price, a click to their right moves the maximum and a click to
+    # their left moves the minimum. The nearest-handle rule alone left both at
+    # the minimum, so the maximum could not be raised at all.
+    for handle in ("#f-min", "#f-max"):
+        page.eval_on_selector(
+            handle,
+            "el => { el.value = 60; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+        )
+    page.wait_for_timeout(80)
+    page.mouse.click(box["x"] + box["width"] * 0.9, box["y"] + 1)
+    page.wait_for_timeout(80)
+    shut = page.evaluate(values)
+    if shut[0] != 60 or shut[1] <= 60:
+        problems.append(
+            f"a click right of two handles at \u00a360 left the range at {shut}, "
+            "expected the maximum to move"
+        )
+
     page.click("#reset")
     page.wait_for_timeout(80)
     restored = page.evaluate(
@@ -1738,7 +1786,7 @@ CHECKS = [
     ),
     Check(
         "details hit area", "desktop", 31,
-        "Details takes a click 8px outside its visible box",
+        "a button that names the costs and sources opens the row, takes a 44px target, and hides a class rather than the row",
         lambda ctx: hit_check(ctx.page),
     ),
     Check(

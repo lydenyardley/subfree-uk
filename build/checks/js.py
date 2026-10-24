@@ -201,9 +201,12 @@ DESKTOP_ROWS_JS = r"""() => {
                 right: cr.right,
                 top: cr.top,
                 textRight: words.length ? Math.max(...words.map((w) => w.right)) : cr.left,
+                textBottom: words.length ? Math.max(...words.map((w) => w.bottom)) : cr.top,
                 textBoxRight: textBox.right,
                 textLines: words.length,
                 moreLeft: more.left,
+                moreTop: more.top,
+                moreBottom: more.bottom,
                 caption: getComputedStyle(catchCell, '::before').content,
             },
         };

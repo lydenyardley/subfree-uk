@@ -22,13 +22,17 @@ sup{font-size:11px}
 .wrap{max-width:1440px;margin:0 auto;padding:0 1rem}
 .mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:0.5rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .mast>div>span{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}
+/* The long remit is the masthead's only statement of scope, and it is the
+   first thing a phone drops. A shorter one takes its place rather than
+   nothing, so the scope survives the narrowest width. */
+.mast-short{display:none}
 #theme{position:relative;font:500 12px/1 var(--sans);text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:44px}
 #theme:hover{border-color:var(--ink)}
 #theme i{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}
 :root[data-theme=dark] #theme i{transform:rotate(180deg)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #theme i{transform:rotate(180deg)}}
 #theme::after{content:"";position:absolute;inset:-10px -8px}
-header.intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
+.intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
 h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
 .dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}
 .meta{font-size:13px;color:var(--ink2);margin:0}
@@ -121,13 +125,13 @@ td.num{white-space:nowrap}
    header carries the name for a screen reader and a ticked box for the eye,
    which is narrower than the word and keeps the box in the middle of its
    cell; on a phone the header is gone and each box carries its own caption. */
-.main-t th.c-cmp,.main-t td.c-cmp{text-align:center;width:2.5rem;padding:0.5rem 0}
+.main-t th.c-cmp,.main-t td.c-cmp{text-align:center;width:44px;padding:0.5rem 0}
 .main-t thead th.c-cmp{justify-content:center}
 .cmp-i{display:block;width:18px;height:18px;margin:0 auto;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .cmp-cap{display:none}
-/* The label is the hit area, not the box: the box stays 15px, the target
-   around it is 44px on a phone. */
-.cmp-w{display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+/* The label is the hit area, not the box: the box stays 15px, and the label
+   around it is 44px on a phone and on a desk, which is what the record says. */
+.cmp-w{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;cursor:pointer}
 .mcell{display:flex;gap:1rem;align-items:flex-start}
 .mcell>div{min-width:0}
 .ph{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}
@@ -136,11 +140,14 @@ span.ph{display:flex;align-items:center;justify-content:center;background:var(--
 span.ph-lg{font-size:12px}
 .brand{font-weight:700} .mname{font-weight:400}
 .best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
-.c-catch{display:flex;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
+.c-catch{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
 /* At 901px this cell's text box is 70px, narrower than "£7.99/month" at 74px,
    and a wider fallback font pushes an unbreakable word across the chevron. */
 .catch-t{min-width:0;overflow-wrap:anywhere}
-.more-w{margin-top:0}
+/* The button takes its own line under the catch at every width: beside the
+   words it ate the column, and at 901 the catch had 104px of text box left
+   with a 121px button in it. */
+.more-w{flex:1 0 100%;margin-top:0}
 /* The label and its footnote share this block. A marker left outside it has no
    room after a wrapped label's last line, so it drops to a new line at the
    hanging indent, which the three wrapped labels did at 1280px. */
@@ -161,15 +168,22 @@ span.ph-lg{font-size:12px}
 .figv{display:contents}
 .fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0.15em;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
 .fn:hover{color:var(--acc);text-decoration:underline}
-/* The row opens from a chevron rather than a word: the catch is the last thing
-   a reader reads, and a button under it made every row a line taller. The
-   chevron turns to point the way the row is going, and the hit area is 44px. */
-button.more{position:relative;display:grid;place-items:center;flex:none;width:24px;height:24px;padding:0;background:none;border:1px solid var(--rule);cursor:pointer;color:var(--ink)}
+/* The button names the panel it opens. A chevron alone left the page's own
+   evidence behind an icon, two clicks deep; the word is the thing that says
+   the costs and sources are here. The chevron turns to say the row opened. */
+button.more{position:relative;display:inline-flex;align-items:center;gap:.45rem;flex:none;min-height:44px;padding:0 .6rem;font:600 12px/1.2 var(--sans);background:none;border:1px solid var(--rule);cursor:pointer;color:var(--ink);text-align:left}
 button.more::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-1px) rotate(45deg);transition:transform .15s}
 button.more[aria-expanded=true]::before{transform:translateY(1px) rotate(-135deg)}
-button.more::after{content:"";position:absolute;inset:-10px}
 button.more:hover,button.more[aria-expanded=true]{border-color:var(--ink)}
 @media (prefers-reduced-motion:reduce){button.more::before{transition:none}}
+/* The panel is hidden by the `js` class, not the `hidden` attribute, so a
+   reader without JavaScript has every panel open instead of none: the costs
+   and sources are the page's claim, and they are in the HTML. The `:not()`
+   is what keeps the desktop rows shut: `.main-t tr.detail{display:block}`
+   carries the same specificity as `.js tr.detail` and is written later, so
+   without it every panel printed open on load. */
+.js tr.detail:not(.open){display:none}
+.js tr.detail.open{display:block}
 tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}
 .dgrid{display:grid;grid-template-columns:180px minmax(0,1fr);gap:0 2rem}
 .dimg{margin:0}
@@ -198,6 +212,9 @@ tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom
 
 .srcs .fn{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}
 .empty{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}
+/* Two recovery actions read as one sentence when a single space separates
+   them, so they keep a gap even on the line they share. */
+.empty-acts{display:inline-flex;flex-wrap:wrap;gap:.75rem;vertical-align:bottom}
 /* jump-to-row highlight */
 @keyframes flash{0%,35%{background-color:var(--hl)}100%{background-color:transparent}}
 tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
@@ -219,7 +236,10 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 .cmp-diff{color:var(--ink3);font-size:12px}
 .cmp-basis{display:block;font-size:12px;line-height:1.3;color:var(--ink2);margin-top:.15rem}
 .cmp-no{color:var(--v-avoid)}
-.cmp-scroll{overflow-x:auto}
+/* The columns snap, so a swipe lands on a model rather than between two. The
+   sticky label column is paid for by the scroll padding. */
+.cmp-scroll{overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:76px}
+.cmp-t thead th[data-id]{scroll-snap-align:start}
 .cmp-wrap{position:relative}
 /* The edge fade says there is more table to the right. */
 .cmp-wrap::after{content:"";position:absolute;top:0;right:0;bottom:0;width:2.5rem;background:linear-gradient(to right,transparent,var(--paper));pointer-events:none;opacity:0;transition:opacity .2s}
@@ -361,7 +381,7 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
 @media (max-width:820px){
  body{font-size:15px}
  .wrap{padding:0 1rem}
- header.intro{grid-template-columns:1fr;gap:1rem;padding:2rem 0}
+ .intro{grid-template-columns:1fr;gap:1rem;padding:2rem 0}
  .verdict{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}
  .dek{font-size:16px}
  .controls{gap:1rem}
@@ -371,12 +391,12 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
  .main-t thead th{position:static;padding:0;border:0;background:none}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
  /* Off-screen cards skip layout, so a sort lays out only the cards in view.
-    410px is the content estimate, 443px with padding and rule, against real
-    cards of 404 to 506px. Auto remembers the real size once a card has been
+    445px is the content estimate, 478px with padding and rule, against real
+    cards of 424 to 523px. Auto remembers the real size once a card has been
     laid out, so the estimate is only paid above the reader's fold, and an
-    off-screen card is not painted, so the content that overflows 443px is not
+    off-screen card is not painted, so the content that overflows 478px is not
     visible until the card is laid out at its own height. */
- .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 410px}
+ .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 445px}
  tbody.item[data-v]{border-left:3px solid var(--vc)}
  tbody.item[data-v] tr.main>td.c-cmp{border-left:0}
  /* The rail holds the box (15px) and the word under it (59px), and the gutter
@@ -435,15 +455,22 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
    the table's own proportions, with a floor under every column that has a
    word in its header: a wide fallback font is about 15% wider than Arial, and
    tracks tuned by eye clipped "Free features" on Linux.
-   The first track is the compare box, which is 2.5rem wide, so the track is
-   40px. It carried 2px more for the collapsed table border that sat there in
-   ADR 6. A grid row has no collapsed border to pay for: the 2px was a hole
-   under the compare header, which painted its own 40px box inside a 42px
-   track and left the next column's rule 2px away. */
+   The first track is the compare box's rail, and the box's 44px target sets
+   it at 47px: the verdict rule is a 3px border on that cell, so 44 content px
+   need 47 of track, or a marked row's label overflows the 41 the border
+   leaves. It carried 2px more for the collapsed table border that sat there in
+   ADR 6, and a track wider than the cell left a hole under the compare
+   header: the cell painted its own box inside it and the next column's rule
+   sat 2px away. Track and cell are the same 47px now. */
 @media (min-width:821px){
  .main-t{display:block}
  .main-t thead,.main-t tbody{display:block}
- .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:40px 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:47px 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ /* The 44px rail is the phone's; here the cell fills its 47px track, or the
+    header's own rule stops 3px short of the column beside it. */
+ .main-t thead th.c-cmp{width:auto}
+ .cmp-w{min-width:44px;min-height:44px}
+ .cmp-scroll{scroll-padding-left:150px}
  /* A sticky cell can only move inside its parent, so the header row sticks as
     a block: fourteen rows of table no longer move it, and the cells still sit
     on one line each. */
@@ -474,15 +501,24 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
 /* The sort control and the option groups come to blows between 821 and the
    wide layout. The filters need 794px beside a 290px sort control, and a font
    15% wider needs 1280: in between, the sort took a line the groups had to
-   share, and at 1101 they both wrapped. Below 1280 the sort takes the count's
-   line instead, so the filters keep a line of their own and the slider takes
-   what the two groups leave. The 1.5rem gap gives the 821px row the room its
-   two groups need in the page's own font. At 1280 the filters and the sort
-   share the line again, and the count goes back under. */
+   share, and at 1101 they both wrapped. Below 1280 the sort takes a line of
+   its own, so the filters keep one and the slider takes what the two groups
+   leave. It sits under the option groups, at the line's start, because placed
+   at the end it read as a caption for the price slider above it, with the
+   count stranded at the other end of the band. Label and select share a line
+   and the count closes it, which is 60px where the stacked block was 91. The
+   1.5rem gap gives the 821px row the room its two groups need. At 1280 the
+   filters and the sort share the line again, and the count goes back under. */
 @media (min-width:821px) and (max-width:1279px){
  .filters{flex:1 0 100%}
  .fbody{gap:1rem 1.5rem}
- .count{flex:1 1 auto;order:1;align-self:flex-end} .sortby{order:2}
+ .sortby{order:1;margin-left:0;flex:0 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0 .75rem}
+ .sortby .lab{margin:0}
+ /* A zero-width basis with a full-width minimum: the note takes the block's
+    line without its 420px sentence deciding how wide the block is, which is
+    what pushed the count off the line at 821. */
+ .sortnote{flex:0 0 100%;width:0;min-width:100%;margin:.35rem 0 0}
+ .count{flex:1 1 0;min-width:0;order:2;align-self:flex-start;text-align:right}
 }
 /* The record track reads in two words a line from 1200px, where the catch can
    pay for it. From 1200 to 1279 the cost columns stay at 10% and only the
@@ -491,7 +527,7 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    rows: one row grows at 1150 and the page is 76px taller at 1101, so the band
    starts where the page's other desktop breakpoint already is. */
 @media (min-width:1200px) and (max-width:1279px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:40px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:47px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
 }
 /* From 1280px the two cost columns are wide enough for their words. At 12px
    "3-year cost," is about 100px, and with the footnote marker beside it that
@@ -506,10 +542,10 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    "Only with extra kit" takes two lines, here and at a fallback 15% wider,
    where 110px split it again. The catch gives up 26px at 1280 and 14px at
    1440, and the page is 17px and 11px shorter for it. */
- .main-t thead tr,.main-t tr.main{grid-template-columns:40px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:47px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
 }
 @media (min-width:821px) and (max-width:1100px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:40px 27% 90px 84px 96px 92px 92px 1fr}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:47px 27% 90px 84px 96px 92px 92px 1fr}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
 }
 /* Eight tracks cannot hold the catch below 901px: the fixed figures and the
@@ -523,7 +559,7 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    shorter than this band at 940, so the band stops where the clip does. The
    901 depends on no font: the tracks are fixed. */
 @media screen and (min-width:821px) and (max-width:900px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:40px minmax(0,1fr) 90px 84px 96px 92px 92px}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:47px minmax(0,1fr) 90px 84px 96px 92px 92px}
  .main-t thead th:last-child{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%)}
  .main-t tr.main>*{border-bottom:0}
  .main-t tbody.item{border-bottom:1px solid var(--rule2)}
@@ -532,9 +568,10 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .main-t td.c-catch[data-label]::before{content:attr(data-label);flex:1 0 100%;margin-bottom:.25rem;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3)}
 }
 @media (max-width:520px){
- .mast>div>span{display:none}
+ .mast-long{display:none}
+ .mast-short{display:inline}
  .mast{padding:.75rem 0}
- header.intro{padding:.75rem 0}
+ .intro{padding:.75rem 0}
  .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
  .verdict{display:none}
  /* The three recommendations, one line each, so a phone reads the same

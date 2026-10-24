@@ -770,12 +770,15 @@ def scroller_check(page):
     state = page.evaluate(
         """() => {
             const s = document.querySelector('.cmp-scroll');
+            const first = document.querySelector('#cmp-table thead th[data-id]');
             return {
                 tab: s.tabIndex,
                 role: s.getAttribute('role'),
                 label: (s.getAttribute('aria-label') || '').trim(),
                 over: s.scrollWidth - s.clientWidth,
-                left: Math.round(s.scrollLeft)
+                left: Math.round(s.scrollLeft),
+                snap: getComputedStyle(s).scrollSnapType,
+                align: first ? getComputedStyle(first).scrollSnapAlign : ''
             };
         }"""
     )
@@ -785,7 +788,14 @@ def scroller_check(page):
         problems.append(f"the comparison scroller is unnamed: {state}")
     if state["over"] <= 0:
         problems.append("the comparison does not overflow at 390px, so it cannot be scrolled")
-    else:
+    # The cue tells the reader which model is next; the snap is what makes a
+    # swipe land on a model rather than between two.
+    if "mandatory" not in state["snap"] or state["align"] != "start":
+        problems.append(
+            f"the comparison does not snap one model at a time: "
+            f"{state['snap']!r} / {state['align']!r}"
+        )
+    if state["over"] > 0:
         # The cue says the table scrolls, so it has to be where the reader looks:
         # above the table, not a screen and a half below the column it names.
         cue = page.evaluate(
@@ -797,8 +807,9 @@ def scroller_check(page):
                     document.querySelectorAll('#cmp-table thead th')
                 ).slice(1).map((th) => {
                     const r = th.getBoundingClientRect();
+                    const name = th.querySelector('.cmp-name');
                     return {
-                        name: (th.textContent || '').trim(),
+                        name: (name || th).textContent.trim(),
                         left: Math.round(r.left),
                         right: Math.round(r.right)
                     };
@@ -808,6 +819,7 @@ def scroller_check(page):
                     text: (cue.textContent || '').trim(),
                     top: Math.round(cue.getBoundingClientRect().top),
                     tableTop: Math.round(box.top),
+                    start: Math.round(box.left),
                     edge: Math.round(box.right),
                     cols: cols
                 };
@@ -818,12 +830,22 @@ def scroller_check(page):
         else:
             if cue["top"] > cue["tableTop"]:
                 problems.append("the scroll cue is below the table it names")
-            # It names a column that is out of sight, not one that is half in
-            # view and already readable.
-            gone = [c["name"] for c in cue["cols"] if c["left"] >= cue["edge"] - 1]
+            # It names the first column the reader cannot read: one cut off by
+            # the edge with less than 60% of itself showing. Naming the first
+            # column that merely starts past the edge named the third model
+            # while the second was a 47px sliver.
+            gone = [
+                c["name"]
+                for c in cue["cols"]
+                if c["right"] > cue["edge"] + 1
+                and (
+                    min(c["right"], cue["edge"]) - max(c["left"], cue["start"])
+                ) < (c["right"] - c["left"]) * 0.6
+            ]
             if gone and cue["text"] != "Swipe to see " + gone[0]:
                 problems.append(
-                    f"the scroll cue names {cue['text']!r}, not the column out of sight {gone[0]!r}"
+                    f"the scroll cue names {cue['text']!r}, not the column the reader "
+                    f"cannot read {gone[0]!r}"
                 )
         page.focus(".cmp-scroll")
         page.keyboard.press("ArrowRight")
@@ -990,17 +1012,25 @@ SPEC_ROWS = [
 COMPARE_ROWS = len(SPEC_ROWS) + 1
 
 def compare_cells(rows):
-    """The cheapest 3-year cost, what it is made of, and the two differences."""
+    """The cheapest 3-year cost, what it is made of, and the two differences.
+
+    A difference names the column it is measured against: the cheapest column
+    can be scrolled out of view on a phone, where "+£25.00" alone does not say
+    what it is more than.
+    """
     by_id = {row["id"]: row for row in rows.ROWS}
-    keeps = [by_id[id]["keep3"] for id in SHORTLIST_IDS]
-    low = min(keeps)
-    return [
-        f"£{value:.2f} "
-        + ("cheapest" if abs(value - low) < 0.005 else f"+£{value - low:.2f}")
-        + " "
-        + by_id[id]["keep_note"]
-        for id, value in zip(SHORTLIST_IDS, keeps)
-    ]
+    keeps = [(id, by_id[id]["keep3"]) for id in SHORTLIST_IDS]
+    low_id, low = min(keeps, key=lambda pair: pair[1])
+    base = f"{by_id[low_id]['brand']} {by_id[low_id]['model']}".replace(" Video Doorbell", "")
+    cells = []
+    for id, value in keeps:
+        diff = (
+            "cheapest of these 3"
+            if abs(value - low) < 0.005
+            else f"+£{value - low:.2f} more than {base}"
+        )
+        cells.append(f"£{value:.2f} {diff} {by_id[id]['keep_note']}")
+    return cells
 
 CHECKS = [
     Check(
@@ -1042,7 +1072,7 @@ CHECKS = [
     ),
     Check(
         "comparison scroller", "compare", 46,
-        "the comparison's sideways scroll is a named, focusable region and the arrow keys move it",
+        "the comparison's sideways scroll is a named, focusable region that snaps one model at a time, the cue names the first column the reader cannot read, and the arrow keys move it",
         lambda ctx: scroller_check(ctx.page),
     ),
     Check(

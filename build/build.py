@@ -51,8 +51,12 @@ def zoom(r, size):
     if m.get("placeholder") or not m:
         return photo(r, size)
     name = e(f"{r['brand']} {r['model']}")
+    # Two photos on one row, so the two names say which one opens: the row's
+    # thumbnail sits beside the name, the large one only inside the details.
+    # Both open the full-size photo, so neither name claims to open a thumbnail.
+    which = "photo" if size == "sm" else "photo full size"
     return (f'<button type="button" class="zoom" data-full="img/{r["id"]}-lg.webp" data-name="{name}" '
-            f'aria-label="View {name} photo full size">{photo(r, size)}<span class="zi" aria-hidden="true"></span></button>')
+            f'aria-label="View {name} {which}">{photo(r, size)}<span class="zi" aria-hidden="true"></span></button>')
 
 # Short-answer verdicts, colour-coded and repeated on the matching rows.
 # One row owns "Best overall"; the other variants name the case they win.
@@ -124,7 +128,7 @@ for i,r in enumerate(ROWS):
     # keep recordings, so the cell that figure comes from starts bold, and the
     # sort note says so. Where the plan is the cheapest way to record, the
     # cell says so too, or the bold number reads as the wrong figure.
-    knote='<span class="note">cheapest: with a plan</span>' if r["keep_basis"]=="sub" else ""
+    knote='<span class="note">cheapest for this model: with plan</span>' if r["keep_basis"]=="sub" else ""
     rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}" data-keep="{r['keep_basis']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 0}" data-score="{sc}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
@@ -134,9 +138,9 @@ for i,r in enumerate(ROWS):
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
 <td class="c-nosub num{ncls}" data-label="3 years, no plan"><span class="figv">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</span></td>
 <td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}"><span class="figv">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{knote}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</span></td>
-<td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="vh">Show details</span></button></div></td>
+<td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
-<tr class="detail" id="d-{r['id']}" hidden><td colspan="8"><div class="dgrid">
+<tr class="detail" id="d-{r['id']}"><td colspan="8"><div class="dgrid">
 <figure class="dimg">{zoom(r,"lg")}</figure>
 <dl class="dspec">
 <div class="pair"><dt>Power</dt><dd>{e(PLAIN[r['id']][0])}{pnote}</dd></div>
@@ -227,10 +231,11 @@ page=f'''<!doctype html>
 <script>document.documentElement.className="js";try{{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}</script>
 <link rel="stylesheet" href="{CSS_URL}">
 </head><body>
-<a class="skip" href="#tbl">Skip to the comparison table</a>
+<a class="skip" href="#tbl">Skip to the doorbell table</a>
 <div class="wrap">
-<div class="mast" id="top"><div>SubFree UK <span>Gadgets that work without a subscription</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
-<header class="intro">
+<header class="mast-head">
+<div class="mast" id="top"><div>SubFree UK <span class="mast-long">Gadgets that work without a subscription</span><span class="mast-short">No subscriptions</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
+<div class="intro">
 <div>
 <h1>Video doorbells that work without a subscription</h1>
 <p class="dek">{len(ROWS)} UK doorbells, checked against manufacturer pages and independent reviews: free features, paywalls and 3-year costs.</p>
@@ -247,6 +252,7 @@ page=f'''<!doctype html>
 <p class="v-batt"><b>Easiest battery pick:</b> {vlink(["tapo-d230"],"Tapo D230S1")}, which keeps footage on a hub inside the house.</p>
 <p class="v-avoid"><b>Avoid if you won't pay monthly:</b> {vlink(["ring"],"Ring")} records nothing without a plan, and {vlink(["blink"],"Blink")} and {vlink(["arlo"],"Arlo")} need extra hardware.</p>
 </aside>
+</div>
 </header>
 
 <main>
@@ -285,9 +291,9 @@ page=f'''<!doctype html>
 <option value="sub3">3-year cost, with plan</option>
 <option value="model">Model, A to Z</option>
 </select><p class="sortnote" id="sortnote">Order: 3-year cost to keep recordings (the bold figure).</p></div>
-<p class="count">Tick up to 3 rows to compare. <span id="count">{len(ROWS)}</span> of {len(ROWS)} shown · <button type="button" class="link" id="reset">Reset</button><span id="cmp-sep" hidden> · </span><button type="button" class="link" id="cmp-inline" hidden>Compare</button><span id="cmp-cap" class="cap" hidden></span></p>
+<p class="count">Tick up to 3 doorbells to compare. <span id="count">{len(ROWS)}</span> of {len(ROWS)} shown · <button type="button" class="link" id="reset">Reset</button><span id="cmp-sep" hidden> · </span><button type="button" class="link" id="cmp-inline" hidden>Compare</button><span id="cmp-cap" class="cap" hidden></span></p>
 </form>
-<noscript><p class="nojs">Filters, sorting, compare and the per-model details need JavaScript. All {len(ROWS)} doorbells are listed below.</p></noscript>
+<noscript><p class="nojs">Filters, sorting and compare need JavaScript. All {len(ROWS)} doorbells are listed below, with each model's costs and sources open.</p></noscript>
 <script>if(window.matchMedia('(max-width:520px)').matches)document.getElementById('filters').open=false;</script>
 
 <section id="compare" hidden>
@@ -300,6 +306,7 @@ page=f'''<!doctype html>
 <div id="totop-s" aria-hidden="true"></div>
 <div class="tbl-w"><div class="prog" aria-hidden="true"><i></i></div>
 <table class="main-t" id="tbl" tabindex="-1">
+<caption class="vh">Doorbell comparison: {len(ROWS)} models, 8 columns</caption>
 <thead><tr>
 <th scope="col" class="c-cmp"><span class="vh">Compare</span><svg class="cmp-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect x="1.75" y="1.75" width="16.5" height="16.5" rx="2"/><path d="M5.5 10.4l3.1 3.1 5.9-6.3"/></svg></th>
 <th scope="col" data-sort="model" aria-sort="none"><button type="button">Model{SI}</button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?{SI}</button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price{SI}</button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features{SI}</button></th>
@@ -307,7 +314,7 @@ page=f'''<!doctype html>
 </tr></thead>
 {''.join(rows_html)}
 </table></div>
-<p class="empty" id="empty" hidden><span id="empty-txt">Nothing matches those filters.</span> <button type="button" class="link" id="near" hidden></button> <button type="button" class="link" id="empty-reset">Reset filters</button></p>
+<p class="empty" id="empty" hidden><span id="empty-txt">Nothing matches those filters.</span> <span class="empty-acts"><button type="button" class="link" id="near" hidden></button> <button type="button" class="link" id="empty-reset">Reset filters</button></span></p>
 
 <section class="method" id="method">
 <div class="method-copy">
@@ -359,7 +366,7 @@ NOT_FOUND = f'''<!doctype html>
 <link rel="stylesheet" href="{SITE}{CSS_FILE}?v={content_version(PAGE_CSS)}">
 </head><body>
 <div class="wrap">
-<div class="mast"><div>SubFree UK <span>Gadgets that work without a subscription</span></div></div>
+<header class="mast-head"><div class="mast"><div>SubFree UK <span class="mast-long">Gadgets that work without a subscription</span><span class="mast-short">No subscriptions</span></div></div></header>
 <main class="nf">
 <h1>Page not found</h1>
 <p>That link does not lead anywhere. The comparison of UK video doorbells that record without a subscription is on the home page, and it is one page.</p>

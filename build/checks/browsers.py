@@ -41,6 +41,8 @@ def nojs_check(browser, url, row_count, source_count):
             "rows": page.locator("#tbl tbody.item").count(),
             "theme": page.locator("#theme").is_visible(),
             "details": page.locator(".more-w").first.is_visible(),
+            "panel": page.locator("#m-reo-poe tr.detail").is_visible(),
+            "pairs": page.locator("#m-reo-poe .dspec .pair").count(),
             "sources": page.locator("#sources").is_visible(),
             "sourceEntries": page.locator("#sources .fns li").count(),
         }
@@ -52,6 +54,12 @@ def nojs_check(browser, url, row_count, source_count):
         problems.append("the inert theme toggle stays visible without JavaScript")
     if state["details"]:
         problems.append("the inert Details buttons stay visible without JavaScript")
+    if not state["panel"]:
+        problems.append("the costs and sources are hidden without JavaScript")
+    if state["pairs"] != 13:
+        problems.append(
+            f"the first model's details list {state['pairs']} rows without JavaScript, expected 13"
+        )
     if "need JavaScript" not in state["note"]:
         problems.append(f"no no-JavaScript note: {state['note']!r}")
     if state["rows"] < row_count:

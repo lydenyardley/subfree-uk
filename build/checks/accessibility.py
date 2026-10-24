@@ -150,7 +150,19 @@ def axe_problems(axe_results):
                 for node in nodes[:4]:
                     summary = node.get("failureSummary", "").replace("\n", " ").strip()
                     print(f"        {', '.join(node['target'])}  {summary[:150]}")
+    # The masthead sat outside every landmark, so the one finding axe called a
+    # best practice was the only content a landmark user could not jump to.
+    # It fails now rather than only printing, which is what the audit's R15
+    # asks for: the region rule reports zero nodes.
+    if "region" in best_practice:
+        entry = best_practice["region"]
+        problems.append(
+            f"axe region: {len(entry['targets'])} element(s) outside every landmark: "
+            + ", ".join(sorted(entry["targets"])[:4])
+        )
     for rule, entry in sorted(best_practice.items()):
+        if rule == "region":
+            continue
         print(
             f"  note  axe best-practice {rule} ({entry['impact']}): {entry['help']} On "
             f"{', '.join(sorted(entry['targets'])[:3])}, in {len(entry['where'])} of "
@@ -216,7 +228,7 @@ CHECKS = [
     ),
     Check(
         "axe WCAG", "compare", 77,
-        "axe-core finds no WCAG 2.2 A/AA violation in either theme at 390, 820 and 1280",
+        "axe-core finds no WCAG 2.2 A/AA violation in either theme at 390, 820 and 1280, and every element sits inside a landmark",
         lambda ctx: axe_problems(axe_audit(ctx.page)),
     ),
 ]

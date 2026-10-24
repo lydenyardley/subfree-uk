@@ -4,7 +4,7 @@ import os
 
 from .behaviour import contain_check
 from .compare import COMPARE_ROWS
-from .context import ROOT, WIDTHS
+from .context import ROOT, WIDTHS, open_compare
 from .js import OVERFLOW_JS
 from .registry import Check
 
@@ -190,9 +190,12 @@ def filters_row_check(page):
     Taking the line fixed that at the wide end and left the middle squeezed:
     the filters need 794px beside a 290px sort control, so from 1101 to 1199
     the sort took a share and both groups wrapped again. Below 1280 the sort
-    now takes the count's line, where it costs nothing, and the filters keep
-    the whole line. Each width is measured in the page's own font and again at
-    Verdana, about 15% wider, because that is the font that hid the 1280 case.
+    takes a line of its own, where it costs nothing, and the filters keep the
+    whole line. That line starts under the option groups and the count closes
+    it: placed at the end of the band the sort read as a caption for the price
+    slider above it, with the count stranded at the other end. Each width is
+    measured in the page's own font and again at Verdana, about 15% wider,
+    because that is the font that hid the 1280 case.
     """
     widths = (821, 850, 900, 1101, 1200, 1279, 1280, 1440)
     read = """() => {
@@ -200,6 +203,7 @@ def filters_row_check(page):
         const body = document.querySelector('.fbody');
         const filters = box(document.querySelector('.filters'));
         const sort = box(document.querySelector('.sortby'));
+        const count = box(document.querySelector('.count'));
         return {
             rows: Array.from(body.querySelectorAll('.opts')).map(
                 (group) => new Set(Array.from(group.children).map((l) => Math.round(box(l).top))).size
@@ -207,7 +211,9 @@ def filters_row_check(page):
             slider: Math.round(box(document.querySelector('.dual')).width),
             beside: Math.abs(filters.top - sort.top) < 3,
             overlap: filters.left < sort.right && sort.left < filters.right
-                && filters.top < sort.bottom && sort.top < filters.bottom
+                && filters.top < sort.bottom && sort.top < filters.bottom,
+            sortIndent: Math.round(sort.left - filters.left),
+            countShares: Math.abs(count.top - sort.top) <= 2 && count.left >= sort.right - 1
         };
     }"""
     problems = []
@@ -231,6 +237,19 @@ def filters_row_check(page):
                 )
             if state["overlap"]:
                 problems.append(f"{where} the sort control overlaps the filters")
+            if width < 1280:
+                # The sort opens its own line under the option groups, and the
+                # count shares it at the far end, so the band reads as one row
+                # of controls rather than a caption for the price slider.
+                if state["sortIndent"] != 0:
+                    problems.append(
+                        f"{where} the sort control starts {state['sortIndent']}px "
+                        "off the filters' edge instead of under the option groups"
+                    )
+                if not state["countShares"]:
+                    problems.append(
+                        f"{where} the count is not on the sort control's line: {state}"
+                    )
             if width < 1280 and state["beside"]:
                 problems.append(f"{where} the sort control takes a share of the filters' line")
             if width >= 1280 and not state["beside"]:
@@ -385,6 +404,139 @@ def overflow_check(page):
     return overflow_problems(widths)
 
 
+def table_name_check(page):
+    """The table says what it is, and the skip link names the same table.
+
+    A screen reader landed on an unnamed table of 14 rows and 8 columns, from a
+    link that promised "the comparison table" and pointed at the doorbell one.
+    """
+    problems = []
+    snap = page.locator("#tbl").aria_snapshot()
+    if 'table "Doorbell comparison' not in snap:
+        problems.append(f"the table is announced as {snap.splitlines()[0] if snap else 'nothing'}")
+    skip = page.evaluate(
+        """() => {
+            const a = document.querySelector('a.skip');
+            return { text: (a.textContent || '').trim(), href: a.getAttribute('href') };
+        }"""
+    )
+    if skip["href"] != "#tbl" or "doorbell table" not in skip["text"].lower():
+        problems.append(f"the skip link reads {skip['text']!r} and points at {skip['href']!r}")
+    return problems
+
+def mast_remit_check(page):
+    """The masthead keeps saying what the site is at 390, and the count says doorbells.
+
+    The long remit is the masthead's only statement of scope and it is the first
+    thing a phone drops, which left the narrowest width with no scope at all.
+    """
+    state = page.evaluate(
+        """() => ({
+            remit: Array.from(document.querySelectorAll('.mast > div > span'))
+                .filter((s) => s.getBoundingClientRect().width > 1 && s.textContent.trim())
+                .map((s) => s.textContent.trim()),
+            count: ((document.querySelector('.count') || {}).textContent || '').trim()
+        })"""
+    )
+    problems = []
+    if not state["remit"]:
+        problems.append("the masthead states no remit at 390")
+    if "doorbells to compare" not in state["count"]:
+        problems.append(f"the count line reads {state['count']!r}")
+    return problems
+
+def photo_names_check(page):
+    """Two photos on one row get two names, so a reader knows which one opens.
+
+    The thumbnail beside the name and the large photo in the details were both
+    "View <model> photo full size", which is one name for two targets. Both
+    open the same full-size image, so the pair says which photo the reader is
+    on ("View <model> photo" and "View <model> photo full size") rather than
+    calling the first one a thumbnail it does not open.
+    """
+    rows = page.evaluate(
+        """() => Array.from(document.querySelectorAll('#tbl tbody.item')).map(
+            (row) => Array.from(row.querySelectorAll('button.zoom')).map(
+                (b) => (b.getAttribute('aria-label') || '').trim()
+            )
+        )"""
+    )
+    problems = []
+    for index, names in enumerate(rows):
+        if len(names) < 2:
+            continue
+        if any(not name for name in names):
+            problems.append(f"row {index + 1} has a photo button without a name")
+        elif len(set(names)) != len(names):
+            problems.append(f"row {index + 1} names both photos {names[0]!r}")
+        elif not names[1].endswith("full size"):
+            problems.append(
+                f"row {index + 1} names its two photos {names}, which do not say "
+                "which photo the reader opened"
+            )
+    return problems
+
+def compare_words_check(ctx):
+    """Both cost columns are named as the table names them, and a delta says against what.
+
+    The comparison wrote "3 YRS, NO PLAN" where the table wrote "3-year cost, no
+    plan", and "cheapest" meant the lowest of the selected models in one place
+    and the cheapest plan for one model in another. A delta read "+£15.00"
+    with nothing to compare it to, and the cheapest column can be off the edge
+    of a phone.
+    """
+    # The performance pass reloads the page, so the comparison a later check
+    # needs is opened here rather than assumed open.
+    open_compare(ctx.page)
+    state = ctx.page.evaluate(
+        """() => {
+            const labels = Array.from(
+                document.querySelectorAll('#cmp-table tbody th')
+            ).map((th) => (th.textContent || '').trim());
+            const cost = document.querySelector('#cmp-table tr.cmp-cost');
+            const cells = Array.from(cost.querySelectorAll('td')).map((td) => ({
+                total: (td.querySelector('b') || {}).textContent || '',
+                diff: (td.querySelector('.cmp-diff') || {}).textContent || ''
+            }));
+            const notes = Array.from(document.querySelectorAll('#tbl .c-sub .note'))
+                .map((n) => (n.textContent || '').trim());
+            return { labels, cells, notes };
+        }"""
+    )
+    problems = []
+    for want in ("3-year cost, no plan", "3-year cost, with plan"):
+        if want not in state["labels"]:
+            problems.append(f"the comparison has no {want!r} row")
+    cheapest = [c for c in state["cells"] if "cheapest of these 3" in c["diff"]]
+    if len(cheapest) != 1:
+        problems.append(f"{len(cheapest)} columns say 'cheapest of these 3', expected one")
+    for cell in state["cells"]:
+        if cell["diff"] and "cheapest of these 3" not in cell["diff"] and " more than " not in cell["diff"]:
+            problems.append(f"the delta {cell['diff']!r} does not name its baseline")
+    if not state["notes"] or not all("for this model" in note for note in state["notes"]):
+        problems.append(f"the plan-is-cheapest notes read {state['notes']}")
+    return problems
+
+def compare_target_check(page):
+    """The compare box's label is 44x44, on a desk as well as on a phone."""
+    problems = []
+    for width in (1280, 390):
+        page.set_viewport_size({"width": width, "height": 900})
+        page.wait_for_timeout(120)
+        box = page.evaluate(
+            """() => {
+                const r = document.querySelector('#tbl tbody .cmp-w').getBoundingClientRect();
+                return { w: Math.round(r.width), h: Math.round(r.height) };
+            }"""
+        )
+        if box["w"] < 44 or box["h"] < 44:
+            problems.append(
+                f"at {width}px the compare label is {box['w']}x{box['h']}px, expected 44x44"
+            )
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(120)
+    return problems
+
 def compare_caption_check(page):
     compare = page.evaluate(
         """() => ({
@@ -433,8 +585,13 @@ CHECKS = [
         lambda ctx: phone_header(ctx.phone["header"], ctx.phone["roles"]),
     ),
     Check(
+        "mast remit", "phone", 25,
+        "the masthead keeps its remit at 390, and the count line says doorbells",
+        lambda ctx: mast_remit_check(ctx.page),
+    ),
+    Check(
         "phone containment", "phone", 20,
-        "off-screen phone cards skip layout, with a 410px estimate standing in",
+        "off-screen phone cards skip layout, with a 445px estimate standing in",
         lambda ctx: contain_check(ctx.page, ctx.row_count),
     ),
     Check(
@@ -501,6 +658,26 @@ CHECKS = [
         "compare caption", "compare", 75,
         "the compare table is captioned with its model count",
         lambda ctx: compare_caption_check(ctx.page),
+    ),
+    Check(
+        "table name", "compare", 84,
+        "the doorbell table has a name, and the skip link says which table it skips",
+        lambda ctx: table_name_check(ctx.page),
+    ),
+    Check(
+        "photo names", "compare", 85,
+        "two photos on one row are two names, and the details one says it is full size",
+        lambda ctx: photo_names_check(ctx.page),
+    ),
+    Check(
+        "compare words", "compare", 86,
+        "the comparison names the cost columns as the table does, and every delta names its baseline",
+        compare_words_check,
+    ),
+    Check(
+        "compare target", "compare", 87,
+        "the compare label is a 44x44 target at 1280 and at 390",
+        lambda ctx: compare_target_check(ctx.page),
     ),
     Check(
         "overflow", "compare", 78,
