@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup: R5 and R13 | SubFree UK</title>
+<style>:root{--ink:#1a1a1a;--ink2:#555;--ink3:#6e6e6e;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
+--v-best:#17694a;--v-batt:#1f5d96;--v-avoid:#a33b26;--hl:#fff1b8;--tray:#332f2a;--tray-ink:#f6f3ec;--imgbg:#fff;--imgf:none;
+--serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
+:root[data-theme=dark]{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#2b2a28;--imgf:brightness(.78);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-batt:#80b4ea;--v-avoid:#f08a74;--hl:#4a4320;--tray:#2b2a28;--tray-ink:#e9e7e2;--imgbg:#2b2a28;--imgf:brightness(.78);color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.skip{position:absolute;top:0;left:0;z-index:20;transform:translateY(-120%);background:var(--paper);border:1px solid var(--ink);padding:0.5rem 1rem;font:600 14px/1.4 var(--sans);color:var(--ink)}
+.skip:focus{transform:none}
+.no-js .controls{display:none}
+.no-js #theme{display:none}
+.no-js .more-w{display:none}
+.nojs{margin:1rem 0;padding:1rem;border:1px solid var(--rule);font-size:14px;color:var(--ink2)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);transition:background-color .18s,color .18s}
+a{color:var(--acc)}
+p{max-width:65ch}
+sup{font-size:11px}
+.wrap{max-width:1440px;margin:0 auto;padding:0 1rem}
+.mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--ink);padding:0.5rem 0;font:600 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.mast>div>span{color:var(--ink3);font-weight:500;margin-left:1rem;letter-spacing:.04em}
+/* The long remit is the masthead's only statement of scope, and it is the
+   first thing a phone drops. A shorter one takes its place rather than
+   nothing, so the scope survives the narrowest width. */
+.mast-short{display:none}
+#theme{position:relative;font:500 12px/1 var(--sans);text-transform:none;background:none;color:var(--ink);border:1px solid var(--rule);padding:0 1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-height:44px}
+#theme:hover{border-color:var(--ink)}
+#theme i{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}
+:root[data-theme=dark] #theme i{transform:rotate(180deg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #theme i{transform:rotate(180deg)}}
+#theme::after{content:"";position:absolute;inset:-10px -8px}
+.intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
+h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
+.dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}
+.meta{font-size:13px;color:var(--ink2);margin:0}
+.meta b{color:var(--ink)}
+.verdict{border-left:1px solid var(--rule);padding:0 0 0 2rem;font-size:14px}
+.verdict h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:0 0 1rem}
+.verdict p{margin:0 0 1rem;padding-left:1rem;border-left:3px solid var(--vc)}
+.verdict p b{color:var(--vc)}
+.vshort{display:none;margin:1rem 0 0;font-size:14px;line-height:1.45}
+.vshort .vlab{display:block;margin:0 0 .3rem;font:600 11px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink3)}
+/* The three lines of the short answer, each in its own colour, so a phone
+   reads the same recommendation as a desktop. */
+.vshort span{display:block;margin:.45rem 0 0;padding-left:.75rem;border-left:3px solid var(--vc)}
+.v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)}
+a.jump{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}
+a.jump:hover{color:var(--vc)}
+.vtag{display:block;margin-top:0;padding:0.5rem 0 0;font:600 12px/1.25 var(--sans);letter-spacing:.01em;color:var(--vc)}
+.vtag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--vc);margin-right:0.5rem;vertical-align:0}
+tbody.item[data-v=best]{--vc:var(--v-best)} tbody.item[data-v=batt]{--vc:var(--v-batt)} tbody.item[data-v=avoid]{--vc:var(--v-avoid)}
+tbody.item[data-v] tr.main>td.c-cmp{border-left:3px solid var(--vc)}
+.controls{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}
+.filters>summary{display:none}
+.fbody{display:flex;flex-wrap:nowrap;gap:1rem 2rem;align-items:flex-start}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}
+.opts{display:flex;flex-wrap:wrap;gap:1rem}
+.opts label{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}
+.hint{margin:0.5rem 0 0;font-size:12px;line-height:1.35;color:var(--ink3);max-width:26ch}
+input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
+/* One range input per handle, stacked, so each keeps its own keyboard value.
+   Only the thumbs take pointer events, which is what lets them overlap. */
+.range{flex:1 1 180px;min-width:170px;max-width:320px}
+.dual{position:relative;height:24px;width:100%;--thumb:18px}
+/* Firefox draws a smaller thumb, so the track inset has to match it too. */
+@supports selector(::-moz-range-thumb){.dual{--thumb:14px}}
+.dual input[type=range]{position:absolute;left:0;top:0;width:100%;height:24px;margin:0;background:none;border:0;padding:0;-webkit-appearance:none;appearance:none;pointer-events:none}
+.dual input[type=range]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.dual input[type=range]::-webkit-slider-runnable-track{height:24px;background:none;border:0}
+.dual input[type=range]::-moz-range-track{height:24px;background:none;border:0}
+.dual input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}
+.dual input[type=range]::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);cursor:pointer}
+.dual-track{position:absolute;left:calc(var(--thumb)/2);right:calc(var(--thumb)/2);top:11px;height:2px;background:var(--rule)}
+.dual-track i{position:absolute;top:0;height:100%;background:var(--acc)}
+.dual-vals{display:flex;justify-content:space-between;gap:1rem;margin-top:0.5rem;font:600 13px var(--sans);font-variant-numeric:tabular-nums;color:var(--ink2)}
+/* The range in words, so two thumbs on top of each other still read. */
+.range-txt{margin:-.75rem 0 .5rem;font:600 13px var(--sans);color:var(--ink2);font-variant-numeric:tabular-nums}
+.sortby{margin-left:auto}
+/* The note under the sort control: which figure the order follows. */
+.sortnote{margin:.25rem 0 0;font:12px/1.35 var(--sans);color:var(--ink2)}
+select{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}
+.count{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}
+.cap{display:inline-block;margin-left:.4rem;color:var(--v-avoid);font-weight:600}
+.count button.link{position:relative;padding:10px 6px;margin:-10px -6px}
+button.link{background:none;border:0;padding:0;min-height:24px;font:inherit;color:var(--acc);text-decoration:underline;cursor:pointer}
+table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
+.main-t thead th{position:sticky;top:0;z-index:2;background:var(--paper);font:600 12px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);text-align:left;padding:0.5rem 1rem;border-bottom:2px solid var(--ink);vertical-align:middle;white-space:normal}
+.main-t thead th.num{text-align:right}
+.main-t thead th button{position:relative;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0;margin:0;min-height:24px;cursor:pointer;text-align:inherit;flex:1 1 auto;min-width:0}
+/* The marker reads as a superscript on the heading, not as a column of its own:
+   a 26px box beside the word took the width the heading needed and left it
+   five lines deep. Its box is still 24px, the smallest a target may be, but
+   its negative margins give the heading back the 8px the glyph does not use. */
+.main-t thead th .mk{display:grid;place-items:center;flex:none;align-self:flex-end;width:24px;height:24px;margin:-4px -8px -4px 0;font:600 11px/1 var(--sans);color:var(--ink3)}
+.main-t thead th .mk:hover{color:var(--acc)}
+.main-t thead th button:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+/* The sort mark: two triangles, the direction the next click takes you in at
+   full strength and the other one pale. An unsorted column shows both pale, so
+   a header that can be clicked says so before it is clicked. */
+/* The mark sits in the header's own right padding, so it never takes width
+   from the words: a column three words wide stays three lines, not four. */
+.main-t thead th .si{position:absolute;top:.15em;right:-.62rem;display:flex;flex-direction:column;gap:2px}
+.main-t thead th .si::before,.main-t thead th .si::after{content:"";width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent}
+.main-t thead th .si::before{border-bottom:4px solid currentColor;opacity:.3}
+.main-t thead th .si::after{border-top:4px solid currentColor;opacity:.3}
+.main-t thead th[aria-sort=ascending] .si::before{opacity:1}
+.main-t thead th[aria-sort=descending] .si::after{opacity:1}
+.main-t thead sup{text-transform:none}
+.main-t td,.main-t tbody th{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);vertical-align:top;text-align:left;font-weight:400}
+.main-t tbody.item:hover tr.main{background:var(--tint)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.main-t td.num,.main-t th.num{text-align:right}
+/* The figure the sort uses is bold, so the order can be read off the list. */
+.main-t td.keep{font-weight:700}
+/* The price is the link to the page the price came from. */
+.buy{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px;white-space:nowrap}
+.buy:hover{color:var(--acc);text-decoration-color:var(--acc)}
+.buy:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+td.num{white-space:nowrap}
+/* The compare column is named, so a bare box in a column is not a puzzle. The
+   header carries the name for a screen reader and a ticked box for the eye,
+   which is narrower than the word and keeps the box in the middle of its
+   cell; on a phone the header is gone and each box carries its own caption. */
+.main-t th.c-cmp,.main-t td.c-cmp{text-align:center;width:44px;padding:0.5rem 0}
+.main-t thead th.c-cmp{justify-content:center}
+.cmp-i{display:block;width:18px;height:18px;margin:0 auto;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.cmp-cap{display:none}
+/* The label is the hit area, not the box: the box stays 15px, and the label
+   around it is 44px on a phone and on a desk, which is what the record says. */
+.cmp-w{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;cursor:pointer}
+.mcell{display:flex;gap:1rem;align-items:flex-start}
+.mcell>div{min-width:0}
+.ph{display:block;flex:none;background:var(--imgbg);border:1px solid var(--rule2);object-fit:contain}
+img.ph{filter:var(--imgf)}
+span.ph{display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--ink2);font:600 11px/1.25 var(--sans);text-transform:uppercase;letter-spacing:.04em;text-align:center;padding:0.5rem 0.25rem}
+span.ph-lg{font-size:12px}
+.brand{font-weight:700} .mname{font-weight:400}
+.best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
+.c-catch{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
+/* At 901px this cell's text box is 70px, narrower than "£7.99/month" at 74px,
+   and a wider fallback font pushes an unbreakable word across the chevron. */
+.catch-t{min-width:0;overflow-wrap:anywhere}
+/* The button takes its own line under the catch at every width: beside the
+   words it ate the column, and at 901 the catch had 104px of text box left
+   with a 121px button in it. */
+.more-w{flex:1 0 100%;margin-top:0}
+/* The label and its footnote share this block. A marker left outside it has no
+   room after a wrapped label's last line, so it drops to a new line at the
+   hanging indent, which the three wrapped labels did at 1280px. */
+.rec{font-size:14px;display:inline-block;padding-left:1rem;text-indent:-1rem}
+.rec::before{content:"";display:inline-block;width:8px;height:8px;margin-right:0.5rem;vertical-align:1px;border:1.5px solid var(--acc);text-indent:0}
+.rec-yes::before{background:var(--acc)}
+.rec-kit::before,.rec-brief::before{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}
+.rec-no{color:var(--ink2)} .rec-no::before{border-color:var(--ink3)}
+.noplan{color:var(--ink2)}
+.score b{font-size:15px} .score{color:var(--ink2);font-size:13px;white-space:nowrap}
+.bar{display:block;height:3px;background:var(--rule);margin:0.5rem 0 0;width:52px}
+/* scaleX paints on the compositor; animating width forced a layout each frame */
+.bar i{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left center}
+.note{display:block;font-size:12px;color:var(--ink3);white-space:normal}
+/* The wrapper around a 3-year figure, so a phone can put the figure in the
+   subgrid row under its label. A text node cannot take a grid position. On a
+   desktop the span disappears and the figure sits where it always did. */
+.figv{display:contents}
+.fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0.15em;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
+.fn:hover{color:var(--acc);text-decoration:underline}
+/* The button names the panel it opens. A chevron alone left the page's own
+   evidence behind an icon, two clicks deep; the word is the thing that says
+   the costs and sources are here. The chevron turns to say the row opened. */
+button.more{position:relative;display:inline-flex;align-items:center;gap:.45rem;flex:none;min-height:44px;padding:0 .6rem;font:600 12px/1.2 var(--sans);background:none;border:1px solid var(--rule);cursor:pointer;color:var(--ink);text-align:left}
+button.more::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-1px) rotate(45deg);transition:transform .15s}
+button.more[aria-expanded=true]::before{transform:translateY(1px) rotate(-135deg)}
+button.more:hover,button.more[aria-expanded=true]{border-color:var(--ink)}
+@media (prefers-reduced-motion:reduce){button.more::before{transition:none}}
+/* The panel is hidden by the `js` class, not the `hidden` attribute, so a
+   reader without JavaScript has every panel open instead of none: the costs
+   and sources are the page's claim, and they are in the HTML. */
+.js tr.detail{display:none}
+.js tr.detail.open{display:block}
+tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom:1px solid var(--rule)}
+.dgrid{display:grid;grid-template-columns:180px minmax(0,1fr);gap:0 2rem}
+.dimg{margin:0}
+.zoom{position:relative;display:block;padding:0;border:0;background:none;line-height:0;cursor:zoom-in}
+.zoom:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.zi{position:absolute;right:-0.25rem;bottom:-0.25rem;width:1.25rem;height:1.25rem;border-radius:50%;background:var(--paper);border:1px solid var(--ink);display:grid;place-items:center;opacity:.55;pointer-events:none;transition:opacity .15s}
+.zi::before{content:"";width:6px;height:6px;border:1.5px solid var(--ink);border-radius:50%;margin:-3px 0 0 -3px}
+.zi::after{content:"";position:absolute;right:4px;bottom:4px;width:5px;height:1.5px;background:var(--ink);transform:rotate(45deg)}
+.zoom:hover .zi,.zoom:focus-visible .zi{opacity:1}
+@media (hover:none){.zi{opacity:1}}
+#lightbox{border:1px solid var(--rule);background:var(--paper);color:var(--ink);padding:2.75rem 1rem 1rem;max-width:min(90vw,420px)}
+.lb-x{position:absolute;top:.5rem;right:.5rem;width:36px;height:36px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);font:600 14px/1 var(--sans);cursor:pointer}
+.lb-x:hover{border-color:var(--ink)}
+#lightbox img{display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:70vh;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
+#lightbox::backdrop{background:rgb(0 0 0 / .65)}
+.lb-bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1rem;font:600 13px/1.3 var(--sans)}
+.dgrid dl{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:1rem;font-size:14px;align-content:start}
+.dgrid dt{color:var(--ink2)} .dgrid dd{margin:0}
+/* One list, two columns of pairs. The rows are shared, so the left and right
+   halves of the panel line up instead of drifting apart. */
+.dgrid .dspec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(7,auto);grid-auto-flow:column;gap:1rem 2rem;margin:0;font-size:14px;align-content:start}
+.dgrid .dspec .pair{display:grid;grid-template-columns:140px minmax(0,1fr);gap:0 1rem;align-items:start}
+.maths{font-variant-numeric:tabular-nums}
+.unverified{font-size:13px;margin:1rem 0 0;color:var(--ink2)}
+.srcs{font-size:12px;color:var(--ink2);margin:1rem 0 0;max-width:100%}
+
+.srcs .fn{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}
+.empty{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}
+/* Two recovery actions read as one sentence when a single space separates
+   them, so they keep a gap even on the line they share. */
+.empty-acts{display:inline-flex;flex-wrap:wrap;gap:.75rem;vertical-align:bottom}
+/* jump-to-row highlight */
+@keyframes flash{0%,35%{background-color:var(--hl)}100%{background-color:transparent}}
+tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} tbody.item.flash tr.main>*{animation:none;background:var(--hl)} #theme i,body,.cmp-note{transition:none}}
+/* compare */
+#compare{border:1px solid var(--ink);margin:1rem 0 0;padding:0 0 1rem}
+.cmp-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0.5rem 1rem;padding:1rem;border-bottom:1px solid var(--rule)}
+.cmp-head h2{font:700 20px/1.2 var(--serif);margin:0}
+.cmp-actions{display:flex;gap:0.5rem 1rem;align-items:baseline;flex-wrap:wrap}
+ /* The three links wrap as one block, so a phone never leaves Close alone. */
+ .cmp-links{display:flex;gap:1rem;align-items:baseline;flex-wrap:nowrap}
+.cmpo{display:inline-flex;align-items:center;gap:0.4rem;font-size:13px;line-height:1.3;color:var(--ink2);cursor:pointer}
+#cmp-dupes{color:var(--ink3);white-space:nowrap}
+.cmp-note{margin:0;padding:0 1rem 1rem;font-size:13px;line-height:1.4;color:var(--ink2);transition:opacity .4s}
+.cmp-note.out{opacity:0}
+.cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{background:var(--tint);font-variant-numeric:tabular-nums}
+/* The total first, then the difference, then what the total is made of. */
+.cmp-t tr.cmp-cost td b{font-size:15px}
+.cmp-diff{color:var(--ink3);font-size:12px}
+.cmp-basis{display:block;font-size:12px;line-height:1.3;color:var(--ink2);margin-top:.15rem}
+.cmp-no{color:var(--v-avoid)}
+/* The columns snap, so a swipe lands on a model rather than between two. The
+   sticky label column is paid for by the scroll padding. */
+.cmp-scroll{overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:76px}
+.cmp-t thead th[data-id]{scroll-snap-align:start}
+.cmp-wrap{position:relative}
+/* The edge fade says there is more table to the right. */
+.cmp-wrap::after{content:"";position:absolute;top:0;right:0;bottom:0;width:2.5rem;background:linear-gradient(to right,transparent,var(--paper));pointer-events:none;opacity:0;transition:opacity .2s}
+.cmp-wrap.more::after{opacity:1}
+/* The cue sits above the table, where the reader looks first. At the foot of a
+   long table it would be a screen and a half below the column it names. */
+.cmp-cue{margin:0;padding:.25rem 1rem .5rem;font-size:12px;line-height:1.35;color:var(--ink3)}
+.cmp-scroll:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cmp-t th,.cmp-t td{padding:0.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px}
+.cmp-t tbody tr:hover th,.cmp-t tbody tr:hover td{background:var(--tint)}
+.cmp-t thead th{font:700 15px/1.25 var(--sans);border-bottom:3px solid var(--ink);min-width:200px}
+/* The header rule takes the column's verdict colour, because it is that
+   column's line and the badge below it already words the verdict. The spec
+   column holds no model, so it keeps the page's ink. */
+.cmp-t thead th[data-v]{border-bottom-color:var(--vc)}
+/* The header's name travels from the row's name, so the two boxes are meant to
+   be the same shape. As a block the name is as wide as its column, and the
+   flight stretched the row's 130px of text across 320px on the way. */
+.cmp-name{display:block;width:max-content;max-width:100%}
+.cmp-photo{display:block;margin-top:1rem}
+.cmp-photo img{display:block;width:45px;height:60px;object-fit:contain;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
+.cmp-t tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);width:150px;min-width:120px}
+/* The row colours travel into the comparison: the same verdict, on the column
+   that is the model. It is said once, as the badge under the column's header
+   and the rule under that header, and never down the side of a cell, where it
+   reads as the previous column's edge. The rule keeps the 3px of every verdict
+   line on the page, so colour is not the only signal. */
+.cmp-t [data-v=best]{--vc:var(--v-best)} .cmp-t [data-v=batt]{--vc:var(--v-batt)} .cmp-t [data-v=avoid]{--vc:var(--v-avoid)}
+.cmp-t thead .vtag{padding-top:.3rem;font-size:11px;white-space:normal}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tray{position:sticky;bottom:0;background:var(--tray);color:var(--tray-ink);border-top:1px solid var(--rule);padding:1rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:14px;z-index:5}
+.tray button{font:600 14px var(--sans);background:var(--tray-ink);color:var(--tray);border:0;padding:0 1rem;min-height:24px;cursor:pointer}
+.tray button:disabled{opacity:.5;cursor:default}
+.tray button.ghost{background:none;color:var(--tray-ink);text-decoration:underline;padding:0 1rem}
+ /* The tray becomes the compare header and comes back again. The two are never
+    on screen together, so one name serves both and no other element is named. */
+ #tray,.cmp-head{view-transition-name:cmp-tray}
+ /* The page behind the pair does not move, so it does not need to be captured.
+    The root snapshot is the whole document rendered as a picture, and it is
+    most of the cost of opening the comparison; only the pair is needed. */
+ html{view-transition-name:none}
+ /* Where the reader is in the table, reported not hijacked: the rule only
+    follows scroll. Without native timelines it is a plain hairline. */
+ .tbl-w{view-timeline-name:--tbl;view-timeline-axis:block}
+ .prog{position:sticky;top:0;z-index:3;height:2px;margin-bottom:-2px;background:var(--rule2);pointer-events:none}
+ .prog i{display:block;height:100%;background:var(--acc);transform:scaleX(0);transform-origin:left center}
+ @supports (animation-timeline:view()){
+  .prog i{animation:rule linear both;animation-timeline:--tbl;animation-range:cover 0% cover 100%}
+  @keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+ }
+/* The tray and the three rows' names and photos travel on one curve, so the
+   open reads as one movement rather than a bar and six boxes in parallel. */
+::view-transition-group(*){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+/* Hand over rather than dissolve: two bars of text cross-fading in one box
+   reads as a smear, so the old bar goes first and the new one arrives after. */
+ ::view-transition-old(cmp-tray){animation:vt-out 100ms linear both}
+ ::view-transition-new(cmp-tray){animation:vt-in 140ms 100ms linear both}
+ @keyframes vt-out{to{opacity:0}}
+ @keyframes vt-in{from{opacity:0}}
+ /* Only the pair moves. Without this the whole page cross-fades and the table
+    ghosts behind the comparison. */
+ ::view-transition-old(root),::view-transition-new(root){animation:none}
+ @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*),::view-transition-image-pair(*),::view-transition-group(root){animation:none!important}}
+/* footer */
+section.method{display:grid;grid-template-columns:1fr;gap:2rem;border-top:1px solid var(--ink);margin-top:2rem;padding:1rem 0 3rem;font-size:13px;color:var(--ink2)}
+/* Above the phone layout the sources sit in the second column, beside the
+   working they belong to, rather than adding 900px to the foot of the page.
+   The copy keeps its 80ch measure and the sources take the rest of the row, so
+   every pixel the paragraphs leave empty widens the list. The entries start as
+   one list, split at 1101px, and split again at 1200 and 1300 as the sources
+   column widens, with a 2rem gap in every multi-list width. */
+@media (min-width:821px){
+ section.method{grid-template-columns:minmax(0,80ch) minmax(0,1fr);align-items:start}
+ section.method>details.srcs{margin-top:0}
+ .srcs .fns-wrap{columns:1}
+}
+@media (min-width:1101px){
+ .srcs .fns-wrap{columns:2;column-gap:2rem}
+}
+@media (min-width:1200px){
+ .srcs .fns-wrap{columns:3;column-gap:2rem}
+}
+@media (min-width:1300px){
+ .srcs .fns-wrap{columns:4;column-gap:2rem}
+}
+section.method h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:0 0 1rem}
+section.method p{margin:0 0 1rem;max-width:80ch}
+section.method p a{color:var(--ink2)}
+.srcs>summary{display:flex;align-items:center;gap:0.5rem;min-height:24px;margin:0 0 1rem;cursor:pointer;list-style:none}
+.srcs>summary::-webkit-details-marker{display:none}
+.srcs>summary h2{margin:0}
+.srcs>summary::before{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg);margin-right:0.25rem}
+.srcs[open]>summary::before{transform:rotate(45deg)}
+.srcs-n{font:500 12px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}
+.fns-wrap{columns:2;column-gap:2rem}
+.fns-g{margin:0 0 0.75rem;break-inside:avoid}
+/* A host name is one word and can be wider than its list: the longest here,
+   `eaglesecuritysolutions.co.uk`, is about 207px at 12px in Segoe UI and
+   wider than a 231px list in DejaVu Sans. Widen the column for Windows and
+   the Linux run clips; let the word break instead, so no font needs its own
+   magic width. */
+.fns-g h3{font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin:0;overflow-wrap:anywhere}
+ol.fns{margin:0;padding-left:1.5rem;columns:1}
+ol.fns li{margin:0}
+ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:anywhere;text-decoration:underline;color:var(--ink2)}
+.foot{border-top:1px solid var(--rule);padding:1rem 0 2rem;font-size:13px;color:var(--ink2)}
+.foot p{margin:0;max-width:none}
+.foot a{color:var(--ink2)}
+/* Back to top, once the reader is into the table. It sits clear of the
+   compare tray, which takes the bottom of the screen when it is open. */
+.totop{position:fixed;right:1rem;bottom:4.5rem;z-index:6;width:44px;height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);font:600 16px/1 var(--sans);cursor:pointer;box-shadow:0 1px 4px rgb(0 0 0 / .2)}
+.totop:hover{border-color:var(--ink)}
+.totop:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+/* The 404 page, in the site's own styles. */
+.nf{max-width:40rem;margin:0 auto;padding:4rem 0 6rem}
+.nf h1{font-size:clamp(28px,5vw,44px);margin:0 0 1rem}
+.nf p{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1.5rem}
+.nf-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 1.25rem;background:var(--acc);color:var(--paper);font:600 15px var(--sans);text-decoration:none}
+.nf-btn:hover{text-decoration:underline}
+.nf-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+/* 821-1100px: the full table must fit without sideways scrolling */
+@media (max-width:1100px){
+ .main-t thead th{letter-spacing:.04em}
+ .c-catch{font-size:13px}
+ .mcell{gap:1rem} .ph-sm{width:36px!important;height:48px!important}
+ .best{font-size:12.5px}
+ .rec{font-size:13px}
+ tr.detail td{padding-left:1rem}
+ .dgrid{grid-template-columns:140px minmax(0,1fr);gap:0 1.5rem}
+ .ph-lg{width:140px!important;height:187px!important}
+ /* Below the wide layout the panel is one column of pairs, label above value. */
+ .dgrid .dspec{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row;gap:0}
+ .dgrid .dspec .pair{grid-template-columns:1fr;gap:0}
+ .dgrid .dspec dt{margin-top:1rem;font-weight:600;font-size:12px} .dgrid .dspec .pair:first-child dt{margin-top:0}
+}
+@media (max-width:900px){
+ .main-t thead th{font-size:12px}
+}
+@media (max-width:820px){
+ body{font-size:15px}
+ .wrap{padding:0 1rem}
+ .intro{grid-template-columns:1fr;gap:1rem;padding:2rem 0}
+ .verdict{border-left:0;border-top:1px solid var(--rule);padding:1rem 0 0}
+ .dek{font-size:16px}
+ .controls{gap:1rem}
+ .sortby{margin-left:0}
+ input[type=range]{width:150px}
+ .main-t thead{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .main-t thead th{position:static;padding:0;border:0;background:none}
+ .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
+ /* Off-screen cards skip layout, so a sort lays out only the cards in view.
+    445px is the content estimate, 478px with padding and rule, against real
+    cards of 424 to 523px. Auto remembers the real size once a card has been
+    laid out, so the estimate is only paid above the reader's fold, and an
+    off-screen card is not painted, so the content that overflows 478px is not
+    visible until the card is laid out at its own height. */
+ .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 445px}
+ tbody.item[data-v]{border-left:3px solid var(--vc)}
+ tbody.item[data-v] tr.main>td.c-cmp{border-left:0}
+ /* The rail holds the box (15px) and the word under it (59px), and the gutter
+    gives back the 16px the wider rail would have taken from the figures, so a
+    card is no taller than it was without the caption. */
+ .main-t tr.main{display:grid;grid-template-columns:60px minmax(0,1fr) minmax(0,1fr);gap:0.5rem;position:relative;align-items:baseline}
+ .main-t tbody.item:hover tr.main{background:none}
+ .main-t tr.main>*{padding:0;border:0;width:auto;min-width:0;max-width:none}
+ .c-cmp{grid-row:1;grid-column:1;align-self:flex-start}
+ .c-model{grid-column:2 / span 2;grid-row:1}
+ .ph-sm{width:45px!important;height:60px!important}
+ /* Two columns of figures under the name. The two 3-year costs sit side by
+    side, so a card is a third shorter than it was. */
+ .c-rec{grid-column:2;grid-row:2} .c-price{grid-column:3;grid-row:2}
+ .c-nosub{grid-column:2;grid-row:3 / span 2} .c-sub{grid-column:3;grid-row:3 / span 2}
+ .c-score{grid-column:2 / span 2;grid-row:5}
+ .main-t td.c-catch{grid-column:2 / span 2;grid-row:6;padding-top:0.75rem;font-size:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
+ /* The caption sits above the text and its chevron, not beside them. */
+ .main-t td.c-catch[data-label]::before{flex:1 0 100%;margin-bottom:0}
+ .main-t td.c-catch .catch-t{flex:1 1 0;min-width:0}
+ .main-t td.c-rec,.main-t td.c-price,.main-t td.c-nosub,.main-t td.c-sub,.main-t td.c-score{display:block;padding:0.5rem 0 0}
+ .main-t td.c-price{font:700 17px/1.2 var(--sans)}
+ .main-t td.c-score .bar{margin:0.25rem 0 0}
+ .main-t td.c-nosub .note,.main-t td.c-sub .note{white-space:normal}
+ .main-t td[data-label]::before{content:attr(data-label);display:block;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:0.25rem;white-space:normal}
+ /* The two 3-year figures are read against each other, so their numbers start
+    on the same line whatever their labels do. Each cell is a two-row subgrid
+    of the card: the label sits at the bottom of the first row and the figure
+    at the top of the second, so a label that wraps takes its extra line from
+    the space above itself rather than pushing its figure below the other's.
+    At 390px "3 years, no plan" fits one line and "3 years, with plan" takes
+    two, and both figures still start on row 4. The label keeps 8px above it
+    as a margin, because the cell no longer has the padding to sit in. */
+ .main-t td.c-nosub,.main-t td.c-sub{display:grid;grid-template-rows:subgrid;padding:0}
+ .main-t td.c-nosub .figv,.main-t td.c-sub .figv{display:block;grid-row:2}
+ .main-t td.c-nosub::before,.main-t td.c-sub::before{grid-row:1;align-self:end;margin-top:0.5rem}
+ .main-t td.num,.main-t th.num{text-align:left} .bar{margin-left:0}
+ /* The compare box keeps its 15px, but the target around it is 44px, and it
+    carries the same muted caption the other figures in the card use. A caption
+    wider than the rail overflows it by a pixel or so rather than squeezing the
+    two figures, which is what made the cards taller. */
+ .cmp-w{width:60px;min-height:44px;flex-direction:column;gap:.2rem}
+ .cmp-cap{display:block;flex:none;width:max-content;font:600 12px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3)}
+ tr.detail td{padding:1rem;margin-top:0}
+ .dgrid{grid-template-columns:1fr}
+ .ph-lg{width:120px!important;height:160px!important;margin-bottom:1rem}
+ .fns-wrap{columns:1}
+ .cmp-t th,.cmp-t td{padding:0.5rem 1rem;font-size:13px}
+ .cmp-t thead th{min-width:140px;font-size:14px}
+ .cmp-t tbody th{width:76px;min-width:76px;font-size:11px;position:sticky;left:0;background:var(--paper)}
+ .cmp-t thead th:first-child{position:sticky;left:0;background:var(--paper);min-width:76px}
+}
+/* Above the phone breakpoint a row is a grid row rather than a table row. A
+   table lays all fourteen rows out again on every sort and no cell can skip
+   that; a contained block lays out only the rows in view. The tracks follow
+   the table's own proportions, with a floor under every column that has a
+   word in its header: a wide fallback font is about 15% wider than Arial, and
+   tracks tuned by eye clipped "Free features" on Linux.
+   The first track is the compare box's rail, and the box's 44px target sets
+   it. It carried 2px more for the collapsed table border that sat there in
+   ADR 6, and a track wider than the cell left a hole under the compare
+   header: the cell painted its own box inside it and the next column's rule
+   sat 2px away. Track and cell are both 44px now. */
+@media (min-width:821px){
+ .main-t{display:block}
+ .main-t thead,.main-t tbody{display:block}
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:44px 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ .cmp-w{min-width:44px;min-height:44px}
+ .cmp-scroll{scroll-padding-left:150px}
+ /* A sticky cell can only move inside its parent, so the header row sticks as
+    a block: fourteen rows of table no longer move it, and the cells still sit
+    on one line each. */
+ .main-t thead{position:sticky;top:0;z-index:2;background:var(--paper)}
+ .main-t thead th{position:relative;display:flex;align-items:center}
+ /* The column rules above are track widths now; a percentage width on a grid
+    item would resolve against its own track and shrink the cell inside it. */
+ .main-t tr.main>*{width:auto;min-width:0;max-width:none}
+ .main-t tr.detail{display:block}
+ .main-t tbody.item{content-visibility:auto;contain-intrinsic-size:auto 118px}
+}
+/* A ticked row is one of the rows that fly into the comparison, and a contained
+   row that is off screen has no box to capture: the transition would have to
+   uncontain it, which lays the row out for the first time inside the open. A
+   ticked row is rendered instead, from the moment it is ticked, when it is on
+   screen and laid out anyway. At most three rows are ever ticked. */
+tbody.item:has(input.cmp:checked){content-visibility:visible}
+/* The filters take the width the sort control leaves them. Left to their own
+   max-content width the row came up a few pixels short of its own options: at
+   1280 the details box was 794px in a 909px line, the two option groups
+   measured 351px and 201px against the 356 and 205 their labels need, and so
+   both wrapped. Growing the box fits each group on one line and hands the
+   spare width to the price slider, which was pinned at 178px in that space. */
+@media (min-width:821px){
+ .filters{flex:1 1 auto}
+ .range{max-width:none}
+}
+/* The sort control and the option groups come to blows between 821 and the
+   wide layout. The filters need 794px beside a 290px sort control, and a font
+   15% wider needs 1280: in between, the sort took a line the groups had to
+   share, and at 1101 they both wrapped. Below 1280 the sort takes the count's
+   line instead, so the filters keep a line of their own and the slider takes
+   what the two groups leave. The 1.5rem gap gives the 821px row the room its
+   two groups need in the page's own font. At 1280 the filters and the sort
+   share the line again, and the count goes back under. */
+@media (min-width:821px) and (max-width:1279px){
+ .filters{flex:1 0 100%}
+ .fbody{gap:1rem 1.5rem}
+ .count{flex:1 1 auto;order:1;align-self:flex-end} .sortby{order:2}
+}
+/* The record track reads in two words a line from 1200px, where the catch can
+   pay for it. From 1200 to 1279 the cost columns stay at 10% and only the
+   record widens: the same change at 1199 makes the table 17px shorter (1,488
+   to 1,471) and no row grows. Lower down the 28px comes out of the catch's
+   rows: one row grows at 1150 and the page is 76px taller at 1101, so the band
+   starts where the page's other desktop breakpoint already is. */
+@media (min-width:1200px) and (max-width:1279px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:44px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+}
+/* From 1280px the two cost columns are wide enough for their words. At 12px
+   "3-year cost," is about 100px, and with the footnote marker beside it that
+   is a 152px track: two lines. Narrower than this the same words take four or
+   five, which is what eight columns at 1100px cost, and the catch column
+   cannot spare the width down there. A wide fallback font is what decides
+   this: at 1280px the 10% columns above leave 68px of button and it wrapped
+   the sub header onto a fourth line on Linux. */
+@media (min-width:1280px){
+/* The record track holds the label, and its lines lose 1rem to the hanging
+   indent: at 92px the three wrapped rows read one word a line. At 118px
+   "Only with extra kit" takes two lines, here and at a fallback 15% wider,
+   where 110px split it again. The catch gives up 26px at 1280 and 14px at
+   1440, and the page is 17px and 11px shorter for it. */
+ .main-t thead tr,.main-t tr.main{grid-template-columns:44px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
+}
+@media (min-width:821px) and (max-width:1100px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:44px 27% 90px 84px 96px 92px 92px 1fr}
+ .main-t tbody.item{contain-intrinsic-size:auto 140px}
+}
+/* Eight tracks cannot hold the catch below 901px: the fixed figures and the
+   27% model column leave it 68px at 821, where the sentence paints under its
+   chevron and a row grows to 394px. There the catch takes the row for itself,
+   from the model column to the table edge, captioned by its own cell like a
+   phone card, and the model column takes the width the catch gave up. The
+   catch's header stays for the table's structure and is clipped, not removed,
+   so the seven figures still name their columns. At 901px the tracks leave the
+   catch 138px, which clears the chevron in every row, and the column is 215px
+   shorter than this band at 940, so the band stops where the clip does. The
+   901 depends on no font: the tracks are fixed. */
+@media screen and (min-width:821px) and (max-width:900px){
+ .main-t thead tr,.main-t tr.main{grid-template-columns:44px minmax(0,1fr) 90px 84px 96px 92px 92px}
+ .main-t thead th:last-child{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%)}
+ .main-t tr.main>*{border-bottom:0}
+ .main-t tbody.item{border-bottom:1px solid var(--rule2)}
+ .main-t tbody.item tr.detail td{border-bottom:0}
+ .main-t td.c-catch{grid-column:2/-1;grid-row:2;flex-wrap:wrap;row-gap:0}
+ .main-t td.c-catch[data-label]::before{content:attr(data-label);flex:1 0 100%;margin-bottom:.25rem;font:600 12px/1.3 var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink3)}
+}
+@media (max-width:520px){
+ .mast-long{display:none}
+ .mast-short{display:inline}
+ .mast{padding:.75rem 0}
+ .intro{padding:.75rem 0}
+ .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
+ .verdict{display:none}
+ /* The three recommendations, one line each, so a phone reads the same
+    advice as a desktop before the first product. */
+ .vshort{display:block;font-size:13px;line-height:1.4;margin:.75rem 0 0}
+ .vshort span{margin:.3rem 0 0}
+ .srcs>summary{align-items:flex-start}
+ .controls{padding:0.75rem 0;gap:0.5rem}
+ .sortby .lab{margin-bottom:0.5rem}
+ /* The Compare action joins this line on the first tick; reserve its second
+    line so the table does not jump 19px when the tray appears. */
+ .count{min-height:3em}
+ .filters{display:block;flex:1 1 100%}
+ .filters>summary{display:flex;align-items:center;gap:0.5rem;min-height:44px;padding:0 1rem;border:1px solid var(--rule);font:600 12px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);cursor:pointer;list-style:none}
+ .filters>summary::-webkit-details-marker{display:none}
+ .filters>summary::marker{content:""}
+ .filters>summary::before{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-right:0.25rem}
+ .filters[open]>summary::before{transform:rotate(45deg)}
+ .filters:not([open]) .fbody{display:none}
+ .fbody{flex-direction:column;align-items:stretch;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}
+ .fbody .opts{gap:0.5rem 1rem}
+ .range{flex:none;width:100%;max-width:none}
+}
+@media print{.skip,.controls,.tray,.prog,.c-cmp,.more-w,.si,#theme,.srcs>summary,.cmp-note,.zi{display:none}
+ .main-t thead th .si{display:none}
+ tr.detail{display:table-row!important}}
+/* There is no box to tick on paper, and a hidden grid cell would leave its
+   track behind: the cells after it move one column left and print under the
+   heading before them. The heading and the track go with the box, so the
+   seven columns that are left still start where they started. */
+@media print and (min-width:821px){
+ .main-t thead th.c-cmp,.main-t td.c-cmp{display:none}
+ .main-t thead tr,.main-t tr.main{grid-template-columns:27% 120px 6.7% 8.2% 10% 10% 1fr}
+}</style>
+<style>
+body{font-size:14px}
+.mock{max-width:1440px;margin:0 auto;padding:0 1rem 4rem}
+.mock-h{border-bottom:1px solid var(--ink);padding:1.5rem 0 1rem;margin:1rem 0 2rem}
+.mock-h h1{font:700 clamp(24px,3vw,34px)/1.15 var(--serif);margin:0 0 .5rem;max-width:30ch}
+.mock-h p{margin:0;color:var(--ink2);font-size:13px;max-width:70ch}
+.mock-note{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid var(--v-batt);background:var(--tint);font-size:13px;color:var(--ink2);max-width:80ch}
+.mock-note b{color:var(--ink)}
+.mock h2{font:700 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.06em;margin:2.5rem 0 .75rem}
+.mock h3{font:700 15px/1.3 var(--sans);margin:2rem 0 .5rem}
+.mock .cap{font-size:12px;color:var(--ink3);margin:.5rem 0 0;max-width:80ch}
+.mock .stack{display:grid;grid-template-columns:1fr;gap:2rem;align-items:start}
+.mock .cell{border:1px solid var(--rule);padding:0 1rem 1rem}
+.mock .cell.win{border-color:var(--acc)}
+.mock .tag{display:inline-block;font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--v-avoid);margin:.75rem 0 0}
+.mock .cell.win .tag{color:var(--v-best)}
+.mock .cmp-scroll{overflow-x:auto}
+.mock .cmp-t{min-width:0;width:100%}
+.mock-panel{background:var(--tint);padding:1rem 1rem 1rem 3rem;border:1px solid var(--rule2)}
+.mock-panel .dimg{display:flex;flex-direction:column;gap:.75rem}
+.mock-panel .dimg .srcs{margin:0}
+/* Proposed R5: the badge line is reserved, so the photos share one top edge
+   whether a column has a verdict or not. */
+.prop .cmp-t thead th .vtag{display:block;min-height:1.35em;padding-top:.1rem}
+.prop .cmp-t thead th .cmp-photo{margin-top:.5rem}
+/* Proposed R13: six pairs a column, and the score breakdown across the foot,
+   so the two columns end level instead of 77px apart. */
+.mock-panel.prop .dspec{grid-template-rows:repeat(6,auto)}
+.mock-panel.prop .dspec .pair:last-child{grid-column:1/-1;grid-row:7;border-top:1px solid var(--rule);padding-top:.75rem}
+.mock .verdicts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin:0;padding:0;list-style:none}
+.mock .verdicts li{border:1px solid var(--rule);padding:.75rem 1rem}
+.mock .verdicts .m{font-weight:700}
+.mock .verdicts .v{display:block;font:600 11px/1.6 var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--v-best)}
+.mock .verdicts .n{display:block;font-size:12px;color:var(--ink3);margin-top:.25rem}
+.mock footer{border-top:1px solid var(--rule);margin-top:3rem;padding-top:1rem;font-size:12px;color:var(--ink3)}
+</style>
+</head><body>
+<div class="mock">
+<div class="mock-h">
+<h1>Two proposals: a verdict in every row, and a panel that ends level</h1>
+<p>A mockup, not the site. It uses the page's own stylesheet and the page's own markup,
+so what you see is what the changes would look like. R5 and R13 from the 23 October
+critique.</p>
+</div>
+
+<h2>R5 · Every column carries a verdict</h2>
+<div class="mock-note"><b>What changes.</b> Every compare column reserves the badge
+line, so the three photos share one top edge. TD21, the cheapest row on the page, gets a
+verdict like the rest.</div>
+<div class="stack">
+<div class="cell">
+<span class="tag">Today</span>
+<div class="cmp-scroll"><table class="cmp-t"><thead><tr><th scope="col"><span class="vh">Spec</span></th><th scope="col" data-id="tapo-td21"><span class="cmp-name" style="">TP-Link Tapo TD21</span><span class="cmp-photo"><button type="button" class="zoom" data-full="img/tapo-td21-lg.webp" data-name="TP-Link Tapo TD21" aria-label="View TP-Link Tapo TD21 thumbnail"><img src="data:image/webp;base64,UklGRo4CAABXRUJQVlA4IIICAADQEwCdASp4AKAAPm00l0ekIyehI7ca6PANiWkABRaHBRY58JvymqY/pZly3eAzAdkuGloJCr0y1c6NKsbdOzBN6ey3HSvXUYVTHQjXyQEYrzoq80pXE/X/LjuDGEo8W03sSb+35JOHH64JKmFj9u1b1q1iid+EG21gBbaKCfs11EpkGZIoxIEjnBSYkJd3XQKPuGz05bA8aIa8+VEP0pzZkUdKVSZhgAD+/EoPf+Ln/y3JXT/6o9PmE+5eWdn+6Pv7rK7p9t3t+U/3/+aWu1l3tdxF9wsXv3Lv4lpEk6T73BpTPtgo9AX2VK2LY2vpnmYCgYOm13rM51q4V65ojYVx6kTm0Ephsimec1jsljwV6+CTznWPXAAeNRy/OY6fJgXT7Rfu2jlo8uJ4rUN6hO1X3ZEFnmi3sNuG032w1Qd7I43JEj3j1vNciGEjo1J/xEud7P0zLTsWhx1jlS4xpCK/Z5Ghsv13FRv3pk7wvsqhjzdybSec2YT4EsHKiyzf2f5zuE9/W0Qr5ESkLXEFvSTo9o2QOIUXYSSpCAr2SQkHVk+6O2QZAFBrvSwYq705UX+S2se+QmjNURHCwCQLAv/mMQ14A3Ai3mrlsEGLzkYJl2EIl7FAkZ8WNAkEiiy/bQdEAdkIByxtJXYCmWIVF6r3hj3YXumxKfSI3US27hf/IH/JG1iiz1on/f+gfcvbH/M6ks1QwH71hYKGrSuyPXBC97JjW+Ru+mpJNFIX8AOMgAfgWWoVmGY3G/+2YQIL/weZxLe/uMaqhHPw5OeuejF0Q0UJaKK+P9+Pk1GFODGhb7N52PndPbhzGqNCFACcZ/Ehv2y7Nce98Xn/2GnSbTQAAAA=" width="45" height="60" alt="" loading="lazy" decoding="async" style=""><span class="zi" aria-hidden="true"></span></button></span></th><th scope="col" data-id="reo-poe" data-v="best"><span class="cmp-name" style="">Reolink Video Doorbell PoE</span><span class="vtag v-best">Best overall</span><span class="cmp-photo"><button type="button" class="zoom" data-full="img/reo-poe-lg.webp" data-name="Reolink Video Doorbell PoE" aria-label="View Reolink Video Doorbell PoE thumbnail"><img src="data:image/webp;base64,UklGRtgEAABXRUJQVlA4IMwEAAAwHwCdASp4AKAAPm0ylkekIyIhptPLCIANiWcNsALMCIAc4DbAZ4B1jXoAdLH5UbS03iy79MH8i6GzRi9UewaUu6JrxtrfWYgF2ijcuX2dYD9x1S60PknPAf5qRVLsiqAwflwf5/Vng9tVpGan08AJ6eZ+EQl/vNaHzfgQRNe5xa1ANe+/23oRei4uLS+5EfVHlm91+71+I77kXRmMLetVf1gmGrqxc4NkHgplcjVviRJHFO9sq+qAqgrlWj3pXEHaaLfM4lz7j29UCI2qwm1Gf0LPqew/JGHWUznrmbKK89Ld4o/cUwJDvL4cCBweFYecWOxp4g7Gv92+sbuscSqpw4AA/vxKGjzAfsa4bs1pmEVqxwNcvRUiyVVQjpuYb/QUg7cwkyEP0GTvOi5XJ+hc7iWctIXxCeV4n5GpIMZwZW7iSPt9Y6cyqdKtQkyklcknW2GlkD3CpqHt2a5PJaT65wG8EtxJcGKI0DXTz8cjKswqql3mDsQubXw2bfstmwwpTnkw2JR/TbX9DQjdrfz9Ym49ifh4dyrWbD2j76QtC6hxpk/DoEfK5KYs99w3lKxDdLZtRn+hA/S3U3L35t2PX3r/wpISr7aB+yOxoIgfbsa06+d0yyyL7xJBQLwFptIt56QP734GPzLo1lfFEx3OhcEgSmpnViJHPw5ru5bHaByc6JAZ+Dh/QLaLBfhxo1lnHJuPExc8Cq49H5JLfjB4ArRck8fIXfQI3eMNkc4EbJV820/kz6nl/Q/RzS5xXDbfjhXwWhfbDa36urgMm4xJFZyVUW8r6OBhDAUQFC9r0L5UgkQIzwLsSdOmEW5MzrkaOzv0KsftEuvhdn4F0wdamZ/XhZUC5Tnvd9VQqufwnandkqEcVwc/L51GVrLW6WNLaBKit3SyohqAtcW+brfTd4N6e/aYh9uQzCcZBWt/h79uOYiYZBnPLEjCXFZ8yUneT1xdN68gc5Kqqp9hx9GID5TBT2o/SZZsqj5QpbzGbctaI/cNHUlAyjSXxM9bA5SGgWcYDCF/K78FkDFHlwLQup/7a0lRNVZzWUTQ7iizFxIyWJaThCrH0xBxhb5p+vOjuBQV4SgptlX4eomGQj6HpxM/TQ2qBpAPgL75cIo9o9PgeD5b4QnPJ+4pds5kiIXKO2G/qitgMqh3T/qRhOYpMFCGGGNqHJx7HnTOmj3lX/8yLzy70Yre42v86iUXLPe/FzaDhZLsErSe/tQvivNKS/Bne36k8vuOQD1VVw6M071DMldNQWcmmoiBrt+oLf/39p+uw7vMswUKicJvMT+M2lB0t+AUniGzz6A5T8YyTOyhZ1LQxLIucba+ngtTdApKr/Uto7YZH8BO2rV/vYjFvm/Feuy8eXUlz+f6+m6PcS5wPU6ZRzVtYrwKF9RfQXDJhQVTrBLcVy7i1QOscc7s1iGZzbMeWgc3w5bmROLHxsflYB3vzYfwjnX9LnMtNz/8YDex69C2RnX9ZXwrdj/+CKYRiMaFgfD+yP6cq//hSiGHYwKmf0nopGj61m+Q9PS4poLWkXzfnX4XBZZf/M8g3P3pI7LIxk2ie61nfFn/Z7gnqJucMl0nEtak5krqQ0gk3M92LnivECBNyzH28Gy5qJSanoLggw0AAAAA" width="45" height="60" alt="" loading="lazy" decoding="async" style=""><span class="zi" aria-hidden="true"></span></button></span></th><th scope="col" data-id="ezviz-ep3x"><span class="cmp-name" style="">EZVIZ EP3x Pro</span><span class="cmp-photo"><button type="button" class="zoom" data-full="img/ezviz-ep3x-lg.webp" data-name="EZVIZ EP3x Pro" aria-label="View EZVIZ EP3x Pro thumbnail"><img src="data:image/webp;base64,UklGRvgDAABXRUJQVlA4IOwDAADQGACdASp4AKAAPm00lkekIyIhI7VbmIANiWcXpnF3BoVqQFYCgreAmoMTlHvkfdOcL3548TB+sAVutX/2asQLr7RMIYstxityG51ayVMRDoERMkyaVtW0rG87qrwsm/V9G0WBaOYZAYUOcD6NklhrJVS1b1I41c59BiyN78iEKZ/QEUP4Kb7miEw8chpGEERbApjP7Cger/5L/Wz14IgrSYKm7jc91JjIvwfVCkb7HSIQD/OEw57Py6STD7mO5Z8s2c6hO56GEMlPbvhTJgAA/vxKBbeh6DoP7CqzN+PaNhbU21nL4IGr/zV6YVh//ToeuZYnyJZPJsekJ1hIbBNl2wfj8BR2zelpsAvoRRLYGXNxLLM1Yp85t44Hs56RwvDYniQmZEQvB7Nb72uNdiY39+Xix6nqXQ0rR7ciMfHiY8YYk9iy4uGeXLs6AEeOyjmsx9gYidk+5KoQqWSUIxWEfu7OJl6gdk/DQ6L3pAh9Fn/ftdGg7Kv9Ob/I7O8pz/w5NnPDV8EhUJDajD7AqiIlHZXv2dZMudoT4T3Zc3bwMfLlq7CqDKP5GK3EQuxLkj5hju3XK43DJnEtRYqEwOb00w7oVqvWeq9GZZYejKKpODU+kG2TkA7fqC84AqwbF3ZC6/kNOmwKgF1qAqQVsRQaU2gpHB4beqdzGMeiQTV00MQRt91Y7hXPNzyR4CLxhjYHQZiiRTsn0FrdD6GWNkRQb3pgBjkr1cgYD6xKiXF3DuEzuzUUKtTOGXQhKEJGY8cu2GSkSRZu/Vs7SjDTHjvC9jB65oqD/J6j9PwPn4nHs3KrP6LT+9uQgY+ZDESoDLdIPEThdAVr56kso2nlkz1wB11IxWjGhK41ehCecwpxHUUyR9dH+0s6m1yqhThCrqxrzKXlbM4Rpkl6PneefTjSEWD4qg7x90DGFOBYdkKFKYNtfNDqnf4LuzLqbbfu7v6uNLxLRujxHZ/kfiWHtSX59Y084gEV0httO5MK3E7bJFfpKVbbHff6TbDjotZV0uB65Ru3s7zRrY/FyeJQMMzsUuPNBbXUp+iHZQ87GFPkpqgp1Xt3sYdcOu8UOfN4Wm3TwDgMMtcJZDhqgIu3TtEpSgZ3ByegBrtF1w5jH2ksf/F3D/lhMRx5xKpUte9xU1BHOexpNteq0pB05RzV8/mgePOVBdw2AjkJUrbo0Sgx5Ap20foNS/Ob3zApTtTHUVGUkyq1iU5gl0NvCCeNGd8InFe6SO2MI0kdDi1SS5aQIpoA/yx9fJ2wgz8N/gpK3WodRRWGXGlQJ5bzReoweBUkuOlI7qn86q3Xkg9jpW3WgD9IjE+KxRlh80YAAA==" width="45" height="60" alt="" loading="lazy" decoding="async" style=""><span class="zi" aria-hidden="true"></span></button></span></th></tr></thead></table></div>
+<p class="cap">The TD21 column has no badge, so its photo starts 19px higher than the
+other two. Position 1 of the default sort reads as the recommendation with no verdict
+beside it.</p>
+</div>
+<div class="cell win">
+<span class="tag">Proposed</span>
+<div class="cmp-scroll prop"><table class="cmp-t"><thead><tr><th scope="col"><span class="vh">Spec</span></th><th scope="col" data-id="tapo-td21"><span class="cmp-name" style="">TP-Link Tapo TD21</span><span class="vtag v-best">Cheapest to keep</span><span class="cmp-photo"><button type="button" class="zoom" data-full="img/tapo-td21-lg.webp" data-name="TP-Link Tapo TD21" aria-label="View TP-Link Tapo TD21 thumbnail"><img src="data:image/webp;base64,UklGRo4CAABXRUJQVlA4IIICAADQEwCdASp4AKAAPm00l0ekIyehI7ca6PANiWkABRaHBRY58JvymqY/pZly3eAzAdkuGloJCr0y1c6NKsbdOzBN6ey3HSvXUYVTHQjXyQEYrzoq80pXE/X/LjuDGEo8W03sSb+35JOHH64JKmFj9u1b1q1iid+EG21gBbaKCfs11EpkGZIoxIEjnBSYkJd3XQKPuGz05bA8aIa8+VEP0pzZkUdKVSZhgAD+/EoPf+Ln/y3JXT/6o9PmE+5eWdn+6Pv7rK7p9t3t+U/3/+aWu1l3tdxF9wsXv3Lv4lpEk6T73BpTPtgo9AX2VK2LY2vpnmYCgYOm13rM51q4V65ojYVx6kTm0Ephsimec1jsljwV6+CTznWPXAAeNRy/OY6fJgXT7Rfu2jlo8uJ4rUN6hO1X3ZEFnmi3sNuG032w1Qd7I43JEj3j1vNciGEjo1J/xEud7P0zLTsWhx1jlS4xpCK/Z5Ghsv13FRv3pk7wvsqhjzdybSec2YT4EsHKiyzf2f5zuE9/W0Qr5ESkLXEFvSTo9o2QOIUXYSSpCAr2SQkHVk+6O2QZAFBrvSwYq705UX+S2se+QmjNURHCwCQLAv/mMQ14A3Ai3mrlsEGLzkYJl2EIl7FAkZ8WNAkEiiy/bQdEAdkIByxtJXYCmWIVF6r3hj3YXumxKfSI3US27hf/IH/JG1iiz1on/f+gfcvbH/M6ks1QwH71hYKGrSuyPXBC97JjW+Ru+mpJNFIX8AOMgAfgWWoVmGY3G/+2YQIL/weZxLe/uMaqhHPw5OeuejF0Q0UJaKK+P9+Pk1GFODGhb7N52PndPbhzGqNCFACcZ/Ehv2y7Nce98Xn/2GnSbTQAAAA=" width="45" height="60" alt="" loading="lazy" decoding="async" style=""><span class="zi" aria-hidden="true"></span></button></span></th><th scope="col" data-id="reo-poe" data-v="best"><span class="cmp-name" style="">Reolink Video Doorbell PoE</span><span class="vtag v-best">Best overall</span><span class="cmp-photo"><button type="button" class="zoom" data-full="img/reo-poe-lg.webp" data-name="Reolink Video Doorbell PoE" aria-label="View Reolink Video Doorbell PoE thumbnail"><img src="data:image/webp;base64,UklGRtgEAABXRUJQVlA4IMwEAAAwHwCdASp4AKAAPm0ylkekIyIhptPLCIANiWcNsALMCIAc4DbAZ4B1jXoAdLH5UbS03iy79MH8i6GzRi9UewaUu6JrxtrfWYgF2ijcuX2dYD9x1S60PknPAf5qRVLsiqAwflwf5/Vng9tVpGan08AJ6eZ+EQl/vNaHzfgQRNe5xa1ANe+/23oRei4uLS+5EfVHlm91+71+I77kXRmMLetVf1gmGrqxc4NkHgplcjVviRJHFO9sq+qAqgrlWj3pXEHaaLfM4lz7j29UCI2qwm1Gf0LPqew/JGHWUznrmbKK89Ld4o/cUwJDvL4cCBweFYecWOxp4g7Gv92+sbuscSqpw4AA/vxKGjzAfsa4bs1pmEVqxwNcvRUiyVVQjpuYb/QUg7cwkyEP0GTvOi5XJ+hc7iWctIXxCeV4n5GpIMZwZW7iSPt9Y6cyqdKtQkyklcknW2GlkD3CpqHt2a5PJaT65wG8EtxJcGKI0DXTz8cjKswqql3mDsQubXw2bfstmwwpTnkw2JR/TbX9DQjdrfz9Ym49ifh4dyrWbD2j76QtC6hxpk/DoEfK5KYs99w3lKxDdLZtRn+hA/S3U3L35t2PX3r/wpISr7aB+yOxoIgfbsa06+d0yyyL7xJBQLwFptIt56QP734GPzLo1lfFEx3OhcEgSmpnViJHPw5ru5bHaByc6JAZ+Dh/QLaLBfhxo1lnHJuPExc8Cq49H5JLfjB4ArRck8fIXfQI3eMNkc4EbJV820/kz6nl/Q/RzS5xXDbfjhXwWhfbDa36urgMm4xJFZyVUW8r6OBhDAUQFC9r0L5UgkQIzwLsSdOmEW5MzrkaOzv0KsftEuvhdn4F0wdamZ/XhZUC5Tnvd9VQqufwnandkqEcVwc/L51GVrLW6WNLaBKit3SyohqAtcW+brfTd4N6e/aYh9uQzCcZBWt/h79uOYiYZBnPLEjCXFZ8yUneT1xdN68gc5Kqqp9hx9GID5TBT2o/SZZsqj5QpbzGbctaI/cNHUlAyjSXxM9bA5SGgWcYDCF/K78FkDFHlwLQup/7a0lRNVZzWUTQ7iizFxIyWJaThCrH0xBxhb5p+vOjuBQV4SgptlX4eomGQj6HpxM/TQ2qBpAPgL75cIo9o9PgeD5b4QnPJ+4pds5kiIXKO2G/qitgMqh3T/qRhOYpMFCGGGNqHJx7HnTOmj3lX/8yLzy70Yre42v86iUXLPe/FzaDhZLsErSe/tQvivNKS/Bne36k8vuOQD1VVw6M071DMldNQWcmmoiBrt+oLf/39p+uw7vMswUKicJvMT+M2lB0t+AUniGzz6A5T8YyTOyhZ1LQxLIucba+ngtTdApKr/Uto7YZH8BO2rV/vYjFvm/Feuy8eXUlz+f6+m6PcS5wPU6ZRzVtYrwKF9RfQXDJhQVTrBLcVy7i1QOscc7s1iGZzbMeWgc3w5bmROLHxsflYB3vzYfwjnX9LnMtNz/8YDex69C2RnX9ZXwrdj/+CKYRiMaFgfD+yP6cq//hSiGHYwKmf0nopGj61m+Q9PS4poLWkXzfnX4XBZZf/M8g3P3pI7LIxk2ie61nfFn/Z7gnqJucMl0nEtak5krqQ0gk3M92LnivECBNyzH28Gy5qJSanoLggw0AAAAA" width="45" height="60" alt="" loading="lazy" decoding="async" style=""><span class="zi" aria-hidden="true"></span></button></span></th><th scope="col" data-id="ezviz-ep3x"><span class="cmp-name" style="">EZVIZ EP3x Pro</span><span class="vtag v-batt">Records free, no card</span><span class="cmp-photo"><button type="button" class="zoom" data-full="img/ezviz-ep3x-lg.webp" data-name="EZVIZ EP3x Pro" aria-label="View EZVIZ EP3x Pro thumbnail"><img src="data:image/webp;base64,UklGRvgDAABXRUJQVlA4IOwDAADQGACdASp4AKAAPm00lkekIyIhI7VbmIANiWcXpnF3BoVqQFYCgreAmoMTlHvkfdOcL3548TB+sAVutX/2asQLr7RMIYstxityG51ayVMRDoERMkyaVtW0rG87qrwsm/V9G0WBaOYZAYUOcD6NklhrJVS1b1I41c59BiyN78iEKZ/QEUP4Kb7miEw8chpGEERbApjP7Cger/5L/Wz14IgrSYKm7jc91JjIvwfVCkb7HSIQD/OEw57Py6STD7mO5Z8s2c6hO56GEMlPbvhTJgAA/vxKBbeh6DoP7CqzN+PaNhbU21nL4IGr/zV6YVh//ToeuZYnyJZPJsekJ1hIbBNl2wfj8BR2zelpsAvoRRLYGXNxLLM1Yp85t44Hs56RwvDYniQmZEQvB7Nb72uNdiY39+Xix6nqXQ0rR7ciMfHiY8YYk9iy4uGeXLs6AEeOyjmsx9gYidk+5KoQqWSUIxWEfu7OJl6gdk/DQ6L3pAh9Fn/ftdGg7Kv9Ob/I7O8pz/w5NnPDV8EhUJDajD7AqiIlHZXv2dZMudoT4T3Zc3bwMfLlq7CqDKP5GK3EQuxLkj5hju3XK43DJnEtRYqEwOb00w7oVqvWeq9GZZYejKKpODU+kG2TkA7fqC84AqwbF3ZC6/kNOmwKgF1qAqQVsRQaU2gpHB4beqdzGMeiQTV00MQRt91Y7hXPNzyR4CLxhjYHQZiiRTsn0FrdD6GWNkRQb3pgBjkr1cgYD6xKiXF3DuEzuzUUKtTOGXQhKEJGY8cu2GSkSRZu/Vs7SjDTHjvC9jB65oqD/J6j9PwPn4nHs3KrP6LT+9uQgY+ZDESoDLdIPEThdAVr56kso2nlkz1wB11IxWjGhK41ehCecwpxHUUyR9dH+0s6m1yqhThCrqxrzKXlbM4Rpkl6PneefTjSEWD4qg7x90DGFOBYdkKFKYNtfNDqnf4LuzLqbbfu7v6uNLxLRujxHZ/kfiWHtSX59Y084gEV0httO5MK3E7bJFfpKVbbHff6TbDjotZV0uB65Ru3s7zRrY/FyeJQMMzsUuPNBbXUp+iHZQ87GFPkpqgp1Xt3sYdcOu8UOfN4Wm3TwDgMMtcJZDhqgIu3TtEpSgZ3ByegBrtF1w5jH2ksf/F3D/lhMRx5xKpUte9xU1BHOexpNteq0pB05RzV8/mgePOVBdw2AjkJUrbo0Sgx5Ap20foNS/Ob3zApTtTHUVGUkyq1iU5gl0NvCCeNGd8InFe6SO2MI0kdDi1SS5aQIpoA/yx9fJ2wgz8N/gpK3WodRRWGXGlQJ5bzReoweBUkuOlI7qn86q3Xkg9jpW3WgD9IjE+KxRlh80YAAA==" width="45" height="60" alt="" loading="lazy" decoding="async" style=""><span class="zi" aria-hidden="true"></span></button></span></th></tr></thead></table></div>
+<p class="cap">A reserved line under each name. A badge is 1.35em whatever its words
+are, so the three photos line up.</p>
+</div>
+</div>
+<h3>The seven rows without a verdict</h3>
+<ul class="verdicts"><li><span class="m">TP-Link Tapo TD21</span><span class="v">Cheapest to keep</span><span class="n">£54.99 over three years, the lowest on the page.</span></li><li><span class="m">Google Nest Doorbell</span><span class="v">Avoid without a plan</span><span class="n">No storage of its own and nothing free.</span></li><li><span class="m">eufy E340</span><span class="v">Records without a card</span><span class="n">8 GB built in.</span></li><li><span class="m">Aqara G4</span><span class="v">Cheapest with a chime</span><span class="n">A microSD in the indoor chime.</span></li><li><span class="m">EZVIZ EP3x Pro</span><span class="v">Records free, no card</span><span class="n">32 GB built in.</span></li><li><span class="m">EZVIZ DB2 Kit</span><span class="v">Chime in the box</span><span class="n">The chime holds the card.</span></li><li><span class="m">Hikvision DS-HD2</span><span class="v">Wired, no fees</span><span class="n">Wired to the chime, card or NVR.</span></li></ul>
+<p class="cap">The wording is a proposal. The rule it follows: a verdict names the case
+the row wins, and no two rows share one.</p>
+
+<h2>R13 · The details panel ends level</h2>
+<div class="mock-note"><b>What changes.</b> Twelve pairs in two columns of six, the
+score breakdown across the foot, and the sources under the photo. The left column no
+longer ends 77px below the right, and the blank grid under the photo is filled.</div>
+<div class="stack">
+<div class="cell">
+<span class="tag">Today</span>
+<div class="mock-panel"><div class="dgrid">
+<figure class="dimg"><button type="button" class="zoom" data-full="img/reo-poe-lg.webp" data-name="Reolink Video Doorbell PoE" aria-label="View Reolink Video Doorbell PoE full-size photo"><img class="ph ph-lg" src="data:image/webp;base64,UklGRu4MAABXRUJQVlA4IOIMAABwaACdASpoAeABPm02mEkkIqUkIhMZKKANiWlu4XaeAMyzwbMU/wCqfvF8k1zCYR9hU4D7gN8R5gPOO9AH63eq71HHoAeXD7Nv7l176yX7bG6HaEd7OJ/TeaAnjD6OPrsPW0zbYbbDbYbbDbYbbDbYbbDbYbbDbYbbDbYbbDbYbbDbYbbDbYbbDbYbbDbYbIjvkPeYu5Ic6CtDGX9C/oX9C/iZL+2vKqoOqT9roj+B24sT8jcYOjlFqjJwNxr0mSixmP3ujucdzjucZA/kgQqJxUbyObidSbRFR3Ex88OxFVUpueovRwMExuzPNhtsNthtmUkYrRX5Zq40cutIoj4qfUJLEdgR6prV89ekcnn2HRRDN2BIni7rEubaBFX8wFZiw2gJzdkWeXlm2dvmmRiznqziEUgxy223TNthtsL4kQx0NvbvZbt6fbgdjHPAPpwW1E1qjQKHFaDxieMTxiKdERzIuOyVN/ffMTfsFEUrYqlKhuUieMTxicuSE1vsWEm6HA+blInjE8YnLkhD6ZJpA99fSrHc47nHcgOtg82MGXPEaCKfUm5x3OO5uLc6U6QkJRR+H9RVGxLQCht9VRvNvNt5dl/Qv6F/PztkP0AewXJ3VViv9gBWQ60aA63VmSTz2JtmZaDxieMTxiKhaCCoSqfN7aOMTiSc5+rP1Z+rL1Ej3AVQgqgoQoZiBtjS1sCRPGJ4u55v8f6Opg4v9vYY4Fwqf+O5x3OO5ASVHwiVyhG+fjwfzjud6Fxbuo147QDeXOFNPHCXGfEM3YEieFTT9zG8sa+pUW1bD6naEbuM0Ho74xPGJ4xD3v8vDdwjHFQ6KiajoMBtLHoLSc7VDIQ1kZgA4t+LAvNd2BInjE5OhYzBOy0VSFZU7mqYK0HF5HCpHz1YMvhGdH4gxVrLStxqYwF8Ucnq/UTN7IXk45x3OOucVMloP+hH4gQjsYRme0uHqMqSpYbGwJzD1gUR/OXXgICVv1/oX9CraBXSnP0DXnChbGZR4rtfW7M8nxNunfEjrFIBn3xPGJ4xPGJ5V3KE+JPt4nbzzXr5zXdgSJ4xPGJ4yQNVGbsCRPGJ4xPGJ4xPGJ4xPGJ4xPGJ4xPGJ4xPGJ4xPGJ4xPGJ4ugAAP79DwAAAAAY9HnV622FqBnWDaYH+lwm7KPiKPQnCutcKwTCLesG/NfxTELVxGzn5Jmvg1rW5tadMdbltUYok1z+zY9ve5TN40dk11BKtZM1V8EsuVfiUDQrIKaE/AM2fhQtyaLMHNz/5/L/IL1VtUkEWlrBr0Hjmpx3QRpP1WY50X3wL6JfLmYCq/ze2o1IzzSa5fPD2Wd3pfMpRiRbcq3Q1/FaHIm6o+ii8pvllGGm78DKhDClsN8YW9Q4NWfJE5QCWITdlQLdl/PXChRpBZKAzoGeg7ELv3akejkhZ6k/jc3kvmR0idlPxuldNcqJsoOpIKlffb2ypgW8/4lNBN2zGt4ZniXwWbB2XdpiIqj1jDH5wcI/UuVUeE69YgYDcd0RChs5ioiaW62rnlkCNRNagnrR897dTX0Au0TJbmkaanO17HIYqcR9bmcqSMdIQCVLZ0iuZrlx4IxML27u6+5Lx5+qeZFYDf0xUxFDBALs18nmHzvAezFIqkFnFrrTGwq08pSPmkqATv83Z7kZqPX7CxSmB9S+OVbJQ3EDGvm1298v4dXGgxTJcbqGu6MSql/jEEYuBVon4EtoZqFe7AlNrLQmpk0od3X4aX83ThpztTkeZoPufe7fdI3me1ErA8UV4lt5SSdEsXqP7Vmb4WW1XsCtHJYFjpEKg6T4h7Tg/ZGm6B8jEirgV1TF6Zbqhze4LO9QqiZ7hQapv59GURu1/wyW79fF77FTxWlvGxDR0Qj4dONNXk1knCRyQFRMO/IsptzkFrakHs3obUnTorcnRO24/Mb4lJG0QWFPbGVbJ5zjzydem90BfCciSAQ1GJ5ak+ldWkqmxp1Yy6h4xURSlTPVjdcMvyJClfjcceDHfri2QPODKztCY0nQemGBLsbYKH1wqFVKgqo90gQhAXcw9Dg+aIPHiUhdDGRFvREYltm1iMuRbeNgIyAH4I9XGLwMvess+0NnDW/q4O3RkcMLqoGhRKTCAQkNTJThFTkIhXZs7zUa9g5AmUwUH8dzaW7JJVIO9DDuOOQqiRBFMgYb9iM7mbAsLlu9d+AUPIQQnmvkUvV7R0D98nWegYz/gkm9KPU9ndtorZFJt7/as3Bnu6p87e4i4G9vKwsLx6yDblbauBXMFFwupby4pBLJdUY2tYrLnVZWL6EZsJ58aUVLUt/ecwMihyxj/5UxLxfhBaSoYCyPA9u1PworM/FJvbj5DB39j2wS2PxMWbG5mJ+hiNZUtVSOS1c66PC5CEtWF14nY0iTzM689tw+Uqxw4l6mrS7N+30P1Noa++sUE3Jtshl1a4r+b6F/5iVmhUk7NPV/XlDPTsx8pj75dk01vINfX/Bkl/tNR3YYcRIfqL/5R0xN4Przr6WyjclXl4jXzk6fnGUYUC/4NRSqRCat50dIDYDtbFo3g/5Oa6jgtHSuwnyaVel3vX/zx53AdNFe5OjG9XukrNVKa4qa9nOekDheBeWXcWpraCbcqdRFdS+89pcW76JCE7wsaIpMqH7zfy9/E09QUftzs0Wk77Dr0su+lB3gGri4jS/qNKqKucS9WAsG8ja6tyYs8QpS3fvLnMc/E4YqQiq4Lxkf8T802/Dt0kA/sw7qQpujVGRUYtKqzlXD+RwlOfwnnWCrM80i4pdrnz2VqSjbKbEeNa+4CnTUGz3vd22TpYnhy2wPBr/WqgHlGA/oKliWX266F9l4kA7zoqgs1mxoOehsnAbi725P1TRJp2/5/4nQHBCmVv8f87fQ2kVo6BgFXy6A4LjQwBOR9+3Yj25PCuzKXxy3tRurk8HDpNif4/jTNASU/4yJBfa58HnIXiydAYmQqTqWQSzKtapZv4L3e1NzilHLreee6yRTDEe5ua0rLxM5RIw3SYnSmDJe03u61b2eTNvv3rLZH3V20mc/LPJWiCv9P088/LQ60/UJ2d2uyQbWLlmEigXuMIEBVezabcadym4WQYKGfyut60UcE87Inb9keavmEwK6erfLWk8dchEUqjYd9ci+s9G2DCphXCYH212xikVTteEd5revZqDE1xzrm1RSnbX4OdISZKLXQ2SJLTTP1VUKMCUXDLPhBMUICw4PSeU5o9RYZtKSpfGy11woeikOmlh956wjzuPvk2jwNcQcEh/wluU9f/VPCRtdCsaB3qjCRGYXYZbMVyC2AQJHiWlCwGjrwqgOiFX7+25uu1xPviLDhH2zwG/H+VQgxJLymXFcQCV86exDMbIfVuynD7auRHB6tNQEDX4oO1ZglLyPRrfKux7gU9Uq0LelcQnNAlAAHR7V5nR/sdWfdRHmqczH8zyxyQM+CvQDnZHWCjCcJAeMfkdB69o7As1t/GNdmvgSx5Icaa0/G0NwQXp3Uf8T9x2W/5T9M2nUoe2fFIyjSb5Pph2eZQ7b/pp2QJTtTjJGGx/sWTvE/u+gUXGlx4dqxCHWtGVvXO3uA/I7vDW97eIp4oUqJItduEZK5SMxttYhF9wkZJnGHM/zQ4uWYFLmpC8lGmiZhJl7rxLZ49Mpi2DUndQuaTRklaAwQ1s1GlrmbB0zDBRkvw6TWIQK3kBDBfnpdesHlIKqDo3dqkIixzn4peV4LUVJhsq5VF51Qa8ed5ZcRnWWJch8g2WtkNSDZaAyTztMn58MHfkupAZeBTmBceF6q3Zi7oR3gZE/4kFlNjzwBq5gYoomkuw8OA2QnRhXMWmif5gdhHs0ce3oDVr5+zCqfcJmjUTc53BpQl8vkc2KUuj9m2B6svZv8GlKm/2pup75KEI3kXRUoYUHraQR+W0tNmpICARlnvxxb5ndKU+5lMA1MXWBLGA+mS6NVMMoSY5K8/e5JS8wCGByHZ4ctjAqpQGInIdjPw/bevwdUIDCn0yALtMAnWNl/tvZ/fLRJ0YUIECKbFj7l6ttiAfU/t3pDWV51/iJ5LV1G3Mkm5lvOy7ihJve/W3eleZaQrbmGTo+Z9M1XWuvwHwuMfqNQRNyShdePEHRcM50HGnDqKZeF0Vci8qxkCaDjHJs8NEB9BNzuMPrJIVqAID7+W4aWDTphz+AWZg8CtMHRlMEAJdAtHNsvpazfW6YFqpQcB2gJ6JAigaKwm0bTwOODXxHFqqT9WNDrFvBlI6VPbZ6wKXlNLXocbO+QphmCJV4byhzi2B4aubvFZlOKOi8CzJNexjdTXCAwhxma6BqSjYJ5Xd3OgXkvvoennlsldMrqfwSzR8XJtkrvC5TZ5Ezpgsn3ehEOawWuP9qBBTkrjPfv9+JdCb8W39WwuAAAAAAAAAA" width="180" height="240" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"><span class="zi" aria-hidden="true"></span></button></figure>
+<dl class="dspec">
+<div class="pair"><dt>Power</dt><dd>Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.</dd></div>
+<div class="pair"><dt>Wi-Fi</dt><dd>Wired Ethernet</dd></div>
+<div class="pair"><dt>Storage</dt><dd>A microSD card in the doorbell, or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video.</dd></div>
+<div class="pair"><dt>Live view</dt><dd>Yes</dd></div>
+<div class="pair"><dt>Motion alerts</dt><dd>Yes</dd></div>
+<div class="pair"><dt>Smart detection</dt><dd>Free: person detection</dd></div>
+<div class="pair"><dt>History without a plan</dt><dd>Yes, motion-triggered or 24/7 recording <a class="fn" href="#fn17" title="Reolink doorbell FAQ">17</a></dd></div>
+<div class="pair"><dt>Behind the paywall</dt><dd>Nothing</dd></div>
+<div class="pair"><dt>Plans</dt><dd>None. Reolink's doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR</dd></div>
+<div class="pair"><dt>Home Assistant</dt><dd>Official, fully local integration (Local Push, Platinum). <a class="fn" href="#fn15" title="Home Assistant: Reolink">15</a></dd></div>
+<div class="pair"><dt>3 years, no plan</dt><dd class="maths">£69.99 + £10.00 (microSD card) = £79.99</dd></div>
+<div class="pair"><dt>3 years, with plan</dt><dd class="maths">No subscription offered or needed</dd></div>
+<div class="pair"><dt>Score breakdown</dt><dd>Records free 2/2; Live view free 1/1; Motion alerts free 1/1; Smart detection free 1/1; Storage in the box 0/1; Local / Home Assistant 2/2</dd></div>
+</dl></div>
+
+<p class="srcs">Sources: <a class="fn" href="#fn14" title="Reolink UK store">Reolink UK store</a>, <a class="fn" href="#fn15" title="Home Assistant: Reolink">Home Assistant: Reolink</a>, <a class="fn" href="#fn17" title="Reolink doorbell FAQ">Reolink doorbell FAQ</a></p></div>
+<p class="cap">Seven pairs left, six right: the left column ends 77px lower. The 240px
+photo leaves 160px of blank grid under it.</p>
+</div>
+<div class="cell win">
+<span class="tag">Proposed</span>
+<div class="mock-panel prop"><div class="dgrid">
+<figure class="dimg"><button type="button" class="zoom" data-full="img/reo-poe-lg.webp" data-name="Reolink Video Doorbell PoE" aria-label="View Reolink Video Doorbell PoE full-size photo"><img class="ph ph-lg" src="data:image/webp;base64,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" width="180" height="240" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"><span class="zi" aria-hidden="true"></span></button><p class="srcs">Sources: <a class="fn" href="#fn14" title="Reolink UK store">Reolink UK store</a>, <a class="fn" href="#fn15" title="Home Assistant: Reolink">Home Assistant: Reolink</a>, <a class="fn" href="#fn17" title="Reolink doorbell FAQ">Reolink doorbell FAQ</a></p></figure>
+<dl class="dspec">
+<div class="pair"><dt>Power</dt><dd>Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.</dd></div>
+<div class="pair"><dt>Wi-Fi</dt><dd>Wired Ethernet</dd></div>
+<div class="pair"><dt>Storage</dt><dd>A microSD card in the doorbell, or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video.</dd></div>
+<div class="pair"><dt>Live view</dt><dd>Yes</dd></div>
+<div class="pair"><dt>Motion alerts</dt><dd>Yes</dd></div>
+<div class="pair"><dt>Smart detection</dt><dd>Free: person detection</dd></div>
+<div class="pair"><dt>History without a plan</dt><dd>Yes, motion-triggered or 24/7 recording <a class="fn" href="#fn17" title="Reolink doorbell FAQ">17</a></dd></div>
+<div class="pair"><dt>Behind the paywall</dt><dd>Nothing</dd></div>
+<div class="pair"><dt>Plans</dt><dd>None. Reolink's doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR</dd></div>
+<div class="pair"><dt>Home Assistant</dt><dd>Official, fully local integration (Local Push, Platinum). <a class="fn" href="#fn15" title="Home Assistant: Reolink">15</a></dd></div>
+<div class="pair"><dt>3 years, no plan</dt><dd class="maths">£69.99 + £10.00 (microSD card) = £79.99</dd></div>
+<div class="pair"><dt>3 years, with plan</dt><dd class="maths">No subscription offered or needed</dd></div>
+<div class="pair"><dt>Score breakdown</dt><dd>Records free 2/2; Live view free 1/1; Motion alerts free 1/1; Smart detection free 1/1; Storage in the box 0/1; Local / Home Assistant 2/2</dd></div>
+</dl></div>
+
+</div>
+<p class="cap">Six a column, the longest pair across the foot, the sources under the
+photo.</p>
+</div>
+</div>
+<h3>Second reading of the same panel</h3>
+<div class="stack">
+<div class="cell">
+<span class="tag">Variant</span>
+<div class="mock-panel prop"><div class="dgrid">
+<figure class="dimg"><button type="button" class="zoom" data-full="img/reo-poe-lg.webp" data-name="Reolink Video Doorbell PoE" aria-label="View Reolink Video Doorbell PoE full-size photo"><img class="ph ph-lg" src="data:image/webp;base64,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" width="180" height="240" loading="lazy" decoding="async" alt="Reolink Video Doorbell PoE"><span class="zi" aria-hidden="true"></span></button></figure>
+<dl class="dspec">
+<div class="pair"><dt>Power</dt><dd>Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.</dd></div>
+<div class="pair"><dt>Wi-Fi</dt><dd>Wired Ethernet</dd></div>
+<div class="pair"><dt>Storage</dt><dd>A microSD card in the doorbell, or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video.</dd></div>
+<div class="pair"><dt>Live view</dt><dd>Yes</dd></div>
+<div class="pair"><dt>Motion alerts</dt><dd>Yes</dd></div>
+<div class="pair"><dt>Smart detection</dt><dd>Free: person detection</dd></div>
+<div class="pair"><dt>History without a plan</dt><dd>Yes, motion-triggered or 24/7 recording <a class="fn" href="#fn17" title="Reolink doorbell FAQ">17</a></dd></div>
+<div class="pair"><dt>Behind the paywall</dt><dd>Nothing</dd></div>
+<div class="pair"><dt>Plans</dt><dd>None. Reolink's doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR</dd></div>
+<div class="pair"><dt>Home Assistant</dt><dd>Official, fully local integration (Local Push, Platinum). <a class="fn" href="#fn15" title="Home Assistant: Reolink">15</a></dd></div>
+<div class="pair"><dt>3 years, no plan</dt><dd class="maths">£69.99 + £10.00 (microSD card) = £79.99</dd></div>
+<div class="pair"><dt>3 years, with plan</dt><dd class="maths">No subscription offered or needed</dd></div>
+<div class="pair"><dt>Score breakdown</dt><dd>Records free 2/2; Live view free 1/1; Motion alerts free 1/1; Smart detection free 1/1; Storage in the box 0/1; Local / Home Assistant 2/2</dd></div>
+</dl></div>
+
+<p class="srcs">Sources: <a class="fn" href="#fn14" title="Reolink UK store">Reolink UK store</a>, <a class="fn" href="#fn15" title="Home Assistant: Reolink">Home Assistant: Reolink</a>, <a class="fn" href="#fn17" title="Reolink doorbell FAQ">Reolink doorbell FAQ</a></p></div>
+<p class="cap">The sources stay at the foot of the panel, where they are now, and only
+the pairs are levelled: twelve in two columns of six, the score breakdown across the
+foot. Choose this if the sources belong to the whole panel rather than to the photo.</p>
+</div>
+</div>
+<footer>Built from the working tree on 24 October 2026. Nothing here is generated by
+<code>build.py</code>, and the mockup is not audited.</footer>
+</div>
+</body></html>

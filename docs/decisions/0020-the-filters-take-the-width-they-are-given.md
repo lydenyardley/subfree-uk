@@ -81,3 +81,20 @@ fieldsets overflow at 821.
 - The mast's padding and the theme button's 44px target are in the same
   review but need no decision record: both are the site's own type sizes and
   the 44px is the smallest target a thumb can hit.
+
+## Follow-up, 24 October 2026
+
+The owner's review of the result: between 821 and 1200 the option groups and
+the sort control still squeezed each other. They no longer overlap, but the
+sort had been pushed to the far end of the band under the price slider, where
+it read as a caption for that slider, and the count sat stranded at the other
+end with about 90px of empty row between them.
+
+Below 1280 the sort now opens the second line, flush with the filters' left
+edge and under the option groups, with its label inline beside the select; the
+count closes that line at the right. The control block at 821 is 206px tall
+where it was 232, the option groups still read one row each from 900, and the
+price slider keeps the spare width. `filters row` asserts the placement at
+821, 850, 900, 1101, 1200 and 1279, in the page's font and at Verdana.
+
+This supersedes the sentence above about the 821 to 901 band.
