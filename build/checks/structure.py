@@ -183,40 +183,67 @@ def row_rule(data):
     return [f"verdict row rule: {rule}"]
 
 def filters_row_check(page):
-    """The filter groups share a line at 1440, and the slider takes the rest.
+    """The option groups read on one row, and the sort control never squeezes them.
 
-    The details box used to size itself to its own content, which came up a
-    few pixels short of the option groups, so both wrapped and the price
-    slider stopped at 178px with half the row unused. Measured at 1440 rather
-    than 1280 because 1440 is the width that still has slack for a fallback
-    font 15% wider: there the groups are one line each and the slider is
-    337px, against 2, 2 and 178px on the old stylesheet.
+    The details box used to size itself to its own content, so both groups
+    wrapped and the price slider stopped at 178px with half the row unused.
+    Taking the line fixed that at the wide end and left the middle squeezed:
+    the filters need 794px beside a 290px sort control, so from 1101 to 1199
+    the sort took a share and both groups wrapped again. Below 1280 the sort
+    now takes the count's line, where it costs nothing, and the filters keep
+    the whole line. Each width is measured in the page's own font and again at
+    Verdana, about 15% wider, because that is the font that hid the 1280 case.
     """
+    widths = (821, 850, 900, 1101, 1200, 1279, 1280, 1440)
+    read = """() => {
+        const box = (el) => el.getBoundingClientRect();
+        const body = document.querySelector('.fbody');
+        const filters = box(document.querySelector('.filters'));
+        const sort = box(document.querySelector('.sortby'));
+        return {
+            rows: Array.from(body.querySelectorAll('.opts')).map(
+                (group) => new Set(Array.from(group.children).map((l) => Math.round(box(l).top))).size
+            ),
+            slider: Math.round(box(document.querySelector('.dual')).width),
+            beside: Math.abs(filters.top - sort.top) < 3,
+            overlap: filters.left < sort.right && sort.left < filters.right
+                && filters.top < sort.bottom && sort.top < filters.bottom
+        };
+    }"""
     problems = []
-    page.set_viewport_size({"width": 1440, "height": 900})
-    page.wait_for_timeout(150)
-    state = page.evaluate(
-        """() => {
-            const body = document.querySelector('.fbody');
-            const top = (el) => el.getBoundingClientRect().top;
-            return {
-                rows: Array.from(body.querySelectorAll('.opts')).map(
-                    (group) => new Set(Array.from(group.children).map(top)).size
-                ),
-                slider: Math.round(document.querySelector('.dual').getBoundingClientRect().width)
-            };
-        }"""
-    )
+    wide = "Verdana, DejaVu Sans, sans-serif"
+    for font, suffix in (("", ""), (wide, " under the wider fallback")):
+        if font:
+            page.evaluate(
+                "(font) => document.documentElement.style.setProperty('--sans', font)", font
+            )
+        for width in widths:
+            page.set_viewport_size({"width": width, "height": 900})
+            page.wait_for_timeout(90)
+            state = page.evaluate(read)
+            where = f"at {width}px{suffix}"
+            # At 821 and 850 the row is narrower than the three controls in a
+            # font this wide: 866px against 789. The groups reflow to two rows,
+            # which is the row's own limit and not the squeeze this fixes.
+            if width >= 900 and state["rows"] != [1, 1]:
+                problems.append(
+                    f"{where} the option groups read in {state['rows']} rows, expected one each"
+                )
+            if state["overlap"]:
+                problems.append(f"{where} the sort control overlaps the filters")
+            if width < 1280 and state["beside"]:
+                problems.append(f"{where} the sort control takes a share of the filters' line")
+            if width >= 1280 and not state["beside"]:
+                problems.append(f"{where} the sort control left the filters' line")
+            floor = 300 if width == 1440 else 160
+            if state["slider"] < floor:
+                problems.append(
+                    f"{where} the price slider is {state['slider']}px wide, expected {floor} or more"
+                )
+        if font:
+            page.evaluate("() => document.documentElement.style.removeProperty('--sans')")
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(120)
-    if state["rows"] != [1, 1]:
-        problems.append(
-            f"at 1440px the option groups read in {state['rows']} rows, expected one each"
-        )
-    if state["slider"] < 300:
-        problems.append(
-            f"at 1440px the price slider is {state['slider']}px wide, expected 300 or more"
-        )
     return problems
 
 def price_cells(data):
@@ -431,7 +458,7 @@ CHECKS = [
     ),
     Check(
         "filters row", "compare", 50,
-        "the filter groups share a line at 1440 and the price slider takes the spare width",
+        "every option group reads on one row from 900 up, the sort control keeps its own line below 1280, and the slider takes the spare width",
         lambda ctx: filters_row_check(ctx.page),
     ),
     Check(

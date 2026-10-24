@@ -340,9 +340,6 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
 .nf-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 1.25rem;background:var(--acc);color:var(--paper);font:600 15px var(--sans);text-decoration:none}
 .nf-btn:hover{text-decoration:underline}
 .nf-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-@media (min-width:821px) and (max-width:1100px){
- .count{flex:1 1 auto;order:1;align-self:flex-end} .sortby{order:2}
-}
 /* 821-1100px: the full table must fit without sideways scrolling */
 @media (max-width:1100px){
  .main-t thead th{letter-spacing:.04em}
@@ -473,6 +470,19 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
 @media (min-width:821px){
  .filters{flex:1 1 auto}
  .range{max-width:none}
+}
+/* The sort control and the option groups come to blows between 821 and the
+   wide layout. The filters need 794px beside a 290px sort control, and a font
+   15% wider needs 1280: in between, the sort took a line the groups had to
+   share, and at 1101 they both wrapped. Below 1280 the sort takes the count's
+   line instead, so the filters keep a line of their own and the slider takes
+   what the two groups leave. The 1.5rem gap gives the 821px row the room its
+   two groups need in the page's own font. At 1280 the filters and the sort
+   share the line again, and the count goes back under. */
+@media (min-width:821px) and (max-width:1279px){
+ .filters{flex:1 0 100%}
+ .fbody{gap:1rem 1.5rem}
+ .count{flex:1 1 auto;order:1;align-self:flex-end} .sortby{order:2}
 }
 /* The record track reads in two words a line from 1200px, where the catch can
    pay for it. From 1200 to 1279 the cost columns stay at 10% and only the
