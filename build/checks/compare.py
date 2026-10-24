@@ -1032,6 +1032,51 @@ def compare_cells(rows):
         cells.append(f"£{value:.2f} {diff} {by_id[id]['keep_note']}")
     return cells
 
+def photo_line_check(page):
+    """Every compare column leaves the same line for its verdict.
+
+    Seven rows carry a verdict and seven do not. A column without one started
+    its photo 19px higher than the other two, so the three images did not line
+    up and the cheapest row read as the odd one out. The badge line is reserved
+    in every column now, written or not.
+    """
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+    state = page.evaluate(
+        """() => Array.from(document.querySelectorAll('#cmp-table thead th[data-id]')).map((th) => {
+            const photo = th.querySelector('.cmp-photo');
+            const badge = th.querySelector('.vtag');
+            return {
+                id: th.dataset.id,
+                verdict: badge ? badge.textContent.trim() : 'missing',
+                top: photo ? Math.round(photo.getBoundingClientRect().top) : -1,
+                line: badge ? Math.round(badge.getBoundingClientRect().height) : -1
+            };
+        })"""
+    )
+    if len(state) != 3:
+        return [f"expected three compare columns, found {len(state)}"]
+    problems = []
+    tops = sorted({col["top"] for col in state})
+    if len(tops) != 1:
+        problems.append(
+            "the compare photos start at "
+            + ", ".join(f"{col['id']} {col['top']}px" for col in state)
+            + ", not on one line"
+        )
+    lines = sorted({col["line"] for col in state})
+    if len(lines) != 1:
+        problems.append(
+            "the badge lines are "
+            + ", ".join(f"{col['id']} {col['line']}px" for col in state)
+            + ", so an empty line is not the height of a written one"
+        )
+    # The alignment only means something if the trio includes a column without
+    # a verdict, which is the case it was fixed for.
+    if all(col["verdict"] not in ("", "missing") for col in state):
+        problems.append(f"every column in this comparison carries a verdict: {[c['verdict'] for c in state]}")
+    return problems
+
 CHECKS = [
     Check(
         "compare morph", "desktop", 37,
@@ -1079,6 +1124,11 @@ CHECKS = [
         "compare label", "compare", 47,
         "the compare box is named by an icon and a hidden name in a narrow column, and by a caption on a phone card",
         lambda ctx: compare_label_check(ctx.page),
+    ),
+    Check(
+        "compare photos", "compare", 88,
+        "the three compare photos start on one line, verdict or no verdict",
+        lambda ctx: photo_line_check(ctx.page),
     ),
 ]
 

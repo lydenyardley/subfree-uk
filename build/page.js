@@ -57,7 +57,6 @@ function apply(){
   (!pw.length||pw.some(function(p){return t.dataset.power.split(' ').indexOf(p)>-1}))}
  items.forEach(function(t){var show=ok(t,lo,hi);t.hidden=!show;if(show)n++});
  $('#count').textContent=n; $('#empty').hidden=n>0;
- var fr=$('#f-range');if(fr)fr.textContent='£'+lo+' to £'+hi;
  var near=null;
  if(!n){
   var bestD=Infinity;
@@ -227,7 +226,9 @@ function buildCmp(){
  built=s.join();
  var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
   var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
-  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span>'+(d.vtag?'<span class="vtag v-'+esc(d.tone)+'">'+esc(d.vtag)+'</span>':'')+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
+  // Every column carries the badge line, written or not, so the photos below
+  // it start on one row: an empty badge is the same box as a written one.
+  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span><span class="vtag'+(d.vtag?' v-'+esc(d.tone):'')+'">'+(d.vtag?esc(d.vtag):'')+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
  }).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
  // The cheapest column can be scrolled out of view, so a delta names the model

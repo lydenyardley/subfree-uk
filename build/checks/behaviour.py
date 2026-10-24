@@ -924,8 +924,10 @@ def price_link_check(page):
     return problems
 
 def details_check(page):
-    """The details panel says each row in a sentence, in two aligned columns."""
+    """The details panel says each row in a sentence, and the two columns end level."""
     problems = []
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
     page.evaluate(
         """() => {
             const b = document.querySelector('#m-reo-poe .more');
@@ -937,12 +939,17 @@ def details_check(page):
         """() => {
             const panel = document.querySelector('#m-reo-poe tr.detail');
             const pairs = Array.from(panel.querySelectorAll('.dspec .pair'));
+            const dl = panel.querySelector('.dspec');
             const left = (el) => Math.round(el.getBoundingClientRect().left);
             const value = (i) => (pairs[i] ? pairs[i].querySelector('dd').textContent.trim() : '');
             return {
                 open: panel.classList.contains('open'),
                 pairs: pairs.length,
                 columns: Array.from(new Set(pairs.map(left))).sort((a, b) => a - b),
+                stacked: pairs.slice(0, -1).map(left),
+                foot: Math.round(pairs[pairs.length - 1].getBoundingClientRect().width),
+                grid: Math.round(dl.getBoundingClientRect().width),
+                sources: !!panel.querySelector('figure.dimg .srcs'),
                 power: value(0),
                 storage: value(2),
                 labels: pairs.map((p) => p.querySelector('dt').textContent.trim())
@@ -957,6 +964,20 @@ def details_check(page):
         problems.append(
             f"the details panel's pairs sit at {state['columns']}, expected two columns"
         )
+    # Seven pairs on the left and six on the right left the two columns ending
+    # 77px apart, so the longest pair (the score breakdown) takes the foot and
+    # the twelve above it divide evenly.
+    per_column = [state["stacked"].count(side) for side in state["columns"]]
+    if per_column != [6, 6]:
+        problems.append(f"the details panel's columns hold {per_column} pairs, expected 6 and 6")
+    if state["grid"] - state["foot"] > 4:
+        problems.append(
+            f"the last pair is {state['foot']}px wide in a {state['grid']}px grid, "
+            "not across the foot"
+        )
+    # The photo left 160px of blank grid under it; the sources fill it.
+    if not state["sources"]:
+        problems.append("the sources sit at the panel's foot, not under the photo")
     # A sentence rather than a data string: long, punctuated, and not a list of
     # terms joined by punctuation.
     for name, text in (("power", state["power"]), ("storage", state["storage"])):
@@ -967,6 +988,36 @@ def details_check(page):
     for want in ("Power", "Storage", "Wi-Fi", "History without a plan"):
         if want not in state["labels"]:
             problems.append(f"the details panel has no {want!r} row")
+    # Below the two-column layout the panel is one list, and the pair moved to
+    # the foot has to go back to the end of it rather than land in the middle.
+    page.set_viewport_size({"width": 900, "height": 900})
+    page.wait_for_timeout(200)
+    narrow = page.evaluate(
+        """() => {
+            const panel = document.querySelector('#m-reo-poe tr.detail');
+            const more = document.querySelector('#m-reo-poe .more');
+            if (more.getAttribute('aria-expanded') !== 'true') more.click();
+            const pairs = Array.from(panel.querySelectorAll('.dspec .pair'));
+            const tops = pairs.map((p) => Math.round(p.getBoundingClientRect().top));
+            return {
+                open: panel.classList.contains('open'),
+                columns: Array.from(new Set(pairs.map((p) => Math.round(p.getBoundingClientRect().left)))).length,
+                order: pairs.map((p) => p.querySelector('dt').textContent.trim()),
+                stacked: tops.every((top, i) => i === 0 || top >= tops[i - 1]),
+                last: pairs[pairs.length - 1].querySelector('dt').textContent.trim()
+            };
+        }"""
+    )
+    if not narrow["open"]:
+        problems.append("the details panel did not open at 900px")
+    if narrow["columns"] != 1:
+        problems.append(f"the details panel's pairs sit in {narrow['columns']} columns at 900px")
+    if not narrow["stacked"] or narrow["last"] != "Score breakdown":
+        problems.append(
+            f"the details panel's rows are out of order at 900px: {narrow['order']}"
+        )
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
     page.evaluate(
         """() => {
             const b = document.querySelector('#m-reo-poe .more');
@@ -1520,7 +1571,11 @@ def price_check(page):
                     document.getElementById("f-min-out").textContent,
                     document.getElementById("f-max-out").textContent
                 ],
-                range: (document.getElementById("f-range") || {}).textContent || ""
+                extra: (() => {
+                    const box = document.querySelector(".range").cloneNode(true);
+                    box.querySelectorAll(".lab, .dual, output").forEach((n) => n.remove());
+                    return (box.textContent || "").replace(/\s+/g, " ").trim();
+                })()
             };
         }"""
     )
@@ -1534,11 +1589,10 @@ def price_check(page):
         problems.append(
             f"the labels read {shapes['outputs']} for handles at {shapes['values']}"
         )
-    # Two thumbs on top of each other read as one grey track, so the range is
-    # also printed as words above the slider.
-    expected_range = f"£{shapes['values'][0]} to £{shapes['values'][1]}"
-    if shapes["range"] != expected_range:
-        problems.append(f"the range reads {shapes['range']!r}, expected {expected_range!r}")
+    # The two labels under the slider already print the range, so the column
+    # prints no third copy of the figures.
+    if shapes["extra"]:
+        problems.append(f"the price column repeats its range: {shapes['extra']!r}")
 
     page.eval_on_selector("#filters", "el => { el.open = true }")
     page.wait_for_timeout(80)
@@ -1579,9 +1633,12 @@ def price_check(page):
             f"the lower handle does not filter: {filtered['shown']} of "
             f"{filtered['total']} rows shown, cheapest £{filtered['cheapest']}"
         )
-    moved = page.evaluate("() => (document.getElementById('f-range') || {}).textContent || ''")
-    if "£200" not in moved:
-        problems.append(f"the range text does not follow the handles: {moved!r}")
+    moved = page.evaluate(
+        "() => [document.getElementById('f-min-out').textContent, "
+        "document.getElementById('f-max-out').textContent]"
+    )
+    if moved[0] != "£200":
+        problems.append(f"the low label does not follow its handle: {moved!r}")
 
     page.eval_on_selector(
         "#f-max",
@@ -1831,7 +1888,7 @@ CHECKS = [
     ),
     Check(
         "details panel", "compare", 51,
-        "a details panel says power and storage in sentences, in two aligned columns",
+        "a details panel says power and storage in sentences, six pairs a column with the score across the foot and the sources under the photo",
         lambda ctx: details_check(ctx.page),
     ),
     Check(

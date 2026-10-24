@@ -141,7 +141,8 @@ for i,r in enumerate(ROWS):
 <td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}"><td colspan="8"><div class="dgrid">
-<figure class="dimg">{zoom(r,"lg")}</figure>
+<figure class="dimg">{zoom(r,"lg")}
+<p class="srcs">Sources: {fnames(r['src'])}</p></figure>
 <dl class="dspec">
 <div class="pair"><dt>Power</dt><dd>{e(PLAIN[r['id']][0])}{pnote}</dd></div>
 <div class="pair"><dt>Wi-Fi</dt><dd>{e(r['wifi'])}</dd></div>
@@ -158,7 +159,7 @@ for i,r in enumerate(ROWS):
 <div class="pair"><dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k,lbl,mx in SCORE_PARTS)}</dd></div>
 </dl></div>
 {unv}
-<p class="srcs">Sources: {fnames(r['src'])}</p></td></tr>
+</td></tr>
 </tbody>''')
 
 data_js = json.dumps({r["id"]:{
@@ -272,7 +273,6 @@ page=f'''<!doctype html>
 </div><p class="hint">PoE: one cable carries both power and data.</p></fieldset>
 <div class="range">
 <span class="lab">Price</span>
-<p class="range-txt" id="f-range">£{MINP} to £{maxp}</p>
 <div class="dual">
 <div class="dual-track" aria-hidden="true"><i id="f-fill"></i></div>
 <input type="range" id="f-min" min="{MINP}" max="{maxp}" step="5" value="{MINP}" aria-label="Lowest price">
