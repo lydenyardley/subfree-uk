@@ -374,21 +374,21 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
  .main-t thead th{position:static;padding:0;border:0;background:none}
  .main-t,.main-t tbody,.main-t tr,.main-t td,.main-t tbody th{display:block}
  /* Off-screen cards skip layout, so a sort lays out only the cards in view.
-    330px is the content estimate, 363px with padding and rule, against real
-    cards of 344 to 441px. Auto remembers the real size once a card has been
+    410px is the content estimate, 443px with padding and rule, against real
+    cards of 404 to 506px. Auto remembers the real size once a card has been
     laid out, so the estimate is only paid above the reader's fold, and an
-    off-screen card is not painted, so the content that overflows 363px is not
+    off-screen card is not painted, so the content that overflows 443px is not
     visible until the card is laid out at its own height. */
- .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 330px}
+ .main-t tbody.item{border-bottom:1px solid var(--rule);padding:1rem;content-visibility:auto;contain-intrinsic-size:auto 410px}
  tbody.item[data-v]{border-left:3px solid var(--vc)}
  tbody.item[data-v] tr.main>td.c-cmp{border-left:0}
  /* The rail holds the box (15px) and the word under it (59px), and the gutter
     gives back the 16px the wider rail would have taken from the figures, so a
     card is no taller than it was without the caption. */
- .main-t tr.main{display:grid;grid-template-columns:60px minmax(0,1fr) minmax(0,1fr);gap:0 0.5rem;position:relative;align-items:baseline}
+ .main-t tr.main{display:grid;grid-template-columns:60px minmax(0,1fr) minmax(0,1fr);gap:0.5rem;position:relative;align-items:baseline}
  .main-t tbody.item:hover tr.main{background:none}
  .main-t tr.main>*{padding:0;border:0;width:auto;min-width:0;max-width:none}
- .c-cmp{grid-row:1;grid-column:1;padding:0!important}
+ .c-cmp{grid-row:1;grid-column:1;align-self:flex-start}
  .c-model{grid-column:2 / span 2;grid-row:1}
  .ph-sm{width:45px!important;height:60px!important}
  /* Two columns of figures under the name. The two 3-year costs sit side by

@@ -48,9 +48,9 @@ Chromium laying out fourteen cards that together run to about 5,000px, and at
 390px that was the whole task: 45 to 221ms at 4x, one long task per sort.
 
 The phone cards now carry `content-visibility: auto` with
-`contain-intrinsic-size: auto 330px`. A card below the fold is not laid out,
+`contain-intrinsic-size: auto 410px`. A card below the fold is not laid out,
 so a sort lays out the three or four cards in view instead of all fourteen.
-The `auto` in the intrinsic size is what makes it affordable: the 330px
+The `auto` in the intrinsic size is what makes it affordable: the 410px
 estimate is used until a card has been laid out once, then the real height is
 remembered.
 
@@ -65,12 +65,11 @@ machine load:
 The check itself measures 9 to 15ms with the containment and 55 to 97ms without
 it.
 
-The cost is paid at first paint, before any card has been measured: the 330px
-estimate is 363px of card, against real cards of 331 to 409px, so the page
+The cost is paid at first paint, before any card has been measured: the 410px
+estimate is 443px of card, against real cards of 404 to 506px, so the page
 lands within about 2% of its settled height and moves only below the reader's
-fold. In the audit browser that is 6,620 against 6,613px; in the desktop
-preview, 6,688 against 6,832px. Chrome's scroll anchoring held it in thirty-
-four 150px steps with no jump. Nothing is hidden: the skipped cards stay in
+fold. At 390 in the desktop preview that is 7,970 against 8,078px. Chrome's
+scroll anchoring held it in thirty-four 150px steps with no jump. Nothing is hidden: the skipped cards stay in
 the accessibility tree, a jump to a card lands in the same place, and a printed
 page has the same 28 pages and the same text with the containment on or off.
 

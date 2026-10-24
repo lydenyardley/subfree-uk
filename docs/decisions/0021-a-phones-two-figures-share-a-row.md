@@ -50,9 +50,11 @@ Chromium at 390, 414 and 320, all 14 cards:
 
 At 390 the card is 363px tall before and after, because the row was already as
 tall as the wrapping label; what moved is the 15.6px of empty space, from
-between the short label and its figure to above the label. On a desktop the
-wrapper contributes no box: with the same comparison open, the page is 4,181px
-at 1280 before and after.
+between the short label and its figure to above the label. The 8px row gap
+that the same review added takes that card to 404px, and the containment
+estimate from 330px to 410px with it. On a desktop the wrapper contributes no
+box: with the same comparison open, the page is 4,181px at 1280 before and
+after.
 
 ## Rejected
 

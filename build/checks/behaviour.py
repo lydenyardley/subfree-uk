@@ -1156,8 +1156,8 @@ def contain_check(page, row_count):
     )
     if got["visibility"] != "auto":
         problems.append(f"a phone card's content-visibility is {got['visibility']!r}, expected auto")
-    if got["size"] != "auto 330px":
-        problems.append(f"the phone card's intrinsic size is {got['size']!r}, expected 'auto 330px'")
+    if got["size"] != "auto 410px":
+        problems.append(f"the phone card's intrinsic size is {got['size']!r}, expected 'auto 410px'")
     if got["n"] != row_count or got["hidden"]:
         problems.append(
             f"{got['n']} cards with {got['hidden']} hidden, expected {row_count} shown"

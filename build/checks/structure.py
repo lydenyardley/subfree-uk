@@ -407,7 +407,7 @@ CHECKS = [
     ),
     Check(
         "phone containment", "phone", 20,
-        "off-screen phone cards skip layout, with a 330px estimate standing in",
+        "off-screen phone cards skip layout, with a 410px estimate standing in",
         lambda ctx: contain_check(ctx.page, ctx.row_count),
     ),
     Check(
