@@ -2,11 +2,12 @@
 
 - Status: Accepted, all fifteen findings settled
 - Date: 24 October 2026
-- Source: the 23 October critique (`docs/audits/2026-10-23-critique.md`) and the
-  owner's dispositions of 24 October: implement R2, R3, R4, R7, R8, R9, R10,
-  R11, R12, R14 and R15; show R5 and R13 as a mockup; reject R6. R1 was not
-  taken. The owner then took R5's alignment without its verdicts, and R13 as
-  drawn.
+- Source: the 23 October critique and the owner's dispositions of 24 October:
+  implement R2, R3, R4, R7, R8, R9, R10, R11, R12, R14 and R15; show R5 and
+  R13 as a mockup; reject R6. R1 was not taken. The owner then took R5's
+  alignment without its verdicts, and R13 as drawn. The critique audit has
+  since been removed, because this record and the checks below carry all of it;
+  what it measured, and what it rejected as measurement, is kept here.
 
 ## Context
 
@@ -15,6 +16,13 @@ comparison open, and found fifteen things worth changing. Eleven of them are
 about the reader being able to check a claim, compare two numbers, or hit a
 control; the rest are polish. This record says what changed, why, and which
 check holds each one.
+
+It scored the page 28 out of 40 on the ten usability heuristics, with
+consistency and standards and recognition rather than recall at 2. It also
+named what already worked: one colour language across the short answer, the
+row edge and the compare column; a comparison that leads with the buyer's
+question, total first and delta second; and an empty state that names its own
+cause and offers the nearest match.
 
 ## Decision
 
@@ -95,6 +103,31 @@ versions, so no page height moved.
   one a swipe lands on; without it the cue tells the reader about a column they
   may never reach.
 
+## What the critique rejected as measurement
+
+These came from an assessment and did not survive re-measurement. They are kept
+so a later pass does not reopen them.
+
+- **The detector's 13 warnings are not defects.** The 10 `side-tab` findings
+  are the 3px verdict rule. `all-caps-body` is the 40-character masthead
+  tagline. `flat-type-hierarchy` compared 12px and 13px labels and ignored the
+  44.8px h1. `aphoristic-cadence` names one factual disclosure.
+- **The full-page screenshot's blank table is a capture artifact.**
+  `content-visibility: auto` leaves off-screen cards out of the capture.
+- **The first product is not below the fold.** The first card starts at 580px
+  in an 844px viewport.
+- **The Reolink price links are not false.** Both rows link to the listing that
+  `rows.py` records as `price_src`.
+- **The shortlist is not missing provenance.** It carries `shareUrl()`, and the
+  page it links to carries the sources.
+- **Dark mode's photo dimming is deliberate.** ADR 16.
+- **The 24px chevron was not a 24px target.** Its `::after` gave it 44x44; the
+  affordance was small, not the target.
+- **Footnote links are inline.** WCAG 2.2's inline exception covers them; the
+  desktop compare box was a different case because it sat alone in a rail.
+- **Side-by-side on a phone stays.** ADR 7 and ADR 8 declined stacking; R2 asks
+  for a truthful cue and a snap, not a different structure.
+
 ## Consequences
 
 - `desktop rows` gained the load-state assertion: no costs-and-sources panel is
@@ -113,9 +146,9 @@ versions, so no page height moved.
 - `details panel` now holds six pairs a column, the foot pair spanning the
   grid, the sources inside the figure, and the rows' order at 900px, where the
   one-column list must end with the score breakdown.
-- `docs/audits/2026-10-23-critique.md` is pruned to the findings and their
-  measured evidence; the fix for each is here. The mockup it pointed at is
-  deleted, because both proposals are now the page.
+- `docs/audits/2026-10-23-critique.md` is deleted. Every finding is above with
+  the check that holds it, and the two mockups it pointed at are gone, because
+  both proposals are now the page.
 - axe's best-practice findings still print as notes, except `region`: every
   element must sit inside a landmark, so that one now fails the run rather
   than printing. The README says so.

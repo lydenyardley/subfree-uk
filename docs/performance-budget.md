@@ -40,6 +40,14 @@ other work, and a machine at full load took one run's 1280px sort from 15ms to
 and fails only the first test, which is why one test alone is not enough. A
 page that lays every row out again fails both.
 
+## The cold load
+
+Measured once, on 23 October 2026, at 390px with the same 4x throttle and an
+empty cache: FCP and LCP 1,092ms, CLS 0.0738, 186,353 bytes over the wire. It
+is a snapshot rather than a gate. The budgets above hold the two interactions,
+and no check holds the first paint, so a change that doubled the photos would
+not fail the build.
+
 ## Why the phone sort is now 7 to 14ms
 
 The sort's own JavaScript was never the cost. It is 5 to 16ms: read the
