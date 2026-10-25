@@ -1506,7 +1506,7 @@ def hit_check(page):
     return problems
 
 def theme_check(page):
-    """The toggle names its action, carries no pressed state, and takes a 44px click."""
+    """The toggle names its action, carries no pressed state, and is its own 44px target."""
     problems = []
     state = page.evaluate(
         """() => {
@@ -1540,19 +1540,27 @@ def theme_check(page):
     numbers = [int(part) for part in tile.replace("rgb(", "").replace(")", "").replace(" ", "").split(",") if part.isdigit()]
     if len(numbers) < 3 or max(numbers[:3]) > 90:
         problems.append(f"the photo tile in dark mode is {tile!r}, expected a dim tile")
+    # The button is its own target: 44px tall, so no pseudo-element has to
+    # extend it, and a click on its last rows of pixels still lands on it.
     before = state["text"]
     toggle = page.locator("#theme")
     toggle.scroll_into_view_if_needed()
     box = toggle.bounding_box()
-    if box:
-        page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+    if not box:
+        problems.append("the theme button has no box")
+    else:
+        if round(box["height"]) < 44:
+            problems.append(
+                f"the theme button is {round(box['height'])}px tall, not the 44px it is meant to be"
+            )
+        page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] - 4)
         page.wait_for_timeout(150)
         after = toggle.inner_text().strip()
         if after == before:
-            problems.append("a click 8px below the theme button does nothing")
+            problems.append("a click on the theme button's lower edge does nothing")
         else:
             box = page.locator("#theme").bounding_box()
-            page.mouse.click(box["x"] + 8, box["y"] + box["height"] + 8)
+            page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] - 4)
             page.wait_for_timeout(150)
     return problems
 
@@ -1848,7 +1856,7 @@ CHECKS = [
     ),
     Check(
         "theme toggle", "desktop", 32,
-        "the theme toggle names its action and takes a 44px click",
+        "the theme toggle names its action and is its own 44px target",
         lambda ctx: theme_check(ctx.page),
     ),
     Check(
