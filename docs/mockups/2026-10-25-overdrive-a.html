@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direction A mockup: the comparison instrument</title>
+<style>
+:root{--ink:#1a1a1a;--ink2:#555;--ink3:#6e6e6e;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
+--v-best:#17694a;--v-avoid:#a33b26;--vc:#0f5c4d;
+--serif:Charter,"Bitstream Charter","Iowan Old Style","Sitka Text",Cambria,Georgia,serif;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--ink:#e9e7e2;--ink2:#b3b0a9;--ink3:#8f8c86;--rule:#3b3a37;--rule2:#2b2a28;--paper:#151514;--tint:#1e1e1c;--acc:#62c2a8;
+--v-best:#5fc896;--v-avoid:#f08a74;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 1rem 4rem}
+.mast{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--ink);padding:.5rem 0;margin-top:1rem;
+font:600 12px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.08em}
+.mast span:last-child{color:var(--ink3);font-weight:500;letter-spacing:.04em}
+h1{font:700 clamp(26px,3.2vw,40px)/1.12 var(--serif);margin:2rem 0 .75rem;letter-spacing:-.01em;max-width:24ch}
+.dek{font:17px/1.5 var(--serif);color:var(--ink2);margin:0 0 1.5rem;max-width:62ch}
+.panel{border:1px solid var(--rule);background:var(--paper)}
+.cmp-head{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem 1rem;padding:1rem;border-bottom:1px solid var(--rule)}
+.cmp-head h2{font:700 20px/1.2 var(--serif);margin:0}
+.hint{font-size:12px;color:var(--ink3);margin:0}
+.stage{position:relative;padding:0}
+table.cmp{border-collapse:collapse;width:100%;table-layout:fixed}
+col.lab{width:150px}
+.cmp th,.cmp td{padding:.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px;background:var(--paper)}
+.cmp thead th{font:700 15px/1.25 var(--sans);border-bottom:3px solid var(--ink);padding-top:.75rem}
+.cmp thead th[data-v=best]{border-bottom-color:var(--v-best)}
+.cmp tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+.cmp-name{display:block}
+.vtag{display:block;padding-top:.3rem;font:600 11px/1.25 var(--sans);min-height:calc(.3rem + 1.25em);color:var(--vc)}
+.cmp i.ph{display:block;width:45px;height:60px;margin-top:1rem;border:1px solid var(--rule2);background:var(--tint)}
+.cmp tr.cmp-cost th,.cmp tr.cmp-cost td{background:var(--tint);font-variant-numeric:tabular-nums}
+.cmp tr.cmp-cost td b{font-size:15px}
+.diff{display:block;color:var(--ink3);font-size:12px}
+.basis{display:block;font-size:12px;line-height:1.3;color:var(--ink2);margin-top:.15rem}
+.rec-yes{color:var(--v-best);font-weight:600}
+tr.same th,tr.same td{background:var(--tint);font-size:13px;color:var(--ink2)}
+tr.same th{color:var(--ink);letter-spacing:.02em}
+tr.same td{line-height:1.35}
+/* The divider. A 2px line with a grip, in a 44px target. */
+.split{position:absolute;top:0;bottom:0;width:44px;padding:0;border:0;background:none;cursor:col-resize;
+transform:translateX(-22px);z-index:4;touch-action:none;font:inherit;color:inherit}
+.split::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:2px;background:var(--acc)}
+.split .grip{position:absolute;left:11px;top:96px;width:22px;height:44px;border-radius:11px;border:1px solid var(--acc);
+background:var(--paper);display:flex;align-items:center;justify-content:center;gap:2px}
+.split .grip i{display:block;width:2px;height:14px;background:var(--acc)}
+.split:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.split:focus-visible .grip{background:var(--acc)}
+.split:focus-visible .grip i{background:var(--paper)}
+/* The neighbour slides under the divider and takes the third model's place. */
+.col1,.col2{transition:transform .16s cubic-bezier(.2,.7,.2,1)}
+.split{transition:left .16s cubic-bezier(.2,.7,.2,1)}
+.cmp td.col2,.cmp th.col2{position:relative;z-index:2}
+.cmp td.col1,.cmp th.col1{position:relative;z-index:1}
+.stage.drag .col1,.stage.drag .col2,.stage.drag .split{transition:none}
+.stage.drag td,.stage.drag th{user-select:none}
+@media (prefers-reduced-motion:reduce){
+ .col1,.col2,.split{transition:none}
+}
+.note{margin:1.25rem 0 0;padding:1rem;border:1px solid var(--rule);font-size:13px;line-height:1.5;color:var(--ink2)}
+.note b{color:var(--ink);display:block;font:600 11px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
+.note ul{margin:0;padding-left:1.1rem}
+.note li{margin:.2rem 0}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.status{margin:0;padding:.6rem 1rem;border-top:1px solid var(--rule);font-size:13px;color:var(--ink2)}
+@media (max-width:760px){.stage{overflow-x:auto}table.cmp{min-width:680px}col.lab{width:96px}.cmp tbody th{font-size:10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast"><span>Mockup: direction A</span><span>25 October 2026</span></header>
+  <h1>The comparison instrument</h1>
+  <p class="dek">Pull the divider and the next model comes into the comparison. The deltas and the rows the two
+    models share follow it. A still table can only show one pair; this shows which pair you are on.</p>
+
+  <div class="panel">
+    <div class="cmp-head">
+      <h2 id="cmp-h">Side by side</h2>
+      <p class="hint">Drag the divider, or focus it and press ← →</p>
+    </div>
+    <div class="stage" id="stage">
+      <table class="cmp" id="table">
+        <caption class="vh">Side-by-side comparison of 3 doorbells, with a divider that chooses which model is compared against the first</caption>
+        <colgroup><col class="lab"><col><col><col></colgroup>
+        <thead id="head"></thead>
+        <tbody id="body"></tbody>
+      </table>
+      <button class="split" id="split" role="slider" aria-label="Comparison divider"
+        aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-valuetext="" aria-describedby="split-how">
+        <span class="grip" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+    <p class="status" id="live" role="status"></p>
+  </div>
+
+  <p class="vh" id="split-how">Arrow keys swap the compared model. Home and End choose one. Escape returns to
+    the first pair.</p>
+
+  <div class="note">
+    <b>What to judge</b>
+    <ul>
+      <li>The gesture: does the divider read as something you can pull, and does the model land where you expect?</li>
+      <li>The arithmetic: the delta chips name the baseline, and the collapsed line counts the rows the pair shares.</li>
+      <li>The keyboard: the divider is one tab stop, 44px wide, with Left, Right, Home, End and Escape.</li>
+      <li>Reduced motion: the columns land without sliding, and the deltas still recompute.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+var D={
+ 'ezviz-db2':{name:'EZVIZ DB2 Pro Kit',short:'EZVIZ DB2',vtag:'',tone:'',rec:'Yes',price:'\u00a3114.99',score:'5/8',
+  nosub3:'\u00a3124.99',sub3:'\u00a3294.63',keep3:124.99,keepNote:'records free, no plan',region:'EU',
+  best:'Flats and rentals: no wiring, and footage stays indoors in the chime',
+  catch:'2.4 GHz Wi-Fi only, and the card is sold separately.',
+  power:'Battery',storage:'microSD (up to 256 GB) in the included indoor chime',
+  live:'Yes',alerts:'Yes',ai:'Free: PIR plus human-shape detection',history:'Yes, on the chime\u2019s card',
+  paywalled:'Nothing essential',
+  plan:'Optional CloudPlay. UK price is app-only; EU \u20ac4.99/month (7 days), so treat the plan column as an estimate',
+  ha:'Official integration, but it goes through EZVIZ\u2019s cloud; this battery model isn\u2019t named in its supported list.',
+  wifi:'2.4 GHz only'},
+ 'ezviz-ep3x':{name:'EZVIZ EP3x Pro',short:'EZVIZ EP3x',vtag:'',tone:'',rec:'Yes',price:'\u00a379.99',score:'6/8',
+  nosub3:'\u00a379.99',sub3:'\u00a3259.63',keep3:79.99,keepNote:'records free, no plan',region:'EU',
+  best:'Two cameras on a budget, with storage built in',
+  catch:'Expert Reviews found its motion detection unreliable and the app confusing.',
+  power:'Battery',storage:'32 GB built in, no card needed',
+  live:'Yes',alerts:'Yes',ai:'Free: human and package detection',history:'Yes, on built-in storage',
+  paywalled:'Nothing essential. CloudPlay is optional',
+  plan:'Optional CloudPlay. UK price is app-only; EU \u20ac4.99/month (7 days), so treat the plan column as an estimate',
+  ha:'Official integration, but it goes through EZVIZ\u2019s cloud; this battery model isn\u2019t named in its supported list.',
+  wifi:'2.4 GHz only'},
+ 'reo-poe':{name:'Reolink Video Doorbell PoE',short:'Reolink PoE',vtag:'Best overall',tone:'best',rec:'Yes',price:'\u00a369.99',score:'7/8',
+  nosub3:'\u00a379.99',sub3:'No plan',keep3:79.99,keepNote:'records free, no plan',region:'UK',
+  best:'The most reliable, fully local setup, if you can run an Ethernet cable',
+  catch:'Needs an Ethernet cable to the door and a PoE switch or injector.',
+  power:'PoE',storage:'microSD and/or NVR; RTSP/ONVIF',
+  live:'Yes',alerts:'Yes',ai:'Free: person detection',history:'Yes, motion-triggered or 24/7 recording',
+  paywalled:'Nothing',
+  plan:'None. Reolink\u2019s doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR',
+  ha:'Official, fully local integration (Local Push, Platinum).',
+  wifi:'Wired Ethernet'}
+};
+var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3-year cost, no plan','nosub3'],
+ ['3-year cost, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],
+ ['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],
+ ['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
+// A row that always carries the decision never collapses, even when the two
+// models agree on it: "both cost the same" is the comparison, not a detail.
+var PINNED=['Records free?','Price','3-year cost, no plan','3-year cost, with plan'];
+
+// The selection order the page carries: the first is the baseline, and the
+// divider chooses which of the other two is compared against it.
+var order=['ezviz-ep3x','ezviz-db2','reo-poe'];
+var ALTS=['ezviz-db2','reo-poe'];
+var stage=document.getElementById('stage'),table=document.getElementById('table'),
+    head=document.getElementById('head'),body=document.getElementById('body'),
+    split=document.getElementById('split'),live=document.getElementById('live');
+var reduce=matchMedia('(prefers-reduced-motion: reduce)');
+var MOVED=160;
+
+function esc(s){var d=document.createElement('div');d.textContent=String(s);return d.innerHTML}
+function cell(key,id){
+  var d=D[id],v=d[key];
+  if(key==='plan'&&d.region==='EU')v+=' (EU price)';
+  if(key==='rec')return '<span class="rec-'+d.rec.toLowerCase()+'">'+esc(v)+'</span>';
+  return esc(v);
+}
+function money(n){return '\u00a3'+n.toFixed(2)}
+// The baseline is the column on the left, the one the reader is reading from.
+// A delta that does not name it is a number with nothing to compare against,
+// and the compared model is not always the dearer of the two.
+function delta(id,baseId){
+  var d=D[id].keep3-D[baseId].keep3;
+  if(Math.abs(d)<0.005)return 'the same 3-year total';
+  if(d>0)return '+'+money(d)+' more than '+esc(D[baseId].short);
+  return money(-d)+' less than '+esc(D[baseId].short);
+}
+function headHtml(){
+  return '<tr><th><span class="vh">Spec</span></th>' + order.map(function(id,i){
+    var d=D[id];
+    return '<th scope="col" data-id="'+id+'"'+(i?' class="col'+i+'"':'')+(d.tone?' data-v="'+d.tone+'"':'')+'>'+
+      '<span class="cmp-name">'+esc(d.name)+'</span>'+
+      '<span class="vtag">'+esc(d.vtag)+'</span>'+
+      '<i class="ph" aria-hidden="true"></i></th>';
+  }).join('') + '</tr>';
+}
+function bodyHtml(){
+  var base=order[0],adj=order[1],h='',same=[];
+  ROWS.forEach(function(r){
+    if(PINNED.indexOf(r[0])>-1)return;
+    if(D[base][r[1]]===D[adj][r[1]])same.push(r[0]);
+  });
+  var nonPinned=ROWS.length-PINNED.length;
+  h+='<tr class="cmp-cost"><th scope="row">Cheapest way to record for 3 years</th>'+order.map(function(id,i){
+    var d=D[id];
+    return '<td><b>'+money(d.keep3)+'</b> <span class="diff">'+
+      (i===0?'the one you compare against':delta(id,base))+'</span> <span class="basis">'+esc(d.keepNote)+'</span></td>';
+  }).join('')+'</tr>';
+  var placed=false;
+  ROWS.forEach(function(r,i){
+    var pin=PINNED.indexOf(r[0])>-1;
+    if(!pin&&D[base][r[1]]===D[adj][r[1]]){
+      if(!placed){
+        placed=true;
+        h+='<tr class="same"><th scope="row">'+same.length+' of '+nonPinned+' rows identical</th>'+
+           '<td colspan="3">'+same.map(esc).join(' \u00b7 ')+'</td></tr>';
+      }
+      return;
+    }
+    h+='<tr><th scope="row">'+esc(r[0])+'</th>'+order.map(function(id,j){
+      return '<td'+(j?' class="col'+j+'"':'')+'>'+cell(r[1],id)+'</td>';
+    }).join('')+'</tr>';
+  });
+  return h;
+}
+// The divider lives on the boundary between the baseline and the compared
+// model, so its rest position is that column's left edge and its travel is one
+// column: the width of the model it is about to swap out.
+function geom(){
+  var ths=table.tHead.rows[0].children;
+  var L2=ths[2].offsetLeft,L3=ths[3].offsetLeft;
+  return {L2:L2,gap:L3-L2};
+}
+function paint(dx,g){
+  each('.col1',function(el){el.style.transform='translateX('+dx+'px)'});
+  each('.col2',function(el){el.style.transform='translateX('+(-dx)+'px)'});
+  split.style.left=(g.L2+dx)+'px';
+}
+function each(sel,fn){Array.prototype.forEach.call(stage.querySelectorAll(sel),fn)}
+function announce(){
+  var adj=D[order[1]],base=D[order[0]];
+  var row=body.querySelector('tr.same th'), n=row?row.textContent:'';
+  split.setAttribute('aria-valuenow',ALTS.indexOf(order[1])+1);
+  split.setAttribute('aria-valuetext',adj.name+' against '+base.name);
+  live.textContent='Comparing '+adj.name+' against '+base.name+'.'+(n?' '+n+'.':'');
+}
+function render(){
+  head.innerHTML=headHtml();
+  body.innerHTML=bodyHtml();
+  split.style.left=geom().L2+'px';
+  announce();
+}
+function swapTo(next){
+  if(next===order[1])return;
+  var rest=order.filter(function(id){return id!==order[0]&&id!==next});
+  order=[order[0],next,rest[0]];
+  render();
+}
+var drag=null;
+function clamp(e,g){return Math.max(0,Math.min(g.gap,e.clientX-g.x))}
+split.addEventListener('pointerdown',function(e){
+  if(e.button!==0)return;
+  var g=geom();
+  drag={x:e.clientX,gap:g.gap,L2:g.L2};
+  try{split.setPointerCapture(e.pointerId)}catch(err){}
+  stage.classList.add('drag');
+  e.preventDefault();
+});
+split.addEventListener('pointermove',function(e){
+  if(drag)paint(clamp(e,drag),drag);
+});
+function end(e){
+  if(!drag)return;
+  var g=drag,dx=clamp(e,g),commit=dx>g.gap/2;
+  drag=null;
+  // The pointer owns the columns while it is down; the moment it lifts, the
+  // same boxes animate to where they are going to settle.
+  stage.classList.remove('drag');
+  if(commit){paint(g.gap,g);setTimeout(function(){swapTo(order[2])},reduce.matches?0:MOVED)}
+  else{paint(0,g)}
+}
+split.addEventListener('pointerup',end);
+// A cancelled pointer is a gesture the system took away, so it drops the edit
+// rather than committing the half that happened to be under the finger.
+split.addEventListener('pointercancel',function(){
+  if(!drag)return;
+  var g=drag;drag=null;
+  stage.classList.remove('drag');
+  paint(0,g);
+});
+// One step per arrow, stopping at the ends, the way a slider behaves. Escape
+// returns to the pair the page opened with.
+split.addEventListener('keydown',function(e){
+  var k=e.key,i=ALTS.indexOf(order[1]);
+  if(k==='ArrowRight'||k==='ArrowDown'){if(i<ALTS.length-1)swapTo(ALTS[i+1])}
+  else if(k==='ArrowLeft'||k==='ArrowUp'){if(i>0)swapTo(ALTS[i-1])}
+  else if(k==='Home')swapTo(ALTS[0]);
+  else if(k==='End')swapTo(ALTS[ALTS.length-1]);
+  else if(k==='Escape')swapTo(ALTS[0]);
+  else return;
+  e.preventDefault();
+});
+addEventListener('resize',function(){split.style.left=geom().L2+'px'});
+render();
+})();
+</script>
+</body>
+</html>
