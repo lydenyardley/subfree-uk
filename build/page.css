@@ -235,7 +235,10 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
 #cmp-dupes{color:var(--ink3);white-space:nowrap}
 .cmp-note{margin:0;padding:0 1rem 1rem;font-size:13px;line-height:1.4;color:var(--ink2);transition:opacity .4s}
 .cmp-note.out{opacity:0}
-.cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{background:var(--tint);font-variant-numeric:tabular-nums}
+/* The tint sits on the row, not on its cells, so a column in flight cannot tear
+   a pale gap through the cost row while it slides. */
+.cmp-t tr.cmp-cost{background:var(--tint)}
+.cmp-t tr.cmp-cost th,.cmp-t tr.cmp-cost td{font-variant-numeric:tabular-nums}
 /* The total first, then the difference, then what the total is made of. */
 .cmp-t tr.cmp-cost td b{font-size:15px}
 .cmp-diff{color:var(--ink3);font-size:12px}
@@ -260,6 +263,32 @@ tbody.item.flash tr.main>*{animation:flash 1.8s ease-out}
    column's line and the badge below it already words the verdict. The spec
    column holds no model, so it keeps the page's ink. */
 .cmp-t thead th[data-v]{border-bottom-color:var(--vc)}
+/* The three columns can be arranged. Each column carries a handle clipped onto
+   its 3px rule: the 44px target sits in the header's empty strip, above the
+   rule, so the cost row underneath is still the reader's to click. */
+.cmp-t thead th{position:relative;z-index:2}
+.cmp-move{position:absolute;left:50%;top:calc(100% + 1.5px);width:44px;height:44px;margin:0;padding:0;border:0;background:none;transform:translate(-50%,-100%);cursor:grab;touch-action:none;color:var(--ink2);font:inherit}
+.cmp-move .grip{position:absolute;left:50%;top:100%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:26px;height:18px;border-radius:9px;border:1px solid var(--rule);background:var(--paper);box-shadow:0 1px 2px rgb(0 0 0 / .07)}
+.cmp-move .grip svg{display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.cmp-move:hover .grip,.cmp-move:focus-visible .grip{background:var(--acc);border-color:var(--acc);color:var(--paper)}
+.cmp-move:focus-visible{outline:0}
+.cmp-move:focus-visible .grip{outline:2px solid var(--acc);outline-offset:2px}
+.cmp-t.arranging .cmp-move{cursor:grabbing}
+@media (max-width:820px){.cmp-move{display:none}}
+/* A column in flight keeps its own rule, its verdict colour and its cost cell,
+   and paints above the columns beside it so its handle is never cut in half.
+   The positioning is switched on with the gesture: at rest the table is painted
+   the way it was before the columns could move, which is the page the compare
+   open's budget was measured on. */
+.cmp-t [data-id]{transition:transform .16s cubic-bezier(.2,.7,.2,1)}
+.cmp-t.arranging [data-id]{position:relative;z-index:1}
+/* The column in flight is opaque, so the column it crosses does not read
+   through it while the two pass. */
+.cmp-t.arranging [data-id].moving{background:var(--paper);z-index:3;transition:none}
+.cmp-t.arranging tr.cmp-cost [data-id].moving{background:var(--tint)}
+.cmp-t.arranging thead th[data-id].moving{z-index:4}
+.cmp-t.arranging td,.cmp-t.arranging th{user-select:none}
+@media (prefers-reduced-motion:reduce){.cmp-t [data-id]{transition:none}}
 /* The header's name travels from the row's name, so the two boxes are meant to
    be the same shape. As a block the name is as wide as its column, and the
    flight stretched the row's 130px of text across 320px on the way. */

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Direction A mockup: the comparison instrument</title>
+<title>Direction A mockup: columns you can arrange</title>
 <style>
 :root{--ink:#1a1a1a;--ink2:#555;--ink3:#6e6e6e;--rule:#d9d6cf;--rule2:#ece9e2;--paper:#fff;--tint:#f6f4ef;--acc:#0f5c4d;
 --v-best:#17694a;--v-avoid:#a33b26;--vc:#0f5c4d;
@@ -26,9 +26,14 @@ h1{font:700 clamp(26px,3.2vw,40px)/1.12 var(--serif);margin:2rem 0 .75rem;letter
 .stage{position:relative;padding:0}
 table.cmp{border-collapse:collapse;width:100%;table-layout:fixed}
 col.lab{width:150px}
-.cmp th,.cmp td{padding:.5rem 1rem;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top;font-size:14px;background:var(--paper)}
-.cmp thead th{font:700 15px/1.25 var(--sans);border-bottom:3px solid var(--ink);padding-top:.75rem}
-.cmp thead th[data-v=best]{border-bottom-color:var(--v-best)}
+.cmp th,.cmp td{padding:.5rem 1rem;text-align:left;vertical-align:top;font-size:14px;background:var(--paper)}
+/* Separators and tint belong to the row, not the cell, so a moving column does
+   not tear a hole in them while it slides. */
+.cmp tbody tr{border-bottom:1px solid var(--rule2)}
+.cmp tr.cmp-cost,.cmp tr.same{background:var(--tint)}
+.cmp thead tr{border-bottom:3px solid var(--ink)}
+.cmp thead th{font:700 15px/1.25 var(--sans);padding-top:.75rem;padding-bottom:.9rem}
+.cmp thead th[data-v=best]{border-bottom:3px solid var(--v-best)}
 .cmp tbody th{font:600 11px/1.2rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
 .cmp-name{display:block}
 .vtag{display:block;padding-top:.3rem;font:600 11px/1.25 var(--sans);min-height:calc(.3rem + 1.25em);color:var(--vc)}
@@ -41,25 +46,29 @@ col.lab{width:150px}
 tr.same th,tr.same td{background:var(--tint);font-size:13px;color:var(--ink2)}
 tr.same th{color:var(--ink);letter-spacing:.02em}
 tr.same td{line-height:1.35}
-/* The divider. A 2px line with a grip, in a 44px target. */
-.split{position:absolute;top:0;bottom:0;width:44px;padding:0;border:0;background:none;cursor:col-resize;
-transform:translateX(-22px);z-index:4;touch-action:none;font:inherit;color:inherit}
-.split::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:2px;background:var(--acc)}
-.split .grip{position:absolute;left:11px;top:96px;width:22px;height:44px;border-radius:11px;border:1px solid var(--acc);
-background:var(--paper);display:flex;align-items:center;justify-content:center;gap:2px}
-.split .grip i{display:block;width:2px;height:14px;background:var(--acc)}
-.split:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.split:focus-visible .grip{background:var(--acc)}
-.split:focus-visible .grip i{background:var(--paper)}
-/* The neighbour slides under the divider and takes the third model's place. */
-.col1,.col2{transition:transform .16s cubic-bezier(.2,.7,.2,1)}
-.split{transition:left .16s cubic-bezier(.2,.7,.2,1)}
-.cmp td.col2,.cmp th.col2{position:relative;z-index:2}
-.cmp td.col1,.cmp th.col1{position:relative;z-index:1}
-.stage.drag .col1,.stage.drag .col2,.stage.drag .split{transition:none}
+/* The handle: a clip on the rule, in a 44px target. */
+.cmp thead th{position:relative}
+.move{position:absolute;left:50%;top:calc(100% + 1.5px);width:44px;height:44px;margin:0;padding:0;border:0;
+background:none;transform:translate(-50%,-100%);cursor:grab;touch-action:none;z-index:2;font:inherit;color:inherit}
+/* The target sits in the header's empty strip; the clip straddles the rule below
+   it, so the price row underneath stays clickable. */
+.move .grip{position:absolute;left:50%;top:100%;transform:translate(-50%,-50%);display:flex;align-items:center;
+justify-content:center;gap:2px;width:31px;height:15px;border-radius:8px;border:1px solid var(--rule);
+background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.07)}
+.move .grip i{display:block;width:5px;height:2px;border-radius:1px;background:var(--ink2)}
+.move:hover .grip,.move:focus-visible .grip{border-color:var(--acc);background:var(--acc)}
+.move:hover .grip i,.move:focus-visible .grip i{background:var(--paper)}
+.move:focus-visible{outline:0}
+.move:focus-visible .grip{outline:2px solid var(--acc);outline-offset:2px}
+.stage.drag .move{cursor:grabbing}
+/* The whole column moves, cost row included, because every cell names its model. */
+.cmp [data-c]{position:relative;z-index:1;transition:transform .16s cubic-bezier(.2,.7,.2,1)}
+/* The header paints above the price row so the clip can straddle the rule. */
+.cmp thead th[data-c]{z-index:3}
+.cmp [data-c].lift{z-index:4;transition:none}
 .stage.drag td,.stage.drag th{user-select:none}
 @media (prefers-reduced-motion:reduce){
- .col1,.col2,.split{transition:none}
+ .cmp [data-c]{transition:none}
 }
 .note{margin:1.25rem 0 0;padding:1rem;border:1px solid var(--rule);font-size:13px;line-height:1.5;color:var(--ink2)}
 .note b{color:var(--ink);display:block;font:600 11px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
@@ -73,40 +82,42 @@ background:var(--paper);display:flex;align-items:center;justify-content:center;g
 <body>
 <div class="wrap">
   <header class="mast"><span>Mockup: direction A</span><span>25 October 2026</span></header>
-  <h1>The comparison instrument</h1>
-  <p class="dek">Pull the divider and the next model comes into the comparison. The deltas and the rows the two
-    models share follow it. A still table can only show one pair; this shows which pair you are on.</p>
+  <h1>Arrange the comparison</h1>
+  <p class="dek">Each column carries a handle on its rule. Drag the handle and the column takes its neighbour's
+    place, or send it to either end. The whole column moves with it, the cost row included, and the figures
+    stay put: the cheapest model is the one the other two are measured against.</p>
 
   <div class="panel">
     <div class="cmp-head">
       <h2 id="cmp-h">Side by side</h2>
-      <p class="hint">Drag the divider, or focus it and press ← →</p>
+      <p class="hint">Drag a column by its handle, or focus it and press ← →</p>
     </div>
     <div class="stage" id="stage">
       <table class="cmp" id="table">
-        <caption class="vh">Side-by-side comparison of 3 doorbells, with a divider that chooses which model is compared against the first</caption>
+        <caption class="vh">Side-by-side comparison of 3 doorbells, with a handle on each column that moves it
+          left or right</caption>
         <colgroup><col class="lab"><col><col><col></colgroup>
         <thead id="head"></thead>
         <tbody id="body"></tbody>
       </table>
-      <button class="split" id="split" role="slider" aria-label="Comparison divider"
-        aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-valuetext="" aria-describedby="split-how">
-        <span class="grip" aria-hidden="true"><i></i><i></i></span>
-      </button>
     </div>
     <p class="status" id="live" role="status"></p>
   </div>
 
-  <p class="vh" id="split-how">Arrow keys swap the compared model. Home and End choose one. Escape returns to
-    the first pair.</p>
+  <p class="vh" id="move-how">Arrow keys move the column one place. Home and End send it to either end.
+    Escape puts the columns back in the order the page opened with.</p>
 
   <div class="note">
     <b>What to judge</b>
     <ul>
-      <li>The gesture: does the divider read as something you can pull, and does the model land where you expect?</li>
-      <li>The arithmetic: the delta chips name the baseline, and the collapsed line counts the rows the pair shares.</li>
-      <li>The keyboard: the divider is one tab stop, 44px wide, with Left, Right, Home, End and Escape.</li>
+      <li>The handle: does the clip on the rule read as something you can drag, without a caption?</li>
+      <li>The motion: does the column land where you expect, and does its cost cell carry the delta with it?</li>
+      <li>The arithmetic: the cheapest of the three is the reference, so moving a column reorders the
+        reading and leaves every figure where it was.</li>
+      <li>The share line: it now counts rows where all three models agree, so no difference is hidden.</li>
+      <li>The keyboard: each handle is a button and a tab stop, with Left, Right, Home, End and Escape.</li>
       <li>Reduced motion: the columns land without sliding, and the deltas still recompute.</li>
+      <li>Scope: this is the desktop picture. The phone keeps its cards.</li>
     </ul>
   </div>
 </div>
@@ -153,13 +164,13 @@ var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['
 // models agree on it: "both cost the same" is the comparison, not a detail.
 var PINNED=['Records free?','Price','3-year cost, no plan','3-year cost, with plan'];
 
-// The selection order the page carries: the first is the baseline, and the
-// divider chooses which of the other two is compared against it.
-var order=['ezviz-ep3x','ezviz-db2','reo-poe'];
-var ALTS=['ezviz-db2','reo-poe'];
+// Column order is the state. The reference is the cheapest model, wherever it
+// sits, so arranging the columns changes the reading order and not the figures.
+var INIT=['ezviz-ep3x','ezviz-db2','reo-poe'];
+var order=INIT.slice();
 var stage=document.getElementById('stage'),table=document.getElementById('table'),
     head=document.getElementById('head'),body=document.getElementById('body'),
-    split=document.getElementById('split'),live=document.getElementById('live');
+    live=document.getElementById('live');
 var reduce=matchMedia('(prefers-reduced-motion: reduce)');
 var MOVED=160;
 
@@ -171,9 +182,9 @@ function cell(key,id){
   return esc(v);
 }
 function money(n){return '\u00a3'+n.toFixed(2)}
-// The baseline is the column on the left, the one the reader is reading from.
-// A delta that does not name it is a number with nothing to compare against,
-// and the compared model is not always the dearer of the two.
+// The baseline is the cheapest of the three, not a position. A delta that does
+// not name it is a number with nothing to compare against, and the compared
+// model is not always the dearer of the two.
 function delta(id,baseId){
   var d=D[id].keep3-D[baseId].keep3;
   if(Math.abs(d)<0.005)return 'the same 3-year total';
@@ -183,119 +194,182 @@ function delta(id,baseId){
 function headHtml(){
   return '<tr><th><span class="vh">Spec</span></th>' + order.map(function(id,i){
     var d=D[id];
-    return '<th scope="col" data-id="'+id+'"'+(i?' class="col'+i+'"':'')+(d.tone?' data-v="'+d.tone+'"':'')+'>'+
+    return '<th scope="col" data-c="'+id+'"'+(d.tone?' data-v="'+d.tone+'"':'')+'>'+
       '<span class="cmp-name">'+esc(d.name)+'</span>'+
       '<span class="vtag">'+esc(d.vtag)+'</span>'+
-      '<i class="ph" aria-hidden="true"></i></th>';
+      '<i class="ph" aria-hidden="true"></i>'+
+      '<button type="button" class="move" data-handle="'+id+'" aria-describedby="move-how" '+
+        'aria-label="Move '+esc(d.name)+' left or right. Column '+(i+1)+' of 3.">'+
+        '<span class="grip" aria-hidden="true"><i></i><i></i><i></i></span></button></th>';
   }).join('') + '</tr>';
 }
+// With the order free, a shared row means all three agree: a row where only the
+// first pair agrees would hide the third model's difference.
+function sharedRows(){
+  return ROWS.filter(function(r){
+    if(PINNED.indexOf(r[0])>-1)return false;
+    var k=r[1];
+    return D[order[0]][k]===D[order[1]][k]&&D[order[0]][k]===D[order[2]][k];
+  }).map(function(r){return r[0]});
+}
 function bodyHtml(){
-  var base=order[0],adj=order[1],h='',same=[];
-  ROWS.forEach(function(r){
-    if(PINNED.indexOf(r[0])>-1)return;
-    if(D[base][r[1]]===D[adj][r[1]])same.push(r[0]);
-  });
-  var nonPinned=ROWS.length-PINNED.length;
-  h+='<tr class="cmp-cost"><th scope="row">Cheapest way to record for 3 years</th>'+order.map(function(id,i){
+  var same=sharedRows(),h='',placed=false;
+  var low=Math.min.apply(null,order.map(function(id){return D[id].keep3}));
+  var lowId=order.filter(function(id){return Math.abs(D[id].keep3-low)<0.005})[0];
+  h+='<tr class="cmp-cost"><th scope="row">Cheapest way to record for 3 years</th>'+order.map(function(id){
     var d=D[id];
-    return '<td><b>'+money(d.keep3)+'</b> <span class="diff">'+
-      (i===0?'the one you compare against':delta(id,base))+'</span> <span class="basis">'+esc(d.keepNote)+'</span></td>';
+    return '<td data-c="'+id+'"><b>'+money(d.keep3)+'</b> <span class="diff">'+
+      (Math.abs(d.keep3-low)<0.005?'cheapest of these 3':delta(id,lowId))+'</span> '+
+      '<span class="basis">'+esc(d.keepNote)+'</span></td>';
   }).join('')+'</tr>';
-  var placed=false;
-  ROWS.forEach(function(r,i){
+  ROWS.forEach(function(r){
     var pin=PINNED.indexOf(r[0])>-1;
-    if(!pin&&D[base][r[1]]===D[adj][r[1]]){
+    if(!pin&&same.indexOf(r[0])>-1){
       if(!placed){
         placed=true;
-        h+='<tr class="same"><th scope="row">'+same.length+' of '+nonPinned+' rows identical</th>'+
-           '<td colspan="3">'+same.map(esc).join(' \u00b7 ')+'</td></tr>';
+        h+='<tr class="same"><th scope="row">'+same.length+' of '+(ROWS.length-PINNED.length)+
+           ' rows identical in all three</th><td colspan="3">'+same.map(esc).join(' \u00b7 ')+'</td></tr>';
       }
       return;
     }
-    h+='<tr><th scope="row">'+esc(r[0])+'</th>'+order.map(function(id,j){
-      return '<td'+(j?' class="col'+j+'"':'')+'>'+cell(r[1],id)+'</td>';
+    h+='<tr><th scope="row">'+esc(r[0])+'</th>'+order.map(function(id){
+      return '<td data-c="'+id+'">'+cell(r[1],id)+'</td>';
     }).join('')+'</tr>';
   });
   return h;
 }
-// The divider lives on the boundary between the baseline and the compared
-// model, so its rest position is that column's left edge and its travel is one
-// column: the width of the model it is about to swap out.
-function geom(){
-  var ths=table.tHead.rows[0].children;
-  var L2=ths[2].offsetLeft,L3=ths[3].offsetLeft;
-  return {L2:L2,gap:L3-L2};
-}
-function paint(dx,g){
-  each('.col1',function(el){el.style.transform='translateX('+dx+'px)'});
-  each('.col2',function(el){el.style.transform='translateX('+(-dx)+'px)'});
-  split.style.left=(g.L2+dx)+'px';
-}
-function each(sel,fn){Array.prototype.forEach.call(stage.querySelectorAll(sel),fn)}
-function announce(){
-  var adj=D[order[1]],base=D[order[0]];
-  var row=body.querySelector('tr.same th'), n=row?row.textContent:'';
-  split.setAttribute('aria-valuenow',ALTS.indexOf(order[1])+1);
-  split.setAttribute('aria-valuetext',adj.name+' against '+base.name);
-  live.textContent='Comparing '+adj.name+' against '+base.name+'.'+(n?' '+n+'.':'');
-}
 function render(){
   head.innerHTML=headHtml();
   body.innerHTML=bodyHtml();
-  split.style.left=geom().L2+'px';
-  announce();
+  live.textContent='Column 1 '+D[order[0]].name+', column 2 '+D[order[1]].name+', column 3 '+
+    D[order[2]].name+'. The cheapest of the three is the one the others are measured against.';
 }
-function swapTo(next){
-  if(next===order[1])return;
-  var rest=order.filter(function(id){return id!==order[0]&&id!==next});
-  order=[order[0],next,rest[0]];
-  render();
+function each(sel,fn){Array.prototype.forEach.call(stage.querySelectorAll(sel),fn)}
+// Every cell names its model, so a column can be moved without knowing where it
+// started, and the cost cell travels with its model like the rest.
+function place(id,px){
+  each('[data-c="'+id+'"]',function(el){el.style.transform=px?'translateX('+px+'px)':''});
 }
-var drag=null;
-function clamp(e,g){return Math.max(0,Math.min(g.gap,e.clientX-g.x))}
-split.addEventListener('pointerdown',function(e){
-  if(e.button!==0)return;
-  var g=geom();
-  drag={x:e.clientX,gap:g.gap,L2:g.L2};
-  try{split.setPointerCapture(e.pointerId)}catch(err){}
+function lift(id,on){
+  each('[data-c="'+id+'"]',function(el){el.classList.toggle('lift',on)});
+}
+function geom(){
+  var ths=[].slice.call(table.tHead.rows[0].children).slice(1);
+  return {slots:ths.map(function(th){return th.offsetLeft})};
+}
+function slotFor(m,dx,slots){
+  var t=m,best=Infinity;
+  for(var c=0;c<slots.length;c++){
+    var dist=Math.abs(slots[m]+dx-slots[c]);
+    if(dist<best){best=dist;t=c}
+  }
+  return t;
+}
+function shuffle(m,t,G){
+  for(var c=0;c<order.length;c++){
+    if(c===m)continue;
+    var s=c;
+    if(m<t&&c>m&&c<=t)s=c-1;
+    else if(t<m&&c>=t&&c<m)s=c+1;
+    place(order[c],G.slots[s]-G.slots[c]);
+  }
+}
+function moveTo(a,m,t){
+  var c=a.slice(),id=c.splice(m,1)[0];
+  c.splice(t,0,id);
+  return c;
+}
+
+var drag=null,raf=0,lastX=0,settling=false;
+
+function nearest(x,d){
+  var m=d.m,lo=d.G.slots[0]-d.G.slots[m],hi=d.G.slots[d.G.slots.length-1]-d.G.slots[m];
+  var dx=Math.max(lo,Math.min(hi,x-d.x0));
+  return {dx:dx,t:slotFor(m,dx,d.G.slots)};
+}
+stage.addEventListener('pointerdown',function(e){
+  if(e.button!==0||settling)return;
+  var h=e.target.closest('.move');
+  if(!h||!stage.contains(h))return;
+  var id=h.getAttribute('data-handle'),m=order.indexOf(id),G=geom();
+  drag={id:id,m:m,x0:e.clientX,t:m,G:G};
+  try{h.setPointerCapture(e.pointerId)}catch(err){}
   stage.classList.add('drag');
+  lift(id,true);
+  h.focus({preventScroll:true});
   e.preventDefault();
 });
-split.addEventListener('pointermove',function(e){
-  if(drag)paint(clamp(e,drag),drag);
-});
-function end(e){
+stage.addEventListener('pointermove',function(e){
   if(!drag)return;
-  var g=drag,dx=clamp(e,g),commit=dx>g.gap/2;
-  drag=null;
-  // The pointer owns the columns while it is down; the moment it lifts, the
-  // same boxes animate to where they are going to settle.
-  stage.classList.remove('drag');
-  if(commit){paint(g.gap,g);setTimeout(function(){swapTo(order[2])},reduce.matches?0:MOVED)}
-  else{paint(0,g)}
+  lastX=e.clientX;
+  if(!raf)raf=requestAnimationFrame(frame);
+});
+// A burst of pointer moves becomes one frame of writes.
+function frame(){
+  raf=0;
+  if(!drag)return;
+  var n=nearest(lastX,drag);
+  drag.t=n.t;
+  shuffle(drag.m,n.t,drag.G);
+  place(drag.id,n.dx);
 }
-split.addEventListener('pointerup',end);
+stage.addEventListener('pointerup',function(e){
+  if(drag)release(nearest(e.clientX,drag));
+});
 // A cancelled pointer is a gesture the system took away, so it drops the edit
 // rather than committing the half that happened to be under the finger.
-split.addEventListener('pointercancel',function(){
-  if(!drag)return;
-  var g=drag;drag=null;
-  stage.classList.remove('drag');
-  paint(0,g);
+stage.addEventListener('pointercancel',function(){
+  if(drag)release(null);
 });
-// One step per arrow, stopping at the ends, the way a slider behaves. Escape
-// returns to the pair the page opened with.
-split.addEventListener('keydown',function(e){
-  var k=e.key,i=ALTS.indexOf(order[1]);
-  if(k==='ArrowRight'||k==='ArrowDown'){if(i<ALTS.length-1)swapTo(ALTS[i+1])}
-  else if(k==='ArrowLeft'||k==='ArrowUp'){if(i>0)swapTo(ALTS[i-1])}
-  else if(k==='Home')swapTo(ALTS[0]);
-  else if(k==='End')swapTo(ALTS[ALTS.length-1]);
-  else if(k==='Escape')swapTo(ALTS[0]);
+function release(n){
+  var d=drag;
+  drag=null;
+  stage.classList.remove('drag');
+  if(raf){cancelAnimationFrame(raf);raf=0}
+  if(!d)return;
+  if(!n){
+    order.forEach(function(id){place(id,0);lift(id,false)});
+    return;
+  }
+  settle(d.m,n.t,d.id,true);
+}
+// The lifted column slides the last few pixels into its slot, then the DOM takes
+// the same order over, so nothing jumps when the animation ends.
+function settle(m,t,id,keepView){
+  var G=geom();
+  if(t===m){
+    lift(id,false);
+    place(id,0);
+    order.forEach(function(o){if(o!==id)place(o,0)});
+    return;
+  }
+  settling=true;
+  shuffle(m,t,G);
+  lift(id,false);
+  void table.offsetWidth;
+  place(id,G.slots[t]-G.slots[m]);
+  setTimeout(function(){
+    settling=false;
+    order=moveTo(order,m,t);
+    render();
+    var h=stage.querySelector('[data-handle="'+id+'"]');
+    if(h)h.focus({preventScroll:!!keepView});
+  },reduce.matches?0:MOVED);
+}
+stage.addEventListener('keydown',function(e){
+  var h=e.target.closest('.move');
+  if(!h||settling)return;
+  var id=h.getAttribute('data-handle'),m=order.indexOf(id),t=m,k=e.key;
+  if(k==='ArrowRight'||k==='ArrowDown')t=Math.min(order.length-1,m+1);
+  else if(k==='ArrowLeft'||k==='ArrowUp')t=Math.max(0,m-1);
+  else if(k==='Home')t=0;
+  else if(k==='End')t=order.length-1;
+  else if(k==='Escape'){e.preventDefault();order=INIT.slice();render();
+    var f=stage.querySelector('[data-handle="'+id+'"]');if(f)f.focus();return}
   else return;
   e.preventDefault();
+  if(t!==m)settle(m,t,id);
 });
-addEventListener('resize',function(){split.style.left=geom().L2+'px'});
 render();
 })();
 </script>

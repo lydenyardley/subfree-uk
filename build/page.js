@@ -153,6 +153,10 @@ $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
 var PINNED=['Records free?','Price','3-year cost, no plan','3-year cost, with plan'],diffOnly=false;
 var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3-year cost, no plan','nosub3'],['3-year cost, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+// The handle's icon is the six dots of a grip, in the page's own stroke.
+var GRIP='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">'+
+ '<circle cx="5" cy="9" r="1"/><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/>'+
+ '<circle cx="5" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/></svg>';
 // The records-free marker is the one the list uses, so a "No" reads the same
 // in both places. A missing feature is marked, not left to the wording.
 // "None" is a drawback in most rows, but not in the two where it is good
@@ -194,7 +198,16 @@ function queueCue(){
  if(cuePending)return;cuePending=true;
  requestAnimationFrame(function(){cuePending=false;cmpCueUpdate()});
 }
-function cmpIds(){return sel().slice(0,3)}
+// The three columns are in the order the reader put them, so the arrangement
+// survives a rebuild and a copied link carries it. A model that leaves the
+// shortlist leaves the order with it.
+var cmpOrder=[];
+function cmpIds(){
+ var s=sel();
+ cmpOrder=cmpOrder.filter(function(id){return s.indexOf(id)>-1});
+ s.forEach(function(id){if(cmpOrder.indexOf(id)<0)cmpOrder.push(id)});
+ return cmpOrder.slice(0,3);
+}
 function shareUrl(){var s=cmpIds();return location.origin+location.pathname+(s.length?'?cmp='+s.join(','):'')}
 function syncUrl(){
  var s=cmpIds(),u=location.pathname+(s.length?'?cmp='+s.join(','):'')+location.hash;
@@ -221,14 +234,14 @@ function tray(){
 // layout of 72 cells, and the open already asks for that once.
 var built='';
 function buildCmp(){
- var s=sel();
+ var s=cmpIds();
  if(s.join()===built)return;
  built=s.join();
- var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id){
+ var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id,i){
   var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
   // Every column carries the badge line, written or not, so the photos below
   // it start on one row: an empty badge is the same box as a written one.
-  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span><span class="vtag'+(d.vtag?' v-'+esc(d.tone):'')+'">'+(d.vtag?esc(d.vtag):'')+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'</th>';
+  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span><span class="vtag'+(d.vtag?' v-'+esc(d.tone):'')+'">'+(d.vtag?esc(d.vtag):'')+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'<button type="button" class="cmp-move" data-move="'+esc(id)+'" aria-label="Move '+esc(cmpName(id))+' left or right. Column '+(i+1)+' of '+s.length+'."><span class="grip" aria-hidden="true">'+GRIP+'</span></button></th>';
  }).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
  // The cheapest column can be scrolled out of view, so a delta names the model
@@ -240,7 +253,7 @@ function buildCmp(){
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
   // the secondary figure, because the total is the one a reader compares.
-  return '<td><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest of these 3':'+£'+(v-low).toFixed(2)+' more than '+esc(cmpName(lowId)))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
+  return '<td data-id="'+esc(id)+'"><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest of these 3':'+£'+(v-low).toFixed(2)+' more than '+esc(cmpName(lowId)))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
  }).join('')+'</tr>';
  var dupes=0;
  ROWS.forEach(function(r){
@@ -250,7 +263,7 @@ function buildCmp(){
    // A plan figure bought in euros is not a UK quote, so the comparison says so
    // in the row rather than leaving the caveat to a footnote.
    if(r[1]==='plan'&&D[id].region==='EU')v+=' (EU price)';
-   return '<td>'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
+   return '<td data-id="'+esc(id)+'">'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
  });
  $('#cmp-table').innerHTML=h+'</tbody>';
  if(!dupes)diffOnly=false;
@@ -267,6 +280,129 @@ function render(){
 // Identical rows are the one part of a comparison that carries no decision, so
 // they can go. The four that do carry one stay even when they match.
 function applyDiff(){$$('#cmp-table tbody tr[data-same]').forEach(function(tr){tr.hidden=diffOnly})}
+// A column is moved by the handle clipped onto its rule. The gesture slides the
+// whole column, cost cell included, and the table is rebuilt in the new order
+// when it lands, so nothing downstream has to remember where a column started.
+// The deltas do not move: they name the cheapest of the three, wherever it sits.
+var cstage=$('#cmp-table'),cdrag=null,craf=0,clastX=0,cquiet=false,CMOVED=160;
+function cCells(id){return $$('[data-id="'+id+'"]',cstage)}
+function cPlace(id,px){cCells(id).forEach(function(el){el.style.transform=px?'translateX('+px+'px)':''})}
+function cLift(id,on){cCells(id).forEach(function(el){el.classList.toggle('moving',on)})}
+function cSlots(){
+ var ths=[].slice.call(cstage.tHead.rows[0].children).slice(1);
+ return ths.map(function(th){return th.offsetLeft});
+}
+function cTarget(m,dx,slots){
+ var t=m,best=Infinity;
+ for(var c=0;c<slots.length;c++){
+  var d=Math.abs(slots[m]+dx-slots[c]);
+  if(d<best){best=d;t=c}
+ }
+ return t;
+}
+// The columns between the one that left and the slot it is heading for take
+// the place it left, so the three never overlap or leave a gap.
+function cShuffle(ord,m,t,slots){
+ for(var c=0;c<ord.length;c++){
+  if(c===m)continue;
+  var s=c;
+  if(m<t&&c>m&&c<=t)s=c-1;
+  else if(t<m&&c>=t&&c<m)s=c+1;
+  cPlace(ord[c],slots[s]-slots[c]);
+ }
+}
+function cNearest(x,d){
+ var lo=d.slots[0]-d.slots[d.m],hi=d.slots[d.slots.length-1]-d.slots[d.m];
+ var dx=Math.max(lo,Math.min(hi,x-d.x0));
+ return {dx:dx,t:cTarget(d.m,dx,d.slots)};
+}
+cstage.addEventListener('pointerdown',function(e){
+ if(e.button!==0||cquiet)return;
+ var h=e.target.closest('.cmp-move');
+ if(!h||!cstage.contains(h))return;
+ var id=h.getAttribute('data-move'),ord=cmpIds(),m=ord.indexOf(id);
+ if(m<0)return;
+ cdrag={id:id,m:m,ord:ord,slots:cSlots(),x0:e.clientX,t:m};
+ try{h.setPointerCapture(e.pointerId)}catch(err){}
+ cstage.classList.add('arranging');
+ cLift(id,true);
+ h.focus({preventScroll:true});
+ e.preventDefault();
+});
+cstage.addEventListener('pointermove',function(e){
+ if(!cdrag)return;
+ clastX=e.clientX;
+ if(!craf)craf=requestAnimationFrame(cFrame);
+});
+// A burst of pointer moves becomes one frame of writes.
+function cFrame(){
+ craf=0;
+ if(!cdrag)return;
+ var n=cNearest(clastX,cdrag);
+ cdrag.t=n.t;
+ cShuffle(cdrag.ord,cdrag.m,n.t,cdrag.slots);
+ cPlace(cdrag.id,n.dx);
+}
+cstage.addEventListener('pointerup',function(e){
+ if(cdrag)cRelease(cNearest(e.clientX,cdrag));
+});
+// A cancelled pointer is a gesture the system took away, so it drops the edit
+// rather than committing the half that happened to be under the finger.
+cstage.addEventListener('pointercancel',function(){
+ if(cdrag)cRelease(null);
+});
+function cRelease(n){
+ var d=cdrag;
+ cdrag=null;
+ if(craf){cancelAnimationFrame(craf);craf=0}
+ if(!d)return;
+ if(!n||n.t===d.m){
+  d.ord.forEach(function(id){cPlace(id,0);cLift(id,false)});
+  cstage.classList.remove('arranging');
+  return;
+ }
+ cquiet=true;
+ cShuffle(d.ord,d.m,n.t,d.slots);
+ cLift(d.id,false);
+ void cstage.offsetWidth;
+ cPlace(d.id,d.slots[n.t]-d.slots[d.m]);
+ setTimeout(function(){
+  cquiet=false;
+  cMove(d.id,n.t,true);
+ },reduce.matches?0:CMOVED);
+}
+// The last few pixels are a slide, and the rebuild waits for it to end, so the
+// column does not jump into its slot.
+function cMove(id,t,fromPointer){
+ var ord=cmpIds(),m=ord.indexOf(id);
+ if(m<0||m===t){cstage.classList.remove('arranging');return}
+ var next=ord.slice(),x=next.splice(m,1)[0];
+ next.splice(t,0,x);
+ cmpOrder=next;
+ render();
+ // The gesture is over once the column has landed: the positioning that let it
+ // fly is not needed at rest, so it leaves with the drag.
+ cstage.classList.remove('arranging');
+ syncUrl();
+ say(cmpName(id)+' moved to column '+(t+1)+' of '+ord.length);
+ var h=cstage.querySelector('.cmp-move[data-move="'+id+'"]');
+ if(h)h.focus({preventScroll:!!fromPointer});
+}
+cstage.addEventListener('keydown',function(e){
+ var h=e.target.closest?e.target.closest('.cmp-move'):null;
+ if(!h)return;
+ var id=h.getAttribute('data-move'),ord=cmpIds(),m=ord.indexOf(id),t=m;
+ if(e.key==='ArrowRight'||e.key==='ArrowDown')t=Math.min(ord.length-1,m+1);
+ else if(e.key==='ArrowLeft'||e.key==='ArrowUp')t=Math.max(0,m-1);
+ else if(e.key==='Home')t=0;
+ else if(e.key==='End')t=ord.length-1;
+ else return;
+ // The handle sits in a sideways scroller, so an arrow key that is not moving
+ // a column, or is pressed while the last one lands, must not scroll it.
+ e.preventDefault();
+ if(cquiet||t===m)return;
+ cMove(id,t,false);
+});
 $('#cmp-diff').onchange=function(){diffOnly=this.checked;applyDiff()};
 // The fourth box is refused, and says why. Turning every other box pale
 // instead makes a live control look broken and hides the reason. The refusal
@@ -468,6 +604,7 @@ if(shared){
  shared.split(',').forEach(function(id){if(D[id]&&ids.indexOf(id)<0&&ids.length<3)ids.push(id)});
  if(ids.length){
   $$('input.cmp').forEach(function(c){c.checked=ids.indexOf(c.value)>-1});
+  cmpOrder=ids.slice();
   if(ids.length>1)render();
   tray();
  }

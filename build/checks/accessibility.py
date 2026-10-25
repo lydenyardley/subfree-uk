@@ -184,6 +184,108 @@ def axe_audit(page):
         page.wait_for_timeout(120)
     return results
 
+COLUMN_KEYS_JS = """() => ({
+    order: Array.from(document.querySelectorAll('#cmp-table thead th[data-id]')).map((th) => th.dataset.id),
+    labels: Array.from(document.querySelectorAll('#cmp-table thead th[data-id]')).map((th) => {
+        const move = th.querySelector('.cmp-move');
+        return move ? move.getAttribute('aria-label') : null;
+    }),
+    target: (() => {
+        const move = document.querySelector('#cmp-table .cmp-move');
+        if (!move) return [0, 0];
+        const box = move.getBoundingClientRect();
+        return [Math.round(box.width), Math.round(box.height)];
+    })(),
+    focus: document.activeElement && document.activeElement.dataset
+        ? document.activeElement.dataset.move : null,
+    live: document.getElementById('live').textContent
+})"""
+
+def column_keys_check(page):
+    """The column handle is a button, and the arrow keys arrange the columns.
+
+    A drag is not the only way to move a column: each handle is a tab stop that
+    moves its column one place with the arrow keys and to either end with Home
+    and End. The name says where the column is, and the move is announced, so a
+    reader who cannot see the slide still knows where the column landed.
+    """
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(120)
+    page.locator("#cmp-table").scroll_into_view_if_needed()
+    page.wait_for_timeout(150)
+    before = page.evaluate(COLUMN_KEYS_JS)
+    if len(before["order"]) != 3:
+        return [f"expected three columns to arrange, found {len(before['order'])}"]
+    missing = [before["order"][i] for i, label in enumerate(before["labels"]) if label is None]
+    if missing:
+        return [f"no column handle on {', '.join(missing)}"]
+    problems = []
+    if before["target"] != [44, 44]:
+        problems.append(f"the handle's target is {before['target']}, not 44x44")
+
+    first = before["order"][0]
+    name = before["labels"][0].split(" left or right")[0].removeprefix("Move ")
+    page.locator(f'.cmp-move[data-move="{first}"]').focus()
+    page.keyboard.press("ArrowRight")
+    page.wait_for_timeout(500)
+    moved = page.evaluate(COLUMN_KEYS_JS)
+    expect = [before["order"][1], first, before["order"][2]]
+    if moved["order"] != expect:
+        problems.append(
+            f"ArrowRight on {first} gave {moved['order']}, expected {expect}"
+        )
+    if moved["focus"] != first:
+        problems.append(f"focus went to {moved['focus']!r} after the key, not {first!r}")
+    if moved["labels"][1] != f"Move {name} left or right. Column 2 of 3.":
+        problems.append(f"the moved handle is named {moved['labels'][1]!r} at column 2")
+    if moved["live"] != f"{name} moved to column 2 of 3":
+        problems.append(f"the key move was announced as {moved['live']!r}")
+
+    page.keyboard.press("ArrowLeft")
+    page.wait_for_timeout(300)
+    if page.evaluate(COLUMN_KEYS_JS)["order"] != before["order"]:
+        problems.append(
+            f"ArrowLeft did not put the columns back: {page.evaluate(COLUMN_KEYS_JS)['order']}"
+        )
+
+    page.keyboard.press("End")
+    page.wait_for_timeout(300)
+    end = page.evaluate(COLUMN_KEYS_JS)
+    if end["order"][-1] != first:
+        problems.append(f"End put {first} at {end['order']}, not the last column")
+    page.keyboard.press("Home")
+    page.wait_for_timeout(300)
+    home = page.evaluate(COLUMN_KEYS_JS)
+    if home["order"] != before["order"]:
+        problems.append(f"Home left the columns as {home['order']}, not {before['order']}")
+
+    # The name counts the columns the reader has. Two models used to be named
+    # "of 3", because the count was written into the name instead of read from
+    # the table.
+    page.evaluate(
+        """(ids) => document.querySelectorAll('input.cmp').forEach((c) => {
+            c.checked = ids.indexOf(c.value) > -1;
+            c.dispatchEvent(new Event('change', { bubbles: true }));
+        })""",
+        before["order"][:2],
+    )
+    page.wait_for_timeout(250)
+    two = page.evaluate(COLUMN_KEYS_JS)
+    if len(two["labels"]) != 2 or any(not (label or "").endswith(" of 2.") for label in two["labels"]):
+        problems.append(f"a two-model comparison names its handles {two['labels']}")
+    page.evaluate(
+        """(ids) => document.querySelectorAll('input.cmp').forEach((c) => {
+            c.checked = ids.indexOf(c.value) > -1;
+            c.dispatchEvent(new Event('change', { bubbles: true }));
+        })""",
+        before["order"],
+    )
+    page.wait_for_timeout(250)
+    back = page.evaluate(COLUMN_KEYS_JS)
+    if back["order"] != before["order"]:
+        problems.append(f"the third model came back at {back['order']}, not {before['order']}")
+    return problems
+
 CHECKS = [
     Check(
         "muted contrast", "desktop", 33,
@@ -225,6 +327,11 @@ CHECKS = [
     Check(
         "type floor at 1280", "compare", 73, "no rendered text is below 11px at 1280",
         lambda ctx: tiny(ctx.snapshot, 1280),
+    ),
+    Check(
+        "compare column keys", "compare", 29,
+        "each column handle is a 44px button that moves its column with the arrow keys and Home/End, keeps focus, and announces where it landed",
+        lambda ctx: column_keys_check(ctx.page),
     ),
     Check(
         "axe WCAG", "compare", 77,

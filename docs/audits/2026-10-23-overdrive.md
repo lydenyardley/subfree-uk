@@ -5,8 +5,7 @@
 
 # The 23 October 2026 overdrive audit
 
-- Status: Proposal. Direction A is mocked up for the owner's judgement, B is
-  declined, C is deferred.
+- Status: A's arrangement is built, B is declined, C and O5 are deferred.
 - Date: 23 October 2026
 - Target: `index.html`, `build/page.css`, `build/page.js`
 - Mockup: `docs/mockups/2026-10-25-overdrive-a.html`
@@ -32,29 +31,37 @@ The gap is not visual ambition. It is that the comparison is still a table you r
 
 | Direction | What the reader feels | Technique | Cost | Fallback | Verdict |
 |---|---|---|---|---|---|
-| A. The comparison instrument | They move one model against another and watch the difference change | Pointer Events, CSS transforms, FLIP for row collapse, the existing view transition for open and close | Medium: 3 to 5 days, 4 to 6KB, a new check family | The current table | Build |
+| A. The comparison instrument | They arrange three models and watch the differences follow | Pointer Events, CSS transforms, FLIP for row collapse, the existing view transition for open and close | Medium: 3 to 5 days, 4 to 6KB, a new check family | The current table | Build |
 | B. The budget-first answer | They drag a budget and the page answers with a ranked strip | The existing price filter promoted to the first control, FLIP reflow, `@property` for the count | High: it changes the information architecture and hides the table | The current filter | Decline |
 | C. Sources in situ | They tap a figure and the claim opens with its page, date, and quote | Popover API, the existing `S` data, the existing view transition | Low: 1 to 2 days, 2 to 3KB | The details panel | Build with A |
 
 ### Direction A, the comparison instrument
 
-The reader picks two models. The compare panel opens as it does now. A vertical divider sits between the two model columns. The reader drags it left or right. The column under the divider moves, the delta chips recompute against the fixed column, and the rows that are identical collapse into one line with a count. When the reader lets go, the divider snaps to the nearest column edge. On a keyboard, the divider is a slider with Left and Right moving it by one column, and Home and End jumping to the ends.
+The reader picks three models, and the compare panel opens as it does now. Each column carries a small handle clipped onto the 3px rule under its photo. The reader drags the handle left or right, and the column takes its neighbour's slot, or goes to the far end. The whole column travels, the cost row included, and so does its verdict rule, so a green header is always the column that earned it. The figures do not travel: every delta names the cheapest of the three, wherever its column sits, so a move changes the order the columns are read in and never the arithmetic. On a keyboard, each handle is a button: Left and Right move the column one place, and Home and End send it to either end.
 
-The numbers are already in the DOM. The deltas are already computed in `buildCmp()`. The interaction adds a pointer layer and a re-render of three cells, not a new data path.
+The numbers are already in the DOM. The deltas are already computed in `buildCmp()`. The interaction adds a pointer layer, a column order and a rebuild when the column lands, not a new data path.
 
-The wow is not the drag. It is that the drag makes the £90 difference physical. The reader sees the cheaper column and the dearer column move against each other, and the delta changes as they move. That is the thing a static table cannot do.
+The wow is not the drag. It is that the reader decides which model they read first, and the £45 difference is still the same fact two columns later. A column that can be moved is a comparison the reader is arranging, not one the page has fixed for them.
+
+The first shape of this direction was one divider between two columns, swapped as the divider passed. The owner replaced it with a handle per column on 25 October, so the gesture arranges the comparison instead of pushing one column through a gap.
 
 `docs/mockups/2026-10-25-overdrive-a.html` is that shape in one file: three real
-models, a 44px divider with a 2px line, the swap under pointer capture, the
-delta chips named against the baseline, and the shared rows collapsed into one
-line with a count. Verified in Chromium at 1280 and 900: the pair moves, the
-count goes 6 to 2, the keyboard swaps and resets, and reduced motion lands
-without a slide. Two things the mockup cannot answer, because they are the
-owner's calls. Whether a collapsed line may hide the third column's differences
-on those rows, and whether the instrument replaces "Differences only" or sits
-beside it.
+models, a handle clipped onto each column's rule, the drag under pointer
+capture, the whole column moving with the pointer, and the shared rows collapsed
+into one line with a count. Verified in Chromium at 1280 and 900: the column
+lands in its slot, the cost cell moves with it, the share line reads 2 of 13,
+focus returns to the handle, Escape restores the order, pointercancel drops the
+gesture, and reduced motion lands without a slide.
 
-The phone does not get the drag. At 390px there is room for one model column and a sliver of the next. The phone gets the snap and the truthful cue from R2, plus a two-model toggle that swaps the visible column. The instrument is a 821px-and-wider interaction.
+The owner accepted it on 25 October with four changes, and the page carries all
+four. The verdict rule stays with its column through the move. The handle is a
+six-dot grip, not three bars. The handle is never cut by the column it passes,
+so a column in flight paints above its neighbours. And the reference stays put.
+The sketch measured its deltas against the column on the left, which was the
+question it was drawn to ask; the page measures them against the cheapest of the
+three, so a move reorders the reading and never the figures.
+
+The phone does not get the drag. At 390px there is room for one model column and a sliver of the next, so the phone keeps the snap and the truthful cue from R2, and the instrument is an 821px-and-wider interaction.
 
 ### Direction B, the budget-first answer
 
@@ -88,21 +95,21 @@ The name and photo flight is already recorded and measured. The drag state shoul
 
 **Acceptance.** `compare morph` still passes unchanged. A drag does not call `startViewTransition`.
 
-### O3. Make the divider a real control, with keyboard parity (P1)
+### O3. Make the handle a real control, with keyboard parity (P1)
 
-Use Pointer Events with `setPointerCapture`. The divider is a `<button role="slider">` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-valuetext` naming the two models. Left and Right move it by one column. Home and End jump to the ends. Escape returns it to the midpoint. The visual divider is 2px, and the hit area is 44px.
+Use Pointer Events with `setPointerCapture`. Each column's handle is a `<button>` whose accessible name carries the model and its place, for example "Move EZVIZ DB2 Pro Kit left or right. Column 2 of 3." A drag moves the column to the slot nearest the pointer when it lands, and the column glides there. Left and Right move it one place, Home and End send it to an end. The visible clip is 26px by 18px with its centre on the 3px rule. The target is 44px and sits in the header's empty strip, so the price row underneath stays clickable.
 
-**Acceptance.** A pointer drag moves the divider and recomputes the delta. Arrow keys do the same. The accessible name and value change with the position. The hit area is at least 44px.
+**Acceptance.** A pointer drag moves a column and rebuilds the table in the new order. The deltas do not change, because they name the cheapest column wherever it sits. Arrow keys do the same. The accessible name carries the position. The target is at least 44px and covers no part of the cost row.
 
-### O4. Recompute only the three cells that change (P1)
+### O4. Recompose on drop, not on every frame (P1)
 
-A drag updates the fixed column's delta chips and the divider position. It does not rebuild the table. Cache the column widths and the row values on open, and write `textContent` to the delta chips on each frame. Use `requestAnimationFrame`, and stop when the pointer stops.
+A drag moves the column with the pointer and slides its neighbour aside. It does not rebuild the table mid-gesture. Cache the column offsets on pick-up, write one transform per cell per frame, and rebuild once, when the column lands. Use `requestAnimationFrame`, and stop when the pointer stops.
 
 **Acceptance.** A drag at 4x CPU holds 60fps, or the page falls back to the snap-only version. No layout is read inside the frame loop after the first measurement.
 
 ### O5. Collapse identical rows with a spring, and keep the count (P2)
 
-When the reader drags one column over another, rows whose values match collapse to one line. The line says how many rows are identical (for example, "12 of 17 rows are identical") and the four decision rows stay. Use a CSS grid row transition or a FLIP on the row heights, not a JavaScript height animation.
+Rows where all three models agree collapse to one line. The line says how many rows that is (for example, "2 of 13 rows identical in all three") and the four decision rows stay. Use a CSS grid row transition or a FLIP on the row heights, not a JavaScript height animation.
 
 **Acceptance.** The collapse runs at 60fps, the count matches the rows hidden, and the "Differences only" toggle and the collapse do not fight each other.
 
@@ -120,20 +127,21 @@ The drag must hold 60fps at 4x CPU, or it does not ship. The source card must no
 
 ### O8. Add named checks, and prove each one fails on the old build (P1)
 
-Add four checks to the existing families:
+The two checks the arrangement needs are in place:
 
-- `compare drag`, in `build/checks/compare.py`: drag the divider, assert the delta changes and the fixed column does not move.
-- `compare keyboard`, in `build/checks/accessibility.py`: focus the divider, press Left and Right, assert the value and the accessible text.
-- `source card`, in `build/checks/behaviour.py`: open a card from a price, assert the source name, URL, and date, close with Escape, assert focus returns.
-- `compare spring`, in `build/checks/performance.py`: run the collapse at 4x CPU and assert the frame budget, with the reduced-motion fallback.
+- `compare column move`, in `build/checks/compare.py`: drag a column's handle by one slot, assert the order and the cost row follow, the figures do not, the verdict rule stays with its column, focus returns to the handle, and the move is announced. It also measures the handle: its centre on the rule, its 44px target clear of the price row, and its grip inside the table.
+- `compare column keys`, in `build/checks/accessibility.py`: focus a handle, press Right, Left, End and Home, and assert the order, the focus, the name's column number and the live text.
+
+The collapse's check (`compare spring`, in `performance.py`) and the source
+card's (`source card`, in `behaviour.py`) arrive with O5 and C.
 
 Each check must fail when the feature is reverted. A check that passes on the old build proves nothing.
 
-**Acceptance.** Four new named checks, each red on the old build and green on the new one. `python build/check.py` stays one command.
+**Acceptance.** Two new named checks, each red on the old build and green on the new one. On the old build both report `no column handle on …`. `python build/check.py` stays one command.
 
 ## The tests
 
-- **Wow.** Show the drag to someone who has not seen the page. Do they move the divider without being told? If they need a caption, the affordance is not there.
+- **Wow.** Show the drag to someone who has not seen the page. Do they pick up a column without being told? If they need a caption, the affordance is not there.
 - **Removal.** Take the drag away. Does the page feel worse, or does nobody notice? If nobody notices, the drag is decoration.
 - **Device.** Run it on a 390px phone, a 1280px laptop, and a 4x CPU profile. The phone gets the snap, not the drag. The laptop holds 60fps. The slow profile falls back.
 - **Context.** Does it make sense for a page whose promise is "no tracking, no affiliate links, check every price"? The source card does. A particle system would not.
@@ -144,11 +152,14 @@ The prices, the sources, the 14 models, the default sort, the table as the evide
 
 ## Where this stands
 
-A is mocked up, not accepted. Look at it, and say whether the gesture earns its
-place on the page, whether the collapsed line is allowed to hide the third
-column's differences, and whether "Differences only" survives it. C is deferred
-until that answer, because a source card on a comparison that is still being
-reshaped would be built twice.
+A's arrangement is on the page: `compare column move` and `compare column keys`
+hold it, and `performance budget`, `axe WCAG` and the Firefox structural pass
+still pass. The verdict rule travels with its column, the cost row's tint sits on
+the row so a column in flight cannot tear a gap through it, and the address
+carries the arrangement alongside the selection.
 
-The critique's P1 items landed in ADR 22, so O3 can start on the page whenever the
-owner wants it.
+What is not built: O5's collapsed line (the panel still has the
+"Differences only" toggle) and C's source card. C waits for O5's answer, because
+both reshape what a reader can open from a cell.
+
+The critique's P1 items landed in ADR 22. The arrangement's own record is ADR 23.

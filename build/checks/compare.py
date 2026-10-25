@@ -1077,6 +1077,135 @@ def photo_line_check(page):
         problems.append(f"every column in this comparison carries a verdict: {[c['verdict'] for c in state]}")
     return problems
 
+COLUMN_JS = """() => {
+    const ths = Array.from(document.querySelectorAll('#cmp-table thead th[data-id]'));
+    const cost = document.querySelector('#cmp-table tr.cmp-cost');
+    const box = document.querySelector('.cmp-scroll').getBoundingClientRect();
+    const price = cost.querySelector('td b').getBoundingClientRect();
+    const hit = document.elementFromPoint(price.left + 4, price.top + price.height / 2);
+    return {
+        order: ths.map((th) => th.dataset.id),
+        lefts: ths.map((th) => Math.round(th.getBoundingClientRect().left)),
+        cols: ths.map((th) => {
+            const move = th.querySelector('.cmp-move');
+            if (!move) return { id: th.dataset.id, missing: true };
+            const rule = th.getBoundingClientRect();
+            const grip = move.querySelector('.grip').getBoundingClientRect();
+            const target = move.getBoundingClientRect();
+            return {
+                id: th.dataset.id,
+                rule: getComputedStyle(th).borderBottomColor,
+                ruleY: Math.round(rule.bottom),
+                gripY: Math.round(grip.top + grip.height / 2),
+                gripIn: grip.left >= box.left - 1 && grip.right <= box.right + 1,
+                target: [Math.round(target.width), Math.round(target.height)],
+                label: move.getAttribute('aria-label')
+            };
+        }),
+        costOrder: Array.from(cost.querySelectorAll('td')).map((td) => td.dataset.id),
+        costs: Object.fromEntries(
+            Array.from(cost.querySelectorAll('td')).map((td) => [td.dataset.id, td.textContent.trim()])
+        ),
+        overPrice: hit ? hit.tagName : '',
+        focus: document.activeElement && document.activeElement.dataset
+            ? document.activeElement.dataset.move : null,
+        live: document.getElementById('live').textContent
+    };
+}"""
+
+def column_move_check(page):
+    """A dragged column takes its slot, and the arithmetic does not follow it.
+
+    Each column carries a handle on its 3px rule, in a 44px target that stays in
+    the header, so the price under it is still the reader's to click. A move
+    slides the whole column, cost cell included, and rebuilds the table in the
+    new order. The reference is the cheapest of the three, so a delta means the
+    same thing wherever its column sits, and a verdict colour travels with the
+    column that owns it rather than staying in the slot it left.
+    """
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(120)
+    page.locator("#cmp-table").scroll_into_view_if_needed()
+    page.wait_for_timeout(150)
+    before = page.evaluate(COLUMN_JS)
+    if len(before["order"]) != 3:
+        return [f"expected three columns to arrange, found {len(before['order'])}"]
+    # A build without the handles is the failure this check exists for, and it
+    # should read as one, not as a crash on a missing box.
+    missing = [col["id"] for col in before["cols"] if col.get("missing")]
+    if missing:
+        return [f"no column handle on {', '.join(missing)}"]
+    problems = []
+    for col in before["cols"]:
+        if col["target"] != [44, 44]:
+            problems.append(
+                f"the {col['id']} handle's target is {col['target']}, not 44x44"
+            )
+        if abs(col["gripY"] - col["ruleY"]) > 1:
+            problems.append(
+                f"the {col['id']} handle sits {col['gripY'] - col['ruleY']}px off its rule"
+            )
+        if not col["gripIn"]:
+            problems.append(f"the {col['id']} handle is cut by the edge of the comparison")
+    if before["overPrice"] != "B":
+        problems.append(
+            f"the handle's target covers the cost row: {before['overPrice']!r} sits at the price"
+        )
+
+    moved, other = before["order"][1], before["order"][0]
+    width = before["lefts"][1] - before["lefts"][0]
+    box = page.locator(f'.cmp-move[data-move="{moved}"]').bounding_box()
+    x, y = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+    page.mouse.move(x, y)
+    page.mouse.down()
+    page.mouse.move(x - width * 0.8, y, steps=8)
+    page.mouse.up()
+    page.wait_for_timeout(900)
+    after = page.evaluate(COLUMN_JS)
+
+    expect = [moved, other, before["order"][2]]
+    if after["order"] != expect:
+        problems.append(f"dragging {moved} one slot left gave {after['order']}, expected {expect}")
+    if after["costOrder"] != expect:
+        problems.append(
+            f"the cost row reads {after['costOrder']} after the move, expected {expect}"
+        )
+    if after["costs"] != before["costs"]:
+        changed = [id for id in before["costs"] if after["costs"].get(id) != before["costs"][id]]
+        problems.append(
+            f"moving a column changed the figures of {changed}: the reference moved with it"
+        )
+    rules = {col["id"]: col["rule"] for col in before["cols"]}
+    for col in after["cols"]:
+        if col["rule"] != rules[col["id"]]:
+            problems.append(
+                f"{col['id']} lost its verdict rule in the move: {col['rule']} was {rules[col['id']]}"
+            )
+    landed = next(col for col in after["cols"] if col["id"] == moved)
+    name = landed["label"].split(" left or right")[0].removeprefix("Move ")
+    if landed["label"] != f"Move {name} left or right. Column 1 of 3.":
+        problems.append(f"the moved handle is named {landed['label']!r} at column 1")
+    if after["focus"] != moved:
+        problems.append(f"focus went to {after['focus']!r} after the move, not {moved!r}")
+    if after["live"] != f"{name} moved to column 1 of 3":
+        problems.append(f"the move was announced as {after['live']!r}")
+    # The address is the shareable copy of the arrangement, so a link carries
+    # the order the reader left the columns in.
+    query = page.evaluate("() => new URL(location.href).searchParams.get('cmp')")
+    if (query or "").split(",") != expect:
+        problems.append(f"the address still reads ?cmp={query!r}, not the arranged {expect}")
+
+    # The run after this one shares the page, so the column goes back where the
+    # reader found it, and the way back is the keyboard.
+    page.keyboard.press("ArrowRight")
+    page.wait_for_timeout(300)
+    back = page.evaluate(COLUMN_JS)
+    if back["order"] != before["order"]:
+        problems.append(
+            f"one ArrowRight did not put the columns back: {back['order']} is not {before['order']}"
+        )
+    return problems
+
 CHECKS = [
     Check(
         "compare morph", "desktop", 37,
@@ -1129,6 +1258,11 @@ CHECKS = [
         "compare photos", "compare", 88,
         "the three compare photos start on one line, verdict or no verdict",
         lambda ctx: photo_line_check(ctx.page),
+    ),
+    Check(
+        "compare column move", "compare", 90,
+        "a dragged column takes its slot and keeps its verdict rule, the cost row moves with it, the figures do not move, and the handle sits on the rule in a 44px target",
+        lambda ctx: column_move_check(ctx.page),
     ),
 ]
 
