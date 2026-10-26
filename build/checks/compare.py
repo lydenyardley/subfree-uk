@@ -4,22 +4,36 @@ from .registry import Check
 
 
 def costrow_check(page, row_count, cells):
-    """The compare table opens with a row that does the 3-year subtraction."""
+    """The compare table opens with a row that does the 3-year subtraction.
+
+    The cells are read by the model each one belongs to, not by position: a
+    column's order is the table's, which follows the sort, so pricing a sundry
+    again moves the columns and a list of cells in this file would only have
+    reported that the data moved.
+    """
     problems = []
     state = page.evaluate(
         """() => {
             const row = document.querySelector('#cmp-table tr.cmp-cost');
             return {
                 label: row ? row.querySelector('th').textContent : '',
-                cells: row ? Array.from(row.querySelectorAll('td')).map((td) => td.textContent) : [],
+                cells: row ? Array.from(row.querySelectorAll('td')).map((td) => ({
+                    id: td.dataset.id || '', text: td.textContent
+                })) : [],
                 rows: document.querySelectorAll('#cmp-table tbody tr').length
             };
         }"""
     )
     if state["label"] != "Cheapest way to record for 3 years":
         problems.append(f"the compare cost row is labelled {state['label']!r}")
-    if state["cells"] != cells:
-        problems.append(f"compare cost row reads {state['cells']}, expected {cells}")
+    read = {cell["id"]: cell["text"] for cell in state["cells"]}
+    if read != cells:
+        for id in sorted(set(read) | set(cells)):
+            if read.get(id) != cells.get(id):
+                problems.append(
+                    f"the {id or '(unnamed)'} cost cell reads {read.get(id)!r}, "
+                    f"expected {cells.get(id)!r}"
+                )
     if state["rows"] != row_count:
         problems.append(
             f"the compare table has {state['rows']} body rows, expected {row_count}"
@@ -211,7 +225,7 @@ def chrome_check(page):
         )
     return problems
 
-def shortlist_check(page, checked=None):
+def shortlist_check(page, checked=None, dataset=None):
     """Copy shortlist puts the selected models and the URL on the clipboard."""
     problems = []
     before = page.inner_text("#cmp-copy")
@@ -238,16 +252,17 @@ def shortlist_check(page, checked=None):
         problems.append(f"the copy confirmation reads {after['text']!r}")
     if after["role"] != "status":
         problems.append(f"the copy confirmation has role {after['role']!r}")
+    # The three models' words and money come from the dataset: a price that
+    # moves should move this list with it, not fail it.
     required = [
         f"SubFree UK shortlist, checked {checked}" if checked else "SubFree UK shortlist, checked",
-        "TP-Link Tapo TD21",
-        "Reolink Video Doorbell PoE",
-        "EZVIZ EP3x Pro",
-        "£44.99",
-        "£54.99",
-        "£69.99",
-        "£79.99",
     ]
+    for id_ in ("tapo-td21", "reo-poe", "ezviz-ep3x"):
+        row = next((r for r in dataset.ROWS if r["id"] == id_), None) if dataset else None
+        if row is None:
+            problems.append(f"no {id_} in the dataset to check the shortlist against")
+            continue
+        required += [f"{row['brand']} {row['model']}", f"£{row['price']:.2f}", f"£{row['keep3']:.2f}"]
     missing = [part for part in required if part not in text]
     if missing:
         problems.append(f"the shortlist is missing {missing}")
@@ -973,7 +988,9 @@ def share_check(page):
                 rows: document.querySelectorAll('#cmp-table tbody tr').length
             })"""
         )
-        if restored["checked"] != ["tapo-td21", "reo-poe", "ezviz-ep3x"]:
+        # Which three, not in which order: the table's order follows the sort,
+        # and the columns' own order is what `compare column move` reads.
+        if sorted(restored["checked"]) != sorted(["tapo-td21", "reo-poe", "ezviz-ep3x"]):
             problems.append(f"the shared link restored {restored['checked']}")
         if restored["rows"] != 18 or not restored["compare"]:
             problems.append(f"the shared link did not reopen the compare table: {restored}")
@@ -1012,24 +1029,25 @@ SPEC_ROWS = [
 COMPARE_ROWS = len(SPEC_ROWS) + 1
 
 def compare_cells(rows):
-    """The cheapest 3-year cost, what it is made of, and the two differences.
+    """The cheapest 3-year cost for each selected model, keyed by its id.
 
     A difference names the column it is measured against: the cheapest column
     can be scrolled out of view on a phone, where "+£25.00" alone does not say
-    what it is more than.
+    what it is more than. The key is the model, so the check reads the cell the
+    column it belongs to carries rather than the slot it happens to sit in.
     """
     by_id = {row["id"]: row for row in rows.ROWS}
     keeps = [(id, by_id[id]["keep3"]) for id in SHORTLIST_IDS]
     low_id, low = min(keeps, key=lambda pair: pair[1])
     base = f"{by_id[low_id]['brand']} {by_id[low_id]['model']}".replace(" Video Doorbell", "")
-    cells = []
+    cells = {}
     for id, value in keeps:
         diff = (
             "cheapest of these 3"
             if abs(value - low) < 0.005
             else f"+£{value - low:.2f} more than {base}"
         )
-        cells.append(f"£{value:.2f} {diff} {by_id[id]['keep_note']}")
+        cells[id] = f"£{value:.2f} {diff} {by_id[id]['keep_note']}"
     return cells
 
 def photo_line_check(page):
@@ -1215,7 +1233,7 @@ CHECKS = [
     Check(
         "shortlist copy", "compare", 40,
         "Copy shortlist writes the models, costs, catches and a ?cmp= link",
-        lambda ctx: shortlist_check(ctx.page, ctx.checked),
+        lambda ctx: shortlist_check(ctx.page, ctx.checked, ctx.dataset),
     ),
     Check(
         "compare cost row", "compare", 41,
