@@ -1,4 +1,5 @@
 """The performance budget, measured on the page the reader gets."""
+from .context import open_compare
 from .js import SORT_JS
 from .registry import Check
 
@@ -113,6 +114,15 @@ def perf_check(page):
     finally:
         session.send("Emulation.setCPUThrottlingRate", {"rate": 1})
         session.detach()
+
+    # The two fresh documents above shut the comparison and leave the page at
+    # 390px, and the checks after this one scroll the panel into view instead of
+    # opening it. The phase hands on a 1280px page with it open, so this pass
+    # puts that back rather than leaving the next check to notice.
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.goto(clean)
+    page.wait_for_timeout(200)
+    open_compare(page)
 
     # Both tests, not one: the absolute budget is the requirement, and the
     # ratio against the same page's uncontained sort is what makes it fair. A
