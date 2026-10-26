@@ -53,8 +53,10 @@ a redesign.
   the next move instead of reporting state.
 - The record markers and the score bar form one notation. Filled, half and
   empty shapes read without a legend.
-- The assumption is confessed in the sentence that uses it. The £10 card
-  figure is labelled as uncited in the same breath.
+- A figure with no cited page is confessed in the sentence that uses it. The
+  £10 card was labelled uncited in the same breath; ADR 26 priced the card and
+  the stick from their own pages, so the guardrail has nothing to confess there
+  any more and holds for any figure that cannot be sourced.
 - The page is fast because it is honest. No webfonts, analytics, tracking or
   third-party requests. The byte budget is part of the experience.
 

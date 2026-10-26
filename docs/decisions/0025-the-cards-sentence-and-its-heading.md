@@ -38,8 +38,9 @@ and the UK no-subscription guide.
 kit, that is the storage line, which names the SmartHub that £115 of Arlo's sum
 is for and the Sync Module 2 in Blink's; where it adds nothing, it is the
 history line, which is what Nest's £179.99 gets. The assumption note in the
-card and this sentence now travel together, since both exist only when the sum
-buys something beyond the doorbell.
+card and this sentence travelled together, since both existed only when the sum
+bought something beyond the doorbell; ADR 26 priced the card and the stick from
+their own pages, so the note is gone and the sentence stands alone.
 
 **The heading and the close button share the card's first row.** The card is a
 two-column grid, the title in a `minmax(0,1fr)` column and the button in an

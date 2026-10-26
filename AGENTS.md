@@ -10,11 +10,12 @@ before committing.
 ## Sourcing rules
 
 Each row in `ROWS` has a `src` list of footnote keys, five claim keys
-(`price_src`, `rec_src`, `history_src`, `ha_src`, `plan_src`) and an optional
-`unverified` sentence. A claim key must also appear in that row's `src` list, so
-the reader can check the record claim, the history claim, the plan claim and the
-Home Assistant claim on their own. `plan_src` is the page that publishes the
-plan's price, or, where the row has no plan, the page that says none is needed.
+(`price_src`, `rec_src`, `history_src`, `ha_src`, `plan_src`), an optional
+`extra_src` for the sundry its no-plan sum buys and an optional `unverified`
+sentence. A claim key must also appear in that row's `src` list, so the reader
+can check the record claim, the history claim, the plan claim and the Home
+Assistant claim on their own. `plan_src` is the page that publishes the plan's
+price, or, where the row has no plan, the page that says none is needed.
 
 - Close a fact before you flag it. Open the vendor's own UK page for the
   product or plan first. If the price, limit or feature is published there,
@@ -37,6 +38,15 @@ plan's price, or, where the row has no plan, the page that says none is needed.
   before removing the region.
 - Preferred order: vendor UK page, vendor support docs, UK retailer, then a UK
   review.
+- Every figure in a 3-year sum is a price from a cited page, never an assumed
+  one. The sundries those sums buy — the microSD card `CARD` and the USB stick
+  `STICK` — are priced on the leading brand's right product, at the cheapest
+  price found among reputable UK suppliers that publish it, and the row names
+  that page in `extra_src`; other kit a sum adds, such as Arlo's SmartHub or
+  Blink's Sync Module 2, is named in `kit_src`. Either key must also be in the
+  row's `src` list, so the sum's own source card can show every line of its
+  arithmetic. `build/check.py` fails if the method note in `index.html` or
+  `data/doorbells.md` stops printing either sundry's figure.
 - Re-check the derived figures after any price change. `keep3` and `sub3` are
   computed in `build/rows.py`, and `build/check.py` recomputes them from
   `price`, `extra` and `sub`; a corrected input moves the ranking.

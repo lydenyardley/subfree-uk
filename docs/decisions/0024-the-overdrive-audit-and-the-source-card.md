@@ -42,7 +42,9 @@ the table and again in the comparison. The card prints the source's name and
 URL, the day the prices and plans were checked, the row's own sentence for that
 claim, and, for a 3-year total, the sum the figure is made of with every page it
 is built from, the uncited card price included as an assumption. `source card`,
-in `build/checks/behaviour.py`, holds all of it.
+in `build/checks/behaviour.py`, holds all of it. ADR 26 prices that card from
+its own page in the same list, so the card's arithmetic no longer carries a
+figure the reader has to take on trust.
 
 The trigger is the figure itself, and it is an ordinary link to the page the
 figure came from. Without a script, and on paper, the click goes where it always

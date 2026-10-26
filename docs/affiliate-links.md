@@ -121,8 +121,10 @@ Sources: [Linking requirements](https://affiliate-program.amazon.co.uk/help/oper
 use Amazon as `price_src`. If those become affiliate links, the honest fix is
 to stop publishing an Amazon price in the table and put the source link behind
 "Check price", or to drop the Amazon price source for another retailer. The
-three-year sums would then need a fixed, dated assumption like the existing
-microSD `CARD` figure.
+three-year sums would then need a fixed, dated price for the sundry, as the
+microSD `CARD` and the stick `STICK` now are: both are cited to their own
+Amazon UK page, which is the retailer conflict worth settling before an
+affiliate tag goes near them (ADR 26).
 
 ### Cookies and the "no tracking" claim
 
