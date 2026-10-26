@@ -350,6 +350,71 @@ def card_check(page, dataset, checked):
     for name in entities[:3]:
         problems.append(f"a figure is announced as {name!r}, with an entity in it")
 
+    # The card's heading shares its top row with the close button. A title
+    # parked under the button's line reads as a card that opened halfway down
+    # itself, and a title that runs under the button cannot be read at all. The
+    # title here is two lines at 340px, which is what makes the width matter.
+    header = page.evaluate(
+        """() => {
+            const a = document.querySelector('#m-nest .c-rec a.src');
+            if (!a) return { missing: true };
+            a.click();
+            const card = document.getElementById('card');
+            const box = card.getBoundingClientRect();
+            const title = card.querySelector('#card-h');
+            const h = title.getBoundingClientRect();
+            const x = document.getElementById('card-x').getBoundingClientRect();
+            const say = card.querySelector('.card-say').getBoundingClientRect();
+            const state = {
+                missing: false, open: card.open,
+                below: Math.round(h.top - box.top),
+                beside: Math.round(x.top - h.top),
+                gap: Math.round(x.left - h.right),
+                over: Math.round(h.bottom - say.top),
+                title: title.textContent.trim()
+            };
+            card.close();
+            return state;
+        }"""
+    )
+    if header.get("missing"):
+        problems.append("no record figure to read the card's heading from")
+    else:
+        if not header["open"]:
+            problems.append("the card did not open for its heading to be measured")
+        if header["below"] > 24:
+            problems.append(f"the card's heading starts {header['below']}px down the card")
+        if abs(header["beside"]) > 8:
+            problems.append(
+                f"the card's heading is {header['beside']}px off the line of its close button"
+            )
+        if header["gap"] < 1:
+            problems.append(
+                f"the card's heading runs {-header['gap']}px under its close button"
+            )
+        if header["over"] > 0:
+            problems.append(f"the card's heading ends {header['over']}px into its own sentence")
+
+    # A closed dialog must not be painted. An author `display` on the dialog
+    # overrides the browser's own rule for one that is not open, which left the
+    # card on the page holding the last figure's evidence. The heading above has
+    # just closed it, so this is the state a reader leaves the card in.
+    shut = page.evaluate(
+        """() => {
+            const card = document.getElementById('card');
+            if (card.open) card.close();
+            const r = card.getBoundingClientRect();
+            return {
+                display: getComputedStyle(card).display,
+                box: Math.round(r.width) * Math.round(r.height)
+            };
+        }"""
+    )
+    if shut["display"] != "none" or shut["box"]:
+        problems.append(
+            f"a closed card still renders: {shut['display']}, {shut['box']}px of it"
+        )
+
     def card_words(row, claim):
         """The sentence and the pages a card prints, read from the dataset.
 
@@ -2155,7 +2220,7 @@ CHECKS = [
     ),
     Check(
         "source card", "compare", 89,
-        "every figure opens its own source card, carrying the page, the row's own sentence for that figure, the sum and the day it was checked, and the comparison's figures open the table's own card",
+        "every figure opens its own source card, carrying the page, the row's own sentence for that figure, the sum and the day it was checked, its heading on the close button's line, and the comparison's figures open the table's own card",
         lambda ctx: card_check(ctx.page, ctx.dataset, ctx.checked),
     ),
     Check(

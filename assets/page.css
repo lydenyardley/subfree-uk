@@ -210,10 +210,19 @@ tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom
    the sum it is made of. It opens beside the figure on a desk, and docks to the
    bottom edge on a phone, where a card floating over the middle of the screen
    would cover the figure the reader just tapped. */
-#card{border:1px solid var(--ink);background:var(--paper);color:var(--ink);margin:0;padding:3rem 1rem 1rem;max-width:min(92vw,340px);position:fixed;inset:auto}
+#card{border:1px solid var(--ink);background:var(--paper);color:var(--ink);margin:0;padding:0.75rem 1rem 1rem;max-width:min(92vw,340px);position:fixed;inset:auto}
+/* The heading and the close button share the card's first row, both against its
+   top edge: a title parked under the button's line reads as a card that opened
+   halfway down itself. The column is the button's own width, so the two cannot
+   drift apart, and a long title wraps inside its column rather than running
+   under the button. The grid is gated on [open] because an author display on a
+   dialog overrides the browser's own rule for a dialog that is not open, and a
+   card left painted with the last figure's evidence reads as one never closed. */
+#card[open]{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 0.5rem}
 #card::backdrop{background:rgb(0 0 0 / .5)}
-#card h2{font:700 15px/1.35 var(--sans);margin:0}
-#card p{margin:0.6rem 0 0;font-size:14px;line-height:1.45;max-width:none}
+#card .lb-x{position:static;grid-area:1/2}
+#card h2{font:700 15px/1.35 var(--sans);margin:0;grid-area:1/1}
+#card p{margin:0.6rem 0 0;font-size:14px;line-height:1.45;max-width:none;grid-column:1/-1}
 #card .card-say{border-left:2px solid var(--rule);padding-left:0.75rem}
 #card .card-arc{font-variant-numeric:tabular-nums;color:var(--ink2)}
 #card .card-note,#card .card-date{font-size:12px;color:var(--ink3)}
