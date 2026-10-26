@@ -19,7 +19,17 @@ CHECKED_ISO = "2026-10-19"
 _CHECKED_DATE = date.fromisoformat(CHECKED_ISO)
 CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
 
-CARD = 10.00   # ASSUMPTION (not cited): typical price of a 64 GB microSD card / USB stick
+# The two sundries the 3-year sums need, read on 26 October 2026 as the best
+# UK price a buyer can pay for the leading brand's right product: the High
+# Endurance card is the one SanDisk makes for home monitoring, and the Ultra
+# Curve is the plain 64 GB stick the SmartHub and the Sync Module 2 take. Both
+# figures are a UK retailer's own page, in S as sandisk_card and sandisk_stick;
+# Amazon was the cheapest delivered of the UK shops that publish a price for
+# them (SanDisk £25.99 and Argos £26.99 for the card, 7DayShop £27.99, Currys
+# £43.99, and a cheaper card at Senetic whose £15.31 delivery made it dearer).
+# A row that buys one names it in extra_src, so its card lists the price.
+CARD = 25.37   # SanDisk High Endurance 64 GB microSDXC (SDSQQNR-064G-GN6IA)
+STICK = 11.99  # SanDisk Ultra Curve 64 GB USB 3.2 flash drive (SDCZ550)
 MINP = 40      # lower end of the price slider; the cheapest doorbell here is £44.99
 MONTHS = 36
 
@@ -74,6 +84,8 @@ S = {
  "ezviz_terms": ("EZVIZ CloudPlay UK terms", "https://www.ezviz.com/uk/legal/cloudplay-paid-subscription-terms"),
  "ha_ezviz": ("Home Assistant: EZVIZ", "https://www.home-assistant.io/integrations/ezviz/"),
  "ertech_db2": ("ER Tech (UK retailer)", "https://www.ertech.co.uk/product/db2-pro/"),
+ "sandisk_card": ("Amazon UK: SanDisk High Endurance 64 GB", "https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B"),
+ "sandisk_stick": ("Amazon UK: SanDisk Ultra Curve 64 GB", "https://www.amazon.co.uk/SANDISK-Computers-Desktops-RescuePRO-Recovery/dp/B0B42FNF15"),
  "eagle_hik": ("Eagle Security Solutions", "https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/"),
  "hik_ds": ("Hikvision datasheet", "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf"),
  "ha_eufy": ("Home Assistant: eufy (ha-eufy-sdk)", "https://github.com/mega-yfue/ha-eufy-sdk"),
@@ -131,7 +143,7 @@ dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power
  rec_src="eufy_prod", history_src="eufy_prod", ha_src="ha_eufy", plan_src="eufy_cloud", unverified=""),
 dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", power=["wired"], ha=2,
  price=93.49, price_note="Reolink UK sale price (RRP £109.99)", price_src="reo_store",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=4.58, sub_name="Reolink Cloud Upgraded single-device",
  best="Homes with existing doorbell wiring, plus Home Assistant or NVR users",
  catch="Needs doorbell transformer wiring, and the microSD card is sold separately.",
@@ -142,11 +154,11 @@ dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", pow
  ha_text="Official, fully local integration (Local Push, top 'Platinum' quality rating); works with no internet connection.",
  wifi="Dual-band 2.4/5 GHz",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
- src=["reo_store","ha_reo","reo_cloud","sha_nosub"],
+ src=["reo_store","ha_reo","reo_cloud","sha_nosub","sandisk_card"],
  rec_src="reo_store", history_src="reo_store", ha_src="ha_reo", plan_src="reo_cloud", unverified=""),
 dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power=["poe"], ha=2,
  price=69.99, price_note="Reolink UK sale price (RRP £99.99)", price_src="reo_store",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No Reolink Cloud plan",
  best="The most reliable, fully local setup, if you can run an Ethernet cable",
  catch="Needs an Ethernet cable to the door and a PoE switch or injector.",
@@ -155,7 +167,7 @@ dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power
  sub_text="None. Reolink's doorbell FAQ says the PoE model cannot use Reolink Cloud; it records to microSD or an NVR",
  ha_text="Official, fully local integration (Local Push, Platinum).", wifi="Wired Ethernet",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
- src=["reo_store","ha_reo","reo_faq"],
+ src=["reo_store","ha_reo","reo_faq","sandisk_card"],
  rec_src="reo_faq", history_src="reo_faq", ha_src="ha_reo", plan_src="reo_faq", unverified=""),
 dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes", power=["battery","wired"], ha=1,
  price=99.99, price_note="Screwfix, includes 64 GB card (Reolink UK also £99.99)", price_src="screwfix_reo",
@@ -173,7 +185,7 @@ dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes"
  rec_src="reo_batt", history_src="reo_batt", ha_src="ha_reo", plan_src="reo_cloud", unverified=""),
 dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["battery"], ha=1,
  price=84.99, price_note="Tapo UK (RRP £94.99)", price_src="tapo_d230",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="An easy battery doorbell that keeps footage indoors on its chime/hub",
  catch="The microSD card is extra, and Home Assistant gets settings and alerts but not the live video.",
@@ -184,11 +196,11 @@ dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["ba
  ha_text="Official TP-Link Smart Home integration, polled locally for settings and motion alerts. Hub-attached cameras still have no live view in Home Assistant.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
- src=["tapo_d230","tapo_care","ha_tplink","er_tapo"],
+ src=["tapo_d230","tapo_care","ha_tplink","er_tapo","sandisk_card"],
  rec_src="tapo_d230", history_src="tapo_d230", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
 dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
  price=44.99, price_note="Tapo UK sale price (RRP £56.00)", price_src="tapo_td21",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="The tightest budget",
  catch="Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it.",
@@ -197,12 +209,13 @@ dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["batt
  sub_text="Optional Tapo Care from £2.99/month",
  ha_text="Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.", wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
- src=["tapo_td21","tapo_care","tapo_td21_manual","ha_tplink"],
+ src=["tapo_td21","tapo_care","tapo_td21_manual","ha_tplink","sandisk_card"],
  rec_src="tapo_td21", history_src="tapo_td21", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
 dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery"], ha=0,
  power_note="Can be wired to an existing chime for trickle charging, but still runs on its battery.",
  price=84.99, price_note="Argos half price, doorbell + chime bundle (was £169.99)", price_src="argos_arlo",
- extra=115.07, extra_note="+ Arlo SmartHub £105.07 + USB stick", free_records=True,
+ extra=round(105.07 + STICK, 2), extra_note="+ Arlo SmartHub £105.07 + SanDisk 64 GB USB stick",
+ extra_src="sandisk_stick", kit_src="amz_arlohub", free_records=True,
  sub=7.99, sub_name="Arlo Secure (1 camera)",
  best="People who already own Arlo cameras",
  catch="Recording needs a £7.99/month plan or a separate hub costing about £105.",
@@ -213,11 +226,11 @@ dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec
  ha_text="No official integration; only a community add-on that goes through Arlo's cloud.",
  wifi="2.4 GHz only",
  score=dict(rec=1,live=1,alerts=1,ai=0,storage=0,ha=0),
- src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo","ha_arlo"],
+ src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo","ha_arlo","sandisk_stick"],
  rec_src="arlo_blog", history_src="arlo_doorbell", ha_src="ha_arlo", plan_src="arlo_plans", unverified=""),
 dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
  price=84.99, price_note="Amazon UK", price_src="amz_aqara",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan needed (iCloud+ only for HomeKit Secure Video)",
  best="Apple Home users",
  catch="Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.",
@@ -228,11 +241,12 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
  ha_text="Reported to work locally through Home Assistant's HomeKit Device integration; two-way audio isn't available there.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
- src=["amz_aqara","aqara_eu","aqara_specs","ha_homekit"],
+ src=["amz_aqara","aqara_eu","aqara_specs","ha_homekit","sandisk_card"],
  rec_src="aqara_specs", history_src="aqara_specs", ha_src="ha_homekit", plan_src="aqara_specs", unverified=""),
 dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
  price=69.99, price_note="Amazon UK RRP (deals as low as £29.99)", price_src="amz_blink",
- extra=49.99, extra_note="+ Sync Module 2 £39.99 + USB stick", free_records=True,
+ extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
+ extra_src="sandisk_stick", kit_src="camel_sm2", free_records=True,
  sub=2.50, sub_name="Blink Basic",
  best="The cheapest way into Amazon's ecosystem, if you catch a deal",
  catch="Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.",
@@ -242,7 +256,7 @@ dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=[
  sub_text="Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month",
  ha_text="Official integration, but it goes through Blink's cloud.", wifi="2.4 GHz (Blink requirement)",
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
- src=["amz_blink","camel_sm2","blink_plans","blink_sm2","ha_blink"],
+ src=["amz_blink","camel_sm2","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
  rec_src="blink_sm2", history_src="blink_sm2", ha_src="ha_blink", plan_src="blink_plans", unverified=""),
 dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["battery"], ha=0,
  price=79.99, price_note="Amazon UK (list price £89.99)", price_src="amz_ep3x",
@@ -261,7 +275,7 @@ dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["batter
  rec_src="amz_ep3x", history_src="ezviz_blog", ha_src="ha_ezviz", plan_src="ezviz_cloud", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["battery"], ha=0,
  price=114.99, price_note="ER Tech, UK retailer", price_src="ertech_db2",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=4.99, sub_name="EZVIZ CloudPlay 7-day",
  best="Flats and rentals: no wiring, and footage stays indoors in the chime",
  catch="2.4 GHz Wi-Fi only, and the card is sold separately.",
@@ -271,11 +285,11 @@ dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["batt
  ha_text="Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
- src=["ertech_db2","ezviz_blog","ezviz_cloud","ezviz_terms","ha_ezviz"],
+ src=["ertech_db2","ezviz_blog","ezviz_cloud","ezviz_terms","ha_ezviz","sandisk_card"],
  rec_src="ertech_db2", history_src="ertech_db2", ha_src="ha_ezviz", plan_src="ezviz_cloud", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wired"], ha=1,
  price=295.00, price_note="Only UK listing found (fitted install); the model is discontinued", price_src="eagle_hik",
- extra=CARD, extra_note="+ microSD card", free_records=True,
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan",
  best="Only worth it if an installer is fitting a Hikvision system anyway",
  catch="Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295.",
@@ -283,7 +297,7 @@ dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wire
  ai="None", history="Yes, on card or NVR", paywalled="Nothing", sub_text="None",
  ha_text="Works as a generic RTSP camera.", wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=0,storage=0,ha=1),
- src=["eagle_hik","hik_ds","hik_4gon"],
+ src=["eagle_hik","hik_ds","hik_4gon","sandisk_card"],
  rec_src="hik_ds", history_src="hik_ds", ha_src="hik_ds", plan_src="hik_ds", unverified=""),
 ]
 
@@ -299,7 +313,7 @@ REQUIRED_ROW_KEYS = (
     "paywalled", "sub_text", "ha_text", "wifi", "score", "src", "unverified",
     "rec_src", "history_src", "ha_src", "plan_src",
 )
-OPTIONAL_ROW_KEYS = ("power_note", "cards", "plan_price_region")
+OPTIONAL_ROW_KEYS = ("power_note", "cards", "plan_price_region", "extra_src", "kit_src")
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
     "plan_region", "keep_basis", "keep_note",
@@ -314,7 +328,7 @@ def row_problems():
         unknown = [k for k in r if k not in allowed]
         if missing: problems.append(f"{rid}: missing {', '.join(missing)}")
         if unknown: problems.append(f"{rid}: unknown {', '.join(unknown)}")
-        for key in ("price_src", "rec_src", "history_src", "ha_src", "plan_src"):
+        for key in ("price_src", "rec_src", "history_src", "ha_src", "plan_src", "extra_src", "kit_src"):
             if key in r and r[key] not in S:
                 problems.append(f"{rid}: {key} {r[key]!r} is not in S")
             if key in r and r[key] not in r.get("src", []):

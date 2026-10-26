@@ -90,6 +90,21 @@ def data_problems(rows, pages):
     eu = sum(1 for row in rows.ROWS if row["plan_region"] == "EU")
     if index.count('data-region="EU"') != eu:
         problems.append("the EU plan rows are not marked as data on the page")
+    # A sundry in a 3-year sum is a price from a cited page, not a figure typed
+    # into the note. Both places that print the method have to carry the figure
+    # the sums were built from, so a re-priced card cannot leave a sentence
+    # behind, and the assumption it replaced cannot come back.
+    with open(os.path.join(ROOT, "data", "doorbells.md"), encoding="utf-8") as handle:
+        markdown = handle.read()
+    for name, text in (("index.html", index), ("data/doorbells.md", markdown)):
+        for sundry, figure in (("microSD card", rows.CARD), ("USB stick", rows.STICK)):
+            if f"{sundry} at {rows.money(figure)}" not in text:
+                problems.append(
+                    f"the {name} method note does not price the {sundry} "
+                    f"at {rows.money(figure)}"
+                )
+        if "not from a cited source" in text:
+            problems.append(f"the {name} method note still calls a sundry an assumption")
     return problems
 
 def freshness_problems(rows):

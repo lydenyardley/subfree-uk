@@ -19,7 +19,8 @@ EMAIL = "lydenyardley+subfreeuk@posteo.net"
 
 from rows import (
     CARD, CHECKED, CHECKED_ISO, FN, MINP, MONTHS, POWER_LABEL, REC_LABEL,
-    REC_RANK, ROWS, S, SCORE_PARTS, _CHECKED_DATE, money, order, row_problems,
+    REC_RANK, ROWS, S, SCORE_PARTS, STICK, _CHECKED_DATE, money, order,
+    row_problems,
 )
 
 # ---------- HTML ----------
@@ -52,10 +53,6 @@ CLAIM_WHAT = {
     "ha": "The Home Assistant line",
 }
 EU_NOTE = "EU price, not a UK quote"
-UNSOURCED_CARD = (
-    f"The card or USB stick in that sum is an assumption at {money(CARD)}, "
-    "not a figure from a cited source."
-)
 
 
 def claims(r):
@@ -84,15 +81,17 @@ def claims(r):
     add("rec", r["rec_src"], r["history_src"], say=r["history"])
     add("price", r["price_src"], say=r["price_note"])
     # Both 3-year figures are sums, so their card carries the arithmetic and
-    # every page it is built from. The card or USB stick is the one figure on
-    # the page that is an assumption, and the card says so where it shows.
-    # What the no-plan sum buys is the kit it adds, where it adds one, and the
+    # every page it is built from, the sundries included: the doorbell, the hub
+    # or recorder the sum adds where it adds one, the card or stick it buys, and
+    # the recording that route keeps. Nothing in a sum is a figure the reader
+    # has to take on trust.
+    # What that sum buys is the kit it adds, where it adds one, and the
     # recording it needs no plan for, where it does not: the storage line names
-    # the SmartHub that £115 of Arlo's sum is for, and the history line is what
+    # the SmartHub that £105 of Arlo's sum is for, and the history line is what
     # a doorbell spending nothing extra gives instead.
-    add("nosub", r["price_src"], r["rec_src"] if r["extra"] else r["history_src"],
-        say=r["storage"] if r["extra"] else r["history"], arc=r["maths_free"],
-        note=UNSOURCED_CARD if r["extra"] else "")
+    add("nosub", r["price_src"], r.get("kit_src", ""), r.get("extra_src", ""),
+        r["rec_src"] if r["extra"] else r["history_src"],
+        say=r["storage"] if r["extra"] else r["history"], arc=r["maths_free"])
     add("plan", r["plan_src"], r["price_src"] if r["sub"] is not None else "",
         say=r["sub_text"] if r["sub"] is not None else r["storage"],
         arc=r["maths_sub"], note=EU_NOTE if r["plan_region"] == "EU" else "")
@@ -440,7 +439,7 @@ page=f'''<!doctype html>
 <section class="method" id="method">
 <div class="method-copy">
 <h2>How we worked it out</h2>
-<p id="m-a"><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a microSD card or USB stick, assumed at {money(CARD)}; that last figure isn't from a cited source). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
+<p id="m-a"><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a 64 GB SanDisk microSD card at {money(CARD)} or SanDisk USB stick at {money(STICK)}, each the cheapest UK price we found, at Amazon UK). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
 <p id="m-b"><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
 <p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>2.4 GHz only</i> means the doorbell cannot join a 5 GHz network, so it will not show up on a phone that is on 5 GHz. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
@@ -543,7 +542,7 @@ def write():
           f"- **Home Assistant:** {r['ha_text']}", *([f"- **Unverified:** {r['unverified']}"] if r["unverified"] else []),
           "- **Sources:** " + " · ".join(f"[{S[k][0]}]({S[k][1]})" for k in r["src"]), ""]
     md += ["## How the 3-year costs are worked out",
-     f"- Without a plan: hardware price + anything extra you need to record for free (a microSD card or USB stick is assumed at {money(CARD)}; that figure isn't from a cited source).",
+     f"- Without a plan: hardware price + anything extra you need to record for free (a 64 GB SanDisk microSD card at {money(CARD)} or SanDisk USB stick at {money(STICK)}, each the cheapest UK price we found, at Amazon UK).",
      f"- With a plan: hardware price + {MONTHS} × the cheapest UK monthly plan that adds recording for one device. Paying yearly is usually cheaper.",
      "- Batteries, electricity, installation (except Hikvision, where it's included) and price rises are left out."]
     open(os.path.join(ROOT,"data","doorbells.md"),"w",encoding="utf-8").write("\n".join(md))

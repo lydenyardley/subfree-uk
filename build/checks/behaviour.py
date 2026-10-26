@@ -431,11 +431,14 @@ def card_check(page, dataset, checked):
         elif claim == "rec":
             keys, words = [row["rec_src"], row["history_src"]], row["history"]
         elif claim == "nosub":
-            keys = [row["price_src"], row["rec_src"] if row["extra"] else row["history_src"]]
+            keys = [
+                row["price_src"], row.get("kit_src", ""), row.get("extra_src", ""),
+                row["rec_src"] if row["extra"] else row["history_src"],
+            ]
             words = row["storage"] if row["extra"] else row["history"]
         else:
             raise ValueError(f"no card sentence is read for the {claim} claim")
-        return words, list(dict.fromkeys(keys))
+        return words, [k for k in dict.fromkeys(keys) if k]
 
     def read(id_, claim):
         return page.evaluate(
@@ -498,15 +501,19 @@ def card_check(page, dataset, checked):
             problems.append(f"the {id_} {claim} card lists {state['srcs']}, expected {want}")
         if state["date"] != f"Prices and plans checked {checked}.":
             problems.append(f"the {id_} {claim} card is dated {state['date']!r}")
-        # The card or USB stick in a 3-year sum is the page's one assumption, so
-        # the card showing that sum has to say so; a plan bought in the UK must
-        # not carry the euro warning.
-        if claim == "nosub":
-            if row["extra"] and "assumption" not in state["note"]:
-                problems.append(f"the {id_} {claim} card does not say its card price is an assumption")
-        elif row["plan_region"] != "EU" and state["note"]:
+        # The card's note is the euro warning and nothing else. A plan bought in
+        # the UK must not carry it, and a no-plan sum has none to carry: the
+        # sundry it buys is cited in that card's own source list now, so the
+        # assumption the card used to confess cannot come back.
+        want_note = (
+            "EU price, not a UK quote"
+            if claim == "plan" and row["plan_region"] == "EU"
+            else ""
+        )
+        if state["note"] != want_note:
             problems.append(
-                f"the {id_} {claim} card warns {state['note']!r} about a UK price"
+                f"the {id_} {claim} card carries the note {state['note']!r}, "
+                f"expected {want_note!r}"
             )
         # Escape is the dialog's own; closing has to hand the reader back to the
         # figure they tapped, which is where they were reading.
@@ -1484,15 +1491,29 @@ def print_check(page):
     return problems
 
 def jump_check(page):
-    """A jump announces its model, verdict and position, then clears."""
+    """A jump announces its model, verdict and position, then clears.
+
+    The position is read from the page's own order instead of typed here: the
+    order follows the 3-year cost, so a re-priced sundry moves the row, and a
+    number in this file would only have reported that the data moved.
+    """
     problems = []
     page.click(".verdict a.jump[data-ids='tapo-d230']")
     page.wait_for_timeout(700)
     state = page.evaluate(
-        """() => ({ live: document.getElementById('live').textContent,
-                     active: document.activeElement.className }) """
+        """() => {
+            const items = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden])'));
+            return {
+                live: document.getElementById('live').textContent,
+                active: document.activeElement.className,
+                row: items.findIndex((t) => t.id === 'm-tapo-d230') + 1,
+                total: items.length
+            };
+        }"""
     )
-    expected = "TP-Link Tapo D230S1, easiest battery setup, row 4 of 14"
+    expected = (
+        f"TP-Link Tapo D230S1, easiest battery setup, row {state['row']} of {state['total']}"
+    )
     if state["live"] != expected:
         problems.append(f"the jump announced {state['live']!r}, expected {expected!r}")
     if "cmp" not in state["active"]:
