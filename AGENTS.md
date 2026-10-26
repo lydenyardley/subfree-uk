@@ -43,9 +43,12 @@ plan's price, or, where the row has no plan, the page that says none is needed.
 - A claim key is what a figure's source card reads. The card opens from the
   figure in the table and in the comparison, and prints the source's name, its
   URL, the day the prices were checked, the row's own sentence for that claim
-  and, for a 3-year total, the sum it is made of. A figure with no claim key
-  behind it cannot carry its own source, so adding one means adding a key here
-  first. The numbered register and the markers stay in the markup for the
+  and, for a 3-year total, the sum it is made of. The sentence has to answer
+  the question the card's own title asks: the recording claim prints the row's
+  `history` words, and a 3-year total prints the kit's storage words where its
+  sum buys kit and the history words where it does not. A figure with no claim
+  key behind it cannot carry its own source, so adding one means adding a key
+  here first. The numbered register and the markers stay in the markup for the
   printed sheet and the reader without a script, and the script hides both: the
   card is where a reader with a browser finds the page behind a number.
 

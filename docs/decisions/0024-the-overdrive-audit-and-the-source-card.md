@@ -1,7 +1,8 @@
 # 24. The overdrive audit, and the source card
 
 - Status: Accepted. Directions A and C are built and B is declined, so the audit
-  leaves nothing open.
+  leaves nothing open. The card's weight and its stylesheet rule count are
+  corrected in ADR 25.
 - Date: 26 October 2026
 - Source: the 23 October 2026 overdrive audit, removed with this record. Every
   item it raised is settled below, with the check or the measurement that holds
