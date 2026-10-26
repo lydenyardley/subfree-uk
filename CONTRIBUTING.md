@@ -59,8 +59,9 @@ so an old cached page can still load them.
   accessibility, anchor, image, target-size, type-floor, phone-layout, compare
   and differences-only, shareable-shortlist, jump-announcement, the
   tray-to-comparison transition, the table's scroll rule, motion, score-bar,
-  label, source-list, closing-line, performance-budget, no-JavaScript and
-  overflow audit at every breakpoint, plus the structural half in Firefox.
+  label, source-card, source-list, closing-line, performance-budget,
+  no-JavaScript and overflow audit at every breakpoint, plus the structural
+  half in Firefox.
   Fix anything it reports. `--only "<name>"` runs one named check and `--list`
   prints their names.
 - Check the page at desktop and phone widths, and keep the numbers in
