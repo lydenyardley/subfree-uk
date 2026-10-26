@@ -75,7 +75,7 @@ def data_problems(rows, pages):
                 problems.append(f"{row['id']}: CSV {key} is {out[key]!r}, recomputed {value!r}")
         if (row["keep3"], row["nosub3"], row["sub3"]) != (keep3, nosub3, sub3):
             problems.append(f"{row['id']}: a derived figure drifted from price, extra and plan")
-        for key in ("price_src", "rec_src", "history_src", "ha_src"):
+        for key in ("price_src", "rec_src", "history_src", "ha_src", "plan_src"):
             if row[key] not in rows.S:
                 problems.append(f"{row['id']}: {key} {row[key]!r} is not in S")
         for key in row["src"]:

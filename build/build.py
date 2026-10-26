@@ -25,9 +25,95 @@ from rows import (
 # ---------- HTML ----------
 e=html.escape
 def fn(keys): return ", ".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{FN[k]}</a>' for k in keys)
-def fnames(keys):
-    """The same footnotes, named. A row says which shop or page, not just a number."""
-    return ", ".join(f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{e(S[k][0])}</a>' for k in keys)
+def srclinks(keys):
+    """The row's own list of sources, as links to the pages themselves.
+
+    A row names every page its record comes from, so that list leaves for those
+    pages rather than for a numbered entry: it works with or without a script,
+    and whether or not the register is on screen. `data-fn` still ties each link
+    to its entry, which is what the audit counts.
+    """
+    return ", ".join(
+        f'<a class="sref" href="{e(S[k][1])}" data-fn="{FN[k]}" title="{e(S[k][0])}" '
+        f'rel="nofollow noopener noreferrer">{e(S[k][0])}</a>'
+        for k in keys
+    )
+
+# Each figure on the page carries its claim. The card opens from the figure and
+# gives the page behind it, the day the prices were checked and the sentence in
+# the dataset that supports it, and a 3-year total gets the sum it is made of.
+# `CLAIM_WHAT` names the claim; the rest is the row's own words.
+CLAIM_WHAT = {
+    "rec": "Records free without a plan",
+    "price": "The price",
+    "nosub": "The 3-year cost with no plan",
+    "plan": "The 3-year cost with a plan",
+    "history": "The recorded history without a plan",
+    "ha": "The Home Assistant line",
+}
+EU_NOTE = "EU price, not a UK quote"
+UNSOURCED_CARD = (
+    f"The card or USB stick in that sum is an assumption at {money(CARD)}, "
+    "not a figure from a cited source."
+)
+
+
+def claims(r):
+    """What each of the row's figures rests on, as the card needs it.
+
+    `keys` is the pages behind the figure, the first being the one the figure
+    links to, and an empty value is dropped: a row with no plan has no plan
+    sentence to show. The rest of the card is the row's own words.
+    """
+    out = {}
+
+    def add(key, *keys, say="", arc="", note=""):
+        out[key] = {
+            "keys": [k for k in dict.fromkeys(keys) if k],
+            "say": say, "arc": arc, "note": note,
+        }
+
+    add("rec", r["rec_src"], say=r["storage"])
+    add("price", r["price_src"], say=r["price_note"])
+    # Both 3-year figures are sums, so their card carries the arithmetic and
+    # every page it is built from. The card or USB stick is the one figure on
+    # the page that is an assumption, and the card says so where it shows.
+    add("nosub", r["price_src"], r["rec_src"], say=r["storage"], arc=r["maths_free"],
+        note=UNSOURCED_CARD if r["extra"] else "")
+    add("plan", r["plan_src"], r["price_src"] if r["sub"] is not None else "",
+        say=r["sub_text"] if r["sub"] is not None else r["storage"],
+        arc=r["maths_sub"], note=EU_NOTE if r["plan_region"] == "EU" else "")
+    add("history", r["history_src"], say=r["history"])
+    add("ha", r["ha_src"], say=r["ha_text"])
+    return {k: {f: v for f, v in c.items() if f == "keys" or v} for k, c in out.items()}
+
+
+def src_label(cl, key, words):
+    """The figure's words and the page its card opens, so a screen reader hears
+    where the click leads without going there first.
+
+    `words` are the row's own and unescaped: a label is escaped once, in `fig`,
+    which is what keeps an apostrophe an apostrophe in the words the reader
+    hears rather than its entities."""
+    return f"{words}, source: {', '.join(S[k][0] for k in cl[key]['keys'])}"
+
+
+def fig(r, cl, key, text, label, cls="", attrs=""):
+    """One figure with its source card on it.
+
+    The anchor is a real link to the page the figure came from, so on paper and
+    without a script it still goes where it says it goes; with a script the
+    click opens the card instead, and the address is the one the card prints.
+    `data-fn` is the register entry the card reads the name and URL from, so a
+    URL is in the page once; `data-more` names the second page a total is built
+    from. `label` is what the click says it does.
+    """
+    keys = cl[key]["keys"]
+    more = "".join(f" data-more=\"{' '.join(str(FN[k]) for k in keys[1:])}\"" if len(keys) > 1 else "")
+    return (f'<a class="src{" " + cls if cls else ""}" href="{e(S[keys[0]][1])}"{more}{attrs}'
+            f' data-claim="{key}" data-id="{r["id"]}" data-fn="{FN[keys[0]]}" '
+            f'rel="nofollow noopener noreferrer" aria-haspopup="dialog" '
+            f'aria-label="{e(label)}">{text}</a>')
 
 
 # Product photos: manufacturers' own images, processed by make_images.py into img/*.webp; sources in images.json
@@ -108,6 +194,10 @@ def plain_problems():
     if stale:
         raise SystemExit(f"PLAIN has an entry for a row that does not exist: {stale}")
 
+# Per row, once: the markup builds the cards from this, and the script rebuilds
+# the comparison's own figures from the same sentences.
+CLAIMS={r["id"]: claims(r) for r in ROWS}
+
 rows_html=[]
 for i,r in enumerate(ROWS):
     pw=" ".join(r["power"])
@@ -118,10 +208,25 @@ for i,r in enumerate(ROWS):
     vtag=f'<span class="vtag v-{tone}">{V_LABEL[v]}</span>' if v else ""
     unv=f'<p class="unverified"><b>Not yet verified:</b> {e(r["unverified"])}</p>' if r["unverified"] else ""
     pnote='. ' + e(r["power_note"]) if r.get("power_note") else ""
+    cl=CLAIMS[r["id"]]
     # The price is the link to the page the price came from, so the promise in
-    # the intro ("each one links to its source") is kept in the row itself.
+    # the intro ("each one links to its source") is kept in the row itself; with
+    # a script that click opens the price's card, which prints the same address.
     pm=money(r["price"], None);psrc=S[r["price_src"]]
-    price=f'<a class="buy" href="{e(psrc[1])}" rel="nofollow noopener noreferrer" title="Check the price at {e(psrc[0])}" aria-label="{pm} at {e(psrc[0])}">{pm}</a>'
+    price=fig(r, cl, "price", pm, f'{pm} at {psrc[0]}', cls="buy",
+              attrs=f' title="Check the price at {e(psrc[0])}"')
+    # Each figure a reader might doubt carries its own card. The words are the
+    # same ones the cell shows, so the card cannot drift from the figure.
+    rec_lbl=REC_LABEL[r["rec"]]
+    rec_fig=fig(r, cl, "rec", f'<span class="rec-t">{rec_lbl}</span>', src_label(cl, "rec", rec_lbl))
+    nosub_words=money(r["nosub3"], None)
+    nosub_fig=fig(r, cl, "nosub", nosub_words, src_label(cl, "nosub", nosub_words))
+    sub_words=money(r["sub3"], None) if r["sub3"] is not None else "No plan"
+    sub_fig=fig(r, cl, "plan", sub_words if r["sub3"] is not None else f'<span class="noplan">{sub_words}</span>',
+                src_label(cl, "plan", sub_words))
+    hist_fig=fig(r, cl, "history", e(r["history"]), src_label(cl, "history", r["history"]))
+    ha_fig=fig(r, cl, "ha", e(r["ha_text"]), src_label(cl, "ha", r["ha_text"]))
+    plan_fig=fig(r, cl, "plan", e(r["sub_text"]), src_label(cl, "plan", r["sub_text"]))
     ncls=" keep" if r["keep_basis"]=="nosub" else ""
     scls=" keep" if r["keep_basis"]=="sub" else ""
     # The bold figure follows the sort. The default sort is the 3-year cost to
@@ -133,16 +238,16 @@ for i,r in enumerate(ROWS):
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}"><span class="rec-t">{REC_LABEL[r['rec']]}</span>{fn([r['rec_src']])}</span></td>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{rec_fig}{fn([r['rec_src']])}</span></td>
 <td class="c-price num" data-label="Price">{price}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/8:.3f})"></i></span></td>
-<td class="c-nosub num{ncls}" data-label="3 years, no plan"><span class="figv">{money(r['nosub3'], None)}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</span></td>
-<td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}"><span class="figv">{money(r['sub3'], None) if r['sub3'] is not None else '<span class="noplan">No plan</span>'}{knote}{'<span class="vh">EU price, not a UK quote</span>' if r['plan_region'] == 'EU' else ''}</span></td>
+<td class="c-nosub num{ncls}" data-label="3 years, no plan"><span class="figv">{nosub_fig}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</span></td>
+<td class="c-sub num{scls}" data-label="3 years, with plan" data-region="{r['plan_region']}"><span class="figv">{sub_fig}{knote}{f'<span class="vh">{EU_NOTE}</span>' if r['plan_region'] == 'EU' else ''}</span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}"><td colspan="8"><div class="dgrid">
 <figure class="dimg">{zoom(r,"lg")}
-<p class="srcs">Sources: {fnames(r['src'])}</p></figure>
+<p class="srcs">Sources: {srclinks(r['src'])}</p></figure>
 <dl class="dspec">
 <div class="pair"><dt>Power</dt><dd>{e(PLAIN[r['id']][0])}{pnote}</dd></div>
 <div class="pair"><dt>Wi-Fi</dt><dd>{e(r['wifi'])}</dd></div>
@@ -150,10 +255,10 @@ for i,r in enumerate(ROWS):
 <div class="pair"><dt>Live view</dt><dd>{e(r['live'])}</dd></div>
 <div class="pair"><dt>Motion alerts</dt><dd>{e(r['alerts'])}</dd></div>
 <div class="pair"><dt>Smart detection</dt><dd>{e(r['ai'])}</dd></div>
-<div class="pair"><dt>History without a plan</dt><dd>{e(r['history'])} {fn([r['history_src']])}</dd></div>
+<div class="pair"><dt>History without a plan</dt><dd>{hist_fig} {fn([r['history_src']])}</dd></div>
 <div class="pair"><dt>Behind the paywall</dt><dd>{e(r['paywalled'])}</dd></div>
-<div class="pair"><dt>Plans</dt><dd>{e(r['sub_text'])}</dd></div>
-<div class="pair"><dt>Home Assistant</dt><dd>{e(r['ha_text'])} {fn([r['ha_src']])}</dd></div>
+<div class="pair"><dt>Plans</dt><dd>{plan_fig}</dd></div>
+<div class="pair"><dt>Home Assistant</dt><dd>{ha_fig} {fn([r['ha_src']])}</dd></div>
 <div class="pair"><dt>3 years, no plan</dt><dd class="maths">{e(r['maths_free'])}</dd></div>
 <div class="pair"><dt>3 years, with plan</dt><dd class="maths">{e(r['maths_sub'])}</dd></div>
 <div class="pair"><dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k,lbl,mx in SCORE_PARTS)}</dd></div>
@@ -168,6 +273,7 @@ data_js = json.dumps({r["id"]:{
  "nosub3":money(r["nosub3"], None),"sub3":money(r["sub3"], None) if r["sub3"] is not None else "No plan","keep3":r["keep3"],"keepNote":r["keep_note"],"region":r["plan_region"],"best":r["best"],"catch":r["catch"],"power":" / ".join(POWER_LABEL[p] for p in r["power"]),
  "storage":r["storage"],"live":r["live"],"alerts":r["alerts"],"ai":r["ai"],"history":r["history"],"paywalled":r["paywalled"],
  "plan":r["sub_text"],"ha":r["ha_text"],"wifi":r["wifi"],
+ "claims":{k:{f:v for f,v in c.items() if f!="keys"} for k,c in CLAIMS[r["id"]].items()},
  "img":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-sm.webp',
  "imgLg":"" if IMG.get(r["id"],{}).get("placeholder") else f'img/{r["id"]}-lg.webp'} for r in ROWS}, ensure_ascii=False)
 
@@ -199,7 +305,9 @@ no_photo=", ".join(f'{e(r["brand"])} {e(r["model"])}' for r in ROWS if IMG.get(r
 # cached copy asking for a file that no longer exists.
 PAGE_CSS = open(os.path.join(HERE, "page.css"), encoding="utf-8").read()
 PAGE_JS = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
-           .replace("/*@@DATA@@*/{}", data_js).replace("@@CHECKED@@", CHECKED))
+           .replace("/*@@DATA@@*/{}", data_js)
+           .replace("/*@@CLAIMS@@*/{}", json.dumps(CLAIM_WHAT))
+           .replace("@@CHECKED@@", CHECKED))
 
 def content_version(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]
@@ -340,6 +448,15 @@ page=f'''<!doctype html>
 <button type="button" class="lb-x" id="lb-x" aria-label="Close photo">✕</button>
 <div id="lb-img"></div>
 <div class="lb-bar"><span id="lb-name"></span><button type="button" class="link" id="lb-close">Close</button></div>
+</dialog>
+<dialog id="card" aria-labelledby="card-h">
+<button type="button" class="lb-x" id="card-x" aria-label="Close source card">✕</button>
+<h2 id="card-h"></h2>
+<p class="card-say"></p>
+<p class="card-arc"></p>
+<p class="card-srcs"></p>
+<p class="card-note"></p>
+<p class="card-date">Prices and plans checked {CHECKED}.</p>
 </dialog>
 <script src="{JS_URL}"></script>
 </body></html>'''

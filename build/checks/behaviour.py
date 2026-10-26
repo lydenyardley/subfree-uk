@@ -324,11 +324,290 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
         problems.append(f"the PoE note is {state['hintSize']}, expected 12px")
     return problems
 
+def card_check(page, dataset, checked):
+    """Every figure opens its own source card, and the card carries the record.
+
+    The card is where the page's evidence lives now: the figure a reader doubts
+    opens a dialog holding the page behind it, the sentence in the dataset that
+    supports it, the day the prices were checked and, for a 3-year total, the sum
+    it is made of. A figure that opens nothing, or a card that arrives empty, is
+    the failure this is here to catch.
+    """
+    if not dataset:
+        return []
+    problems = []
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(150)
+
+    # A label is the sentence the reader hears before they go anywhere, so an
+    # entity in one means the escaping went round twice: "Ring&#x27;s cloud" is
+    # not a sentence, it is the markup of one.
+    entities = page.evaluate(
+        """() => Array.from(document.querySelectorAll('a.src[aria-label]'))
+            .map((a) => a.getAttribute('aria-label'))
+            .filter((name) => name.indexOf('&#') > -1 || name.indexOf('&amp;') > -1)"""
+    )
+    for name in entities[:3]:
+        problems.append(f"a figure is announced as {name!r}, with an entity in it")
+
+    def read(id_, claim):
+        return page.evaluate(
+            """([id, claim]) => {
+                const a = document.querySelector('#m-' + id + ' a.src[data-claim="' + claim + '"]');
+                if (!a) return { missing: true };
+                a.click();
+                const card = document.getElementById('card');
+                const line = (s) => {
+                    const el = card.querySelector(s);
+                    return el && !el.hidden ? el.textContent.trim() : '';
+                };
+                return {
+                    missing: false,
+                    open: card.open,
+                    inside: card.contains(document.activeElement),
+                    title: card.querySelector('#card-h').textContent.trim(),
+                    say: line('.card-say'),
+                    arc: line('.card-arc'),
+                    note: line('.card-note'),
+                    date: line('.card-date'),
+                    srcs: Array.from(card.querySelectorAll('.card-srcs a'))
+                        .map((l) => [l.textContent.trim(), l.getAttribute('href')])
+                };
+            }""",
+            [id_, claim],
+        )
+
+    # A row with a plan and a row without one: the two 3-year figures are the
+    # page's own arithmetic, and their cards have to show the sum they are.
+    for id_, claim, title in (
+        ("reo-poe", "nosub", "Reolink Video Doorbell PoE \u00b7 The 3-year cost with no plan"),
+        ("ring", "plan", "Ring Battery Video Doorbell 2K \u00b7 The 3-year cost with a plan"),
+    ):
+        row = next((r for r in dataset.ROWS if r["id"] == id_), None)
+        if row is None:
+            problems.append(f"no {id_} in the dataset to open a card from")
+            continue
+        state = read(id_, claim)
+        if state.get("missing"):
+            problems.append(f"{id_} has no {claim} source card")
+            continue
+        if not state["open"] or not state["inside"]:
+            problems.append(f"the {id_} {claim} card opened without taking the reader to it")
+        if state["title"] != title:
+            problems.append(f"the {id_} {claim} card is titled {state['title']!r}, expected {title!r}")
+        words = row["sub_text"] if claim == "plan" and row["sub"] is not None else row["storage"]
+        if state["say"] != words:
+            problems.append(f"the {id_} {claim} card quotes {state['say']!r}, expected {words!r}")
+        if state["arc"] != row["maths_sub" if claim == "plan" else "maths_free"]:
+            problems.append(f"the {id_} {claim} card shows the sum as {state['arc']!r}")
+        keys = [k for k in dict.fromkeys((row["price_src"], row["rec_src"]))] if claim == "nosub" else [row["plan_src"]]
+        if claim == "plan" and row["sub"] is not None:
+            keys = [row["plan_src"], row["price_src"]]
+        want = [[dataset.S[k][0], dataset.S[k][1]] for k in keys]
+        if state["srcs"] != want:
+            problems.append(f"the {id_} {claim} card lists {state['srcs']}, expected {want}")
+        if state["date"] != f"Prices and plans checked {checked}.":
+            problems.append(f"the {id_} {claim} card is dated {state['date']!r}")
+        # The card or USB stick in a 3-year sum is the page's one assumption, so
+        # the card showing that sum has to say so; a plan bought in the UK must
+        # not carry the euro warning.
+        if claim == "nosub":
+            if row["extra"] and "assumption" not in state["note"]:
+                problems.append(f"the {id_} {claim} card does not say its card price is an assumption")
+        elif row["plan_region"] != "EU" and state["note"]:
+            problems.append(
+                f"the {id_} {claim} card warns {state['note']!r} about a UK price"
+            )
+        # Escape is the dialog's own; closing has to hand the reader back to the
+        # figure they tapped, which is where they were reading.
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(120)
+        closed = page.evaluate(
+            """([id, claim]) => ({
+                open: document.getElementById('card').open,
+                back: document.activeElement === document.querySelector(
+                    '#m-' + id + ' a.src[data-claim="' + claim + '"]')
+            })""",
+            [id_, claim],
+        )
+        if closed["open"] or not closed["back"]:
+            problems.append(f"closing the {id_} {claim} card left {closed} behind")
+
+    # The comparison repeats the table's figures, so it has to repeat their
+    # cards: the anchor there is copied from the row's own, and this is what
+    # proves the copy carries the same page and the same name.
+    panel = page.evaluate(
+        """() => {
+            const a = document.querySelector('#cmp-table td a.src[data-claim]');
+            if (!a) return { missing: true };
+            a.click();
+            const t = document.querySelector('#m-' + a.dataset.id + ' a.src[data-claim="' + a.dataset.claim + '"]');
+            const card = document.getElementById('card');
+            const srcs = Array.from(card.querySelectorAll('.card-srcs a')).map((l) => l.getAttribute('href'));
+            const state = {
+                missing: false, open: card.open, id: a.dataset.id, claim: a.dataset.claim,
+                title: card.querySelector('#card-h').textContent.trim(),
+                same: !!t && t.getAttribute('href') === a.getAttribute('href')
+                    && t.getAttribute('aria-label') === a.getAttribute('aria-label'),
+                srcs,
+                spoke: a.getAttribute('aria-haspopup')
+            };
+            card.close();
+            return state;
+        }"""
+    )
+    if panel.get("missing"):
+        problems.append("no figure in the comparison opens a source card")
+    else:
+        if not panel["open"]:
+            problems.append("a comparison figure did not open a card")
+        if not panel["same"]:
+            problems.append(
+                f"the comparison's {panel['id']} {panel['claim']} card does not match the table's"
+            )
+        name = next((f"{r['brand']} {r['model']}" for r in dataset.ROWS if r["id"] == panel["id"]), "")
+        if not name or not panel["title"].startswith(name):
+            problems.append(f"the comparison card is titled {panel['title']!r}, for {panel['id']}")
+        if not panel["srcs"]:
+            problems.append("the comparison's card has no source in it")
+        if panel["spoke"] != "dialog":
+            problems.append("a figure does not say it opens a dialog")
+
+    # The comparison's 3-year total is the page's headline figure, and it is
+    # whichever of the row's two 3-year figures is the cheaper route: the no-plan
+    # total for a row that records without a plan, the plan's for a row whose
+    # cheapest route is a plan. Its card has to be the one behind that figure, so
+    # a reader who doubts the number lands on the page the number came from.
+    totals = page.evaluate(
+        """() => Array.from(document.querySelectorAll('#cmp-table .cmp-cost td')).map((td) => ({
+            id: td.dataset.id,
+            keep: (document.getElementById('m-' + td.dataset.id) || { dataset: {} }).dataset.keep,
+            claim: (td.querySelector('a.src') || { dataset: {} }).dataset.claim || ''
+        }))"""
+    )
+    if not totals:
+        problems.append("the comparison has no 3-year total to open a card from")
+    for cell in totals:
+        want = {"nosub": "nosub", "sub": "plan"}.get(cell["keep"], "")
+        if want and cell["claim"] != want:
+            problems.append(
+                f"the comparison's {cell['id']} total ({cell['keep']}) opens "
+                f"{cell['claim'] or 'nothing'}, expected the {want} card"
+            )
+
+    # The phase's three models all record without a plan, so no total taken from
+    # the plan route is in the panel to be read. One is put in their place, read,
+    # and their three are handed back, because the checks after this one read the
+    # page this check found.
+    plan_row = next(
+        (r for r in dataset.ROWS if r["keep_basis"] == "sub" and r["sub3"] is not None), None
+    )
+    if plan_row is None:
+        problems.append("no row's cheapest 3-year route is a plan, so nothing can be read")
+    else:
+        swapped = page.evaluate(
+            """([id]) => {
+                const boxes = Array.from(document.querySelectorAll('input.cmp'));
+                const before = boxes.filter((c) => c.checked).map((c) => c.value);
+                const box = boxes.find((c) => c.value === id);
+                if (!box || before.indexOf(id) > -1) return { skipped: true };
+                const drop = boxes.find((c) => before.indexOf(c.value) > -1);
+                const flip = (el, on) => {
+                    el.checked = on;
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                };
+                flip(drop, false);
+                flip(box, true);
+                const td = document.querySelector('#cmp-table .cmp-cost td[data-id="' + id + '"]');
+                const a = td && td.querySelector('a.src');
+                const state = {
+                    skipped: false,
+                    claim: (a || { dataset: {} }).dataset.claim || '',
+                    href: a ? a.getAttribute('href') : '',
+                    total: td ? td.textContent.trim() : ''
+                };
+                flip(box, false);
+                flip(drop, true);
+                return state;
+            }""",
+            [plan_row["id"]],
+        )
+        if swapped.get("skipped"):
+            problems.append(
+                f"{plan_row['id']} is not in the comparison, so its total cannot be read"
+            )
+        else:
+            if swapped["claim"] != "plan":
+                problems.append(
+                    f"the plan-route total for {plan_row['id']} opens "
+                    f"{swapped['claim'] or 'nothing'}, expected the plan's card"
+                )
+            if swapped["href"] != dataset.S[plan_row["plan_src"]][1]:
+                problems.append(
+                    f"the plan-route total for {plan_row['id']} points at {swapped['href']!r}"
+                )
+            want_total = dataset.money(plan_row["keep3"], None)
+            if not swapped["total"].startswith(want_total):
+                problems.append(
+                    f"the plan-route total for {plan_row['id']} reads {swapped['total']!r}, "
+                    f"expected it to start with {want_total!r}"
+                )
+
+    # On a phone the card docks to the bottom edge, and the figure the reader
+    # tapped stays on the screen: in the middle, that is where it was, and at the
+    # bottom edge the page brings it up rather than leaving it behind the card.
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_timeout(150)
+
+    def tap(block):
+        return page.evaluate(
+            """(block) => {
+                const a = document.querySelector('#m-reo-poe .c-nosub a.src');
+                const card = document.getElementById('card');
+                if (card.open) card.close();
+                a.scrollIntoView({ block });
+                a.click();
+                const c = card.getBoundingClientRect(), r = a.getBoundingClientRect();
+                const state = {
+                    open: card.open,
+                    docked: Math.round(window.innerHeight - c.bottom),
+                    width: Math.round(c.width),
+                    view: window.innerWidth,
+                    // Geometry, not hit-testing: a modal dialog's backdrop covers
+                    // the page, so whether the figure is still readable is
+                    // decided by where the two boxes are. Read after the click,
+                    // because the card may have moved the page to get there.
+                    figureVisible: r.bottom <= c.top + 1
+                };
+                card.close();
+                return state;
+            }""",
+            block,
+        )
+
+    for where, block in (("the middle of the screen", "center"), ("the bottom edge", "end")):
+        phone = tap(block)
+        if not phone["open"]:
+            problems.append(f"a phone figure tapped at {where} did not open a card")
+        if phone["docked"] > 16:
+            problems.append(f"the phone card floats {phone['docked']}px off the bottom edge")
+        if phone["width"] < phone["view"] - 32:
+            problems.append(
+                f"the phone card is {phone['width']}px wide on a {phone['view']}px screen"
+            )
+        if not phone["figureVisible"]:
+            problems.append(f"the phone card covers the figure it opened from, tapped at {where}")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    return problems
+
+
 def sources_check(page, source_count):
     """The numbered sources sit with the working, grouped by host.
 
-    They are the list every footnote marker points at, so they stay on the
-    page: with the comparison open or closed, on paper, and without a script.
+    Every figure carries its own card now, so a reader with a script never opens
+    this list; it is what the printed sheet and the reader without a script
+    read, which is why it stays on the page and why its layout is still
+    measured. The measurement shows it, and puts the page back as it was.
     """
     problems = []
 
@@ -336,6 +615,8 @@ def sources_check(page, source_count):
         return page.evaluate(
             """() => {
                 const box = document.getElementById('sources');
+                const restore = box.style.display;
+                box.style.display = 'block';
                 const summary = box.querySelector('summary');
                 const fits = box.scrollWidth <= box.clientWidth + 1;
                 const values = Array.from(box.querySelectorAll('li')).map((li) => +li.getAttribute('value'));
@@ -369,7 +650,7 @@ def sources_check(page, source_count):
                 const clipped = Array.from(box.querySelectorAll('.fns-g h3'))
                     .filter((h) => h.scrollWidth > h.clientWidth + 1)
                     .map((h) => h.textContent.trim());
-                return {
+                const out = {
                     inMethod: !!box.closest('section.method'),
                     clipped,
                     // Above the phone layout the list is a column of its own,
@@ -393,54 +674,17 @@ def sources_check(page, source_count):
                     values: values.slice().sort((a, b) => a - b),
                     groups: groups
                 };
+                // Put the page back as the check found it: with a script the
+                // register is off the screen, and the checks after this one read
+                // the live page.
+                box.style.display = restore;
+                return out;
             }"""
         )
 
     page.set_viewport_size({"width": 390, "height": 844})
     page.wait_for_timeout(200)
     phone = read()
-
-    # A row's footnote marker points at an entry in this list, and on a phone
-    # the list is closed: following one has to open it and land on the entry,
-    # which a jump into a closed disclosure does not do.
-    followed = page.evaluate(
-        """() => {
-            const toggle = document.querySelector('#tbl tbody.item button.more');
-            if (toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
-            const link = document.querySelector('#tbl tbody.item .srcs a.fn');
-            const href = link.getAttribute('href');
-            const wasOpen = document.getElementById('sources').open;
-            link.click();
-            return { href, wasOpen };
-        }"""
-    )
-    page.wait_for_timeout(400)
-    landed = page.evaluate(
-        """(href) => {
-            const box = document.getElementById('sources');
-            const entry = document.querySelector(href);
-            const r = entry ? entry.getBoundingClientRect() : null;
-            const state = {
-                open: box.open,
-                hash: location.hash,
-                inView: !!r && r.bottom > 0 && r.top < window.innerHeight
-            };
-            // Put the phone back the way the check found it.
-            box.open = false;
-            const toggle = document.querySelector('#tbl tbody.item button.more');
-            if (toggle.getAttribute('aria-expanded') === 'true') toggle.click();
-            return state;
-        }""",
-        followed["href"],
-    )
-    if followed["wasOpen"]:
-        problems.append("the source list is already open on a phone")
-    if not landed["open"]:
-        problems.append("following a row's source leaves the list closed")
-    if landed["hash"] != followed["href"] or not landed["inView"]:
-        problems.append(
-            f"following a row's source does not land on {followed['href']}: {landed}"
-        )
 
     page.set_viewport_size({"width": 821, "height": 900})
     page.wait_for_timeout(200)
@@ -1833,6 +2077,11 @@ CHECKS = [
         "score bars", "phone", 19,
         "score bars are painted at their score and a sort never redraws them",
         lambda ctx: bars_check(ctx.page, ctx.row_count),
+    ),
+    Check(
+        "source card", "compare", 89,
+        "every figure opens its own source card, carrying the page, the sentence, the sum and the day it was checked, and the comparison's figures open the table's own card",
+        lambda ctx: card_check(ctx.page, ctx.dataset, ctx.checked),
     ),
     Check(
         "source list", "compare", 72,

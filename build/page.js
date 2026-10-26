@@ -1,5 +1,5 @@
 (function(){
-var D=/*@@DATA@@*/{},CHECKED='@@CHECKED@@';
+var D=/*@@DATA@@*/{},CHECKED='@@CHECKED@@',CLAIM_WHAT=/*@@CLAIMS@@*/{};
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
 var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
 function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}
@@ -128,14 +128,6 @@ $$('button.more').forEach(function(b){b.onclick=function(){
  d.classList.toggle('open',!o);
 }});
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
-// A footnote marker in a row jumps to its numbered entry, and on a phone the
-// list is a closed disclosure. Chromium opens one for a jump it is asked to
-// make; not every engine does, so the list is opened here and the navigation
-// then scrolls to the entry wherever it has landed.
-document.addEventListener('click',function(ev){
- var link=ev.target.closest('a.fn');
- if(link&&srcs&&!srcs.open)srcs.open=true;
-});
 $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
  var rows=a.dataset.ids.split(' ').map(function(id){return document.getElementById('m-'+id)});
  if(rows.some(function(r){return r.hidden}))$('#reset').click();
@@ -166,6 +158,21 @@ function cmpCell(key,v,d){
  if(key==='rec')return '<span class="rec rec-'+(d.recCls||'yes')+'">'+esc(v)+'</span>';
  if(key!=='plan'&&key!=='paywalled'&&/^None\b/.test(v))return '<span class="cmp-no">'+esc(v)+'</span>';
  return esc(v);
+}
+// The comparison repeats the table's figures, so it repeats their cards. The
+// trigger is copied from the table's own anchor for that figure rather than
+// rebuilt here, so the two views cannot drift apart.
+var CMP_CLAIM={'rec':'rec','price':'price','nosub3':'nosub','sub3':'plan','plan':'plan','history':'history','ha':'ha'};
+// The total is whichever of the two 3-year figures is the cheaper route, and its
+// card is the one behind that figure: `data-keep` names the route the total was
+// taken from, which is the no-plan figure or the plan's, never the other one.
+var KEEP_CLAIM={nosub:'nosub',sub:'plan'};
+function claimCell(id,claim,html){
+ if(!claim)return html;
+ var row=document.getElementById('m-'+id),t=row&&row.querySelector('a.src[data-claim="'+claim+'"]');
+ if(!t)return html;
+ var a=['href','data-fn','data-more','aria-label'].map(function(k){var v=t.getAttribute(k);return v?' '+k+'="'+esc(v)+'"':''}).join('');
+ return '<a class="src"'+a+' data-claim="'+esc(claim)+'" data-id="'+esc(id)+'" rel="nofollow noopener noreferrer" aria-haspopup="dialog">'+html+'</a>';
 }
 function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
 // The comparison is wider than a phone, and a table that is cut off with no
@@ -253,7 +260,8 @@ function buildCmp(){
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
   // the secondary figure, because the total is the one a reader compares.
-  return '<td data-id="'+esc(id)+'"><b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest of these 3':'+£'+(v-low).toFixed(2)+' more than '+esc(cmpName(lowId)))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span></td>';
+  var basis=document.getElementById('m-'+id);
+  return '<td data-id="'+esc(id)+'">'+claimCell(id,basis&&KEEP_CLAIM[basis.dataset.keep],'<b>'+m3(v)+'</b> <span class="cmp-diff">'+(cheapest?'cheapest of these 3':'+£'+(v-low).toFixed(2)+' more than '+esc(cmpName(lowId)))+'</span> <span class="cmp-basis">'+esc(D[id].keepNote)+'</span>')+'</td>';
  }).join('')+'</tr>';
  var dupes=0;
  ROWS.forEach(function(r){
@@ -263,7 +271,7 @@ function buildCmp(){
    // A plan figure bought in euros is not a UK quote, so the comparison says so
    // in the row rather than leaving the caveat to a footnote.
    if(r[1]==='plan'&&D[id].region==='EU')v+=' (EU price)';
-   return '<td data-id="'+esc(id)+'">'+cmpCell(r[1],v,D[id])+'</td>'}).join('')+'</tr>';
+   return '<td data-id="'+esc(id)+'">'+claimCell(id,CMP_CLAIM[r[1]],cmpCell(r[1],v,D[id]))+'</td>'}).join('')+'</tr>';
  });
  $('#cmp-table').innerHTML=h+'</tbody>';
  if(!dupes)diffOnly=false;
@@ -572,6 +580,91 @@ lb.addEventListener('click',function(ev){
  if(ev.target===lb){lb.close();return}
  if(ev.target.closest('#lb-x')||ev.target.closest('.lb-bar'))return;
  if(ev.target.tagName!=='IMG')lb.close();
+});
+// A figure carries its own source card: the page it came from, the sentence in
+// the dataset that supports it, the day the prices were checked and, for a
+// 3-year total, the sum it is made of. The anchor under the figure is a real link
+// to that page, so a middle click or a command-click still opens the page; a
+// plain click opens the card instead, which is where the reader is looking.
+var card=$('#card'),cardFrom=null;
+function fnEntry(n){
+ var a=n?document.getElementById('fn'+n):null;
+ a=a&&a.querySelector('a');
+ return a?{name:a.textContent.trim(),url:a.href}:null;
+}
+function cardLine(selector,text){
+ var el=$(selector,card);
+ el.textContent=text||'';
+ el.hidden=!text;
+}
+// The card opens beside the figure it belongs to, unless that would push it off
+// the bottom or the side, in which case it opens above or against the edge. On a
+// phone it docks to the bottom instead, because a card over the middle of the
+// screen covers the figure the reader just tapped.
+function placeCard(t){
+ var r=t.getBoundingClientRect();
+ if(!window.matchMedia('(min-width:760px)').matches){
+  card.style.left='';card.style.top='';
+  // Docked to the bottom edge, where the card would sit over the figure it
+  // came from: the figure is brought up above it, so the reader keeps both.
+  // Only when it has to move: a card that scrolled every tap would read as a
+  // page that jumped.
+  if(r.bottom>card.getBoundingClientRect().top-8)t.scrollIntoView({block:'center'});
+  return;
+ }
+ var pad=12,w=card.offsetWidth,h=card.offsetHeight;
+ // Under the figure, above it when there is no room below, and inside the
+ // viewport either way: a figure the reader tapped while the page was still
+ // scrolling would otherwise place the card off the screen it belongs on.
+ var y=r.bottom+8;
+ if(y+h>window.innerHeight-pad)y=r.top-h-8;
+ y=Math.min(Math.max(pad,y),Math.max(pad,window.innerHeight-h-pad));
+ card.style.left=Math.round(Math.min(Math.max(pad,r.left),Math.max(pad,window.innerWidth-w-pad)))+'px';
+ card.style.top=Math.round(y)+'px';
+}
+function openCard(t){
+ var d=D[t.dataset.id],c=d&&d.claims&&d.claims[t.dataset.claim];
+ if(!c)return false;
+ var seen=[],list=[];
+ [t.dataset.fn].concat((t.dataset.more||'').split(' ')).forEach(function(n){
+  var entry=fnEntry(n);
+  if(entry&&seen.indexOf(entry.url)<0){seen.push(entry.url);list.push(entry)}
+ });
+ if(!list.length)return false;
+ $('#card-h',card).textContent=d.name+' \u00b7 '+(CLAIM_WHAT[t.dataset.claim]||'');
+ cardLine('.card-say',c.say);
+ cardLine('.card-arc',c.arc);
+ cardLine('.card-note',c.note);
+ var box=$('.card-srcs',card);
+ box.textContent='';
+ box.appendChild(document.createTextNode(list.length>1?'Sources: ':'Source: '));
+ list.forEach(function(entry,i){
+  if(i)box.appendChild(document.createTextNode(', '));
+  var a=document.createElement('a');
+  a.href=entry.url;a.rel='nofollow noopener noreferrer';a.textContent=entry.name;
+  box.appendChild(a);
+ });
+ cardFrom=t;
+ if(!card.open)card.showModal();
+ placeCard(t);
+ return true;
+}
+document.addEventListener('click',function(ev){
+ var t=ev.target.closest('a.src[data-claim]');
+ // No dialog in this browser, or the reader asked for the page itself with a
+ // modifier or another button: the anchor is a link and does what it says.
+ if(!t||!card||!card.showModal)return;
+ if(ev.button||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey)return;
+ if(!openCard(t))return;
+ ev.preventDefault();
+});
+$('#card-x').onclick=function(){card.close()};
+// A tap on the card's own background, outside its text, closes it.
+card.addEventListener('click',function(ev){if(ev.target===card)card.close()});
+// Escape and the close button are the dialog's own; closing hands the reader
+// back to the figure they tapped, where they were.
+card.addEventListener('close',function(){
+ if(cardFrom){cardFrom.focus({preventScroll:true});cardFrom=null}
 });
 // Back to top, once the reader is into the table. The button appears when the
 // sentinel above the table has scrolled past, and takes the reader and the

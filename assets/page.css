@@ -113,10 +113,14 @@ table.cmp-t,table.main-t{border-collapse:collapse;width:100%}
 .main-t td.num,.main-t th.num{text-align:right}
 /* The figure the sort uses is bold, so the order can be read off the list. */
 .main-t td.keep{font-weight:700}
-/* The price is the link to the page the price came from. */
+/* The price is the link to the page the price came from, and every other figure
+   with a source card on it is marked the same way, because the click does the
+   same job: it opens the evidence. The `white-space` stays with the price, since
+   a sentence that opens a card still has to wrap. */
 .buy{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px;white-space:nowrap}
-.buy:hover{color:var(--acc);text-decoration-color:var(--acc)}
-.buy:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.src{color:inherit;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+.buy:hover,.src:hover{color:var(--acc);text-decoration-color:var(--acc)}
+.buy:focus-visible,.src:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 td.num{white-space:nowrap}
 /* The compare column is named, so a bare box in a column is not a puzzle. The
    header carries the name for a screen reader and a ticked box for the eye,
@@ -165,6 +169,12 @@ span.ph-lg{font-size:12px}
 .figv{display:contents}
 .fn{font-size:11px;vertical-align:super;line-height:0;margin-left:0.15em;text-decoration:underline;text-underline-offset:2px;color:var(--ink3)}
 .fn:hover{color:var(--acc);text-decoration:underline}
+/* Provenance sits with the figure it explains: the card holds the page, the
+   sentence and the sum, and opens from the figure itself. The numbered markers
+   and the register stay in the markup for the two readers who cannot open a
+   card, which are the printed sheet and the one without a script. */
+.js .fn{display:none}
+.js #sources{display:none}
 /* The button names the panel it opens. A chevron alone left the page's own
    evidence behind an icon, two clicks deep; the word is the thing that says
    the costs and sources are here. The chevron turns to say the row opened. */
@@ -196,6 +206,19 @@ tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom
 .lb-x:hover{border-color:var(--ink)}
 #lightbox img{display:block;margin:0 auto;width:auto;height:auto;max-width:100%;max-height:70vh;background:var(--imgbg);border:1px solid var(--rule2);filter:var(--imgf)}
 #lightbox::backdrop{background:rgb(0 0 0 / .65)}
+/* The source card: the page behind the figure, the sentence that supports it and
+   the sum it is made of. It opens beside the figure on a desk, and docks to the
+   bottom edge on a phone, where a card floating over the middle of the screen
+   would cover the figure the reader just tapped. */
+#card{border:1px solid var(--ink);background:var(--paper);color:var(--ink);margin:0;padding:3rem 1rem 1rem;max-width:min(92vw,340px);position:fixed;inset:auto}
+#card::backdrop{background:rgb(0 0 0 / .5)}
+#card h2{font:700 15px/1.35 var(--sans);margin:0}
+#card p{margin:0.6rem 0 0;font-size:14px;line-height:1.45;max-width:none}
+#card .card-say{border-left:2px solid var(--rule);padding-left:0.75rem}
+#card .card-arc{font-variant-numeric:tabular-nums;color:var(--ink2)}
+#card .card-note,#card .card-date{font-size:12px;color:var(--ink3)}
+#card .card-date{margin-top:1rem}
+@media (max-width:759px){#card{left:0.75rem;right:0.75rem;bottom:0.75rem;max-width:none}}
 .lb-bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1rem;font:600 13px/1.3 var(--sans)}
 .dgrid dl{margin:0;display:grid;grid-template-columns:140px minmax(0,1fr);gap:1rem;font-size:14px;align-content:start}
 .dgrid dt{color:var(--ink2)} .dgrid dd{margin:0}
@@ -214,8 +237,6 @@ tr.detail td{background:var(--tint);padding:0.75rem 1rem 1rem 3rem;border-bottom
 .maths{font-variant-numeric:tabular-nums}
 .unverified{font-size:13px;margin:1rem 0 0;color:var(--ink2)}
 .srcs{font-size:12px;color:var(--ink2);margin:1rem 0 0;max-width:100%}
-
-.srcs .fn{font-size:12px;vertical-align:baseline;margin-left:0;color:var(--acc)}
 .empty{padding:2rem 0;margin:0 auto;color:var(--ink2);text-align:center}
 /* Two recovery actions read as one sentence when a single space separates
    them, so they keep a gap even on the line they share. */
@@ -633,8 +654,14 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .fbody .opts{gap:0.5rem 1rem}
  .range{flex:none;width:100%;max-width:none}
 }
+/* Paper has no click, so the sheet keeps what the script hides: the numbered
+   markers and the register, and the figures lose the underline that says they
+   open something. */
 @media print{.skip,.controls,.tray,.prog,.c-cmp,.more-w,.si,#theme,.srcs>summary,.cmp-note,.zi{display:none}
  .main-t thead th .si{display:none}
+ .js .fn{display:inline}
+ .js #sources{display:block}
+ .src,.buy{text-decoration:none}
  tr.detail{display:table-row!important}}
 /* There is no box to tick on paper, and a hidden grid cell would leave its
    track behind: the cells after it move one column left and print under the

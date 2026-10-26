@@ -15,7 +15,8 @@ labels, target sizes, the type floor, the phone layout, the price range slider,
 the filter panel, the live announcements, the three-row compare cap, the
 empty-state recovery, the compare cost row, the shortlist copy, the
 differences-only view, the focusable comparison scroller, the jump announcement,
-the tray-to-comparison transition, the theme motion, the static score bars, the
+the tray-to-comparison transition, the source card on every figure, the theme
+motion, the static score bars, the
 contained phone cards and desktop rows with their column alignment and the
 catch's own row below 901px, the sticky
 table header, the muted-text contrast, the record and plan labels, the phone

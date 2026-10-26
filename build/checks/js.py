@@ -41,7 +41,14 @@ AUDIT_JS = r"""() => {
     })),
     headings: all("h1,h2,h3,h4,h5,h6").map((h) => Number(h.tagName[1])),
     thNoScope: all("th").filter((th) => !th.getAttribute("scope")).length,
-    footRefs: internal.filter((a) => /^#fn\d+$/.test(a.href)).map((a) => a.href.slice(1)),
+    // An entry is cited by a numbered marker or by the row's own list of sources,
+    // which links the pages themselves now that every figure carries its card.
+    // The two together are what reads the register; a marker lives in the markup
+    // for the printed sheet and the reader without a script.
+    footRefs: all('a[href^="#fn"], a[data-fn]').map((a) => {
+      const n = a.getAttribute("data-fn");
+      return n ? "fn" + n : a.getAttribute("href").slice(1);
+    }),
     footTargets: all('li[id^="fn"]').map((li) => li.id),
     externals: external.map((a) => a.href),
     rowRule: (() => {
@@ -158,6 +165,13 @@ BARS_JS = r"""() => {
 
 DESKTOP_ROWS_JS = r"""() => {
     const table = document.getElementById('tbl');
+    // The numbered record marker belongs to the printed sheet and to the reader
+    // without a script: with a script the figure itself opens its card and the
+    // number is off the screen. The label's words, and the track they sit in,
+    // are the same either way, so the placement is measured with it shown.
+    const markers = document.createElement('style');
+    markers.textContent = '.js .fn{display:inline!important}';
+    document.head.appendChild(markers);
     const head = Array.from(table.querySelectorAll('thead th')).map((th) => {
         const r = th.getBoundingClientRect();
         return {left: r.left, width: r.width};
@@ -218,6 +232,7 @@ DESKTOP_ROWS_JS = r"""() => {
         if (cell.getBoundingClientRect().width <= 2) return;
         if (cell.scrollWidth > cell.clientWidth + 1) clipped.push(cell.className || cell.tagName);
     });
+    markers.remove();
     return {
         display: getComputedStyle(row).display,
         tracks: getComputedStyle(row).gridTemplateColumns.split(' ').length,
