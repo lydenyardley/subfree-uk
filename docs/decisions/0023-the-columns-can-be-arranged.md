@@ -2,9 +2,10 @@
 
 - Status: Accepted
 - Date: 25 October 2026
-- Source: direction A of the 23 October overdrive audit, accepted on 25 October
-  with four changes: keep the verdict rule with its column, use a six-dot grip,
-  never cut the handle, and hold the reference still.
+- Source: direction A of the 23 October overdrive audit, which ADR 24 closes,
+  accepted on 25 October with four changes: keep the verdict rule with its
+  column, use a six-dot grip, never cut the handle, and hold the reference
+  still.
 
 ## Context
 
@@ -57,5 +58,6 @@ in a row and a reason to put them in their own order.
 - The sketch's Escape-to-restore did not ship: the page's own undo is the
   handle that made the move, and a second shortcut for one gesture was more
   surface than the arrangement earns.
-- `docs/audits/2026-10-23-overdrive.md` records what else waits: the collapsed
-  identical-row line and the source card.
+- ADR 24 closes the audit this direction came from and holds what it left
+  open, the source card. The collapsed identical-row line is not waiting: its
+  count is the compare panel's own control, and ADR 5 declined the line itself.
