@@ -73,12 +73,25 @@ def claims(r):
             "say": say, "arc": arc, "note": note,
         }
 
-    add("rec", r["rec_src"], say=r["storage"])
+    # The sentence is the row's own words for the question the card's title
+    # asks, which is not always the field that looks nearest. "Records free
+    # without a plan" asks the recording question, so it prints the row's
+    # history line; the storage line answers where footage is kept, and read
+    # under that title it said "None" for the Nest doorbell, whose figure beside
+    # it reads "Only briefly (3 hrs)". Where the sentence and the figure rest on
+    # different pages, the card lists both, so the sentence stays checkable
+    # where it says it came from.
+    add("rec", r["rec_src"], r["history_src"], say=r["history"])
     add("price", r["price_src"], say=r["price_note"])
     # Both 3-year figures are sums, so their card carries the arithmetic and
     # every page it is built from. The card or USB stick is the one figure on
     # the page that is an assumption, and the card says so where it shows.
-    add("nosub", r["price_src"], r["rec_src"], say=r["storage"], arc=r["maths_free"],
+    # What the no-plan sum buys is the kit it adds, where it adds one, and the
+    # recording it needs no plan for, where it does not: the storage line names
+    # the SmartHub that £115 of Arlo's sum is for, and the history line is what
+    # a doorbell spending nothing extra gives instead.
+    add("nosub", r["price_src"], r["rec_src"] if r["extra"] else r["history_src"],
+        say=r["storage"] if r["extra"] else r["history"], arc=r["maths_free"],
         note=UNSOURCED_CARD if r["extra"] else "")
     add("plan", r["plan_src"], r["price_src"] if r["sub"] is not None else "",
         say=r["sub_text"] if r["sub"] is not None else r["storage"],

@@ -350,6 +350,28 @@ def card_check(page, dataset, checked):
     for name in entities[:3]:
         problems.append(f"a figure is announced as {name!r}, with an entity in it")
 
+    def card_words(row, claim):
+        """The sentence and the pages a card prints, read from the dataset.
+
+        This is the rule the build follows, restated here, so that a card which
+        drifts from the figure it opens from fails rather than agreeing with a
+        copy of the build's own mistake. The sentence has to answer the
+        question the card's title asks: the recording question is the row's
+        history line, not the storage line, which said "None" beside a figure
+        that reads "Only briefly (3 hrs)".
+        """
+        if claim == "plan":
+            keys = [row["plan_src"], row["price_src"]] if row["sub"] is not None else [row["plan_src"]]
+            words = row["sub_text"] if row["sub"] is not None else row["storage"]
+        elif claim == "rec":
+            keys, words = [row["rec_src"], row["history_src"]], row["history"]
+        elif claim == "nosub":
+            keys = [row["price_src"], row["rec_src"] if row["extra"] else row["history_src"]]
+            words = row["storage"] if row["extra"] else row["history"]
+        else:
+            raise ValueError(f"no card sentence is read for the {claim} claim")
+        return words, list(dict.fromkeys(keys))
+
     def read(id_, claim):
         return page.evaluate(
             """([id, claim]) => {
@@ -377,11 +399,13 @@ def card_check(page, dataset, checked):
             [id_, claim],
         )
 
-    # A row with a plan and a row without one: the two 3-year figures are the
-    # page's own arithmetic, and their cards have to show the sum they are.
+    # A row with a plan, a row without one, and the row whose card opened this
+    # check: the two 3-year figures are the page's own arithmetic and have to
+    # show the sum they are, and the recording verdict has to quote the row.
     for id_, claim, title in (
         ("reo-poe", "nosub", "Reolink Video Doorbell PoE \u00b7 The 3-year cost with no plan"),
         ("ring", "plan", "Ring Battery Video Doorbell 2K \u00b7 The 3-year cost with a plan"),
+        ("nest", "rec", "Google Nest Doorbell (battery) \u00b7 Records free without a plan"),
     ):
         row = next((r for r in dataset.ROWS if r["id"] == id_), None)
         if row is None:
@@ -395,14 +419,15 @@ def card_check(page, dataset, checked):
             problems.append(f"the {id_} {claim} card opened without taking the reader to it")
         if state["title"] != title:
             problems.append(f"the {id_} {claim} card is titled {state['title']!r}, expected {title!r}")
-        words = row["sub_text"] if claim == "plan" and row["sub"] is not None else row["storage"]
+        words, keys = card_words(row, claim)
         if state["say"] != words:
             problems.append(f"the {id_} {claim} card quotes {state['say']!r}, expected {words!r}")
-        if state["arc"] != row["maths_sub" if claim == "plan" else "maths_free"]:
-            problems.append(f"the {id_} {claim} card shows the sum as {state['arc']!r}")
-        keys = [k for k in dict.fromkeys((row["price_src"], row["rec_src"]))] if claim == "nosub" else [row["plan_src"]]
-        if claim == "plan" and row["sub"] is not None:
-            keys = [row["plan_src"], row["price_src"]]
+        # A recording verdict is not a sum, so only the totals carry one.
+        want_arc = "" if claim == "rec" else row["maths_sub" if claim == "plan" else "maths_free"]
+        if state["arc"] != want_arc:
+            problems.append(
+                f"the {id_} {claim} card shows the sum as {state['arc']!r}, expected {want_arc!r}"
+            )
         want = [[dataset.S[k][0], dataset.S[k][1]] for k in keys]
         if state["srcs"] != want:
             problems.append(f"the {id_} {claim} card lists {state['srcs']}, expected {want}")
@@ -432,6 +457,56 @@ def card_check(page, dataset, checked):
         )
         if closed["open"] or not closed["back"]:
             problems.append(f"closing the {id_} {claim} card left {closed} behind")
+
+    # The two recording figures sit on every row, so their cards are read on
+    # every row: one row was enough to find the fault, and not enough to hold
+    # it, because whether the sentence answers the figure turns on what that
+    # row's no-plan route does rather than on anything the row's neighbours do.
+    every = page.evaluate(
+        """() => {
+            const card = document.getElementById('card');
+            const out = [];
+            for (const item of document.querySelectorAll('tbody.item')) {
+                for (const claim of ['rec', 'nosub']) {
+                    const a = item.querySelector('a.src[data-claim="' + claim + '"]');
+                    if (!a) {
+                        out.push({ id: item.dataset.id, claim, missing: true });
+                        continue;
+                    }
+                    a.click();
+                    out.push({
+                        missing: false, id: item.dataset.id, claim, open: card.open,
+                        say: card.querySelector('.card-say').textContent.trim(),
+                        srcs: Array.from(card.querySelectorAll('.card-srcs a'))
+                            .map((l) => l.getAttribute('href'))
+                    });
+                    card.close();
+                }
+            }
+            return out;
+        }"""
+    )
+    for state in every:
+        row = next((r for r in dataset.ROWS if r["id"] == state["id"]), None)
+        if row is None:
+            problems.append(f"the table has a {state['id']} row the dataset does not")
+            continue
+        if state.get("missing"):
+            problems.append(f"{state['id']} has no {state['claim']} source card")
+            continue
+        if not state["open"]:
+            problems.append(f"the {state['id']} {state['claim']} card did not open")
+        words, keys = card_words(row, state["claim"])
+        if state["say"] != words:
+            problems.append(
+                f"the {state['id']} {state['claim']} card quotes {state['say']!r}, "
+                f"expected the row's own {words!r}"
+            )
+        want = [dataset.S[k][1] for k in keys]
+        if state["srcs"] != want:
+            problems.append(
+                f"the {state['id']} {state['claim']} card lists {state['srcs']}, expected {want}"
+            )
 
     # The comparison repeats the table's figures, so it has to repeat their
     # cards: the anchor there is copied from the row's own, and this is what
@@ -2080,7 +2155,7 @@ CHECKS = [
     ),
     Check(
         "source card", "compare", 89,
-        "every figure opens its own source card, carrying the page, the sentence, the sum and the day it was checked, and the comparison's figures open the table's own card",
+        "every figure opens its own source card, carrying the page, the row's own sentence for that figure, the sum and the day it was checked, and the comparison's figures open the table's own card",
         lambda ctx: card_check(ctx.page, ctx.dataset, ctx.checked),
     ),
     Check(
