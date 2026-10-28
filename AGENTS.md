@@ -7,6 +7,33 @@ files. `index.html`, the `doorbells.html` redirect, `404.html`,
 `data/doorbells.md` are generated from `ROWS`. Run `python build/check.py`
 before committing.
 
+## Categories
+
+`build/catalog.py` holds `CATEGORIES`, one record per category: its route and
+file names, its nouns and copy, the row keys it needs, its facets and the
+vocabularies of its record, power and verdicts, its score parts, the claims a
+figure can carry, the comparison's rows and pinned count, its sort options, and
+the method, CSV and markdown words. `build.py` renders a record and knows no
+product; `rows.py` authors every product, including its verdict and its plain
+sentences, so a product is written in one file.
+
+To bring a second category online:
+
+1. add its record to `CATEGORIES`, with `route="cameras/"` for a page below the
+   site root (`""` is the root). Asset links take one `../` per directory;
+2. add its rows to `ROWS`, each carrying a `cat` and facets drawn from that
+   record;
+3. run `python build/build.py` and `python build/check.py`. `category records`
+   reads the new page back and fails on a count that misses its rows, a headline
+   verdict no row carries, a file name the record does not own, an asset link
+   that does not resolve from its route, or two `h1`s; `category words` fails if
+   the copy still speaks another category's nouns.
+
+`row_problems()` validates every row against its category and stops the build
+with the row's id and the reason: an unknown key, a missing facet, a `rec`,
+`power` or `ha` outside the vocabulary, a score part over its maximum, and a row
+with no route to recordings at all.
+
 ## Sourcing rules
 
 Each row in `ROWS` has a `src` list of footnote keys, five claim keys
@@ -43,7 +70,10 @@ price, or, where the row has no plan, the page that says none is needed.
   `STICK` — are priced on the leading brand's right product, at the cheapest
   price found among reputable UK suppliers that publish it, and the row names
   that page in `extra_src`; other kit a sum adds, such as Arlo's SmartHub or
-  Blink's Sync Module 2, is named in `kit_src`. Either key must also be in the
+  Blink's Sync Module 2, is named in `kit_src` and priced in `kit_price`, which
+  plus the sundry and any extra cards has to come to the row's `extra` — the
+  method note prints that price, so it is authored, not recovered by
+  subtraction. Either key must also be in the
   row's `src` list, so the sum's own source card can show every line of its
   arithmetic. `build/check.py` fails if the method note in `index.html` or
   `data/doorbells.md` stops printing either sundry's figure.
@@ -82,3 +112,10 @@ Move it only after re-checking the data.
 - `python build/check.py --only "<name>"` runs one named check (or a
   comma-separated list of name fragments); `--list` prints them. The run also
   starts Firefox and does the structural audit there.
+- The checks take their fixtures from the data by property (`shortlist()`,
+  `family()`, `cheapest()`, `lead_ids()`) and their columns, names and counts
+  from the category record, so a new row or a new category does not mean editing
+  an expected value. A check that names a product id or a count of rows is a bug.
+- The byte budget is a check too (`transfer budget`): the page, the stylesheet
+  and the script are gzipped and measured against the ceilings in
+  `docs/performance-budget.md`. Raising one is a design decision, not a fix.

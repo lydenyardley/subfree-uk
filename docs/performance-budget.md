@@ -19,6 +19,26 @@ they always are.
 | Longest task inside the compare open | 1280px | under 120ms, median of 3 | 0ms | Met |
 | Table movement when the tray opens | 1280px | 0px | 0px | Met |
 
+## The byte budget
+
+| File | Budget, gzipped | Measured 28 October 2026 |
+|---|---|---|
+| `index.html` | 24,000 | 18,868 |
+| `assets/page.css` | 18,000 | 15,298 |
+| `assets/page.js` | 24,000 | 19,682 |
+| The three together, a first visit | 60,000 | 53,848 |
+
+These are the bytes a reader downloads before the page can answer them, so they
+are the one performance number that can be held exactly: same input, same
+output, no machine in between. `build/check.py`'s `transfer budget` check
+rebuilds, gzips the three files at level 9 and fails above any ceiling. The
+headroom is deliberate — a tenth of the total — so a row or a sentence does not
+need a budget edit, while a second category's copy, a dependency or an inline
+data block does.
+The comparison's rows are in the script rather than in a JSON block on purpose:
+the same bytes on the wire, one more parse, and one more copy to fall out of
+step with `ROWS`. If the budget does bind, that is the first trade to revisit.
+
 ## How to measure
 
 `python build/check.py` applies the 4x throttle for the length of the check. It

@@ -6,6 +6,8 @@ Live page: https://lydenyardley.github.io/subfree-uk/
 
 A single static HTML page, one content-versioned stylesheet and one content-versioned script, plus self-hosted product photos in `img/` (sources in `IMAGE_SOURCES.md`). No tracking, cookies, external fonts or third-party scripts. Prices change often, so check the linked sources before buying.
 
+The build is category-driven: `build/catalog.py` holds a record per category and the page, its copy and every check read it, so another category is a record and a set of rows rather than a second build. [AGENTS.md](AGENTS.md) has the steps.
+
 The compare selection lives in the URL. Tick two or three models and the address carries `?cmp=`, so the link and the shortlist text both reopen the same table.
 
 ## Repo layout
@@ -21,7 +23,9 @@ IMAGE_SOURCES.md             where every photo came from, generated
 .nojekyll                    serve files as-is
 build/
   rows.py                    the doorbell data (ROWS), its sources (S) and every derived figure
+  catalog.py                 the category records: route, nouns, copy, facets, vocabularies, claims, comparison shape
   build.py                   the page assembly: index.html, the alias, 404.html, the assets and the two data files
+  checks/                    the audit's families (structure, behaviour, compare, accessibility, performance, browsers, data, category)
   page.css, page.js          the page's stylesheet and script, emitted as hashed assets
   check.py                   rebuild, data recomputation, structure, accessibility and link audit (Playwright, axe-core)
   check_commits.py           commit message format check (run by CI on pull requests)
