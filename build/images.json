@@ -14,6 +14,11 @@
   "page": "https://www.eufy.com/uk/products/T8214311",
   "cropped": true
  },
+ "eufy-c31": {
+  "src": "https://cdn.shopify.com/s/files/1/0504/1094/6753/files/E8223111_E8223J11_E8223J11-11_E8223T11_T8223111_T8223111-80__ProductImage_nocopy.png",
+  "page": "https://www.eufy.com/uk/products/t8223311",
+  "cropped": false
+ },
  "reo-wifi": {
   "src": "https://home-cdn.reolink.us/wp-content/uploads/2022/05/170610101652767810.7304.png",
   "page": "https://reolink.com/gb/product/reolink-video-doorbell-wifi/",

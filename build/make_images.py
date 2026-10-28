@@ -12,6 +12,7 @@ IMGS={
  "ring":("https://en-uk.ring.com/cdn/shop/files/1_Slate_Sunray_Front_ad46b95a-0b98-4a7e-8f06-0304b31312eb.jpg?v=1779257638","https://en-uk.ring.com/products/battery-doorbell-2nd-gen",None,True),
  "nest":("https://lh3.googleusercontent.com/7as7cJnLssK4ejvx-4zNQCRmNoupXijD6fkO4orVEB54bB0SRfQn75qzZNnT4Ud4gqOabRfO-8J0YIBRKkMG9yvK5QWKz2FwRQ=rw-rj-sc0xffffffff","https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB",None,True),
  "eufy-e340":("https://cdn.shopify.com/s/files/1/0504/1094/6753/files/T8214321-UK-DTC-RI00-ExpertReviews.png?v=1749789318","https://www.eufy.com/uk/products/T8214311",(0.55,0,1,1),True),
+ "eufy-c31":("https://cdn.shopify.com/s/files/1/0504/1094/6753/files/E8223111_E8223J11_E8223J11-11_E8223T11_T8223111_T8223111-80__ProductImage_nocopy.png","https://www.eufy.com/uk/products/t8223311",None,True),
  "reo-wifi":("https://home-cdn.reolink.us/wp-content/uploads/2022/05/170610101652767810.7304.png","https://reolink.com/gb/product/reolink-video-doorbell-wifi/",(0,0,0.5,1),True),
  "reo-poe":("https://home-cdn.reolink.us/wp-content/uploads/2023/07/070730451688715045.0661.png","https://reolink.com/gb/product/reolink-video-doorbell-poe/",(0.5,0,1,1),True),
  "reo-batt":("https://home-cdn.reolink.us/wp-content/uploads/2024/10/doorbell-battery-1pack.png","https://reolink.com/gb/product/reolink-doorbell-battery/",None,True),
