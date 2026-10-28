@@ -1,6 +1,6 @@
 # UK video doorbells without a subscription
 
-Last checked 19 October 2026. 14 doorbells. No affiliate links.
+Last checked 19 October 2026. 15 doorbells. No affiliate links.
 
 | Doorbell | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
@@ -10,6 +10,7 @@ Last checked 19 October 2026. 14 doorbells. No affiliate links.
 | Reolink Video Doorbell (Battery) | Yes | [£99.99](https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak) | 7 | £99.99 | £250.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49). |
 | TP-Link Tapo D230S1 | Yes | [£84.99](https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell) | 6 | £110.36 | £192.63 | An easy battery doorbell that keeps footage indoors on its chime/hub | The microSD card is extra, and Home Assistant gets settings and alerts but not the live video. |
 | Aqara Video Doorbell G4 | Yes | [£84.99](https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG) | 6 | £110.36 | — | Apple Home users | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
+| eufy Video Doorbell C31 | Yes | [£89.99](https://www.eufy.com/uk/products/t8223311) | 6 | £115.36 | £233.63 | A cheap eufy with 24/7 recording, if you can hardwire it | 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately. |
 | Reolink Video Doorbell WiFi | Yes | [£93.49](https://store.reolink.com/gb/video-doorbells/) | 7 | £118.86 | £258.37 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
 | Blink Battery Doorbell 2K+ | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C) | 2 | £121.97 | £159.99 | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
 | EZVIZ DB2 Pro Kit | Yes | [£114.99](https://www.ertech.co.uk/product/db2-pro/) | 5 | £140.36 | £294.63 | Flats and rentals: no wiring, and footage stays indoors in the chime | 2.4 GHz Wi-Fi only, and the card is sold separately. |
@@ -62,6 +63,20 @@ Last checked 19 October 2026. 14 doorbells. No affiliate links.
 - **Plans:** Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices
 - **Home Assistant:** Community integration only (ha-eufy-sdk), which still logs in through your eufy account.
 - **Sources:** [eufy UK: E340](https://www.eufy.com/uk/products/T8214311) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [The Verge, Nov 2022](https://www.theverge.com/2022/11/30/23486753/anker-eufy-security-camera-cloud-private-encryption-authentication-storage) · [smarthomeassistant.co.uk guide](https://smarthomeassistant.co.uk/articles/smart-security/best-video-doorbell-no-subscription-uk) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk)
+
+### eufy Video Doorbell C31
+- **Best for:** A cheap eufy with 24/7 recording, if you can hardwire it
+- **Main catch:** 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately.
+- **Price:** £89.99 (eufy UK)
+- **3-year cost, no plan:** £89.99 + £25.37 (SanDisk 64 GB microSD card) = £115.36
+- **3-year cost, with plan:** £89.99 + 36 × £3.99 (eufy Cloud Backup Basic) = £233.63
+- **Storage:** microSD up to 128 GB (not included); optional HomeBase S380
+- **Free:** live view yes; alerts yes; smart detection: Free: human and motion detection
+- **History without plan:** Yes, event clips on the card; 24/7 continuous recording only when hardwired
+- **Paywalled:** Nothing essential; cloud backup is optional
+- **Plans:** Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices
+- **Home Assistant:** Community integration only (ha-eufy-sdk), which still logs in through your eufy account.
+- **Sources:** [eufy UK: C31](https://www.eufy.com/uk/products/t8223311) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
 
 ### Reolink Video Doorbell WiFi
 - **Best for:** Homes with existing doorbell wiring, plus Home Assistant or NVR users
