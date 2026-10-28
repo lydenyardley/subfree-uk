@@ -468,6 +468,10 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
  .main-t thead th{font-size:12px}
 }
 @media (max-width:820px){
+ /* The desktop width cap and the euro clause would wrap the sort note to a second line and push the first
+    doorbell off the first screen; it stays in the note for screen readers. */
+ .sortnote{max-width:none}
+ .sortnote .eu-note{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
  body{font-size:15px}
  .wrap{padding:0 1rem}
  .intro{grid-template-columns:1fr;gap:1rem;padding:2rem 0}

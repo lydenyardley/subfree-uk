@@ -93,6 +93,7 @@ PHONE_JS = r"""() => {
     open: filters ? filters.open : null,
     firstRowTop: row ? Math.round(row.getBoundingClientRect().top) : -1,
     viewport: window.innerHeight,
+    sortNoteLines: (() => { const n = document.getElementById("sortnote"); if (!n || !n.textContent.trim()) return 0; return Math.round(n.getBoundingClientRect().height / parseFloat(getComputedStyle(n).lineHeight)); })(),
     verdict: verdict ? getComputedStyle(verdict).display : null,
     shortAnswer: short ? getComputedStyle(short).display : null
   };

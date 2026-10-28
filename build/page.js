@@ -36,8 +36,14 @@ function markSort(){
  // note says so: the order does not mix currencies without a word.
  var eu=skey==='keep3'||skey==='sub3';
  if(eu)eu=items.some(function(t){return !t.hidden&&t.getAttribute('data-region')==='EU'});
- var text=(SORT_NOTES[skey]||'')+(eu?' One plan price is in euros.':'');
- if(note&&note.textContent!==text)note.textContent=text;
+ // The euro clause is its own span so a phone can keep it for screen readers
+ // without it wrapping the note onto a second line; each euro row's plan cell
+ // already says so on screen.
+ var base=SORT_NOTES[skey]||'',text=base+(eu?' One plan price is in euros.':'');
+ if(note&&note.textContent!==text){
+  note.textContent=base;
+  if(eu){var s=document.createElement('span');s.className='eu-note';s.textContent=' One plan price is in euros.';note.appendChild(s)}
+ }
  items.forEach(function(t){
   var cells=t.querySelectorAll('.c-nosub,.c-sub');
   for(var i=0;i<cells.length;i++)cells[i].classList.remove('keep');

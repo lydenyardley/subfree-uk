@@ -79,13 +79,15 @@ def phone_first_paint(phone):
         and phone["firstRowTop"] < 600
         and phone["verdict"] == "none"
         and phone["shortAnswer"] == "block"
+        and phone["sortNoteLines"] <= 1
     ):
         return []
     return [
         "phone first paint: "
         f"filters open={phone['open']}, first product at "
         f"{phone['firstRowTop']}px of {phone['viewport']}px, "
-        f"verdict={phone['verdict']}, short answer={phone['shortAnswer']}"
+        f"verdict={phone['verdict']}, short answer={phone['shortAnswer']}, "
+        f"sort note lines={phone['sortNoteLines']}"
     ]
 
 def short_answer_check(page):
