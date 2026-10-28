@@ -1,3 +1,8 @@
-Pillow>=10
-playwright>=1.49
-axe-playwright-python>=0.1.8
+# Pinned to the versions the audit last passed with. An unpinned Playwright
+# ships a different browser build and an unpinned axe-playwright-python a
+# different axe-core, so every check would be measuring something newer than the
+# last commit that said it passed. Bump these together, run
+# `python build/check.py`, and name the versions in the commit message.
+Pillow==13.0.0
+playwright==1.64.0
+axe-playwright-python==0.1.8

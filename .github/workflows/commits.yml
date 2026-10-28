@@ -14,7 +14,8 @@ jobs:
     name: Commit messages
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Pinned by commit; `v4` in the comment is the tag this was.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
         with:
           # The whole history, so the range below has both ends to walk. A
           # shallow clone leaves the base commit missing and the check passes
