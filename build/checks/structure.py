@@ -1,7 +1,9 @@
 """The shape of the document and of the files the build writes."""
 import hashlib
 import os
+import re
 
+from catalog import CATEGORIES
 from .behaviour import contain_check
 from .compare import COMPARE_ROWS
 from .context import ROOT, WIDTHS, open_compare
@@ -37,32 +39,38 @@ def emitted_sources(pages):
     happy. `rebuild` covers the other half: that the committed file is what the
     build would write.
     """
-    html = pages["index.html"]
     problems = []
-    for name, link in (("assets/page.css", "href"), ("assets/page.js", "src")):
-        path = os.path.join(ROOT, name)
-        if not os.path.exists(path):
-            problems.append(f"{name} is missing")
-            continue
-        text = open(path, encoding="utf-8").read()
-        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:10]
-        if f'{link}="{name}?v={digest}"' not in html:
-            problems.append(f"the page does not load {name}?v={digest}")
-    if "<style>" in html:
-        problems.append("the page still inlines its stylesheet")
-    if "@@DATA@@" in html or "@@CHECKED@@" in html:
-        problems.append("a build placeholder leaked into the page")
+    for cat in CATEGORIES:
+        html = pages[cat["page"]]
+        for name, link in (("assets/page.css", "href"), ("assets/page.js", "src")):
+            path = os.path.join(ROOT, name)
+            if not os.path.exists(path):
+                problems.append(f"{name} is missing")
+                continue
+            text = open(path, encoding="utf-8").read()
+            digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:10]
+            # A nested route reaches the assets one level up, so only the file
+            # and its hash are fixed.
+            if not re.search(rf'{link}="(?:\.\./)*{re.escape(name)}\?v={digest}"', html):
+                problems.append(f"{cat['page']} does not load {name}?v={digest}")
+        if "<style>" in html:
+            problems.append(f"{cat['page']} still inlines its stylesheet")
+        if "@@DATA@@" in html or "@@CHECKED@@" in html:
+            problems.append(f"a build placeholder leaked into {cat['page']}")
     return problems
 
 def alias_problems(pages):
-    alias = pages["doorbells.html"]
     problems = []
-    if 'http-equiv="refresh"' not in alias or "url=./" not in alias:
-        problems.append("doorbells.html is not a redirect to ./")
-    if len(alias) > 1000:
-        problems.append(f"doorbells.html is {len(alias)} bytes; it should be a redirect, not a copy")
-    if pages["index.html"] == alias:
-        problems.append("index.html and doorbells.html are identical again")
+    for cat in CATEGORIES:
+        alias = pages[cat["alias"]]
+        if 'http-equiv="refresh"' not in alias or "url=./" not in alias:
+            problems.append(f"{cat['alias']} is not a redirect to ./")
+        if len(alias) > 1000:
+            problems.append(
+                f"{cat['alias']} is {len(alias)} bytes; it should be a redirect, not a copy"
+            )
+        if pages[cat["page"]] == alias:
+            problems.append(f"{cat['page']} and {cat['alias']} are identical again")
     return problems
 
 def phone_first_paint(phone):
@@ -407,12 +415,14 @@ def overflow_check(page):
 def table_name_check(page):
     """The table says what it is, and the skip link names the same table.
 
-    A screen reader landed on an unnamed table of 14 rows and 8 columns, from a
-    link that promised "the comparison table" and pointed at the doorbell one.
+    A screen reader landed on an unnamed table of rows and columns, from a link
+    that promised "the comparison table" and pointed at another table. Both
+    names come from the category record, so a second one cannot inherit these.
     """
+    cat = CATEGORIES[0]
     problems = []
     snap = page.locator("#tbl").aria_snapshot()
-    if 'table "Doorbell comparison' not in snap:
+    if f'table "{cat["table_name"]}' not in snap:
         problems.append(f"the table is announced as {snap.splitlines()[0] if snap else 'nothing'}")
     skip = page.evaluate(
         """() => {
@@ -420,7 +430,7 @@ def table_name_check(page):
             return { text: (a.textContent || '').trim(), href: a.getAttribute('href') };
         }"""
     )
-    if skip["href"] != "#tbl" or "doorbell table" not in skip["text"].lower():
+    if skip["href"] != "#tbl" or skip["text"] != cat["skip"]:
         problems.append(f"the skip link reads {skip['text']!r} and points at {skip['href']!r}")
     return problems
 
@@ -441,7 +451,7 @@ def mast_remit_check(page):
     problems = []
     if not state["remit"]:
         problems.append("the masthead states no remit at 390")
-    if "doorbells to compare" not in state["count"]:
+    if f"{CATEGORIES[0]['nouns']} to compare" not in state["count"]:
         problems.append(f"the count line reads {state['count']!r}")
     return problems
 
@@ -544,11 +554,11 @@ def compare_caption_check(page):
             rows: document.querySelectorAll("#cmp-table tbody tr").length
         })"""
     )
-    if "Side-by-side comparison of 3 doorbells" in compare["caption"] and (
-        compare["rows"] == COMPARE_ROWS
-    ):
+    cat = CATEGORIES[0]
+    want = cat["cmp_caption"].replace("{count}", "3").replace("{nouns}", cat["nouns"])
+    if want in compare["caption"] and compare["rows"] == COMPARE_ROWS:
         return []
-    return [f"compare table: {compare}"]
+    return [f"compare table: {compare}, expected a caption naming {want!r}"]
 
 CHECKS = [
     Check(

@@ -40,9 +40,13 @@ class Skip(Exception):
 
 def registry():
     """Every check, in the order it runs."""
-    from . import accessibility, behaviour, browsers, compare, data, performance, structure
+    from . import (
+        accessibility, behaviour, browsers, category, compare, data, performance, structure,
+    )
 
-    modules = (data, structure, behaviour, compare, accessibility, performance, browsers)
+    modules = (
+        data, category, structure, behaviour, compare, accessibility, performance, browsers,
+    )
     checks = [check for module in modules for check in module.CHECKS]
     checks.sort(key=lambda check: check.order)
 

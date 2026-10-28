@@ -31,6 +31,20 @@ sup{font-size:11px}
 #theme i{display:inline-block;width:10px;height:10px;margin-right:0.4rem;border-radius:50%;border:1.5px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);transition:transform .18s ease}
 :root[data-theme=dark] #theme i{transform:rotate(180deg)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #theme i{transform:rotate(180deg)}}
+/* The button names the theme it switches to. Both names are in the markup and
+   the stylesheet picks one, so the first frame is right before any script runs:
+   a page that is already dark does not offer "Dark mode". */
+#theme .t-light{display:none}
+:root[data-theme=light] #theme .t-dark{display:inline}
+:root[data-theme=dark] #theme .t-dark{display:none}
+:root[data-theme=dark] #theme .t-light{display:inline}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #theme .t-dark{display:none} :root:not([data-theme=light]) #theme .t-light{display:inline}}
+/* A second category is a second page, and the masthead is how a reader crosses
+   between them. */
+.cats{display:flex;gap:1rem;margin-left:auto}
+.cats a{color:var(--ink2);text-decoration:none;border-bottom:1px solid transparent}
+.cats a:hover{color:var(--ink);border-bottom-color:currentColor}
+.cats a[aria-current=page]{color:var(--ink);border-bottom-color:var(--ink)}
 .intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
 h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
 .dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}
@@ -55,7 +69,7 @@ tbody.item[data-v] tr.main>td.c-cmp{border-left:3px solid var(--vc)}
 .controls{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--rule)}
 .filters>summary{display:none}
 .fbody{display:flex;flex-wrap:nowrap;gap:1rem 2rem;align-items:flex-start}
-fieldset{border:0;margin:0;padding:0;min-width:0}
+fieldset{border:0;margin:0;padding:0;min-width:0;min-inline-size:0}
 legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);padding:0;margin-bottom:1rem;display:block}
 .opts{display:flex;flex-wrap:wrap;gap:1rem}
 .opts label{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}
@@ -78,7 +92,10 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
 .dual-vals{display:flex;justify-content:space-between;gap:1rem;margin-top:0.5rem;font:600 13px var(--sans);font-variant-numeric:tabular-nums;color:var(--ink2)}
 .sortby{margin-left:auto}
 /* The note under the sort control: which figure the order follows. */
-.sortnote{margin:.25rem 0 0;font:12px/1.35 var(--sans);color:var(--ink2)}
+/* The note may gain a sentence (a euro plan price in a pound order), and it
+   must not widen the control it sits in: it wraps inside the width the note
+   already took. */
+.sortnote{margin:.25rem 0 0;font:12px/1.35 var(--sans);color:var(--ink2);max-width:24em}
 select{font:14px var(--sans);padding:0 1rem;min-height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:0}
 .count{flex:1 0 100%;margin:0;font-size:13px;color:var(--ink2)}
 .cap{display:inline-block;margin-left:.4rem;color:var(--v-avoid);font-weight:600}
@@ -418,7 +435,11 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
 .foot a{color:var(--ink2)}
 /* Back to top, once the reader is into the table. It sits clear of the
    compare tray, which takes the bottom of the screen when it is open. */
-.totop{position:fixed;right:1rem;bottom:4.5rem;z-index:6;width:44px;height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);font:600 16px/1 var(--sans);cursor:pointer;box-shadow:0 1px 4px rgb(0 0 0 / .2)}
+/* The wrapper is the landmark the button sits in: the button keeps its button
+   role and its name, and the control is inside something a screen reader can
+   jump to. */
+.totop-w{position:fixed;right:1rem;bottom:4.5rem;z-index:6}
+.totop{width:44px;height:44px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);font:600 16px/1 var(--sans);cursor:pointer;box-shadow:0 1px 4px rgb(0 0 0 / .2)}
 .totop:hover{border-color:var(--ink)}
 .totop:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 /* The 404 page, in the site's own styles. */

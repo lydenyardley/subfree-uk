@@ -1,6 +1,17 @@
 """The comparison view, from the tray it grows out of to the table it becomes."""
-from .context import SHORTLIST_IDS, open_compare
+from catalog import CATEGORIES, words
+from .context import FAMILY, THREE, open_compare
 from .registry import Check
+
+CAT = CATEGORIES[0]
+# The record's copy with its period written out, which is what the page prints.
+WORDS = words(CAT)
+# The fixtures as JavaScript literals. They are read from the dataset when this
+# module loads, so a check never names a product that a data edit removed.
+SHORT = ", ".join(f"'{i}'" for i in THREE)
+SHORT_TWO = ", ".join(f"'{i}'" for i in (THREE or ("", ""))[:2])
+FIRST_SHORT = (THREE or ("",))[0]
+FAM = ", ".join(f"'{i}'" for i in FAMILY)
 
 
 def costrow_check(page, row_count, cells):
@@ -24,7 +35,7 @@ def costrow_check(page, row_count, cells):
             };
         }"""
     )
-    if state["label"] != "Cheapest way to record for 3 years":
+    if state["label"] != f"Cheapest way to record for {CAT['period']}":
         problems.append(f"the compare cost row is labelled {state['label']!r}")
     read = {cell["id"]: cell["text"] for cell in state["cells"]}
     if read != cells:
@@ -40,7 +51,7 @@ def costrow_check(page, row_count, cells):
         )
     return problems
 
-def marks_check(page):
+def marks_check(page, rows):
     """The comparison marks what is missing, and leaves good news unmarked.
 
     A missing feature is worth a reader's attention, so it is coloured. The
@@ -53,7 +64,7 @@ def marks_check(page):
     problems = []
     page.evaluate(
         """() => {
-            const ids = ['ring', 'reo-poe', 'aqara-g4'];
+            const ids = [""" + SHORT + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -76,6 +87,7 @@ def marks_check(page):
                 return Array.from(tr.querySelectorAll('td')).map((td) => {
                     const rec = td.querySelector('.rec');
                     return {
+                        id: td.dataset.id || '',
                         text: td.textContent.trim().slice(0, 30),
                         marked: !!td.querySelector('.cmp-no'),
                         rec: rec ? rec.className : ''
@@ -96,30 +108,42 @@ def marks_check(page):
             problems.append(f"the comparison has no {label} row to read")
     if problems:
         return problems
-    # The columns are in the table's order, not the order they were ticked,
-    # so the assertions read the cells rather than count them.
-    # The record marker is the list's own, so a "No" reads the same in both
-    # places and colour is not the only signal.
-    no = [cell for cell in state["rec"] if cell["rec"] == "rec rec-no"]
-    yes = [cell for cell in state["rec"] if cell["rec"] == "rec rec-yes"]
-    if len(no) != 1 or len(yes) != 2:
-        problems.append(f"the record markers are wrong: {state['rec']}")
-    # One of the three has no storage and no free history, and both are
-    # marked. The other two have both, and neither is marked.
+    # The expected marks come from the rows themselves. The columns are in the
+    # table's order, not the order they were ticked, so each cell says which
+    # model it belongs to and every assertion reads that row.
+    by_id = {row["id"]: row for row in rows if row["id"] in THREE}
+    readable = {cell["id"] for cell in state["rec"]}
+    if set(by_id) != readable:
+        problems.append(f"the comparison shows {sorted(readable)} for {sorted(by_id)}")
+    for cell in state["rec"]:
+        row = by_id.get(cell["id"])
+        if row is None:
+            continue
+        # The record marker is the list's own, so a "No" reads the same in both
+        # places and colour is not the only signal.
+        want = f"rec rec-{row['rec']}"
+        if cell["rec"] != want:
+            problems.append(f"{cell['id']}'s record marker is {cell['rec']!r}, expected {want!r}")
+    # A feature the row does not have is marked; one it has is not. "None" is
+    # the page's word for missing, so each cell is read against its own row.
     for label in ("storage", "history"):
-        marked = [cell for cell in state[label] if cell["marked"]]
-        if len(marked) != 1 or not marked[0]["text"].startswith("None"):
-            problems.append(
-                f"the {label} row does not mark the one that is missing: {state[label]}"
-            )
-    # "None" in the plan row and the paywall row is good news, and is not
-    # marked. Reolink PoE and Aqara are both in this trio.
-    if any(cell["marked"] for cell in state["plan"]):
-        problems.append(f"a plan cell is marked: {state['plan']}")
-    if any(cell["marked"] for cell in state["paywall"]):
-        problems.append(f"a paywall cell is marked: {state['paywall']}")
-    if not any(cell["text"].startswith("None") for cell in state["plan"]):
-        problems.append(f"the plan row has no 'None' in it to read: {state['plan']}")
+        for cell in state[label]:
+            row = by_id.get(cell["id"])
+            if row is None:
+                continue
+            want = str(row[label]).strip().startswith("None")
+            if cell["marked"] != want:
+                problems.append(
+                    f"{cell['id']}'s {label} cell is marked={cell['marked']}, "
+                    f"its row says {row[label]!r}"
+                )
+    # "None" in the plan row and the paywall row is good news, and is never
+    # marked: a doorbell with no plan and nothing held back is the cheapest
+    # option on the page, and painting it red would warn the reader off it.
+    for label in ("plan", "paywall"):
+        marked = [cell["id"] for cell in state[label] if cell["marked"]]
+        if marked:
+            problems.append(f"{', '.join(marked)} carry a marked {label} cell")
     # The verdict a row carries travels into the comparison as the badge under
     # its column's header and the rule under that header, both in the verdict's
     # colour at the 3px of every other verdict line on the page. The spec column
@@ -185,7 +209,7 @@ def marks_check(page):
     # Put the shortlist back for the checks that follow.
     page.evaluate(
         """() => {
-            const ids = ['tapo-td21', 'reo-poe', 'ezviz-ep3x'];
+            const ids = [""" + SHORT + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -257,7 +281,7 @@ def shortlist_check(page, checked=None, dataset=None):
     required = [
         f"SubFree UK shortlist, checked {checked}" if checked else "SubFree UK shortlist, checked",
     ]
-    for id_ in ("tapo-td21", "reo-poe", "ezviz-ep3x"):
+    for id_ in THREE:
         row = next((r for r in dataset.ROWS if r["id"] == id_), None) if dataset else None
         if row is None:
             problems.append(f"no {id_} in the dataset to check the shortlist against")
@@ -273,7 +297,7 @@ def shortlist_check(page, checked=None, dataset=None):
         problems.append(f"the shortlist is not laid out as lines: {lines[:3]}")
     links = [line for line in lines if "?cmp=" in line]
     if len(links) != 1 or not all(
-        model in links[0] for model in ("tapo-td21", "reo-poe", "ezviz-ep3x")
+        model in links[0] for model in THREE
     ):
         problems.append(f"the shortlist link reads {links}")
     if text.count("Best for:") != 3 or text.count("Main catch:") != 3:
@@ -290,7 +314,7 @@ def diff_check(page, compare_rows):
     problems = []
     page.evaluate(
         """() => {
-            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            const ids = [""" + FAM + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -349,7 +373,9 @@ def diff_check(page, compare_rows):
                 allIdentical: same,
                 pinnedHidden: rows.filter((tr) => tr.dataset.pin && tr.hidden)
                     .map((tr) => tr.querySelector('th').textContent),
-                pinned: rows.filter((tr) => tr.dataset.pin).length
+                pinned: rows.filter((tr) => tr.dataset.pin).length,
+                pinnedLabels: rows.filter((tr) => tr.dataset.pin)
+                    .map((tr) => tr.querySelector('th').textContent)
             };
         }"""
     )
@@ -361,8 +387,19 @@ def diff_check(page, compare_rows):
         problems.append("the toggle hides a row that is not identical")
     if on["pinnedHidden"]:
         problems.append(f"the toggle hides a decision row: {on['pinnedHidden']}")
-    if on["pinned"] != 5:
-        problems.append(f"{on['pinned']} rows are pinned, expected the cost row and four decisions")
+    # Which rows are pinned is the record's list of keys, not the first four of
+    # its rows: a row added above the cost rows must not quietly take a pin.
+    expected_pins = [f"Cheapest way to record for {CAT['period']}"]
+    expected_pins += [label for label, key in WORDS["compare"] if key in CAT["pin"]]
+    if on["pinned"] != len(expected_pins):
+        problems.append(
+            f"{on['pinned']} rows are pinned, expected the cost row and {len(CAT['pin'])} "
+            f"decisions ({', '.join(CAT['pin'])})"
+        )
+    elif sorted(on["pinnedLabels"]) != sorted(expected_pins):
+        problems.append(
+            f"the pinned rows read {on['pinnedLabels']}, expected {expected_pins}"
+        )
 
     page.uncheck("#cmp-diff")
     page.wait_for_timeout(120)
@@ -371,7 +408,7 @@ def diff_check(page, compare_rows):
 
     page.evaluate(
         """() => {
-            const ids = ['tapo-td21', 'reo-poe', 'ezviz-ep3x'];
+            const ids = [""" + SHORT + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -394,7 +431,7 @@ def morph_check(page):
     page.emulate_media(reduced_motion="no-preference")
     page.evaluate(
         """() => {
-            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            const ids = [""" + FAM + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -465,7 +502,7 @@ def morph_check(page):
                 root: getComputedStyle(r, '::view-transition-old(root)').animationName,
                 named: anims.filter((a) => (a.effect.pseudoElement || '').includes('cmp-tray')).length,
                 rows: anims.filter((a) => /cmp-[np]-/.test(a.effect.pseudoElement || '')).length,
-                rowDur: getComputedStyle(r, '::view-transition-group(cmp-n-reo-poe)').animationDuration,
+                rowDur: getComputedStyle(r, '::view-transition-group(cmp-n-""" + FIRST_SHORT + """)').animationDuration,
                 // Every other line here reads the name off the element, and a
                 // name that never became a snapshot still reads back. The group
                 // is the evidence that both halves were captured: no group, no
@@ -662,7 +699,7 @@ def morph_check(page):
     page.emulate_media(reduced_motion="reduce")
     page.evaluate(
         """() => {
-            const ids = ['tapo-td21', 'reo-poe'];
+            const ids = [""" + SHORT_TWO + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -734,13 +771,14 @@ def morph_check(page):
         problems.append(f"without the API the panel does not open or the tray stays: {fallback}")
 
     # Unticking below two closes the panel and leaves focus where the reader is.
-    page.focus("input.cmp[value='tapo-td21']")
+    page.focus(f"input.cmp[value='{THREE[0]}']")
     page.evaluate(
-        """() => {
-            const c = document.querySelector("input.cmp[value='reo-poe']");
+        """(id) => {
+            const c = document.querySelector("input.cmp[value='" + id + "']");
             c.checked = false;
             c.dispatchEvent(new Event('change', { bubbles: true }));
-        }"""
+        }""",
+        THREE[1],
     )
     page.wait_for_timeout(200)
     implicit = page.evaluate(
@@ -753,7 +791,7 @@ def morph_check(page):
     )
     if implicit["panel"] or not implicit["tray"] or implicit["checked"] != 1:
         problems.append(f"unticking below two did not close the panel: {implicit}")
-    if implicit["focus"] != "tapo-td21":
+    if implicit["focus"] != THREE[0]:
         problems.append(f"unticking below two moved focus to {implicit['focus']}")
 
     page.evaluate(
@@ -990,14 +1028,14 @@ def share_check(page):
         )
         # Which three, not in which order: the table's order follows the sort,
         # and the columns' own order is what `compare column move` reads.
-        if sorted(restored["checked"]) != sorted(["tapo-td21", "reo-poe", "ezviz-ep3x"]):
+        if sorted(restored["checked"]) != sorted(THREE):
             problems.append(f"the shared link restored {restored['checked']}")
-        if restored["rows"] != 18 or not restored["compare"]:
+        if restored["rows"] != COMPARE_ROWS or not restored["compare"]:
             problems.append(f"the shared link did not reopen the compare table: {restored}")
         if len(restored["names"]) != 3:
             problems.append(f"the shared compare table names {restored['names']}")
         base = href.split("?")[0]
-        extra.goto(base + "?cmp=reo-poe,bogus,reo-poe", wait_until="load")
+        extra.goto(base + f"?cmp={THREE[0]},bogus,{THREE[0]}", wait_until="load")
         extra.wait_for_timeout(300)
         filtered = extra.evaluate(
             """() => ({
@@ -1006,27 +1044,19 @@ def share_check(page):
                 search: location.search
             })"""
         )
-        if filtered["checked"] != ["reo-poe"]:
+        if filtered["checked"] != [THREE[0]]:
             problems.append(f"unknown and duplicate ids were kept: {filtered['checked']}")
         if filtered["compare"]:
             problems.append("a one-model link opens the compare table")
-        if filtered["search"] != "?cmp=reo-poe":
+        if filtered["search"] != f"?cmp={THREE[0]}":
             problems.append(f"the link was not cleaned up: {filtered['search']}")
     finally:
         extra.close()
     return problems
 
-# The compare table prints these spec rows under one cost row. The count is a
-# property of that table, not of ROWS, so it is named here rather than counted
-# from the dataset.
-SPEC_ROWS = [
-    "Records free?", "Price", "Free features", "3 yrs, no plan", "3 yrs, with plan",
-    "Best for", "Main catch", "Power", "Storage", "Live view", "Motion alerts",
-    "Smart detection", "History, no plan", "Behind the paywall", "Plans",
-    "Home Assistant", "Wi-Fi",
-]
-
-COMPARE_ROWS = len(SPEC_ROWS) + 1
+# The compare table prints the category's spec rows under one cost row, so the
+# count is the record's plus the total.
+COMPARE_ROWS = len(CAT["compare"]) + 1
 
 def compare_cells(rows):
     """The cheapest 3-year cost for each selected model, keyed by its id.
@@ -1037,7 +1067,7 @@ def compare_cells(rows):
     column it belongs to carries rather than the slot it happens to sit in.
     """
     by_id = {row["id"]: row for row in rows.ROWS}
-    keeps = [(id, by_id[id]["keep3"]) for id in SHORTLIST_IDS]
+    keeps = [(id, by_id[id]["keep3"]) for id in THREE]
     low_id, low = min(keeps, key=lambda pair: pair[1])
     base = f"{by_id[low_id]['brand']} {by_id[low_id]['model']}".replace(" Video Doorbell", "")
     cells = {}
@@ -1260,7 +1290,7 @@ CHECKS = [
     Check(
         "compare markers", "compare", 45,
         "the comparison marks what is missing, leaves the good news alone, and names each row's verdict under its column's header",
-        lambda ctx: marks_check(ctx.page),
+        lambda ctx: marks_check(ctx.page, ctx.rows),
     ),
     Check(
         "comparison scroller", "compare", 46,

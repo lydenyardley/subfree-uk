@@ -1,5 +1,5 @@
 """The performance budget, measured on the page the reader gets."""
-from .context import open_compare
+from .context import CHEAPEST, open_compare
 from .js import SORT_JS
 from .registry import Check
 
@@ -38,7 +38,7 @@ def perf_check(page):
                 const table = document.getElementById('tbl');
                 const height = table.getBoundingClientRect().height;
                 const top = document.querySelector('#tbl tbody.item').getBoundingClientRect().top;
-                const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+                const ids = [""" + ", ".join(f"'{i}'" for i in CHEAPEST) + """];
                 document.querySelectorAll('input.cmp').forEach((c) => {
                     c.checked = ids.indexOf(c.value) > -1;
                     c.dispatchEvent(new Event('change', { bubbles: true }));

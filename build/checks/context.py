@@ -3,29 +3,86 @@
 A check asks for `phone`, `snapshot` or `lightbox` and the measurement is taken
 once, by the first check that needs it, at the point in the run where the
 sequential audit used to take it. Nothing here writes a file.
+
+The fixtures are chosen from the dataset by the property a check needs, not by
+product id, so adding a product cannot break a check that is not about it, and
+no count is typed in that a fifteenth row would turn into a weaker test.
 """
 import os
 
+from catalog import CATEGORIES
 from .js import AUDIT_JS, COST_JS, HEADER_JS, PHONE_JS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-PAGES = ["index.html", "doorbells.html"]
+PAGES = [cat["page"] for cat in CATEGORIES] + [cat["alias"] for cat in CATEGORIES]
 GENERATED = PAGES + [
-    "data/doorbells.csv",
-    "data/doorbells.md",
+    cat[name] for cat in CATEGORIES for name in ("csv", "md")
+] + [
     "assets/page.css",
     "assets/page.js",
     "404.html",
 ]
-WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390]
+WIDTHS = [1440, 1280, 1100, 1000, 900, 820, 390, 320]
 AXE_WIDTHS = [1280, 820, 390]
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 BEST_PRACTICE_TAG = "best-practice"
-SHORTLIST_IDS = ("tapo-td21", "reo-poe", "ezviz-ep3x")
 
 
-def open_compare(page, ids=SHORTLIST_IDS):
-    """Open every detail row and the comparison for three known models."""
+def pick(rows, predicate, chosen):
+    """The first row that fits, if it is not already in the fixture."""
+    for row in rows:
+        if row["id"] not in chosen and predicate(row):
+            return row["id"]
+    return None
+
+
+def shortlist(rows):
+    """Three rows that between them carry the decision the comparison draws out.
+
+    One that records nothing without a plan, one with nothing to buy, and one
+    that records free for a fee, so the comparison always has a marked "None"
+    and an unmarked one to tell apart. Filled from the cheapest rows if the
+    dataset is too thin for all three.
+    """
+    chosen = []
+    for predicate in (
+        lambda r: r["rec"] == "no" and r["sub"] is not None,
+        lambda r: r["sub"] is None,
+        lambda r: r["free_records"] and r["sub"] is not None,
+    ):
+        found = pick(rows, predicate, chosen)
+        if found:
+            chosen.append(found)
+    for row in sorted(rows, key=lambda r: (r["keep3"] is None, r["keep3"] or 0)):
+        if len(chosen) >= 3:
+            break
+        if row["id"] not in chosen:
+            chosen.append(row["id"])
+    return tuple(chosen[:3])
+
+
+def family(rows):
+    """Three rows of one brand, for the view that hides identical rows.
+
+    The brand with the most rows is the one whose models have anything in
+    common to hide, so it is the busiest brand's three rather than a named one.
+    """
+    counts = {}
+    for row in rows:
+        counts.setdefault(row["brand"], []).append(row["id"])
+    brand = max(counts, key=lambda name: len(counts[name]))
+    return tuple(counts[brand][:3])
+
+
+def cheapest(rows, count=3):
+    """The cheapest rows, for the checks that only need a comparison to open."""
+    ordered = sorted(rows, key=lambda r: (r["keep3"] is None, r["keep3"] or 0))
+    return tuple(row["id"] for row in ordered[:count])
+
+
+def open_compare(page, ids=None):
+    """Open every detail row and the comparison for three datasets rows."""
+    ids = list(ids or THREE)
     page.eval_on_selector_all(
         "button.more",
         "els => els.forEach(el => { if (el.getAttribute('aria-expanded') !== 'true') el.click() })",
@@ -37,12 +94,26 @@ def open_compare(page, ids=SHORTLIST_IDS):
                 c.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }""",
-        list(ids),
+        ids,
     )
     page.wait_for_timeout(250)
     if page.evaluate("() => document.getElementById('compare').hidden"):
         page.click("#tray-go")
         page.wait_for_timeout(350)
+
+
+# The default trio is read from the dataset at import, so the checks below can
+# name a fixture before any of them has run.
+def _from_dataset():
+    import rows as module
+
+    return shortlist(module.ROWS), family(module.ROWS), cheapest(module.ROWS)
+
+
+try:
+    THREE, FAMILY, CHEAPEST = _from_dataset()
+except Exception:                    # the dataset itself is the failure to report
+    THREE, FAMILY, CHEAPEST = (), (), ()
 
 
 class Context:
@@ -71,8 +142,8 @@ class Context:
 
     @property
     def row_count(self):
-        """The rows the page should render; the page's own count when the data did not load."""
-        return len(self.rows) or 14
+        """The rows the page should render, read from the data it was built from."""
+        return len(self.rows)
 
     @property
     def source_count(self):
@@ -81,6 +152,18 @@ class Context:
     @property
     def checked(self):
         return self.dataset.CHECKED if self.dataset else None
+
+    @property
+    def three(self):
+        return self.dataset and shortlist(self.rows) or ()
+
+    @property
+    def family(self):
+        return self.dataset and family(self.rows) or ()
+
+    @property
+    def cheapest(self):
+        return self.dataset and cheapest(self.rows) or ()
 
     def note(self, text):
         self.audit.note(text)
@@ -115,5 +198,5 @@ class Context:
     def ensure_compare(self):
         """Open the comparison once, however many checks ask for it."""
         if not self._compare:
-            open_compare(self.page)
+            open_compare(self.page, self.three)
             self._compare = True

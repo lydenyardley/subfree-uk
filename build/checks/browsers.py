@@ -33,6 +33,7 @@ def nojs_check(browser, url, row_count, source_count):
         page = context.new_page()
         page.goto(url, wait_until="load")
         page.wait_for_timeout(100)
+        first = page.locator("#tbl tbody.item").first
         state = {
             "controls": page.locator(".controls").is_visible(),
             "note": page.locator(".nojs").inner_text()
@@ -41,8 +42,8 @@ def nojs_check(browser, url, row_count, source_count):
             "rows": page.locator("#tbl tbody.item").count(),
             "theme": page.locator("#theme").is_visible(),
             "details": page.locator(".more-w").first.is_visible(),
-            "panel": page.locator("#m-reo-poe tr.detail").is_visible(),
-            "pairs": page.locator("#m-reo-poe .dspec .pair").count(),
+            "panel": first.locator("tr.detail").is_visible(),
+            "pairs": first.locator(".dspec .pair").count(),
             "sources": page.locator("#sources").is_visible(),
             "sourceEntries": page.locator("#sources .fns li").count(),
         }

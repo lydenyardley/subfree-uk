@@ -12,6 +12,10 @@ fails by name instead of printing nothing.
 """
 
 from datetime import date
+from math import ceil
+from urllib.parse import urlparse
+
+from catalog import DOORBELLS as CAT
 
 # The one hand-typed fact: the day the prices and plans were checked. ISO, so
 # the age can be counted; build/check.py warns after 30 days and fails at 60.
@@ -30,8 +34,7 @@ CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
 # A row that buys one names it in extra_src, so its card lists the price.
 CARD = 25.37   # SanDisk High Endurance 64 GB microSDXC (SDSQQNR-064G-GN6IA)
 STICK = 11.99  # SanDisk Ultra Curve 64 GB USB 3.2 flash drive (SDCZ550)
-MINP = 40      # lower end of the price slider; the cheapest doorbell here is £44.99
-MONTHS = 36
+MONTHS = CAT["months"]
 
 # Shared sources (footnote numbers are assigned automatically)
 S = {
@@ -215,7 +218,7 @@ dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec
  power_note="Can be wired to an existing chime for trickle charging, but still runs on its battery.",
  price=84.99, price_note="Argos half price, doorbell + chime bundle (was £169.99)", price_src="argos_arlo",
  extra=round(105.07 + STICK, 2), extra_note="+ Arlo SmartHub £105.07 + SanDisk 64 GB USB stick",
- extra_src="sandisk_stick", kit_src="amz_arlohub", free_records=True,
+ extra_src="sandisk_stick", kit_src="amz_arlohub", kit_label="SmartHub", kit_price=105.07, free_records=True,
  sub=7.99, sub_name="Arlo Secure (1 camera)",
  best="People who already own Arlo cameras",
  catch="Recording needs a £7.99/month plan or a separate hub costing about £105.",
@@ -246,7 +249,7 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
 dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
  price=69.99, price_note="Amazon UK RRP (deals as low as £29.99)", price_src="amz_blink",
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
- extra_src="sandisk_stick", kit_src="camel_sm2", free_records=True,
+ extra_src="sandisk_stick", kit_src="camel_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
  sub=2.50, sub_name="Blink Basic",
  best="The cheapest way into Amazon's ecosystem, if you catch a deal",
  catch="Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.",
@@ -301,6 +304,44 @@ dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wire
  rec_src="hik_ds", history_src="hik_ds", ha_src="hik_ds", plan_src="hik_ds", unverified=""),
 ]
 
+# ---------- each row's verdict and its plain words ----------
+# Authored beside the rows and attached to them below, so a row carries its own
+# verdict and sentences by the time anything reads it.
+VERDICT = {
+    "reo-poe": "best", "reo-wifi": "wired", "reo-batt": "batt",
+    "tapo-d230": "easy", "ring": "avoid", "blink": "avoid", "arlo": "avoid",
+}
+PLAIN = {
+    "ring": ("Runs on the battery, or you can wire it to your existing chime.",
+             "None. The doorbell has no storage of its own and no hub to hold the footage."),
+    "nest": ("Runs on the battery, or you can wire it to your existing chime.",
+             "None. The doorbell has no storage of its own and no hub to hold the footage."),
+    "eufy-e340": ("Runs on the battery, or you can wire it to your existing chime.",
+                  "8 GB is built into the doorbell, so it records on its own. The optional HomeBase S380 (16 GB, expandable) holds more."),
+    "reo-wifi": ("Wired to your existing doorbell chime.",
+                 "A microSD card in the doorbell (up to 256 GB), or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video."),
+    "reo-poe": ("Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.",
+                "A microSD card in the doorbell, or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video."),
+    "reo-batt": ("Runs on the battery, or you can wire it to your existing chime.",
+                 "A microSD card in the doorbell, or a Reolink Home Hub indoors (up to 1 TB)."),
+    "tapo-d230": ("Battery only.",
+                  "A microSD card (up to 512 GB) in the indoor H200 hub, so the footage stays in the house."),
+    "tapo-td21": ("Battery only.",
+                  "A microSD card (up to 512 GB) in the doorbell itself, so the card comes out with the doorbell if it is stolen."),
+    "arlo": ("Battery only, though you can wire it to an existing chime for trickle charging.",
+             "Recording needs an Arlo SmartHub (VMB4540, with a USB stick) or a Base Station."),
+    "aqara-g4": ("Runs on AA batteries, or you can wire it to your existing chime.",
+                 "A microSD card (up to 512 GB) in the indoor chime."),
+    "blink": ("Battery only.",
+              "Recording needs a Sync Module 2 and a USB stick (1–256 GB). The clips are not encrypted."),
+    "ezviz-ep3x": ("Battery only.",
+                   "32 GB is built in, so no card is needed."),
+    "ezviz-db2": ("Battery only.",
+                  "A microSD card (up to 256 GB) in the indoor chime that comes with it."),
+    "hik": ("Wired to your existing doorbell chime.",
+            "A microSD card (up to 128 GB), and it can stream to an NVR over RTSP."),
+}
+
 # ---------- row shape ----------
 # The unknown-key test is what catches a misspelling, which would otherwise read
 # as a valid optional field and quietly skip a sentence or print nothing. The
@@ -312,16 +353,30 @@ REQUIRED_ROW_KEYS = (
     "best", "catch", "storage", "live", "alerts", "ai", "history",
     "paywalled", "sub_text", "ha_text", "wifi", "score", "src", "unverified",
     "rec_src", "history_src", "ha_src", "plan_src",
+) + CAT["required_keys"]
+OPTIONAL_ROW_KEYS = (
+    "power_note", "cards", "plan_price_region", "extra_src", "kit_src", "kit_label",
+    "kit_price",
 )
-OPTIONAL_ROW_KEYS = ("power_note", "cards", "plan_price_region", "extra_src", "kit_src")
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
-    "plan_region", "keep_basis", "keep_note",
+    "plan_region", "keep_basis", "keep_note", "verdict", "plain",
 )
 
-def row_problems():
+def row_problems(cat=None):
+    """Every row against the category's row shape, by name.
+
+    `rows.py` runs this before `build.py` writes anything, and the audit runs it
+    over the files that shipped. A missing key, an unknown key, a source that
+    does not resolve, a source that is not https, a verdict outside the
+    category's vocabulary and a row with no plain sentence are all named rather
+    than printed blank.
+    """
+    cat = cat or CAT
+    rows = cat.get("rows") or ROWS
+    sources = cat.get("sources") or S
     problems = []
-    for r in ROWS:
+    for r in rows:
         rid = r.get("id", "(no id)")
         missing = [k for k in REQUIRED_ROW_KEYS if k not in r]
         allowed = REQUIRED_ROW_KEYS + OPTIONAL_ROW_KEYS + DERIVED_ROW_KEYS
@@ -329,14 +384,88 @@ def row_problems():
         if missing: problems.append(f"{rid}: missing {', '.join(missing)}")
         if unknown: problems.append(f"{rid}: unknown {', '.join(unknown)}")
         for key in ("price_src", "rec_src", "history_src", "ha_src", "plan_src", "extra_src", "kit_src"):
-            if key in r and r[key] not in S:
-                problems.append(f"{rid}: {key} {r[key]!r} is not in S")
+            if key in r and r[key] not in sources:
+                problems.append(f"{rid}: {key} {r[key]!r} is not in the category's sources")
             if key in r and r[key] not in r.get("src", []):
                 problems.append(f"{rid}: {key} {r[key]!r} is not in the row's src list")
         if r.get("cards", 1) < 1:
             problems.append(f"{rid}: cards must be at least 1")
         if r.get("plan_price_region", "UK") not in ("UK", "EU"):
             problems.append(f"{rid}: plan_price_region must be UK or EU")
+        # A row with no free route to a recording and no plan has nothing to
+        # keep, so `keep3` has no figure to be. The build used to crash in
+        # `min()` with no row named; it now fails here, in words.
+        if not r.get("free_records") and r.get("sub") is None:
+            problems.append(
+                f"{rid}: no route keeps recordings (free_records is false and sub is None)"
+            )
+        # The fields a new row is most likely to get wrong, checked against the
+        # vocabulary the page prints, so a typo names its row instead of raising
+        # a KeyError inside the CSV writer or printing a blank cell.
+        if r.get("rec") not in REC_LABEL:
+            problems.append(
+                f"{rid}: rec {r.get('rec')!r} is not one of {', '.join(REC_LABEL)}"
+            )
+        for value in r.get("power") or ():
+            if value not in POWER_LABEL:
+                problems.append(
+                    f"{rid}: power {value!r} is not one of {', '.join(POWER_LABEL)}"
+                )
+        if not isinstance(r.get("ha"), int) or isinstance(r.get("ha"), bool) or not 0 <= r["ha"] <= 2:
+            problems.append(f"{rid}: ha {r.get('ha')!r} is not a whole number from 0 to 2")
+        parts = r.get("score") or {}
+        for key, value in parts.items():
+            if key not in PART_MAX:
+                problems.append(
+                    f"{rid}: score {key!r} is not one of {', '.join(PART_MAX)}"
+                )
+            elif not isinstance(value, int) or not 0 <= value <= PART_MAX[key]:
+                problems.append(
+                    f"{rid}: score {key} is {value!r}, outside 0 to {PART_MAX[key]}"
+                )
+        missing_parts = [key for key in PART_MAX if key not in parts]
+        if missing_parts:
+            problems.append(f"{rid}: score is missing {', '.join(missing_parts)}")
+        verdict = r.get("verdict")
+        if verdict is not None and verdict not in cat["verdicts"]:
+            problems.append(
+                f"{rid}: verdict {verdict!r} is not one of {', '.join(cat['verdicts'])}"
+            )
+        if r.get("plain") is None:
+            problems.append(f"{rid}: has no plain-language sentence")
+        if r.get("kit_src") and not r.get("kit_label"):
+            problems.append(f"{rid}: buys kit but names no kit_label for the method note")
+        # The kit's own price is authored, not recovered by subtracting a sundry
+        # from the row's extra: the note prints it, and it has to be the price
+        # the cited page published for that box.
+        if r.get("kit_src"):
+            kit = r.get("kit_price")
+            if not isinstance(kit, (int, float)) or kit <= 0:
+                problems.append(f"{rid}: buys kit but names no kit_price")
+                continue
+            card = CARD * (r.get("cards", 1) - 1)
+            want = round(kit + (STICK if r.get("extra_src") else 0) + card, 2)
+            if abs(want - r["extra"]) > 0.005:
+                problems.append(
+                    f"{rid}: extra is {r['extra']:.2f}, but kit_price, the sundry and "
+                    f"the cards come to {want:.2f}"
+                )
+    # A source is a page a reader clicks, so it has to be an https page: the
+    # escaping on the way out keeps the markup intact, not the scheme honest.
+    for key, (_, url) in sources.items():
+        if urlparse(url).scheme != "https":
+            problems.append(f"{key}: {url!r} is not an https page")
+    ids = {r["id"] for r in rows}
+    if rows is ROWS:      # the doorbell module's own tables
+        for rid in VERDICT:
+            if rid not in ids:
+                problems.append(f"VERDICT has an entry for a row that does not exist: {rid}")
+        for rid in PLAIN:
+            if rid not in ids:
+                problems.append(f"PLAIN has an entry for a row that does not exist: {rid}")
+    headlines = [r["id"] for r in rows if r.get("verdict") == cat["headline"]]
+    if not headlines:
+        problems.append(f"no row carries the headline verdict {cat['headline']!r}")
     return problems
 
 
@@ -353,16 +482,23 @@ for r in ROWS:
     # A second card is a second purchase: the base extra has one already.
     if r["cards"] > 1: r["extra"] = round(r["extra"] + CARD * (r["cards"] - 1), 2)
     r["score_total"] = sum(r["score"].values())
+    r["verdict"] = VERDICT.get(r["id"])
+    r["plain"] = PLAIN.get(r["id"])
     r["nosub3"] = round(r["price"] + r["extra"], 2)
     r["sub3"] = round(r["price"] + MONTHS * r["sub"], 2) if r["sub"] is not None else None
     # cheapest way to keep recordings for 3 years
     opts = []
     if r["free_records"]: opts.append(r["nosub3"])
     if r["sub3"] is not None: opts.append(r["sub3"])
-    r["keep3"] = min(opts)
+    # A row with neither route has no total to print. `row_problems()` rejects
+    # it by name before anything is written; `None` here keeps the module
+    # importable so that the guard can run at all.
+    r["keep3"] = min(opts) if opts else None
     # Which of the two 3-year figures the sort uses, and what to call it. The
     # page says so in words and bolds that cell, so the order never looks broken.
-    if r["free_records"] and (r["sub3"] is None or r["nosub3"] <= r["sub3"]):
+    if r["keep3"] is None:
+        r["keep_basis"], r["keep_note"] = "none", "no way to keep recordings"
+    elif r["free_records"] and (r["sub3"] is None or r["nosub3"] <= r["sub3"]):
         r["keep_basis"], r["keep_note"] = "nosub", "records free, no plan"
     else:
         r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
@@ -372,10 +508,27 @@ for r in ROWS:
     r["maths_free"], r["maths_sub"] = m_free, m_sub
 
 # 'brief' is a time limit, not missing hardware: Nest keeps 3 hours with no kit.
-REC_LABEL = {"yes":"Yes", "kit":"Only with extra kit", "brief":"Only briefly (3 hrs)", "no":"No"}
-REC_RANK = {"yes":2, "kit":1, "brief":1, "no":0}
-POWER_LABEL = {"battery":"Battery", "wired":"Wired", "poe":"PoE"}
-SCORE_PARTS = [("rec","Records free",2),("live","Live view free",1),("alerts","Motion alerts free",1),("ai","Smart detection free",1),("storage","Storage in the box",1),("ha","Local / Home Assistant",2)]
+# The vocabulary comes from the category record, so the page, the CSV, the
+# comparison and the checks all print the same words.
+REC_LABEL = {key: label for key, label, _ in CAT["rec"]}
+REC_RANK = {key: rank for key, _, rank in CAT["rec"]}
+POWER_LABEL = dict(CAT["powers"])
+SCORE_PARTS = list(CAT["score_parts"])
+SCORE_MAX = CAT["score_max"]
+PART_MAX = {key: maximum for key, _, maximum in SCORE_PARTS}
+# The slider's ends are the data's own: a row priced below a typed-in floor
+# would disappear from the default view of the page it was added to, and a
+# ceiling off the handle's 5-step grid would snap the dearest row out of range
+# just as quietly.
+MINP = int(min(r["price"] for r in ROWS) // 10 * 10)
+MAXP = int(ceil(max(r["price"] for r in ROWS) / 5) * 5)
+
+
+# The category record is where a category is described, so that a second one is
+# a second record and its rows, not an edit to every page of the build. The rows
+# attach themselves to their record; a record with no rows fails the audit.
+CAT["rows"] = ROWS
+CAT["sources"] = S
 
 # footnote numbering
 order=[]

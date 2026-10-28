@@ -1,9 +1,14 @@
 (function(){
-var D=/*@@DATA@@*/{},CHECKED='@@CHECKED@@',CLAIM_WHAT=/*@@CLAIMS@@*/{};
+var D=/*@@DATA@@*/{},CHECKED='@@CHECKED@@',CAT=/*@@CAT@@*/{},CLAIM_WHAT=CAT.claims;
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+// The category's sentences carry placeholders; the page fills them, so a
+// second category can say "cameras" without a line of script changing.
+function cat(s,values){return String(s).replace(/\{(\w+)\}/g,function(m,k){var v=values&&values[k];if(v===undefined)v=CAT[k];return v===undefined?m:v})}
 var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
 function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}
-function syncTheme(){var d=isDark();tb.lastChild.textContent=d?'Light mode':'Dark mode';tb.title=d?'Switch to light mode':'Switch to dark mode';tb.setAttribute('aria-label',tb.title)}
+// The label is two spans and the stylesheet shows the one the theme needs, so
+// the first frame is right before any script runs. The name is set here.
+function syncTheme(){var d=isDark();tb.title=d?'Switch to light mode':'Switch to dark mode';tb.setAttribute('aria-label',tb.title)}
 tb.onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n)}catch(e){}syncTheme()};
 if(mq.addEventListener)mq.addEventListener('change',syncTheme);
 syncTheme();
@@ -19,22 +24,20 @@ fitFilters();fitSortKeys();fitSources();
 var tbl=$('#tbl'),items=$$('tbody.item',tbl),minEl=$('#f-min'),maxEl=$('#f-max'),minOut=$('#f-min-out'),maxOut=$('#f-max-out'),fill=$('#f-fill');
 var live=$('#live'),liveT,liveClearT,announce=false,lastN=0,nearPick=null;
 function say(m){clearTimeout(liveT);clearTimeout(liveClearT);liveT=setTimeout(function(){live.textContent='';liveT=setTimeout(function(){live.textContent=m;liveClearT=setTimeout(function(){live.textContent=''},4000)},60)},300)}
-var skey='keep3',sdir=1,SDEF={keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1};
+var skey=CAT.defaultSort,sdir=1,SDEF={keep3:1,price:1,score:-1,recv:-1,nosub3:1,sub3:1,model:1};
 // The note under the sort control names the figure the order follows, and the
 // bold figure in each row is that figure. A list that reads as broken has an
-// explanation next to the control that broke it.
-var SORT_NOTES={
- keep3:'Order: 3-year cost to keep recordings (the bold figure).',
- nosub3:'Order: 3-year cost with no plan (the bold figure).',
- sub3:'Order: 3-year cost with a plan (the bold figure).',
- price:'Order: price, low to high.',
- score:'Order: free-feature score, high to low.',
- recv:'Order: records free first.',
- model:'Order: model name, A to Z.'
-};
+// explanation next to the control that broke it, and the category supplies the
+// period's words.
+var SORT_NOTES=CAT.sortNotes;
 function markSort(){
  var note=$('#sortnote');
- if(note)note.textContent=SORT_NOTES[skey]||'';
+ // A euro plan price sorted into a pound order is not a comparison, so the
+ // note says so: the order does not mix currencies without a word.
+ var eu=skey==='keep3'||skey==='sub3';
+ if(eu)eu=items.some(function(t){return !t.hidden&&t.getAttribute('data-region')==='EU'});
+ var text=(SORT_NOTES[skey]||'')+(eu?' One plan price is in euros.':'');
+ if(note&&note.textContent!==text)note.textContent=text;
  items.forEach(function(t){
   var cells=t.querySelectorAll('.c-nosub,.c-sub');
   for(var i=0;i<cells.length;i++)cells[i].classList.remove('keep');
@@ -50,6 +53,10 @@ function apply(){
  if(lo>hi){lo=hi;minEl.value=hi}
  minEl.style.zIndex=lo>=hi?2:1;
  minOut.textContent='£'+lo;maxOut.textContent='£'+hi;
+ // A bare "40" is not a price. The two handles are one range, and a screen
+ // reader hears the pair as pounds, with the outputs describing both ends.
+ if(minEl.getAttribute('aria-valuetext')!=='£'+lo)minEl.setAttribute('aria-valuetext','£'+lo);
+ if(maxEl.getAttribute('aria-valuetext')!=='£'+hi)maxEl.setAttribute('aria-valuetext','£'+hi);
  fill.style.left=((lo-lo0)/(hi0-lo0)*100)+'%';
  fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
  var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){return x.value}),n=0;
@@ -78,14 +85,14 @@ function apply(){
   else if(p<+minEl.value)nb.textContent='Lower the minimum to £'+(base+Math.floor((p-base)/st)*st);
   else nb.textContent='Show '+nm+' at '+pr;
   // The message names the filter that emptied the list, not just that it is empty.
-  var why=['no doorbell costs between £'+lo+' and £'+hi];
+  var why=['no '+CAT.noun+' costs between £'+lo+' and £'+hi];
   if(rec)why.push('none records free with no extra kit');
   if(ha)why.push('none works locally with Home Assistant');
   if(pw.length)why.push('none is '+(pw.length>1?'either ':'')+pw.join(' or '));
   var msg=why.join(', and ')+'.';
   et.textContent=msg.charAt(0).toUpperCase()+msg.slice(1)+(near?' The closest is '+nm+' at '+pr+'.':'');
- }else et.textContent='Nothing matches those filters.';
- if(announce&&n!==lastN)say(n?n+' of '+items.length+' doorbells shown':'No doorbells match those filters');
+ }else et.textContent=cat(CAT.empty);
+ if(announce&&n!==lastN)say(n?cat(CAT.shown,{shown:n,total:items.length}):cat(CAT.noMatch));
  lastN=n;
  var s=items.slice().sort(function(a,b){
   var x=skey==='model'?a.dataset.model:+a.dataset[skey],y=skey==='model'?b.dataset.model:+b.dataset[skey];
@@ -97,6 +104,9 @@ function apply(){
  markSort();
 }
 $$('#controls input').forEach(function(el){el.addEventListener('input',apply);el.addEventListener('change',apply)});
+// The form has no action and no submit, and a strict policy blocks an inline
+// handler, so the one place that stops a stray Enter is here.
+$('#controls').onsubmit=function(ev){ev.preventDefault()};
 // The track is decorative and its inputs ignore pointer events, so a click
 // there is a shortcut for "move the handle nearest this spot".
 $('.dual-track').addEventListener('click',function(ev){
@@ -142,9 +152,14 @@ $$('a.jump').forEach(function(a){a.addEventListener('click',function(ev){
 })});
 // The row labels are the table's own words, so the second view does not make
 // the reader relearn the two cost columns.
-var PINNED=['Records free?','Price','3-year cost, no plan','3-year cost, with plan'],diffOnly=false;
-var ROWS=[['Records free?','rec'],['Price','price'],['Free features','score'],['3-year cost, no plan','nosub3'],['3-year cost, with plan','sub3'],['Best for','best'],['Main catch','catch'],['Power','power'],['Storage','storage'],['Live view','live'],['Motion alerts','alerts'],['Smart detection','ai'],['History, no plan','history'],['Behind the paywall','paywalled'],['Plans','plan'],['Home Assistant','ha'],['Wi-Fi','wifi']];
-function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+// The comparison's rows and the four pinned ones are the category's, so the
+// second view never learns the first category's vocabulary.
+var ROWS=CAT.compare,PINNED=ROWS.filter(function(r){return CAT.pin.indexOf(r[1])>-1}).map(function(r){return r[0]}),diffOnly=false;
+// A product name can hold a quote (a 5" screen), and these values are written
+// into double-quoted attributes: escaping only &, < and > ends the attribute
+// and puts the rest of the name into markup.
+var ESC={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return ESC[c]})}
 // The handle's icon is the six dots of a grip, in the page's own stroke.
 var GRIP='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">'+
  '<circle cx="5" cy="9" r="1"/><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/>'+
@@ -178,11 +193,14 @@ function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
 // The comparison is wider than a phone, and a table that is cut off with no
 // sign of it reads as a table that ends there. The cue names the column that
 // is off the edge, and an edge fade says there is more.
-var cmpScroll=$('.cmp-scroll'),cmpCue=$('#cmp-cue');
-function cmpCueUpdate(){
+var cmpScroll=$('.cmp-scroll'),cmpCue=$('#cmp-cue'); function cmpCueUpdate(){
  if(!cmpScroll||!cmpCue)return;
  var wrap=cmpScroll.parentNode;
- if(cmpScroll.scrollWidth-cmpScroll.clientWidth<=2){cmpCue.hidden=true;wrap.classList.remove('more');return}
+ if(cmpScroll.scrollWidth-cmpScroll.clientWidth<=2){
+  if(!cmpCue.hidden)cmpCue.hidden=true;
+  if(wrap.classList.contains('more'))wrap.classList.remove('more');
+  return;
+ }
  var box=cmpScroll.getBoundingClientRect(),ths=cmpScroll.querySelectorAll('#cmp-table thead th'),name='';
  for(var i=1;i<ths.length;i++){
   var r=ths[i].getBoundingClientRect(),nameEl=ths[i].querySelector('.cmp-name'),t=((nameEl||ths[i]).textContent||'').trim();
@@ -193,10 +211,26 @@ function cmpCueUpdate(){
   var seen=Math.min(r.right,box.right)-Math.max(r.left,box.left);
   if(r.right>box.right+1&&seen<r.width*0.6){name=t;break}
  }
- if(name){cmpCue.textContent='Swipe to see '+name;cmpCue.hidden=false;wrap.classList.add('more')}
- else{cmpCue.hidden=true;wrap.classList.remove('more')}
+ if(name){
+  // Only touch the DOM when the answer changed: this runs on every scroll.
+  var text='Swipe to see '+name;
+  if(cmpCue.textContent!==text)cmpCue.textContent=text;
+  if(cmpCue.hidden)cmpCue.hidden=false;
+  if(!wrap.classList.contains('more'))wrap.classList.add('more');
+ }
+ else{
+  if(!cmpCue.hidden)cmpCue.hidden=true;
+  if(wrap.classList.contains('more'))wrap.classList.remove('more');
+ }
 }
-if(cmpScroll){cmpScroll.addEventListener('scroll',cmpCueUpdate);addEventListener('resize',cmpCueUpdate)}
+// One frame of work per scroll burst, the same gate the back-to-top button
+// uses: the cue is a hint, and four rect reads per event is not.
+var cueFrame=0;
+function cueScroll(){
+ if(cueFrame)return;
+ cueFrame=requestAnimationFrame(function(){cueFrame=0;cmpCueUpdate()});
+}
+if(cmpScroll){cmpScroll.addEventListener('scroll',cueScroll,{passive:true});addEventListener('resize',cueScroll)}
 // The cue needs the width of a table that has just been built, so it costs a
 // layout. Ask for it on the frame after the table is on screen, not in the
 // middle of the open.
@@ -244,7 +278,7 @@ function buildCmp(){
  var s=cmpIds();
  if(s.join()===built)return;
  built=s.join();
- var h='<caption class="vh">Side-by-side comparison of '+s.length+' doorbells</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id,i){
+ var h='<caption class="vh">'+esc(cat(CAT.cmpCaption,{count:s.length}))+'</caption><thead><tr><th scope="col"><span class="vh">Spec</span></th>'+s.map(function(id,i){
   var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
   // Every column carries the badge line, written or not, so the photos below
   // it start on one row: an empty badge is the same box as a written one.
@@ -255,7 +289,7 @@ function buildCmp(){
  // it is measured against. "+£15.00" without a baseline is not a comparison.
  var lowId=null;
  s.forEach(function(id){var v=D[id].keep3;if(typeof v==='number'&&isFinite(v)&&(lowId===null||v<D[lowId].keep3))lowId=id});
- h+='<tr class="cmp-cost" data-pin="1"><th scope="row">Cheapest way to record for 3 years</th>'+s.map(function(id){var v=D[id].keep3;
+ h+='<tr class="cmp-cost" data-pin="1"><th scope="row">Cheapest way to record for '+esc(CAT.period)+'</th>'+s.map(function(id){var v=D[id].keep3;
   if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
@@ -485,7 +519,7 @@ function showCompare(){
   setTimeout(landRows,700);
   if(vt.finished&&vt.finished.then)vt.finished.then(landRows,landRows);
  }else go(!reduce.matches);
- say('Side-by-side comparison of '+sel().length+' doorbells');
+ say(cat(CAT.cmpCaption,{count:sel().length}));
 }
 // Closing runs the same pairs back: the header's copy carries the name while
 // the open frame is captured, the row's copy in the frame after the panel goes.
@@ -524,7 +558,7 @@ function m3(x){return '£'+(+x).toFixed(2)}
 function cmpName(id){return id?D[id].name.replace(' Video Doorbell',''):''}
 function shortlist(){
  return 'SubFree UK shortlist, checked '+CHECKED+'\n'+shareUrl()+'\n\n'+sel().map(function(id){var d=D[id];
-  return d.name+'\n'+d.price+' · 3-year cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\nBest for: '+d.best+'\nMain catch: '+d.catch;
+  return d.name+'\n'+d.price+' · '+CAT.periodAdj+' cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\nBest for: '+d.best+'\nMain catch: '+d.catch;
  }).join('\n\n');
 }
 function legacyCopy(text){
@@ -662,9 +696,22 @@ $('#card-x').onclick=function(){card.close()};
 // A tap on the card's own background, outside its text, closes it.
 card.addEventListener('click',function(ev){if(ev.target===card)card.close()});
 // Escape and the close button are the dialog's own; closing hands the reader
-// back to the figure they tapped, where they were.
+// back to the figure they tapped, where they were. A figure inside a row the
+// filters have since hidden cannot take focus, so the reader is handed to the
+// control they last changed instead of being dropped on the document body.
+var lastCtl=null;
+document.addEventListener('change',function(ev){
+ var t=ev.target;
+ if(t&&t.closest&&t.closest('#controls'))lastCtl=t;
+},true);
+function placeFocus(from){
+ var target=from&&!from.closest('[hidden]')&&from.offsetParent!==null?from:null;
+ if(target){target.focus({preventScroll:true});return}
+ var fallback=(lastCtl&&!lastCtl.closest('[hidden]')&&lastCtl.offsetParent!==null)?lastCtl:$('#reset');
+ if(fallback)fallback.focus({preventScroll:true});
+}
 card.addEventListener('close',function(){
- if(cardFrom){cardFrom.focus({preventScroll:true});cardFrom=null}
+ if(cardFrom){placeFocus(cardFrom);cardFrom=null}
 });
 // Back to top, once the reader is into the table. The button appears when the
 // sentinel above the table has scrolled past, and takes the reader and the

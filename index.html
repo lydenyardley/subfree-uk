@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bYc9F4ssEXSWH1K5cCpTA+wBMIrQVVvvWzLI+WL/sf8=' 'sha256-XHCdkeUkqGvfVflifuSXskmtjakxOioqljpHR/eID/E='; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <title>Video doorbells that work without a subscription (UK) | SubFree UK</title>
 <meta name="description" content="14 UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.">
 <link rel="canonical" href="https://lydenyardley.github.io/subfree-uk/">
@@ -15,12 +16,12 @@
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script>document.documentElement.className="js";try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
-<link rel="stylesheet" href="assets/page.css?v=fadf0563fd">
+<link rel="stylesheet" href="assets/page.css?v=909aa9fe5b">
 </head><body>
 <a class="skip" href="#tbl">Skip to the doorbell table</a>
 <div class="wrap">
 <header class="mast-head">
-<div class="mast" id="top"><div>SubFree UK <span class="mast-long">Gadgets that work without a subscription</span><span class="mast-short">No subscriptions</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span>Dark mode</span></button></div>
+<div class="mast" id="top"><div>SubFree UK <span class="mast-long">Gadgets that work without a subscription</span><span class="mast-short">No subscriptions</span></div><button type="button" id="theme"><i aria-hidden="true"></i><span class="t-dark">Dark mode</span><span class="t-light">Light mode</span></button></div>
 <div class="intro">
 <div>
 <h1>Video doorbells that work without a subscription</h1>
@@ -30,20 +31,18 @@
 <span class="v-best"><a class="jump" href="#m-reo-poe" data-ids="reo-poe">Reolink PoE</a> is the best overall without fees.</span>
 <span class="v-batt"><a class="jump" href="#m-tapo-d230" data-ids="tapo-d230">Tapo D230S1</a> is the easiest battery one.</span>
 <span class="v-avoid"><a class="jump" href="#m-ring" data-ids="ring">Ring</a> needs a plan. <a class="jump" href="#m-blink" data-ids="blink">Blink</a> and <a class="jump" href="#m-arlo" data-ids="arlo">Arlo</a> need extra kit.</span>
-</p>
-</div>
+</p></div>
 <aside class="verdict">
 <h2>The short answer</h2>
 <p class="v-best"><b>Best overall without fees:</b> <a class="jump" href="#m-reo-poe" data-ids="reo-poe">Reolink Video Doorbell PoE</a>. It records to a card or NVR, nothing is paywalled, and Reolink is the only brand here with an official local Home Assistant integration. The WiFi and battery versions follow the same rules if you can't run an Ethernet cable.</p>
 <p class="v-batt"><b>Easiest battery pick:</b> <a class="jump" href="#m-tapo-d230" data-ids="tapo-d230">Tapo D230S1</a>, which keeps footage on a hub inside the house.</p>
-<p class="v-avoid"><b>Avoid if you won't pay monthly:</b> <a class="jump" href="#m-ring" data-ids="ring">Ring</a> records nothing without a plan, and <a class="jump" href="#m-blink" data-ids="blink">Blink</a> and <a class="jump" href="#m-arlo" data-ids="arlo">Arlo</a> need extra hardware.</p>
-</aside>
-</div>
+<p class="v-avoid"><b>Avoid if you won&#x27;t pay monthly:</b> <a class="jump" href="#m-ring" data-ids="ring">Ring</a> records nothing without a plan, and <a class="jump" href="#m-blink" data-ids="blink">Blink</a> and <a class="jump" href="#m-arlo" data-ids="arlo">Arlo</a> need extra hardware.</p>
+</aside></div>
 </header>
 
 <main>
 <p class="vh" id="live" role="status"></p>
-<form class="controls" id="controls" onsubmit="return false">
+<form class="controls" id="controls">
 <details class="filters" id="filters" open>
 <summary>Filters</summary>
 <div class="fbody">
@@ -56,26 +55,17 @@
 <label><input type="checkbox" class="f-pw" value="wired"> Wired</label>
 <label><input type="checkbox" class="f-pw" value="poe"> PoE</label>
 </div><p class="hint">PoE: one cable carries both power and data.</p></fieldset>
-<div class="range">
-<span class="lab">Price</span>
+<fieldset class="range"><legend>Price</legend>
 <div class="dual">
 <div class="dual-track" aria-hidden="true"><i id="f-fill"></i></div>
-<input type="range" id="f-min" min="40" max="300" step="5" value="40" aria-label="Lowest price">
-<input type="range" id="f-max" min="40" max="300" step="5" value="300" aria-label="Highest price">
+<input type="range" id="f-min" min="40" max="295" step="5" value="40" aria-label="Lowest price" aria-valuetext="£40" aria-describedby="f-min-out f-max-out">
+<input type="range" id="f-max" min="40" max="295" step="5" value="295" aria-label="Highest price" aria-valuetext="£295" aria-describedby="f-min-out f-max-out">
 </div>
-<div class="dual-vals"><output id="f-min-out" for="f-min">£40</output><output id="f-max-out" for="f-max">£300</output></div>
-</div>
+<div class="dual-vals"><output id="f-min-out" for="f-min">£40</output><output id="f-max-out" for="f-max">£295</output></div>
+</fieldset>
 </div>
 </details>
-<div class="sortby"><label class="lab" for="sort">Sort by</label><select id="sort">
-<option value="keep3">3-year cost to keep recordings</option>
-<option value="price">Price, low to high</option>
-<option value="score">Free-feature score, high to low</option>
-<option value="recv">Records free first</option>
-<option value="nosub3">3-year cost, no plan</option>
-<option value="sub3">3-year cost, with plan</option>
-<option value="model">Model, A to Z</option>
-</select><p class="sortnote" id="sortnote">Order: 3-year cost to keep recordings (the bold figure).</p></div>
+<div class="sortby"><label class="lab" for="sort">Sort by</label><select id="sort"><option value="keep3" selected>3-year cost to keep recordings</option><option value="price">Price, low to high</option><option value="score">Free-feature score, high to low</option><option value="recv">Records free first</option><option value="nosub3">3-year cost, no plan</option><option value="sub3">3-year cost, with plan</option><option value="model">Model, A to Z</option></select><p class="sortnote" id="sortnote">Order: 3-year cost to keep recordings (the bold figure).</p></div>
 <p class="count">Tick up to 3 doorbells to compare. <span id="count">14</span> of 14 shown · <button type="button" class="link" id="reset">Reset</button><span id="cmp-sep" hidden> · </span><button type="button" class="link" id="cmp-inline" hidden>Compare</button><span id="cmp-cap" class="cap" hidden></span></p>
 </form>
 <noscript><p class="nojs">Filters, sorting and compare need JavaScript. All 14 doorbells are listed below, with each model's costs and sources open.</p></noscript>
@@ -97,15 +87,15 @@
 <th scope="col" data-sort="model" aria-sort="none"><button type="button">Model<span class="si" aria-hidden="true"></span></button></th><th scope="col" data-sort="recv" aria-sort="none"><button type="button">Records free?<span class="si" aria-hidden="true"></span></button></th><th scope="col" class="num" data-sort="price" aria-sort="none"><button type="button">Price<span class="si" aria-hidden="true"></span></button></th><th scope="col" data-sort="score" aria-sort="none"><button type="button">Free features<span class="si" aria-hidden="true"></span></button></th>
 <th scope="col" class="num" data-sort="nosub3" aria-sort="none"><button type="button" aria-label="3-year cost, no plan, footnote a">3-year cost, no plan<span class="si" aria-hidden="true"></span></button><a class="mk" href="#m-a" aria-label="How the 3-year cost without a plan is worked out">a</a></th><th scope="col" class="num" data-sort="sub3" aria-sort="none"><button type="button" aria-label="3-year cost, with plan, footnote b">3-year cost, with plan<span class="si" aria-hidden="true"></span></button><a class="mk" href="#m-b" aria-label="How the 3-year cost with a plan is worked out">b</a></th><th scope="col">Main catch</th>
 </tr></thead>
-<tbody class="item" id="m-ring" data-id="ring" data-keep="sub" data-v="avoid" data-rec="no" data-recv="0" data-ha="0" data-power="battery wired" data-price="79.99" data-keep3="259.63" data-nosub3="79.99" data-sub3="259.63" data-score="2" data-model="ring battery video doorbell 2k" data-idx="0">
+<tbody class="item" id="m-ring" data-id="ring" data-keep="sub" data-v="avoid" data-rec="no" data-recv="0" data-ha="0" data-power="battery wired" data-price="79.99" data-keep3="259.63" data-nosub3="79.99" data-sub3="259.63" data-score="2" data-region="UK" data-model="ring battery video doorbell 2k" data-idx="0">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="ring" aria-label="Compare Ring Battery Video Doorbell 2K"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/ring-lg.webp" data-name="Ring Battery Video Doorbell 2K" aria-label="View Ring Battery Video Doorbell 2K photo"><img class="ph ph-sm" src="img/ring-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Ring</span> <span class="mname">Battery Video Doorbell 2K</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: Alexa households happy to pay the monthly plan</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-no"><a class="src" href="https://en-uk.ring.com/pages/plans/" data-claim="rec" data-id="ring" data-fn="2" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No, source: Ring UK plans"><span class="rec-t">No</span></a><a class="fn" href="#fn2" title="Ring UK plans">2</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://en-uk.ring.com/products/battery-doorbell-2nd-gen" title="Check the price at Ring UK: Battery Doorbell 2K" data-claim="price" data-id="ring" data-fn="1" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£79.99 at Ring UK: Battery Doorbell 2K">£79.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>2</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.250)"></i></span></td>
-<td class="c-nosub num" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://en-uk.ring.com/products/battery-doorbell-2nd-gen" data-more="2" data-claim="nosub" data-id="ring" data-fn="1" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£79.99, source: Ring UK: Battery Doorbell 2K, Ring UK plans">£79.99</a><span class="note">no recordings</span></span></td>
-<td class="c-sub num keep" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://en-uk.ring.com/pages/plans/" data-more="1" data-claim="plan" data-id="ring" data-fn="2" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£259.63, source: Ring UK plans, Ring UK: Battery Doorbell 2K">£259.63</a><span class="note">cheapest for this model: with plan</span></span></td>
+<td class="c-nosub num" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://en-uk.ring.com/products/battery-doorbell-2nd-gen" data-more="2" data-claim="nosub" data-id="ring" data-fn="1" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£79.99, source: Ring UK: Battery Doorbell 2K, Ring UK plans">£79.99</a><span class="note">no recordings</span></span></td>
+<td class="c-sub num keep" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://en-uk.ring.com/pages/plans/" data-more="1" data-claim="plan" data-id="ring" data-fn="2" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£259.63, source: Ring UK plans, Ring UK: Battery Doorbell 2K">£259.63</a><span class="note">cheapest for this model: with plan</span></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Saves no video at all unless you pay £4.99 a month.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-ring"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-ring"><td colspan="8"><div class="dgrid">
@@ -128,15 +118,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-nest" data-id="nest" data-keep="sub" data-rec="brief" data-recv="1" data-ha="0" data-power="battery wired" data-price="179.99" data-keep3="467.99" data-nosub3="179.99" data-sub3="467.99" data-score="4" data-model="google nest doorbell (battery)" data-idx="1">
+</tbody><tbody class="item" id="m-nest" data-id="nest" data-keep="sub" data-rec="brief" data-recv="1" data-ha="0" data-power="battery wired" data-price="179.99" data-keep3="467.99" data-nosub3="179.99" data-sub3="467.99" data-score="4" data-region="UK" data-model="google nest doorbell (battery)" data-idx="1">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="nest" aria-label="Compare Google Nest Doorbell (battery)"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/nest-lg.webp" data-name="Google Nest Doorbell (battery)" aria-label="View Google Nest Doorbell (battery) photo"><img class="ph ph-sm" src="img/nest-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Google Nest</span> <span class="mname">Doorbell (battery)</span><span class="best">Best for: Google Home households who want polished smart alerts</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-brief"><a class="src" href="https://support.google.com/googlehome/answer/9233159?hl=en-GB" data-claim="rec" data-id="nest" data-fn="7" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Only briefly (3 hrs), source: Google Home Premium: what you get"><span class="rec-t">Only briefly (3 hrs)</span></a><a class="fn" href="#fn7" title="Google Home Premium: what you get">7</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB" title="Check the price at Google Store UK: Nest Doorbell" data-claim="price" data-id="nest" data-fn="5" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£179.99 at Google Store UK: Nest Doorbell">£179.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>4</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.500)"></i></span></td>
-<td class="c-nosub num" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB" data-more="7" data-claim="nosub" data-id="nest" data-fn="5" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£179.99, source: Google Store UK: Nest Doorbell, Google Home Premium: what you get">£179.99</a><span class="note">3 hrs history</span></span></td>
-<td class="c-sub num keep" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://store.google.com/gb/product/google_home_premium?hl=en-GB" data-more="5" data-claim="plan" data-id="nest" data-fn="6" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£467.99, source: Google Home Premium UK, Google Store UK: Nest Doorbell">£467.99</a><span class="note">cheapest for this model: with plan</span></span></td>
+<td class="c-nosub num" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB" data-more="7" data-claim="nosub" data-id="nest" data-fn="5" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£179.99, source: Google Store UK: Nest Doorbell, Google Home Premium: what you get">£179.99</a><span class="note">3 hrs history</span></span></td>
+<td class="c-sub num keep" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://store.google.com/gb/product/google_home_premium?hl=en-GB" data-more="5" data-claim="plan" data-id="nest" data-fn="6" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£467.99, source: Google Home Premium UK, Google Store UK: Nest Doorbell">£467.99</a><span class="note">cheapest for this model: with plan</span></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Only 3 hours of free history. Anything longer is £8 a month.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-nest"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-nest"><td colspan="8"><div class="dgrid">
@@ -159,15 +149,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-eufy-e340" data-id="eufy-e340" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="169.99" data-keep3="169.99" data-nosub3="169.99" data-sub3="313.63" data-score="7" data-model="eufy video doorbell e340" data-idx="2">
+</tbody><tbody class="item" id="m-eufy-e340" data-id="eufy-e340" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="169.99" data-keep3="169.99" data-nosub3="169.99" data-sub3="313.63" data-score="7" data-region="UK" data-model="eufy video doorbell e340" data-idx="2">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="eufy-e340" aria-label="Compare eufy Video Doorbell E340"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/eufy-e340-lg.webp" data-name="eufy Video Doorbell E340" aria-label="View eufy Video Doorbell E340 photo"><img class="ph ph-sm" src="img/eufy-e340-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">eufy</span> <span class="mname">Video Doorbell E340</span><span class="best">Best for: Busy doorsteps with lots of parcels: a second camera looks straight down</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://www.eufy.com/uk/products/T8214311" data-claim="rec" data-id="eufy-e340" data-fn="9" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: eufy UK: E340"><span class="rec-t">Yes</span></a><a class="fn" href="#fn9" title="eufy UK: E340">9</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.eufy.com/uk/products/T8214311" title="Check the price at eufy UK: E340" data-claim="price" data-id="eufy-e340" data-fn="9" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£169.99 at eufy UK: E340">£169.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.875)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.eufy.com/uk/products/T8214311" data-claim="nosub" data-id="eufy-e340" data-fn="9" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£169.99, source: eufy UK: E340">£169.99</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.eufy.com/uk/cloud-storage" data-more="9" data-claim="plan" data-id="eufy-e340" data-fn="10" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£313.63, source: eufy UK cloud plans, eufy UK: E340">£313.63</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.eufy.com/uk/products/T8214311" data-claim="nosub" data-id="eufy-e340" data-fn="9" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£169.99, source: eufy UK: E340">£169.99</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.eufy.com/uk/cloud-storage" data-more="9" data-claim="plan" data-id="eufy-e340" data-fn="10" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£313.63, source: eufy UK cloud plans, eufy UK: E340">£313.63</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-eufy-e340"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-eufy-e340"><td colspan="8"><div class="dgrid">
@@ -190,15 +180,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-reo-wifi" data-id="reo-wifi" data-keep="nosub" data-v="best" data-rec="yes" data-recv="2" data-ha="2" data-power="wired" data-price="93.49" data-keep3="118.86" data-nosub3="118.86" data-sub3="258.37" data-score="7" data-model="reolink video doorbell wifi" data-idx="3">
+</tbody><tbody class="item" id="m-reo-wifi" data-id="reo-wifi" data-keep="nosub" data-v="best" data-rec="yes" data-recv="2" data-ha="2" data-power="wired" data-price="93.49" data-keep3="118.86" data-nosub3="118.86" data-sub3="258.37" data-score="7" data-region="UK" data-model="reolink video doorbell wifi" data-idx="3">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="reo-wifi" aria-label="Compare Reolink Video Doorbell WiFi"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/reo-wifi-lg.webp" data-name="Reolink Video Doorbell WiFi" aria-label="View Reolink Video Doorbell WiFi photo"><img class="ph ph-sm" src="img/reo-wifi-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell WiFi</span><span class="vtag v-best">Best with doorbell wiring</span><span class="best">Best for: Homes with existing doorbell wiring, plus Home Assistant or NVR users</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://store.reolink.com/gb/video-doorbells/" data-claim="rec" data-id="reo-wifi" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Reolink UK store"><span class="rec-t">Yes</span></a><a class="fn" href="#fn14" title="Reolink UK store">14</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://store.reolink.com/gb/video-doorbells/" title="Check the price at Reolink UK store" data-claim="price" data-id="reo-wifi" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£93.49 at Reolink UK store">£93.49</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.875)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://store.reolink.com/gb/video-doorbells/" data-more="17" data-claim="nosub" data-id="reo-wifi" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£118.86, source: Reolink UK store, Amazon UK: SanDisk High Endurance 64 GB">£118.86</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://cloud.reolink.com/cloud-plan" data-more="14" data-claim="plan" data-id="reo-wifi" data-fn="16" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£258.37, source: Reolink Cloud UK plans, Reolink UK store">£258.37</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://store.reolink.com/gb/video-doorbells/" data-more="17" data-claim="nosub" data-id="reo-wifi" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£118.86, source: Reolink UK store, Amazon UK: SanDisk High Endurance 64 GB">£118.86</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://cloud.reolink.com/cloud-plan" data-more="14" data-claim="plan" data-id="reo-wifi" data-fn="16" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£258.37, source: Reolink Cloud UK plans, Reolink UK store">£258.37</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Needs doorbell transformer wiring, and the microSD card is sold separately.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-wifi"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-reo-wifi"><td colspan="8"><div class="dgrid">
@@ -221,15 +211,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-reo-poe" data-id="reo-poe" data-keep="nosub" data-v="best" data-rec="yes" data-recv="2" data-ha="2" data-power="poe" data-price="69.99" data-keep3="95.36" data-nosub3="95.36" data-sub3="0" data-score="7" data-model="reolink video doorbell poe" data-idx="4">
+</tbody><tbody class="item" id="m-reo-poe" data-id="reo-poe" data-keep="nosub" data-v="best" data-rec="yes" data-recv="2" data-ha="2" data-power="poe" data-price="69.99" data-keep3="95.36" data-nosub3="95.36" data-sub3="0" data-score="7" data-region="UK" data-model="reolink video doorbell poe" data-idx="4">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="reo-poe" aria-label="Compare Reolink Video Doorbell PoE"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/reo-poe-lg.webp" data-name="Reolink Video Doorbell PoE" aria-label="View Reolink Video Doorbell PoE photo"><img class="ph ph-sm" src="img/reo-poe-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell PoE</span><span class="vtag v-best">Best overall</span><span class="best">Best for: The most reliable, fully local setup, if you can run an Ethernet cable</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://support.reolink.com/articles/29213749981209-Reolink-Video-Doorbell-Cameras-FAQ/" data-claim="rec" data-id="reo-poe" data-fn="18" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Reolink doorbell FAQ"><span class="rec-t">Yes</span></a><a class="fn" href="#fn18" title="Reolink doorbell FAQ">18</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://store.reolink.com/gb/video-doorbells/" title="Check the price at Reolink UK store" data-claim="price" data-id="reo-poe" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£69.99 at Reolink UK store">£69.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.875)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://store.reolink.com/gb/video-doorbells/" data-more="17 18" data-claim="nosub" data-id="reo-poe" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£95.36, source: Reolink UK store, Amazon UK: SanDisk High Endurance 64 GB, Reolink doorbell FAQ">£95.36</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://support.reolink.com/articles/29213749981209-Reolink-Video-Doorbell-Cameras-FAQ/" data-claim="plan" data-id="reo-poe" data-fn="18" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No plan, source: Reolink doorbell FAQ"><span class="noplan">No plan</span></a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://store.reolink.com/gb/video-doorbells/" data-more="17 18" data-claim="nosub" data-id="reo-poe" data-fn="14" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£95.36, source: Reolink UK store, Amazon UK: SanDisk High Endurance 64 GB, Reolink doorbell FAQ">£95.36</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://support.reolink.com/articles/29213749981209-Reolink-Video-Doorbell-Cameras-FAQ/" data-claim="plan" data-id="reo-poe" data-fn="18" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No plan, source: Reolink doorbell FAQ"><span class="noplan">No plan</span></a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Needs an Ethernet cable to the door and a PoE switch or injector.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-poe"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-reo-poe"><td colspan="8"><div class="dgrid">
@@ -252,15 +242,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-reo-batt" data-id="reo-batt" data-keep="nosub" data-v="batt" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="99.99" data-keep3="99.99" data-nosub3="99.99" data-sub3="250.11" data-score="7" data-model="reolink video doorbell (battery)" data-idx="5">
+</tbody><tbody class="item" id="m-reo-batt" data-id="reo-batt" data-keep="nosub" data-v="batt" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="99.99" data-keep3="99.99" data-nosub3="99.99" data-sub3="250.11" data-score="7" data-region="UK" data-model="reolink video doorbell (battery)" data-idx="5">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="reo-batt" aria-label="Compare Reolink Video Doorbell (Battery)"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/reo-batt-lg.webp" data-name="Reolink Video Doorbell (Battery)" aria-label="View Reolink Video Doorbell (Battery) photo"><img class="ph ph-sm" src="img/reo-batt-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Reolink</span> <span class="mname">Video Doorbell (Battery)</span><span class="vtag v-batt">Best battery, no fees</span><span class="best">Best for: Battery install with 5 GHz Wi-Fi and no fees</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://store.reolink.com/gb/wireless-doorbell-camera/" data-claim="rec" data-id="reo-batt" data-fn="20" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Reolink UK battery doorbells"><span class="rec-t">Yes</span></a><a class="fn" href="#fn20" title="Reolink UK battery doorbells">20</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak" title="Check the price at Screwfix: Reolink Battery" data-claim="price" data-id="reo-batt" data-fn="19" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£99.99 at Screwfix: Reolink Battery">£99.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>7</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.875)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak" data-more="20" data-claim="nosub" data-id="reo-batt" data-fn="19" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£99.99, source: Screwfix: Reolink Battery, Reolink UK battery doorbells">£99.99</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://cloud.reolink.com/cloud-plan" data-more="19" data-claim="plan" data-id="reo-batt" data-fn="16" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£250.11, source: Reolink Cloud UK plans, Screwfix: Reolink Battery">£250.11</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak" data-more="20" data-claim="nosub" data-id="reo-batt" data-fn="19" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£99.99, source: Screwfix: Reolink Battery, Reolink UK battery doorbells">£99.99</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://cloud.reolink.com/cloud-plan" data-more="19" data-claim="plan" data-id="reo-batt" data-fn="16" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£250.11, source: Reolink Cloud UK plans, Screwfix: Reolink Battery">£250.11</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49).</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-reo-batt"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-reo-batt"><td colspan="8"><div class="dgrid">
@@ -283,15 +273,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-tapo-d230" data-id="tapo-d230" data-keep="nosub" data-v="batt" data-rec="yes" data-recv="2" data-ha="1" data-power="battery" data-price="84.99" data-keep3="110.36" data-nosub3="110.36" data-sub3="192.63" data-score="6" data-model="tp-link tapo d230s1" data-idx="6">
+</tbody><tbody class="item" id="m-tapo-d230" data-id="tapo-d230" data-keep="nosub" data-v="batt" data-rec="yes" data-recv="2" data-ha="1" data-power="battery" data-price="84.99" data-keep3="110.36" data-nosub3="110.36" data-sub3="192.63" data-score="6" data-region="UK" data-model="tp-link tapo d230s1" data-idx="6">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="tapo-d230" aria-label="Compare TP-Link Tapo D230S1"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/tapo-d230-lg.webp" data-name="TP-Link Tapo D230S1" aria-label="View TP-Link Tapo D230S1 photo"><img class="ph ph-sm" src="img/tapo-d230-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">TP-Link Tapo</span> <span class="mname">D230S1</span><span class="vtag v-batt">Easiest battery setup</span><span class="best">Best for: An easy battery doorbell that keeps footage indoors on its chime/hub</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell" data-claim="rec" data-id="tapo-d230" data-fn="22" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Tapo UK: D230S1"><span class="rec-t">Yes</span></a><a class="fn" href="#fn22" title="Tapo UK: D230S1">22</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell" title="Check the price at Tapo UK: D230S1" data-claim="price" data-id="tapo-d230" data-fn="22" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£84.99 at Tapo UK: D230S1">£84.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.750)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell" data-more="17" data-claim="nosub" data-id="tapo-d230" data-fn="22" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£110.36, source: Tapo UK: D230S1, Amazon UK: SanDisk High Endurance 64 GB">£110.36</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://uk.store.tapo.com/pages/tapo-care" data-more="22" data-claim="plan" data-id="tapo-d230" data-fn="23" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£192.63, source: Tapo Care UK, Tapo UK: D230S1">£192.63</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell" data-more="17" data-claim="nosub" data-id="tapo-d230" data-fn="22" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£110.36, source: Tapo UK: D230S1, Amazon UK: SanDisk High Endurance 64 GB">£110.36</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://uk.store.tapo.com/pages/tapo-care" data-more="22" data-claim="plan" data-id="tapo-d230" data-fn="23" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£192.63, source: Tapo Care UK, Tapo UK: D230S1">£192.63</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">The microSD card is extra, and Home Assistant gets settings and alerts but not the live video.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-tapo-d230"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-tapo-d230"><td colspan="8"><div class="dgrid">
@@ -314,15 +304,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-tapo-td21" data-id="tapo-td21" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="0" data-power="battery" data-price="44.99" data-keep3="70.36" data-nosub3="70.36" data-sub3="152.63" data-score="5" data-model="tp-link tapo td21" data-idx="7">
+</tbody><tbody class="item" id="m-tapo-td21" data-id="tapo-td21" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="0" data-power="battery" data-price="44.99" data-keep3="70.36" data-nosub3="70.36" data-sub3="152.63" data-score="5" data-region="UK" data-model="tp-link tapo td21" data-idx="7">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="tapo-td21" aria-label="Compare TP-Link Tapo TD21"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/tapo-td21-lg.webp" data-name="TP-Link Tapo TD21" aria-label="View TP-Link Tapo TD21 photo"><img class="ph ph-sm" src="img/tapo-td21-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">TP-Link Tapo</span> <span class="mname">TD21</span><span class="best">Best for: The tightest budget</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21" data-claim="rec" data-id="tapo-td21" data-fn="26" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Tapo UK: TD21"><span class="rec-t">Yes</span></a><a class="fn" href="#fn26" title="Tapo UK: TD21">26</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21" title="Check the price at Tapo UK: TD21" data-claim="price" data-id="tapo-td21" data-fn="26" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£44.99 at Tapo UK: TD21">£44.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.625)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21" data-more="17" data-claim="nosub" data-id="tapo-td21" data-fn="26" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£70.36, source: Tapo UK: TD21, Amazon UK: SanDisk High Endurance 64 GB">£70.36</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://uk.store.tapo.com/pages/tapo-care" data-more="26" data-claim="plan" data-id="tapo-td21" data-fn="23" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£152.63, source: Tapo Care UK, Tapo UK: TD21">£152.63</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21" data-more="17" data-claim="nosub" data-id="tapo-td21" data-fn="26" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£70.36, source: Tapo UK: TD21, Amazon UK: SanDisk High Endurance 64 GB">£70.36</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://uk.store.tapo.com/pages/tapo-care" data-more="26" data-claim="plan" data-id="tapo-td21" data-fn="23" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£152.63, source: Tapo Care UK, Tapo UK: TD21">£152.63</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-tapo-td21"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-tapo-td21"><td colspan="8"><div class="dgrid">
@@ -345,15 +335,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-arlo" data-id="arlo" data-keep="nosub" data-v="avoid" data-rec="kit" data-recv="1" data-ha="0" data-power="battery" data-price="84.99" data-keep3="202.05" data-nosub3="202.05" data-sub3="372.63" data-score="3" data-model="arlo essential video doorbell 2k (2nd gen)" data-idx="8">
+</tbody><tbody class="item" id="m-arlo" data-id="arlo" data-keep="nosub" data-v="avoid" data-rec="kit" data-recv="1" data-ha="0" data-power="battery" data-price="84.99" data-keep3="202.05" data-nosub3="202.05" data-sub3="372.63" data-score="3" data-region="UK" data-model="arlo essential video doorbell 2k (2nd gen)" data-idx="8">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="arlo" aria-label="Compare Arlo Essential Video Doorbell 2K (2nd gen)"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/arlo-lg.webp" data-name="Arlo Essential Video Doorbell 2K (2nd gen)" aria-label="View Arlo Essential Video Doorbell 2K (2nd gen) photo"><img class="ph ph-sm" src="img/arlo-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Arlo</span> <span class="mname">Essential Video Doorbell 2K (2nd gen)</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: People who already own Arlo cameras</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-kit"><a class="src" href="https://www.arlo.com/en_gb/blog/smart-security/should-you-have-a-video-doorbell-without-a-subscription" data-more="32" data-claim="rec" data-id="arlo" data-fn="29" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Only with extra kit, source: Arlo UK blog, Arlo 2nd-gen doorbell FAQ"><span class="rec-t">Only with extra kit</span></a><a class="fn" href="#fn29" title="Arlo UK blog">29</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.argos.co.uk/product/4379311" title="Check the price at Argos: Arlo doorbell" data-claim="price" data-id="arlo" data-fn="28" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£84.99 at Argos: Arlo doorbell">£84.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>3</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.375)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.argos.co.uk/product/4379311" data-more="34 38 29" data-claim="nosub" data-id="arlo" data-fn="28" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£202.05, source: Argos: Arlo doorbell, Amazon UK: Arlo SmartHub, Amazon UK: SanDisk Ultra Curve 64 GB, Arlo UK blog">£202.05</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.arlo.com/en_gb/serviceplans" data-more="28" data-claim="plan" data-id="arlo" data-fn="30" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£372.63, source: Arlo UK plan prices, Argos: Arlo doorbell">£372.63</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.argos.co.uk/product/4379311" data-more="34 38 29" data-claim="nosub" data-id="arlo" data-fn="28" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£202.05, source: Argos: Arlo doorbell, Amazon UK: Arlo SmartHub, Amazon UK: SanDisk Ultra Curve 64 GB, Arlo UK blog">£202.05</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.arlo.com/en_gb/serviceplans" data-more="28" data-claim="plan" data-id="arlo" data-fn="30" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£372.63, source: Arlo UK plan prices, Argos: Arlo doorbell">£372.63</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Recording needs a £7.99/month plan or a separate hub costing about £105.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-arlo"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-arlo"><td colspan="8"><div class="dgrid">
@@ -376,15 +366,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-aqara-g4" data-id="aqara-g4" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="84.99" data-keep3="110.36" data-nosub3="110.36" data-sub3="0" data-score="6" data-model="aqara video doorbell g4" data-idx="9">
+</tbody><tbody class="item" id="m-aqara-g4" data-id="aqara-g4" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="1" data-power="battery wired" data-price="84.99" data-keep3="110.36" data-nosub3="110.36" data-sub3="0" data-score="6" data-region="UK" data-model="aqara video doorbell g4" data-idx="9">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="aqara-g4" aria-label="Compare Aqara Video Doorbell G4"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/aqara-g4-lg.webp" data-name="Aqara Video Doorbell G4" aria-label="View Aqara Video Doorbell G4 photo"><img class="ph ph-sm" src="img/aqara-g4-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Aqara</span> <span class="mname">Video Doorbell G4</span><span class="best">Best for: Apple Home users</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/" data-claim="rec" data-id="aqara-g4" data-fn="41" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Aqara G4 specifications"><span class="rec-t">Yes</span></a><a class="fn" href="#fn41" title="Aqara G4 specifications">41</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG" title="Check the price at Amazon UK: Aqara G4" data-claim="price" data-id="aqara-g4" data-fn="39" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£84.99 at Amazon UK: Aqara G4">£84.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.750)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG" data-more="17 41" data-claim="nosub" data-id="aqara-g4" data-fn="39" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£110.36, source: Amazon UK: Aqara G4, Amazon UK: SanDisk High Endurance 64 GB, Aqara G4 specifications">£110.36</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/" data-claim="plan" data-id="aqara-g4" data-fn="41" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No plan, source: Aqara G4 specifications"><span class="noplan">No plan</span></a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG" data-more="17 41" data-claim="nosub" data-id="aqara-g4" data-fn="39" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£110.36, source: Amazon UK: Aqara G4, Amazon UK: SanDisk High Endurance 64 GB, Aqara G4 specifications">£110.36</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/" data-claim="plan" data-id="aqara-g4" data-fn="41" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No plan, source: Aqara G4 specifications"><span class="noplan">No plan</span></a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-aqara-g4"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-aqara-g4"><td colspan="8"><div class="dgrid">
@@ -407,15 +397,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-blink" data-id="blink" data-keep="nosub" data-v="avoid" data-rec="kit" data-recv="1" data-ha="0" data-power="battery" data-price="69.99" data-keep3="121.97" data-nosub3="121.97" data-sub3="159.99" data-score="2" data-model="blink battery doorbell 2k+" data-idx="10">
+</tbody><tbody class="item" id="m-blink" data-id="blink" data-keep="nosub" data-v="avoid" data-rec="kit" data-recv="1" data-ha="0" data-power="battery" data-price="69.99" data-keep3="121.97" data-nosub3="121.97" data-sub3="159.99" data-score="2" data-region="UK" data-model="blink battery doorbell 2k+" data-idx="10">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="blink" aria-label="Compare Blink Battery Doorbell 2K+"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/blink-lg.webp" data-name="Blink Battery Doorbell 2K+" aria-label="View Blink Battery Doorbell 2K+ photo"><img class="ph ph-sm" src="img/blink-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">Blink</span> <span class="mname">Battery Doorbell 2K+</span><span class="vtag v-avoid">Avoid without a plan</span><span class="best">Best for: The cheapest way into Amazon&#x27;s ecosystem, if you catch a deal</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-kit"><a class="src" href="https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2" data-claim="rec" data-id="blink" data-fn="46" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Only with extra kit, source: Blink Sync Module 2 FAQ"><span class="rec-t">Only with extra kit</span></a><a class="fn" href="#fn46" title="Blink Sync Module 2 FAQ">46</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C" title="Check the price at Amazon UK: Blink 2K+" data-claim="price" data-id="blink" data-fn="43" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£69.99 at Amazon UK: Blink 2K+">£69.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>2</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.250)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C" data-more="44 38 46" data-claim="nosub" data-id="blink" data-fn="43" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£121.97, source: Amazon UK: Blink 2K+, camelcamelcamel (Sync Module 2), Amazon UK: SanDisk Ultra Curve 64 GB, Blink Sync Module 2 FAQ">£121.97</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://blinkforhome.com/plans-uk" data-more="43" data-claim="plan" data-id="blink" data-fn="45" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£159.99, source: Blink UK plans, Amazon UK: Blink 2K+">£159.99</a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C" data-more="44 38 46" data-claim="nosub" data-id="blink" data-fn="43" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£121.97, source: Amazon UK: Blink 2K+, camelcamelcamel (Sync Module 2), Amazon UK: SanDisk Ultra Curve 64 GB, Blink Sync Module 2 FAQ">£121.97</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://blinkforhome.com/plans-uk" data-more="43" data-claim="plan" data-id="blink" data-fn="45" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£159.99, source: Blink UK plans, Amazon UK: Blink 2K+">£159.99</a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-blink"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-blink"><td colspan="8"><div class="dgrid">
@@ -438,15 +428,15 @@
 </dl></div>
 
 </td></tr>
-</tbody><tbody class="item" id="m-ezviz-ep3x" data-id="ezviz-ep3x" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="0" data-power="battery" data-price="79.99" data-keep3="79.99" data-nosub3="79.99" data-sub3="259.63" data-score="6" data-model="ezviz ep3x pro" data-idx="11">
+</tbody><tbody class="item" id="m-ezviz-ep3x" data-id="ezviz-ep3x" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="0" data-power="battery" data-price="79.99" data-keep3="79.99" data-nosub3="79.99" data-sub3="259.63" data-score="6" data-region="EU" data-model="ezviz ep3x pro" data-idx="11">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="ezviz-ep3x" aria-label="Compare EZVIZ EP3x Pro"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/ezviz-ep3x-lg.webp" data-name="EZVIZ EP3x Pro" aria-label="View EZVIZ EP3x Pro photo"><img class="ph ph-sm" src="img/ezviz-ep3x-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">EZVIZ</span> <span class="mname">EP3x Pro</span><span class="best">Best for: Two cameras on a budget, with storage built in</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD" data-more="49" data-claim="rec" data-id="ezviz-ep3x" data-fn="48" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Amazon UK: EZVIZ EP3x Pro, EZVIZ UK: no-subscription guide"><span class="rec-t">Yes</span></a><a class="fn" href="#fn48" title="Amazon UK: EZVIZ EP3x Pro">48</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD" title="Check the price at Amazon UK: EZVIZ EP3x Pro" data-claim="price" data-id="ezviz-ep3x" data-fn="48" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£79.99 at Amazon UK: EZVIZ EP3x Pro">£79.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>6</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.750)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD" data-more="49" data-claim="nosub" data-id="ezviz-ep3x" data-fn="48" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£79.99, source: Amazon UK: EZVIZ EP3x Pro, EZVIZ UK: no-subscription guide">£79.99</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="EU"><span class="figv"><a class="src" href="https://www.ezviz.com/page/cloudplay" data-more="48" data-claim="plan" data-id="ezviz-ep3x" data-fn="50" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£259.63, source: EZVIZ CloudPlay (EU prices), Amazon UK: EZVIZ EP3x Pro">£259.63</a><span class="vh">EU price, not a UK quote</span></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD" data-more="49" data-claim="nosub" data-id="ezviz-ep3x" data-fn="48" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£79.99, source: Amazon UK: EZVIZ EP3x Pro, EZVIZ UK: no-subscription guide">£79.99</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="EU"><span class="figv"><a class="src" href="https://www.ezviz.com/page/cloudplay" data-more="48" data-claim="plan" data-id="ezviz-ep3x" data-fn="50" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£259.63, source: EZVIZ CloudPlay (EU prices), Amazon UK: EZVIZ EP3x Pro">£259.63</a><span class="vh">EU price, not a UK quote</span></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Expert Reviews found its motion detection unreliable and the app confusing.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-ezviz-ep3x"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-ezviz-ep3x"><td colspan="8"><div class="dgrid">
@@ -469,15 +459,15 @@
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> CloudPlay&#x27;s UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote.</p>
 </td></tr>
-</tbody><tbody class="item" id="m-ezviz-db2" data-id="ezviz-db2" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="0" data-power="battery" data-price="114.99" data-keep3="140.36" data-nosub3="140.36" data-sub3="294.63" data-score="5" data-model="ezviz db2 pro kit" data-idx="12">
+</tbody><tbody class="item" id="m-ezviz-db2" data-id="ezviz-db2" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="0" data-power="battery" data-price="114.99" data-keep3="140.36" data-nosub3="140.36" data-sub3="294.63" data-score="5" data-region="EU" data-model="ezviz db2 pro kit" data-idx="12">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="ezviz-db2" aria-label="Compare EZVIZ DB2 Pro Kit"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><button type="button" class="zoom" data-full="img/ezviz-db2-lg.webp" data-name="EZVIZ DB2 Pro Kit" aria-label="View EZVIZ DB2 Pro Kit photo"><img class="ph ph-sm" src="img/ezviz-db2-sm.webp" width="45" height="60" loading="lazy" decoding="async" alt=""><span class="zi" aria-hidden="true"></span></button><div><span class="brand">EZVIZ</span> <span class="mname">DB2 Pro Kit</span><span class="best">Best for: Flats and rentals: no wiring, and footage stays indoors in the chime</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://www.ertech.co.uk/product/db2-pro/" data-claim="rec" data-id="ezviz-db2" data-fn="53" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: ER Tech (UK retailer)"><span class="rec-t">Yes</span></a><a class="fn" href="#fn53" title="ER Tech (UK retailer)">53</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://www.ertech.co.uk/product/db2-pro/" title="Check the price at ER Tech (UK retailer)" data-claim="price" data-id="ezviz-db2" data-fn="53" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£114.99 at ER Tech (UK retailer)">£114.99</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.625)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://www.ertech.co.uk/product/db2-pro/" data-more="17" data-claim="nosub" data-id="ezviz-db2" data-fn="53" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£140.36, source: ER Tech (UK retailer), Amazon UK: SanDisk High Endurance 64 GB">£140.36</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="EU"><span class="figv"><a class="src" href="https://www.ezviz.com/page/cloudplay" data-more="53" data-claim="plan" data-id="ezviz-db2" data-fn="50" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£294.63, source: EZVIZ CloudPlay (EU prices), ER Tech (UK retailer)">£294.63</a><span class="vh">EU price, not a UK quote</span></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://www.ertech.co.uk/product/db2-pro/" data-more="17" data-claim="nosub" data-id="ezviz-db2" data-fn="53" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£140.36, source: ER Tech (UK retailer), Amazon UK: SanDisk High Endurance 64 GB">£140.36</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="EU"><span class="figv"><a class="src" href="https://www.ezviz.com/page/cloudplay" data-more="53" data-claim="plan" data-id="ezviz-db2" data-fn="50" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£294.63, source: EZVIZ CloudPlay (EU prices), ER Tech (UK retailer)">£294.63</a><span class="vh">EU price, not a UK quote</span></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">2.4 GHz Wi-Fi only, and the card is sold separately.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-ezviz-db2"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-ezviz-db2"><td colspan="8"><div class="dgrid">
@@ -500,15 +490,15 @@
 </dl></div>
 <p class="unverified"><b>Not yet verified:</b> CloudPlay&#x27;s UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote.</p>
 </td></tr>
-</tbody><tbody class="item" id="m-hik" data-id="hik" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="1" data-power="wired" data-price="295.0" data-keep3="320.37" data-nosub3="320.37" data-sub3="0" data-score="5" data-model="hikvision ds-kb6003-wip" data-idx="13">
+</tbody><tbody class="item" id="m-hik" data-id="hik" data-keep="nosub" data-rec="yes" data-recv="2" data-ha="1" data-power="wired" data-price="295.0" data-keep3="320.37" data-nosub3="320.37" data-sub3="0" data-score="5" data-region="UK" data-model="hikvision ds-kb6003-wip" data-idx="13">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="hik" aria-label="Compare Hikvision DS-KB6003-WIP"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell"><span class="ph ph-sm" aria-hidden="true" style="width:45px;height:60px"><span>No photo</span></span><div><span class="brand">Hikvision</span> <span class="mname">DS-KB6003-WIP</span><span class="best">Best for: Only worth it if an installer is fitting a Hikvision system anyway</span></div></div></th>
 <td class="c-rec" data-label="Records free?"><span class="rec rec-yes"><a class="src" href="https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf" data-claim="rec" data-id="hik" data-fn="55" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="Yes, source: Hikvision datasheet"><span class="rec-t">Yes</span></a><a class="fn" href="#fn55" title="Hikvision datasheet">55</a></span></td>
 <td class="c-price num" data-label="Price"><a class="src buy" href="https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/" title="Check the price at Eagle Security Solutions" data-claim="price" data-id="hik" data-fn="54" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£295 at Eagle Security Solutions">£295</a></td>
 <td class="c-score" data-label="Free features"><span class="score"><b>5</b>/8</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(0.625)"></i></span></td>
-<td class="c-nosub num keep" data-label="3 years, no plan"><span class="figv"><a class="src" href="https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/" data-more="17 55" data-claim="nosub" data-id="hik" data-fn="54" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£320.37, source: Eagle Security Solutions, Amazon UK: SanDisk High Endurance 64 GB, Hikvision datasheet">£320.37</a></span></td>
-<td class="c-sub num" data-label="3 years, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf" data-claim="plan" data-id="hik" data-fn="55" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No plan, source: Hikvision datasheet"><span class="noplan">No plan</span></a></span></td>
+<td class="c-nosub num keep" data-label="3-year cost, no plan"><span class="figv"><a class="src" href="https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/" data-more="17 55" data-claim="nosub" data-id="hik" data-fn="54" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="£320.37, source: Eagle Security Solutions, Amazon UK: SanDisk High Endurance 64 GB, Hikvision datasheet">£320.37</a></span></td>
+<td class="c-sub num" data-label="3-year cost, with plan" data-region="UK"><span class="figv"><a class="src" href="https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf" data-claim="plan" data-id="hik" data-fn="55" rel="nofollow noopener noreferrer" aria-haspopup="dialog" aria-label="No plan, source: Hikvision datasheet"><span class="noplan">No plan</span></a></span></td>
 <td class="c-catch" data-label="Main catch"><span class="catch-t">Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295.</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-hik"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-hik"><td colspan="8"><div class="dgrid">
@@ -538,7 +528,7 @@
 <section class="method" id="method">
 <div class="method-copy">
 <h2>How we worked it out</h2>
-<p id="m-a"><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Blink's Sync Module 2 at £39.99, Arlo's SmartHub at £105.07, and a 64 GB SanDisk microSD card at £25.37 or SanDisk USB stick at £11.99, each the cheapest UK price we found, at Amazon UK). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
+<p id="m-a"><sup>a</sup> <b>3 years, no plan</b> = price + anything you must add to record for free (Arlo's SmartHub at £105.07, Blink's Sync Module 2 at £39.99, and a 64 GB SanDisk microSD card at £25.37 or SanDisk USB stick at £11.99, each the cheapest UK price we found, on a page that publishes it). Ring and Nest can't keep recordings this way, which is shown next to the figure.</p>
 <p id="m-b"><sup>b</sup> <b>3 years, with plan</b> = price + 36 × the cheapest UK monthly plan that adds cloud recording for one device. Paying yearly is usually cheaper. The EZVIZ plan figure is the EU price because EZVIZ shows UK pricing only inside its app. Every model's sums are under <i>Details</i>.</p>
 <p><b>Free-feature score (out of 8):</b> records for free (2 = out of the box, 1 = with extra kit or only briefly), free live view (1), free motion alerts (1), free smart detection (1), storage included in the box (1), local Home Assistant support (2 = official and local, 1 = unofficial or generic).</p>
 <p><b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and video down one network cable. An <i>NVR</i> is a recorder box that stores footage from several cameras. A <i>microSD</i> card is the small memory card that sits inside many doorbells or their indoor chime. <i>2.4 GHz only</i> means the doorbell cannot join a 5 GHz network, so it will not show up on a phone that is on 5 GHz. <i>Home Assistant</i> is free software that keeps your smart home on your own network instead of a manufacturer's cloud.</p>
@@ -549,12 +539,12 @@
 </section>
 <footer class="foot">
 <p>Last checked 19 October 2026. 14 UK doorbells, no affiliate links, no tracking. <a href="https://github.com/lydenyardley/subfree-uk/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>
-<p>SubFree UK is a personal comparison of UK video doorbells, put together by <a href="https://github.com/lydenyardley/subfree-uk">lydenyardley</a> to show which ones record without a subscription. Every price links to the page it came from, so you can check it yourself. Spotted a mistake? <a href="mailto:lydenyardley+subfreeuk@posteo.net">lydenyardley+subfreeuk@posteo.net</a>.</p>
+<p>SubFree UK is a personal comparison of UK doorbells, put together by <a href="https://github.com/lydenyardley/subfree-uk">lydenyardley</a> to show which ones record without a subscription. Every price links to the page it came from, so you can check it yourself. Spotted a mistake? <a href="mailto:lydenyardley+subfreeuk@posteo.net">lydenyardley+subfreeuk@posteo.net</a>.</p>
 </footer>
 </main>
 </div>
-<div class="tray" id="tray" hidden><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
-<button type="button" class="totop" id="totop" hidden aria-label="Back to top"><span aria-hidden="true">↑</span></button>
+<div class="tray" id="tray" hidden role="region" aria-label="Compare selection"><span id="tray-txt"></span><button type="button" id="tray-go">Compare</button><button type="button" class="ghost" id="tray-clear">Clear</button></div>
+<div class="totop-w" role="region" aria-label="Page tools"><button type="button" class="totop" id="totop" hidden aria-label="Back to top"><span aria-hidden="true">↑</span></button></div>
 <dialog id="lightbox" aria-labelledby="lb-name">
 <button type="button" class="lb-x" id="lb-x" aria-label="Close photo">✕</button>
 <div id="lb-img"></div>
@@ -569,5 +559,5 @@
 <p class="card-note"></p>
 <p class="card-date">Prices and plans checked 19 October 2026.</p>
 </dialog>
-<script src="assets/page.js?v=875b75fc81"></script>
+<script src="assets/page.js?v=e17dd23ab9"></script>
 </body></html>

@@ -1,7 +1,11 @@
 """What the page does when it is used: the controls, the disclosures, the theme and the page's own text."""
 import os
 
-from .context import ROOT
+from catalog import CATEGORIES, CLAIM_WHAT
+from .context import FAMILY, ROOT, THREE
+
+CAT = CATEGORIES[0]
+FAM = ", ".join(f"'{i}'" for i in FAMILY)
 from .js import BARS_JS, DESKTOP_ROWS_JS, FILTERS_JS, STUCK_JS
 from .registry import Check
 
@@ -140,9 +144,28 @@ def copy_check(page):
         problems.append(f"the refused fourth box says nothing: {refused['cap']!r}")
     return problems
 
-def recovery_check(page):
+def empty_window(dataset):
+    """A price range with no row in it, read from the data.
+
+    The slider's ends are the data's own now, so the ceiling is a real price for
+    the dearest row and pinning both handles to it leaves that row on the page.
+    An empty result is therefore a gap between two adjacent prices, found here
+    rather than typed in.
+    """
+    prices = sorted(row["price"] for row in dataset.ROWS)
+    step = 5
+    for low in range(int(min(prices)) // step * step, int(max(prices)) + step, step):
+        if not any(low <= price <= low + step for price in prices):
+            return low, low + step
+    return None
+
+
+def recovery_check(page, dataset):
     """Filtering announces its count; an empty result offers the nearest match."""
     problems = []
+    window = empty_window(dataset)
+    if window is None:
+        return ["every price gap has a row in it, so the empty state cannot be reached"]
     page.eval_on_selector_all(
         "input.cmp",
         """els => els.forEach(el => {
@@ -165,10 +188,11 @@ def recovery_check(page):
             f"filtering set {filtered['count']} rows and announced {filtered['live']!r}"
         )
 
-    for handle in ("#f-min", "#f-max"):
+    for handle, value in (("#f-min", window[0]), ("#f-max", window[1])):
         page.eval_on_selector(
             handle,
-            "el => { el.value = 300; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+            "(el, value) => { el.value = value; el.dispatchEvent(new Event('input', { bubbles: true })) }",
+            value,
         )
     page.wait_for_timeout(600)
     empty = page.evaluate(
@@ -298,7 +322,10 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
         problems.append(
             f"the phone spec cells are {state['displays']}, expected block rows"
         )
-    for want in ("Records free?", "Price", "3 years, no plan", "3 years, with plan"):
+    for want in (
+        "Records free?", "Price",
+        f"{CAT['period_adj']} cost, no plan", f"{CAT['period_adj']} cost, with plan",
+    ):
         if not any(want in label for label in state["labels"]):
             problems.append(f"the phone labels read {state['labels']}, missing {want!r}")
     # The two 3-year figures are read against each other, so they sit side by
@@ -467,18 +494,25 @@ def card_check(page, dataset, checked):
             [id_, claim],
         )
 
-    # A row with a plan, a row without one, and the row whose card opened this
-    # check: the two 3-year figures are the page's own arithmetic and have to
-    # show the sum they are, and the recording verdict has to quote the row.
-    for id_, claim, title in (
-        ("reo-poe", "nosub", "Reolink Video Doorbell PoE \u00b7 The 3-year cost with no plan"),
-        ("ring", "plan", "Ring Battery Video Doorbell 2K \u00b7 The 3-year cost with a plan"),
-        ("nest", "rec", "Google Nest Doorbell (battery) \u00b7 Records free without a plan"),
-    ):
-        row = next((r for r in dataset.ROWS if r["id"] == id_), None)
+    # A row with a plan, a row without one, and a row whose recording is limited
+    # rather than missing: the two 3-year figures are the page's own arithmetic
+    # and have to show the sum they are, and the recording verdict has to quote
+    # the row. The rows are chosen by that property, so re-pricing or renaming a
+    # product cannot leave this check opening a card that is no longer there.
+    chosen = (
+        (next((r for r in dataset.ROWS if r["sub"] is None), None), "nosub"),
+        (next((r for r in dataset.ROWS if r["sub"] is not None), None), "plan"),
+        (next((r for r in dataset.ROWS if r["rec"] == "brief"), None), "rec"),
+    )
+    for row, claim in chosen:
         if row is None:
-            problems.append(f"no {id_} in the dataset to open a card from")
+            problems.append(f"the dataset has no row to open a {claim} card from")
             continue
+        id_ = row["id"]
+        title = (
+            f"{row['brand']} {row['model']} \u00b7 "
+            + CLAIM_WHAT[claim].format(period=CAT["period"])
+        )
         state = read(id_, claim)
         if state.get("missing"):
             problems.append(f"{id_} has no {claim} source card")
@@ -647,10 +681,18 @@ def card_check(page, dataset, checked):
     # and their three are handed back, because the checks after this one read the
     # page this check found.
     plan_row = next(
-        (r for r in dataset.ROWS if r["keep_basis"] == "sub" and r["sub3"] is not None), None
+        (
+            r
+            for r in dataset.ROWS
+            if r["keep_basis"] == "sub" and r["sub3"] is not None and r["id"] not in THREE
+        ),
+        None,
     )
     if plan_row is None:
-        problems.append("no row's cheapest 3-year route is a plan, so nothing can be read")
+        # Either the panel already shows a plan-route total, which the loop
+        # above has read, or no row's cheapest route is a plan at all.
+        if not any(r["keep_basis"] == "sub" for r in dataset.ROWS):
+            problems.append("no row's cheapest 3-year route is a plan, so nothing can be read")
     else:
         swapped = page.evaluate(
             """([id]) => {
@@ -709,7 +751,7 @@ def card_check(page, dataset, checked):
     def tap(block):
         return page.evaluate(
             """(block) => {
-                const a = document.querySelector('#m-reo-poe .c-nosub a.src');
+                const a = document.querySelector('#tbl tbody.item .c-nosub a.src');
                 const card = document.getElementById('card');
                 if (card.open) card.close();
                 a.scrollIntoView({ block });
@@ -1112,7 +1154,7 @@ def head_check(page):
     width = page.evaluate("() => innerWidth")
     page.evaluate(
         """() => {
-            const ids = ['reo-poe', 'reo-wifi', 'reo-batt'];
+            const ids = [""" + FAM + """];
             document.querySelectorAll('input.cmp').forEach((c) => {
                 c.checked = ids.indexOf(c.value) > -1;
                 c.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1289,7 +1331,7 @@ def price_link_check(page):
                         target: a ? (a.getAttribute('target') || '') : ''
                     };
                 }),
-                sourceNames: Array.from(document.querySelectorAll('#m-reo-poe .srcs a'))
+                sourceNames: Array.from(document.querySelectorAll('#tbl tbody.item .srcs a'))
                     .map((a) => a.textContent.trim())
             };
         }"""
@@ -1314,26 +1356,27 @@ def price_link_check(page):
         problems.append(f"the details name their sources by number: {numeric[:3]}")
     return problems
 
-def details_check(page):
+def details_check(page, dataset):
     """The details panel says each row in a sentence, and the two columns end level."""
     problems = []
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(150)
     page.evaluate(
         """() => {
-            const b = document.querySelector('#m-reo-poe .more');
+            const b = document.querySelector('#tbl tbody.item .more');
             if (b.getAttribute('aria-expanded') !== 'true') b.click();
         }"""
     )
     page.wait_for_timeout(200)
     state = page.evaluate(
         """() => {
-            const panel = document.querySelector('#m-reo-poe tr.detail');
+            const panel = document.querySelector('#tbl tbody.item tr.detail');
             const pairs = Array.from(panel.querySelectorAll('.dspec .pair'));
             const dl = panel.querySelector('.dspec');
             const left = (el) => Math.round(el.getBoundingClientRect().left);
             const value = (i) => (pairs[i] ? pairs[i].querySelector('dd').textContent.trim() : '');
             return {
+                id: panel.closest('tbody').getAttribute('data-id'),
                 open: panel.classList.contains('open'),
                 pairs: pairs.length,
                 columns: Array.from(new Set(pairs.map(left))).sort((a, b) => a - b),
@@ -1369,13 +1412,29 @@ def details_check(page):
     # The photo left 160px of blank grid under it; the sources fill it.
     if not state["sources"]:
         problems.append("the sources sit at the panel's foot, not under the photo")
-    # A sentence rather than a data string: long, punctuated, and not a list of
-    # terms joined by punctuation.
-    for name, text in (("power", state["power"]), ("storage", state["storage"])):
-        if len(text) < 40 or not text.rstrip().endswith("."):
-            problems.append(f"the {name} line reads {text!r}")
-        if " / " in text or ";" in text:
-            problems.append(f"the {name} line is still a list of terms: {text!r}")
+    # Each panel prints the row's own sentence, and every row's sentence reads
+    # as one: it ends in a full stop and is not a list of terms joined by
+    # punctuation. The copy is checked from the data, so the assertion is not a
+    # length threshold tuned to one product's wording.
+    # The panel this check opened is the first row in the table's own order,
+    # which is the sort's, so the row is found by the id the panel carries.
+    shown = next((r for r in dataset.ROWS if r["id"] == state["id"]), dataset.ROWS[0])
+    for name, text, want in (
+        ("power", state["power"], shown["plain"][0]),
+        ("storage", state["storage"], shown["plain"][1]),
+    ):
+        if text != want:
+            problems.append(
+                f"{shown['id']}: the {name} line reads {text!r}, not the row's own sentence"
+            )
+    for row in dataset.ROWS:
+        for name, text in (("power", row["plain"][0]), ("storage", row["plain"][1])):
+            if not text.rstrip().endswith("."):
+                problems.append(f"{row['id']}: the {name} sentence is {text!r}")
+            if " / " in text or ";" in text:
+                problems.append(
+                    f"{row['id']}: the {name} sentence is still a list of terms: {text!r}"
+                )
     for want in ("Power", "Storage", "Wi-Fi", "History without a plan"):
         if want not in state["labels"]:
             problems.append(f"the details panel has no {want!r} row")
@@ -1385,8 +1444,8 @@ def details_check(page):
     page.wait_for_timeout(200)
     narrow = page.evaluate(
         """() => {
-            const panel = document.querySelector('#m-reo-poe tr.detail');
-            const more = document.querySelector('#m-reo-poe .more');
+            const panel = document.querySelector('#tbl tbody.item tr.detail');
+            const more = document.querySelector('#tbl tbody.item .more');
             if (more.getAttribute('aria-expanded') !== 'true') more.click();
             const pairs = Array.from(panel.querySelectorAll('.dspec .pair'));
             const tops = pairs.map((p) => Math.round(p.getBoundingClientRect().top));
@@ -1411,7 +1470,7 @@ def details_check(page):
     page.wait_for_timeout(150)
     page.evaluate(
         """() => {
-            const b = document.querySelector('#m-reo-poe .more');
+            const b = document.querySelector('#tbl tbody.item .more');
             if (b.getAttribute('aria-expanded') === 'true') b.click();
         }"""
     )
@@ -1490,7 +1549,7 @@ def print_check(page):
         problems.append("the row's chevron prints where there is nothing to open")
     return problems
 
-def jump_check(page):
+def jump_check(page, dataset):
     """A jump announces its model, verdict and position, then clears.
 
     The position is read from the page's own order instead of typed here: the
@@ -1498,21 +1557,31 @@ def jump_check(page):
     number in this file would only have reported that the data moved.
     """
     problems = []
-    page.click(".verdict a.jump[data-ids='tapo-d230']")
+    # The row the page's own short answer links to, read from the link itself,
+    # so the check follows the lead rather than a product id.
+    lead = page.eval_on_selector_all(
+        ".verdict a.jump", "els => els.map((a) => a.getAttribute('data-ids'))"
+    )
+    target = next((r for r in dataset.ROWS if r["id"] in lead and r["verdict"]), None)
+    if target is None:
+        return ["the short answer in the margin links to no row with a verdict"]
+    page.click(f".verdict a.jump[data-ids='{target['id']}']")
     page.wait_for_timeout(700)
     state = page.evaluate(
-        """() => {
+        """(id) => {
             const items = Array.from(document.querySelectorAll('#tbl tbody.item:not([hidden])'));
             return {
                 live: document.getElementById('live').textContent,
                 active: document.activeElement.className,
-                row: items.findIndex((t) => t.id === 'm-tapo-d230') + 1,
+                row: items.findIndex((t) => t.id === 'm-' + id) + 1,
                 total: items.length
             };
-        }"""
+        }""",
+        target["id"],
     )
     expected = (
-        f"TP-Link Tapo D230S1, easiest battery setup, row {state['row']} of {state['total']}"
+        f"{target['brand']} {target['model']}, "
+        f"{CAT['verdicts'][target['verdict']][0].lower()}, row {state['row']} of {state['total']}"
     )
     if state["live"] != expected:
         problems.append(f"the jump announced {state['live']!r}, expected {expected!r}")
@@ -1986,8 +2055,18 @@ def price_check(page):
                 ],
                 extra: (() => {
                     const box = document.querySelector(".range").cloneNode(true);
-                    box.querySelectorAll(".lab, .dual, output").forEach((n) => n.remove());
+                    box.querySelectorAll("legend, .lab, .dual, output").forEach((n) => n.remove());
                     return (box.textContent || "").replace(/\s+/g, " ").trim();
+                })(),
+                group: (() => {
+                    const range = document.querySelector(".range");
+                    const legend = range.querySelector("legend");
+                    return {
+                        tag: range.tagName,
+                        legend: legend ? legend.textContent.trim() : "",
+                        described: ranges.map((el) => el.getAttribute("aria-describedby") || ""),
+                        valuetext: ranges.map((el) => el.getAttribute("aria-valuetext") || "")
+                    };
                 })()
             };
         }"""
@@ -2006,6 +2085,18 @@ def price_check(page):
     # prints no third copy of the figures.
     if shapes["extra"]:
         problems.append(f"the price column repeats its range: {shapes['extra']!r}")
+    # The pair is one control: a named group, a price rather than a bare number
+    # for each handle, and the two outputs describing the current ends.
+    group = shapes["group"]
+    if group["tag"] != "FIELDSET" or group["legend"] != "Price":
+        problems.append(f"the price pair is a {group['tag']} named {group['legend']!r}")
+    for label, described, spoken in zip(
+        shapes["labels"], group["described"], group["valuetext"]
+    ):
+        if described != "f-min-out f-max-out":
+            problems.append(f"{label} is described by {described!r}, not the two outputs")
+        if not spoken.startswith("£"):
+            problems.append(f"{label} announces {spoken!r}, not a price")
 
     page.eval_on_selector("#filters", "el => { el.open = true }")
     page.wait_for_timeout(80)
@@ -2116,24 +2207,39 @@ def price_check(page):
     if not box or not box["width"]:
         return problems + ["the price track has no width to click on"]
     values = "() => [Number(document.getElementById('f-min').value), Number(document.getElementById('f-max').value)]"
+    # The ends are the data's, so the prices a click lands on are worked out
+    # from the page's own range rather than typed in: a repriced dearest row
+    # moves the ceiling and this check with it.
+    ends = page.evaluate(
+        "() => { const el = document.getElementById('f-min');"
+        " return [Number(el.min), Number(el.max), Number(el.step)]; }"
+    )
+    floor, ceiling, step = (int(value) for value in ends)
+
+    def on_grid(fraction):
+        raw = floor + (ceiling - floor) * fraction
+        return floor + int((raw - floor) // step) * step
+
     # Playwright's hit-target check sees the transparent range input at this
     # point even though it has pointer-events:none; a real mouse click is the
     # behaviour under test.
+    want_low = on_grid(0.25)
     page.mouse.click(box["x"] + box["width"] * 0.25, box["y"] + 1)
     page.wait_for_timeout(80)
     low = page.evaluate(values)
-    if abs(low[0] - 105) > 5 or low[1] != 300:
+    if abs(low[0] - want_low) > 5 or low[1] != ceiling:
         problems.append(
             f"a click a quarter along the track left the handles at {low}, "
-            "expected the lower one near 105"
+            f"expected the lower one near {want_low} and the upper at {ceiling}"
         )
+    want_high = on_grid(0.75)
     page.mouse.click(box["x"] + box["width"] * 0.75, box["y"] + 1)
     page.wait_for_timeout(80)
     high = page.evaluate(values)
-    if abs(high[1] - 235) > 5 or high[0] != low[0]:
+    if abs(high[1] - want_high) > 5 or high[0] != low[0]:
         problems.append(
             f"a click three quarters along the track left the handles at {high}, "
-            "expected the upper one near 235"
+            f"expected the upper one near {want_high}"
         )
 
     # A range dragged shut still has to open by the pointer: with both handles
@@ -2232,7 +2338,7 @@ CHECKS = [
     Check(
         "empty result", "phone", 18,
         "filtering announces its count; an empty result offers the nearest match",
-        lambda ctx: recovery_check(ctx.page),
+        lambda ctx: recovery_check(ctx.page, ctx.dataset),
     ),
     Check(
         "score bars", "phone", 19,
@@ -2277,7 +2383,7 @@ CHECKS = [
     Check(
         "jump announcement", "desktop", 35,
         "a jump announces its model, verdict and row, then clears",
-        lambda ctx: jump_check(ctx.page),
+        lambda ctx: jump_check(ctx.page, ctx.dataset),
     ),
     Check(
         "desktop rows", "desktop", 36,
@@ -2307,7 +2413,7 @@ CHECKS = [
     Check(
         "details panel", "compare", 51,
         "a details panel says power and storage in sentences, six pairs a column with the score across the foot and the sources under the photo",
-        lambda ctx: details_check(ctx.page),
+        lambda ctx: details_check(ctx.page, ctx.dataset),
     ),
     Check(
         "print", "compare", 53,

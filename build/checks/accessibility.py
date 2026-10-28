@@ -121,35 +121,40 @@ def footnote_set(data):
     broken = sorted(set(data["footRefs"]) - set(data["footTargets"]))
     return [f"footnote mismatch, unreferenced: {orphaned}, missing: {broken}"]
 
+def axe_where(key):
+    """The name of one pass: a theme at a width, or a named page state."""
+    theme, where = key
+    return f"{theme} at {where}px" if isinstance(where, int) else f"{theme} {where}"
+
+
 def axe_problems(axe_results):
     problems = []
     best_practice = {}
-    for theme in ("dark", "light"):
-        for width in AXE_WIDTHS:
-            violations = axe_results[(theme, width)]
-            wcag = [v for v in violations if set(v["tags"]) & set(WCAG_TAGS)]
-            wcag_ids = {v["id"] for v in wcag}
-            for violation in violations:
-                if violation["id"] in wcag_ids:
-                    continue
-                entry = best_practice.setdefault(
-                    violation["id"],
-                    {"impact": violation["impact"], "help": violation["help"],
-                     "targets": set(), "where": set()},
-                )
-                entry["targets"].update(node["target"][0] for node in violation["nodes"])
-                entry["where"].add(f"{theme} {width}px")
-            if not wcag:
+    for key, violations in axe_results.items():
+        where = axe_where(key)
+        wcag = [v for v in violations if set(v["tags"]) & set(WCAG_TAGS)]
+        wcag_ids = {v["id"] for v in wcag}
+        for violation in violations:
+            if violation["id"] in wcag_ids:
                 continue
-            for violation in wcag:
-                nodes = violation["nodes"]
-                problems.append(
-                    f"axe {theme} at {width}px: {violation['id']} ({violation['impact']}), "
-                    f"{len(nodes)} node(s). {violation['help']}"
-                )
-                for node in nodes[:4]:
-                    summary = node.get("failureSummary", "").replace("\n", " ").strip()
-                    print(f"        {', '.join(node['target'])}  {summary[:150]}")
+            entry = best_practice.setdefault(
+                violation["id"],
+                {"impact": violation["impact"], "help": violation["help"],
+                 "targets": set(), "where": set()},
+            )
+            entry["targets"].update(node["target"][0] for node in violation["nodes"])
+            entry["where"].add(where)
+        if not wcag:
+            continue
+        for violation in wcag:
+            nodes = violation["nodes"]
+            problems.append(
+                f"axe {where}: {violation['id']} ({violation['impact']}), "
+                f"{len(nodes)} node(s). {violation['help']}"
+            )
+            for node in nodes[:4]:
+                summary = node.get("failureSummary", "").replace("\n", " ").strip()
+                print(f"        {', '.join(node['target'])}  {summary[:150]}")
     # The masthead sat outside every landmark, so the one finding axe called a
     # best practice was the only content a landmark user could not jump to.
     # It fails now rather than only printing, which is what the audit's R15
@@ -166,7 +171,7 @@ def axe_problems(axe_results):
         print(
             f"  note  axe best-practice {rule} ({entry['impact']}): {entry['help']} On "
             f"{', '.join(sorted(entry['targets'])[:3])}, in {len(entry['where'])} of "
-            f"{len(AXE_WIDTHS) * 2} theme and width passes"
+            f"{len(axe_results)} theme, width and state passes"
         )
     return problems
 
@@ -182,6 +187,37 @@ def axe_audit(page):
             results[(mode, width)] = axe_violations(axe, page)
         page.click("#theme")
         page.wait_for_timeout(120)
+    # The tray and the back-to-top button are only on screen once the reader has
+    # ticked a model and scrolled, so a pass at the top of the page never sees
+    # them. This one does: one model ticked, the page scrolled past its
+    # sentinel, at the width where the tray is the only Compare affordance.
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.evaluate(
+        """() => {
+            const box = document.querySelector('input.cmp');
+            box.checked = true;
+            box.dispatchEvent(new Event('change', { bubbles: true }));
+            const s = document.getElementById('totop-s');
+            window.scrollTo(0, s.getBoundingClientRect().top + window.scrollY + 600);
+        }"""
+    )
+    page.wait_for_timeout(250)
+    theme = page.evaluate(
+        "() => document.documentElement.getAttribute('data-theme')"
+        " || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')"
+    )
+    results[(theme, "with the tray and back-to-top on screen")] = axe_violations(axe, page)
+    # Put the page back the way the checks after this one expect it: one row
+    # unticked through its own change event, so the tray closes with it.
+    page.evaluate(
+        """() => {
+            window.scrollTo(0, 0);
+            const box = document.querySelector('input.cmp');
+            box.checked = false;
+            box.dispatchEvent(new Event('change', { bubbles: true }));
+        }"""
+    )
+    page.wait_for_timeout(120)
     return results
 
 COLUMN_KEYS_JS = """() => ({
@@ -335,7 +371,7 @@ CHECKS = [
     ),
     Check(
         "axe WCAG", "compare", 77,
-        "axe-core finds no WCAG 2.2 A/AA violation in either theme at 390, 820 and 1280, and every element sits inside a landmark",
+        "axe-core finds no WCAG 2.2 A/AA violation in either theme at 390, 820 and 1280, or with the tray and back-to-top on screen, and every element sits inside a landmark",
         lambda ctx: axe_problems(axe_audit(ctx.page)),
     ),
 ]
