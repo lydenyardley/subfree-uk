@@ -91,7 +91,7 @@ def phone_first_paint(phone):
     ]
 
 def short_answer_check(page):
-    """The phone keeps all three recommendations, each on its own line.
+    """The phone keeps the situation picks and the warning in two short lines.
 
     The desktop's longer verdict block is hidden on a phone. The audit's item 8
     was that the short answer had shrunk to one condensed sentence, dropping
@@ -126,16 +126,15 @@ def short_answer_check(page):
             f"the phone shows the short answer={state['shown']} and the verdict "
             f"block={state['verdict']}"
         )
-    if [line["cls"] for line in state["lines"]] != ["v-best", "v-batt", "v-avoid"]:
+    if [line["cls"] for line in state["lines"]] != ["v-pick", "v-pick"]:
         problems.append(
             f"the phone's short answer lines are {[line['cls'] for line in state['lines']]}"
         )
+    # Two lines by situation: wired, no wires, cheapest, then the warning that
+    # Ring needs a plan and Blink and Arlo need hardware. Each carries its price.
     wants = (
-        ("Reolink", "best overall"),
-        ("Tapo", "easiest battery"),
-        # The third line is the warning the condensed sentence dropped: Ring
-        # needs a plan, and Blink and Arlo need hardware.
-        ("Ring", "Blink", "Arlo"),
+        ("Reolink", "Tapo D230S1", "£"),
+        ("Tapo TD21", "£", "Ring", "Blink", "Arlo"),
     )
     for line, needed in zip(state["lines"], wants):
         missing = [word for word in needed if word not in line["words"]]
@@ -147,9 +146,6 @@ def short_answer_check(page):
             problems.append(
                 f"the {line['cls']} line takes {line['height'] / line['line']:.1f} lines"
             )
-    colours = {line["colour"] for line in state["lines"]}
-    if len(colours) != 3:
-        problems.append(f"the three short-answer lines share {len(colours)} colour(s): {colours}")
     return problems
 
 
@@ -562,6 +558,32 @@ def compare_caption_check(page):
         return []
     return [f"compare table: {compare}, expected a caption naming {want!r}"]
 
+def desktop_short_answer_check(page):
+    """The short answer sits beside the intro and never pushes the table down.
+
+    Most readers come for the table and filters, so the right-hand box may not
+    outgrow the intro column beside it, and the filters stay where they were
+    before the situation picks went in (388px at 1280).
+    """
+    state = page.evaluate(
+        """() => {
+            const aside = document.querySelector('.verdict').getBoundingClientRect();
+            const intro = document.querySelector('.intro > div').getBoundingClientRect();
+            const controls = document.querySelector('#controls').getBoundingClientRect();
+            return {aside: Math.round(aside.bottom + scrollY), intro: Math.round(intro.bottom + scrollY),
+                    controls: Math.round(controls.top + scrollY),
+                    prices: document.querySelector('.verdict').textContent.split('£').length - 1};
+        }"""
+    )
+    problems = []
+    if state["aside"] > state["intro"] + 2:
+        problems.append(f"the short answer box ends at {state['aside']}px, below the intro at {state['intro']}px")
+    if state["controls"] > 410:
+        problems.append(f"the filters start at {state['controls']}px, expected no lower than 410px")
+    if state["prices"] < 4:
+        problems.append(f"the short answer box shows {state['prices']} prices, expected at least 4")
+    return problems
+
 CHECKS = [
     Check(
         "emitted sources", "static", 4,
@@ -579,6 +601,11 @@ CHECKS = [
         lambda ctx: notfound_check(),
     ),
     Check(
+        "desktop short answer", "desktop", 93,
+        "the short answer fits beside the intro and the filters stay at the top",
+        lambda ctx: desktop_short_answer_check(ctx.page),
+    ),
+    Check(
         "phone first paint", "phone", 10, "",
         lambda ctx: phone_first_paint(ctx.phone["first paint"]),
     ),
@@ -588,7 +615,7 @@ CHECKS = [
     ),
     Check(
         "phone short answer", "phone", 24,
-        "all three recommendations are on the phone, in their own colours, one or two lines each",
+        "the situation picks and the warning are on the phone, two lines each at most",
         lambda ctx: short_answer_check(ctx.page),
     ),
     Check(

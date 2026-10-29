@@ -168,22 +168,23 @@ DOORBELLS = {
 
     # The editorial lead, which is a judgement about this category's rows rather
     # than a figure: `{v:ID:Words}` becomes a link to that row.
+    # `{p:ID}` and `{c:ID}` print a row's price and its no-plan 3-year cost,
+    # rounded to the pound, so the short answer never drifts from the table.
     "short": (
-        '{v:reo-poe:Reolink PoE} is the best overall without fees.',
-        '{v:tapo-d230:Tapo D230S1} is the easiest battery one.',
-        '{v:ring:Ring} needs a plan. {v:blink:Blink} and {v:arlo:Arlo} need extra kit.',
+        'Wired already: {v:reo-wifi:Reolink WiFi} {p:reo-wifi} · No wires: {v:tapo-d230:Tapo D230S1} {p:tapo-d230}',
+        'Cheapest: {v:tapo-td21:Tapo TD21} {p:tapo-td21} · Avoid: {v:ring:Ring}, {v:blink:Blink}, {v:arlo:Arlo}',
     ),
-    "short_tones": ("best", "batt", "avoid"),
+    "short_tones": ("pick", "pick"),
+    "short_head": "Short answer: which to buy",
     "aside": (
-        ("best", "Best overall without fees:", "{v:reo-poe:Reolink Video Doorbell PoE}",
-         ". It records to a card or NVR, nothing is paywalled, and Reolink is the only "
-         "brand here with an official local Home Assistant integration. The WiFi and "
-         "battery versions follow the same rules if you can't run an Ethernet cable."),
-        ("batt", "Easiest battery pick:", "{v:tapo-d230:Tapo D230S1}",
-         ", which keeps footage on a hub inside the house."),
+        ("pick", "Already have a wired doorbell:", "{v:reo-wifi:Reolink WiFi}",
+         ", {p:reo-wifi} ({c:reo-wifi} over 3 yrs). Same wires, records to a card (or the {v:reo-poe:PoE}, {p:reo-poe}, if you can run a cable)."),
+        ("pick", "Renting or no wires:", "{v:tapo-d230:Tapo D230S1}",
+         ", {p:tapo-d230} ({c:tapo-d230}). Battery, footage kept indoors."),
+        ("pick", "Cheapest that records free:", "{v:tapo-td21:Tapo TD21}",
+         ", {p:tapo-td21} ({c:tapo-td21}). Basic, card sits in the doorbell."),
         ("avoid", "Avoid if you won't pay monthly:", "{v:ring:Ring}",
-         " records nothing without a plan, and {v:blink:Blink} and {v:arlo:Arlo} need "
-         "extra hardware."),
+         " records nothing without a plan; {v:blink:Blink} and {v:arlo:Arlo} need extra kit."),
     ),
 
     "score_max": 8,

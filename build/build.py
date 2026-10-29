@@ -165,12 +165,15 @@ def vlink(ids, text):
     return f'<a class="jump" href="#m-{ids[0]}" data-ids="{" ".join(ids)}">{text}</a>'
 
 
+ROW_FIG = re.compile(r"\{([pc]):([a-z0-9-]+)\}")
+BY_ID = {r["id"]: r for r in ROWS}
 ROW_LINK = re.compile(r"\{v:([a-z0-9-]+):([^}]+)\}")
 
 
 def with_links(text):
     """`{v:ID:Words}` becomes a link to that row, so the editorial lead can
     name a product without the record holding markup for a specific id."""
+    text = ROW_FIG.sub(lambda m: f"£{round(BY_ID[m.group(2)]['price' if m.group(1) == 'p' else 'nosub3']):,}", text)
     return ROW_LINK.sub(lambda m: vlink([m.group(1)], m.group(2)), text)
 
 
@@ -410,7 +413,7 @@ def build(cat):
     # The short answer is the category's own: three linked sentences, each
     # naming the row it is about.
     short_html = (
-        '<p class="vshort"><b class="vlab">Short answer</b>\n'
+        f'<p class="vshort"><b class="vlab">{e(cat["short_head"])}</b>\n'
         + "".join(
             f'<span class="v-{tone}">{with_links(sentence)}</span>\n'
             for tone, sentence in zip(cat["short_tones"], cat["short"])
@@ -418,7 +421,7 @@ def build(cat):
         + "</p>"
     )
     aside_html = (
-        '<aside class="verdict">\n<h2>The short answer</h2>\n'
+        f'<aside class="verdict">\n<h2>{e(cat["short_head"])}</h2>\n'
         + "".join(
             f'<p class="v-{tone}"><b>{e(head)}</b> {with_links(link + rest)}</p>\n'
             for tone, head, link, rest in cat["aside"]

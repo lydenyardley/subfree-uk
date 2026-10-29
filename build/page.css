@@ -59,7 +59,7 @@ h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family
 /* The three lines of the short answer, each in its own colour, so a phone
    reads the same recommendation as a desktop. */
 .vshort span{display:block;margin:.45rem 0 0;padding-left:.75rem;border-left:3px solid var(--vc)}
-.v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)}
+.v-best{--vc:var(--v-best)} .v-batt{--vc:var(--v-batt)} .v-avoid{--vc:var(--v-avoid)} .v-pick{--vc:var(--acc)}
 a.jump{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--vc);text-decoration-thickness:2px;text-underline-offset:2px}
 a.jump:hover{color:var(--vc)}
 .vtag{display:block;margin-top:0;padding:0.5rem 0 0;font:600 12px/1.25 var(--sans);letter-spacing:.01em;color:var(--vc)}
