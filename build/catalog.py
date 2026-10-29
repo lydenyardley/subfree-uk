@@ -171,7 +171,7 @@ DOORBELLS = {
     # `{p:ID}` and `{c:ID}` print a row's price and its no-plan 3-year cost,
     # rounded to the pound, so the short answer never drifts from the table.
     "short": (
-        'Wired already: {v:reo-wifi:Reolink WiFi} {p:reo-wifi} · No wires: {v:tapo-d230:Tapo D230S1} {p:tapo-d230}',
+        'Wired: {v:reo-wifi:Reolink WiFi} {p:reo-wifi} · No wires: {v:tapo-d230:Tapo D230S1} {p:tapo-d230}',
         'Cheapest: {v:tapo-td21:Tapo TD21} {p:tapo-td21} · Avoid: {v:ring:Ring}, {v:blink:Blink}, {v:arlo:Arlo}',
     ),
     "short_tones": ("pick", "pick"),
