@@ -171,10 +171,12 @@ DOORBELLS = {
     # `{p:ID}` and `{c:ID}` print a row's price and its no-plan 3-year cost,
     # rounded to the pound, so the short answer never drifts from the table.
     "short": (
-        'Wired: {v:reo-wifi:Reolink WiFi} {p:reo-wifi} · No wires: {v:tapo-d230:Tapo D230S1} {p:tapo-d230}',
-        'Cheapest: {v:tapo-td21:Tapo TD21} {p:tapo-td21} · Avoid: {v:ring:Ring}, {v:blink:Blink}, {v:arlo:Arlo}',
+        'Wired doorbell: {v:reo-wifi:Reolink WiFi}, {p:reo-wifi}',
+        'Renting or no wires: {v:tapo-d230:Tapo D230S1}, {p:tapo-d230}',
+        'Cheapest that records free: {v:tapo-td21:Tapo TD21}, {p:tapo-td21}',
+        '{v:ring:Ring} needs a plan. {v:blink:Blink} and {v:arlo:Arlo} need extra kit.',
     ),
-    "short_tones": ("pick", "pick"),
+    "short_tones": ("pick", "pick", "pick", "avoid"),
     "short_head": "Short answer: which to buy",
     "aside": (
         ("pick", "Already have a wired doorbell:", "{v:reo-wifi:Reolink WiFi}",

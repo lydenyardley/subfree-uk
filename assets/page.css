@@ -667,10 +667,13 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .intro{padding:.75rem 0}
  .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
  .verdict{display:none}
- /* The three recommendations, one line each, so a phone reads the same
-    advice as a desktop before the first product. */
- .vshort{display:block;font-size:13px;line-height:1.4;margin:.75rem 0 0}
- .vshort span{margin:.3rem 0 0}
+ /* The situation picks and the warning, one line each with no gap, so the
+    first product stays above 600px. */
+ .vshort{display:block;font-size:13px;line-height:1.4;margin:.5rem 0 0}
+ .vshort span{margin:0}
+ /* The lines name their own situations, so the label is read out but not
+    drawn: it cost the first product its place above 600px on CI's fonts. */
+ .vshort .vlab{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
  .srcs>summary{align-items:flex-start}
  .controls{padding:0.75rem 0;gap:0.5rem}
  .sortby .lab{margin-bottom:0.5rem}

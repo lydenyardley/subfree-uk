@@ -91,7 +91,7 @@ def phone_first_paint(phone):
     ]
 
 def short_answer_check(page):
-    """The phone keeps the situation picks and the warning in two short lines.
+    """The phone keeps the situation picks and the warning one short line each.
 
     The desktop's longer verdict block is hidden on a phone. The audit's item 8
     was that the short answer had shrunk to one condensed sentence, dropping
@@ -126,23 +126,42 @@ def short_answer_check(page):
             f"the phone shows the short answer={state['shown']} and the verdict "
             f"block={state['verdict']}"
         )
-    if [line["cls"] for line in state["lines"]] != ["v-pick", "v-pick"]:
+    if [line["cls"] for line in state["lines"]] != ["v-pick", "v-pick", "v-pick", "v-avoid"]:
         problems.append(
             f"the phone's short answer lines are {[line['cls'] for line in state['lines']]}"
         )
     # Two lines by situation: wired, no wires, cheapest, then the warning that
     # Ring needs a plan and Blink and Arlo need hardware. Each carries its price.
     wants = (
-        ("Reolink", "Tapo D230S1", "£"),
-        ("Tapo TD21", "£", "Ring", "Blink", "Arlo"),
+        ("Reolink", "£"),
+        ("Tapo D230S1", "£"),
+        ("Tapo TD21", "£"),
+        ("Ring", "Blink", "Arlo"),
     )
+    # CI's runner draws system-ui in DejaVu Sans, wider than most desktops'
+    # fonts, and a wrapped line there pushed the first product past 600px.
+    # Each line has to fit on one line in DejaVu Sans as well.
+    wide = page.evaluate(
+        """() => {
+            const s = document.createElement('style');
+            s.textContent = ':root{--sans:"DejaVu Sans" !important}';
+            document.head.append(s);
+            const out = Array.from(document.querySelectorAll('.vshort span')).map((el) =>
+                el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
+            s.remove();
+            return out;
+        }"""
+    )
+    for line, lines in zip(state["lines"], wide):
+        if lines > 1.1:
+            problems.append(f"the {line['cls']} line takes {lines:.1f} lines in DejaVu Sans")
     for line, needed in zip(state["lines"], wants):
         missing = [word for word in needed if word not in line["words"]]
         if missing:
             problems.append(f"the {line['cls']} line is missing {missing}: {line['words']!r}")
         if line["border"] < 2:
             problems.append(f"the {line['cls']} line has no colour rule: {line['border']}px")
-        if line["line"] and line["height"] > line["line"] * 2 + 1:
+        if line["line"] and line["height"] > line["line"] + 1:
             problems.append(
                 f"the {line['cls']} line takes {line['height'] / line['line']:.1f} lines"
             )
