@@ -251,7 +251,7 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
  price=84.99, price_note="Amazon UK", price_src="amz_aqara",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan needed (iCloud+ only for HomeKit Secure Video)",
- best="Apple Home users",
+ best="Free face recognition, Android or iPhone",
  catch="Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.",
  storage="microSD (up to 512 GB) in the indoor chime", live="Yes", alerts="Yes",
  ai="Free: face recognition on the device", history="Yes, on the chime's card (24/7 only when wired)",
