@@ -210,7 +210,7 @@ def kit_phrase(rows):
     if not named:
         return ""
     # The sentence reads "Blink's Sync Module 2 at £39.99, Arlo's SmartHub at
-    # £105.07, and a 64 GB card at £25.37 or a stick at £11.99".
+    # £109.99, and a 64 GB card at £26.99 or a stick at £15.99".
     return ", ".join(named) + ", and "
 
 

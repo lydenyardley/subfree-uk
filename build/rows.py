@@ -32,8 +32,8 @@ CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
 # them (SanDisk £25.99 and Argos £26.99 for the card, 7DayShop £27.99, Currys
 # £43.99, and a cheaper card at Senetic whose £15.31 delivery made it dearer).
 # A row that buys one names it in extra_src, so its card lists the price.
-CARD = 25.37   # SanDisk High Endurance 64 GB microSDXC (SDSQQNR-064G-GN6IA)
-STICK = 11.99  # SanDisk Ultra Curve 64 GB USB 3.2 flash drive (SDCZ550)
+CARD = 26.99   # SanDisk High Endurance 64 GB microSDXC (SDSQQNR-064G-GN6IA), Argos
+STICK = 15.99  # SanDisk Cruzer Blade 64 GB USB flash drive (SDCZ50), Argos
 MONTHS = CAT["months"]
 
 # Shared sources (footnote numbers are assigned automatically)
@@ -70,10 +70,10 @@ S = {
  "arlo_faq": ("Arlo UK plans FAQ", "https://www.arlo.com/en_gb/support/faq/subscriptions-and-payments/what-arlo-subscription-plans-and-cloud-recording-options-are-available"),
  "arlo_blog": ("Arlo UK blog", "https://www.arlo.com/en_gb/blog/smart-security/should-you-have-a-video-doorbell-without-a-subscription"),
  "arlo_hubcompat": ("Arlo SmartHub compatibility", "https://www.arlo.com/en_gb/support/faq/connectivity-and-integrations/arlo-smarthub-and-base-station-compatibility"),
- "amz_arlohub": ("Amazon UK: Arlo SmartHub", "https://www.amazon.co.uk/Arlo-Certified-Accessory-Designed-Floodlight/dp/B08516SJZ9"),
+ "arlo_hub": ("Arlo UK store: SmartHub", "https://www.arlo.com/en_gb/accessories/arlo-pro-smarthub"),
  "tr_arlo": ("Trusted Reviews, 2026", "https://www.trustedreviews.com/reviews/arlo-essential-3-2k-security-camera"),
  "ambient_arlo": ("The Ambient", "https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/"),
- "aqara_uk": ("Aqara UK Shop: G4", "https://www.aqara-shop.co.uk/product/aqara-smart-video-doorbell-g4/"),
+ "aqara_uk": ("EasyGates: Aqara G4", "https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/"),
  "tr_blink": ("Trusted Reviews: Blink 2K+ UK prices", "https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss"),
  "chester_ep3x": ("Chester Digital Supplies: EP3x Pro", "https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro"),
  "ezviz_ep3x": ("EZVIZ UK: EP3x Pro", "https://www.ezviz.com/uk/product/ep3x+pro/55935"),
@@ -87,7 +87,7 @@ S = {
  "aqara_specs": ("Aqara G4 specifications", "https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/"),
  "ha_homekit": ("Home Assistant: HomeKit Device", "https://www.home-assistant.io/integrations/homekit_controller"),
  "amz_blink": ("Amazon UK: Blink 2K+", "https://www.amazon.co.uk/dp/B0G62K1Y6C"),
- "camel_sm2": ("camelcamelcamel (Sync Module 2)", "https://uk.camelcamelcamel.com/product/B08BJ9ZCZC"),
+ "camel_sm2": ("Sync Module 2 RRP £39.99 (camelcamelcamel history; no non-Amazon UK seller)", "https://uk.camelcamelcamel.com/product/B08BJ9ZCZC"),
  "blink_plans": ("Blink UK plans", "https://blinkforhome.com/plans-uk"),
  "blink_sm2": ("Blink Sync Module 2 FAQ", "https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2"),
  "ha_blink": ("Home Assistant: Blink", "https://www.home-assistant.io/integrations/blink/"),
@@ -97,8 +97,8 @@ S = {
  "ezviz_terms": ("EZVIZ CloudPlay UK terms", "https://www.ezviz.com/uk/legal/cloudplay-paid-subscription-terms"),
  "ha_ezviz": ("Home Assistant: EZVIZ", "https://www.home-assistant.io/integrations/ezviz/"),
  "ertech_db2": ("ER Tech (UK retailer)", "https://www.ertech.co.uk/product/db2-pro/"),
- "sandisk_card": ("Amazon UK: SanDisk High Endurance 64 GB", "https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B"),
- "sandisk_stick": ("Amazon UK: SanDisk Ultra Curve 64 GB", "https://www.amazon.co.uk/SANDISK-Computers-Desktops-RescuePRO-Recovery/dp/B0B42FNF15"),
+ "sandisk_card": ("Argos: SanDisk High Endurance 64 GB", "https://www.argos.co.uk/product/2656586"),
+ "sandisk_stick": ("Argos: SanDisk Cruzer Blade 64 GB", "https://www.argos.co.uk/product/3395891"),
  "eagle_hik": ("Eagle Security Solutions", "https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/"),
  "hik_ds": ("Hikvision datasheet", "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000083/S000000126/S000000127/OFR000160/M000001570/Data_Sheet/UD04258B_Spec-of-DS-KB6003-WIP-Wi-Fi-Doorbell_V1.4.6_20170519.pdf"),
  "ha_eufy": ("Home Assistant: eufy (ha-eufy-sdk)", "https://github.com/mega-yfue/ha-eufy-sdk"),
@@ -242,11 +242,11 @@ dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["batt
 dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery"], ha=0,
  power_note="Can be wired to an existing chime for trickle charging, but still runs on its battery.",
  price=84.99, price_note="Argos half price, doorbell + chime bundle (was £169.99)", price_src="argos_arlo",
- extra=round(105.07 + STICK, 2), extra_note="+ Arlo SmartHub £105.07 + SanDisk 64 GB USB stick",
- extra_src="sandisk_stick", kit_src="amz_arlohub", kit_label="SmartHub", kit_price=105.07, free_records=True,
+ extra=round(109.99 + STICK, 2), extra_note="+ Arlo SmartHub £109.99 + SanDisk 64 GB USB stick",
+ extra_src="sandisk_stick", kit_src="arlo_hub", kit_label="SmartHub", kit_price=109.99, free_records=True,
  sub=7.99, sub_name="Arlo Secure (1 camera)",
  best="People who already own Arlo cameras",
- catch="Recording needs a £7.99/month plan or a separate hub costing about £105.",
+ catch="Recording needs a £7.99/month plan or a separate hub costing about £110.",
  storage="Only through an Arlo SmartHub (VMB4540, USB) or a Base Station", live="Yes", alerts="Yes",
  ai="Paid", history="None without a hub",
  paywalled="Cloud recording (7, 14 or 30 days depending on plan), object detection, activity zones, theft replacement",
@@ -254,10 +254,10 @@ dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec
  ha_text="No official integration; only a community add-on that goes through Arlo's cloud.",
  wifi="2.4 GHz only",
  score=dict(rec=1,live=1,alerts=1,ai=0,storage=0,ha=0),
- src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo","ha_arlo","sandisk_stick"],
+ src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","arlo_hub","tr_arlo","ambient_arlo","ha_arlo","sandisk_stick"],
  rec_src="arlo_blog", history_src="arlo_doorbell", ha_src="ha_arlo", plan_src="arlo_plans", unverified=""),
 dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
- price=79.98, price_note="Aqara UK Shop (RRP £119)", price_src="aqara_uk", buy="amz_aqara",
+ price=69.00, price_note="EasyGates, UK retailer (RRP £119)", price_src="aqara_uk", buy="amz_aqara",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan needed (iCloud+ only for HomeKit Secure Video)",
  best="Free face recognition, Android or iPhone",

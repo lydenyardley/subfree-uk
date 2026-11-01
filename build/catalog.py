@@ -97,7 +97,7 @@ METHOD = {
     "md": [
         "Without a plan: hardware price + anything extra you need to record "
         "for free (a 64 GB SanDisk microSD card at {card} or SanDisk USB stick "
-        "at {stick}, each the cheapest UK price we found, at Amazon UK).",
+        "at {stick}, both from Argos).",
         "With a plan: hardware price + {months} × the cheapest UK monthly plan "
         "that adds recording for one device. Paying yearly is usually cheaper.",
         "Batteries, electricity, installation (except Hikvision, where it's "
