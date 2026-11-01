@@ -73,16 +73,25 @@ S = {
  "amz_arlohub": ("Amazon UK: Arlo SmartHub", "https://www.amazon.co.uk/Arlo-Certified-Accessory-Designed-Floodlight/dp/B08516SJZ9"),
  "tr_arlo": ("Trusted Reviews, 2026", "https://www.trustedreviews.com/reviews/arlo-essential-3-2k-security-camera"),
  "ambient_arlo": ("The Ambient", "https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/"),
- "amz_aqara": ("Amazon UK: Aqara G4", "https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG"),
+ "aqara_uk": ("Aqara UK Shop: G4", "https://www.aqara-shop.co.uk/product/aqara-smart-video-doorbell-g4/"),
+ "tr_blink": ("Trusted Reviews: Blink 2K+ UK prices", "https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss"),
+ "chester_ep3x": ("Chester Digital Supplies: EP3x Pro", "https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro"),
+ "ezviz_ep3x": ("EZVIZ UK: EP3x Pro", "https://www.ezviz.com/uk/product/ep3x+pro/55935"),
+ "amz_ring": ("Amazon UK: Ring Battery Doorbell 2K", "https://www.amazon.co.uk/dp/B0FHJ91JY5"),
+ "amz_nest": ("Amazon UK: Nest Doorbell (battery)", "https://www.amazon.co.uk/dp/B0D96LS7Z2"),
+ "amz_e340": ("Amazon UK: eufy E340", "https://www.amazon.co.uk/dp/B0CF8RPX5M"),
+ "amz_c31": ("Amazon UK: eufy C31", "https://www.amazon.co.uk/dp/B0GSFQL25B"),
+ "amz_td21": ("Amazon UK: Tapo TD21", "https://www.amazon.co.uk/dp/B0DGLVB89G"),
+ "amz_aqara": ("Amazon UK: Aqara G4", "https://www.amazon.co.uk/dp/B0BPHTL7MG"),
  "aqara_eu": ("Aqara EU store", "https://eu.aqara.com/products/aqara-video-doorbell-g4"),
  "aqara_specs": ("Aqara G4 specifications", "https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/"),
  "ha_homekit": ("Home Assistant: HomeKit Device", "https://www.home-assistant.io/integrations/homekit_controller"),
- "amz_blink": ("Amazon UK: Blink 2K+", "https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C"),
+ "amz_blink": ("Amazon UK: Blink 2K+", "https://www.amazon.co.uk/dp/B0G62K1Y6C"),
  "camel_sm2": ("camelcamelcamel (Sync Module 2)", "https://uk.camelcamelcamel.com/product/B08BJ9ZCZC"),
  "blink_plans": ("Blink UK plans", "https://blinkforhome.com/plans-uk"),
  "blink_sm2": ("Blink Sync Module 2 FAQ", "https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2"),
  "ha_blink": ("Home Assistant: Blink", "https://www.home-assistant.io/integrations/blink/"),
- "amz_ep3x": ("Amazon UK: EZVIZ EP3x Pro", "https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD"),
+ "amz_ep3x": ("Amazon UK: EZVIZ EP3x Pro", "https://www.amazon.co.uk/dp/B0CXJ272BY"),
  "ezviz_blog": ("EZVIZ UK: no-subscription guide", "https://www.ezviz.com/uk/blog/detail/best-video-doorbells-without-monthly-subscription-fees/2609214160772537"),
  "ezviz_cloud": ("EZVIZ CloudPlay (EU prices)", "https://www.ezviz.com/page/cloudplay"),
  "ezviz_terms": ("EZVIZ CloudPlay UK terms", "https://www.ezviz.com/uk/legal/cloudplay-paid-subscription-terms"),
@@ -101,7 +110,7 @@ S = {
 # score parts: rec 0-2, live 0-1, alerts 0-1, ai 0-1, storage_in_box 0-1, ha 0-2  (max 8)
 ROWS = [
 dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power=["battery","wired"], ha=0,
- price=79.99, price_note="Ring UK, in stock", price_src="ring_prod",
+ price=79.99, price_note="Ring UK, in stock", price_src="ring_prod", buy="amz_ring",
  extra=0, extra_note="", free_records=False,
  sub=4.99, sub_name="Ring Solo",
  best="Alexa households happy to pay the monthly plan",
@@ -116,7 +125,7 @@ dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power
  src=["ring_prod","ring_plans","indy_ring","ha_ring"],
  rec_src="ring_plans", history_src="ring_plans", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
 dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", power=["battery","wired"], ha=0,
- price=179.99, price_note="Google Store UK", price_src="nest_prod",
+ price=179.99, price_note="Google Store UK", price_src="nest_prod", buy="amz_nest",
  extra=0, extra_note="", free_records=False,
  sub=8.00, sub_name="Google Home Premium Standard",
  best="Google Home households who want polished smart alerts",
@@ -131,7 +140,7 @@ dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", po
  src=["nest_prod","nest_prem","nest_plans","ha_nest"],
  rec_src="nest_plans", history_src="nest_plans", ha_src="ha_nest", plan_src="nest_prem", unverified=""),
 dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power=["battery","wired"], ha=1,
- price=169.99, price_note="eufy UK", price_src="eufy_prod",
+ price=169.99, price_note="eufy UK", price_src="eufy_prod", buy="amz_e340",
  extra=0, extra_note="8 GB storage built in", free_records=True,
  sub=3.99, sub_name="eufy Cloud Backup Basic",
  best="Busy doorsteps with lots of parcels: a second camera looks straight down",
@@ -146,7 +155,7 @@ dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power
  src=["eufy_prod","eufy_cloud","verge_eufy","sha_nosub","ha_eufy"],
  rec_src="eufy_prod", history_src="eufy_prod", ha_src="ha_eufy", plan_src="eufy_cloud", unverified=""),
 dict(id="eufy-c31", brand="eufy", model="Video Doorbell C31", rec="yes", power=["battery","wired"], ha=1,
- price=89.99, price_note="eufy UK", price_src="eufy_c31",
+ price=89.99, price_note="eufy UK", price_src="eufy_c31", buy="amz_c31",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=3.99, sub_name="eufy Cloud Backup Basic",
  best="A cheap eufy with 24/7 recording, if you can hardwire it",
@@ -218,7 +227,7 @@ dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["ba
  src=["tapo_d230","tapo_care","ha_tplink","er_tapo","sandisk_card"],
  rec_src="tapo_d230", history_src="tapo_d230", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
 dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
- price=44.99, price_note="Tapo UK sale price (RRP £56.00)", price_src="tapo_td21",
+ price=44.99, price_note="Tapo UK sale price (RRP £56.00)", price_src="tapo_td21", buy="amz_td21",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="The tightest budget",
@@ -248,7 +257,7 @@ dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec
  src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","amz_arlohub","tr_arlo","ambient_arlo","ha_arlo","sandisk_stick"],
  rec_src="arlo_blog", history_src="arlo_doorbell", ha_src="ha_arlo", plan_src="arlo_plans", unverified=""),
 dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
- price=84.99, price_note="Amazon UK", price_src="amz_aqara",
+ price=79.98, price_note="Aqara UK Shop (RRP £119)", price_src="aqara_uk", buy="amz_aqara",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan needed (iCloud+ only for HomeKit Secure Video)",
  best="Free face recognition, Android or iPhone",
@@ -260,10 +269,10 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
  ha_text="Reported to work locally through Home Assistant's HomeKit Device integration; two-way audio isn't available there.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
- src=["amz_aqara","aqara_eu","aqara_specs","ha_homekit","sandisk_card"],
+ src=["aqara_uk","aqara_eu","aqara_specs","ha_homekit","sandisk_card"],
  rec_src="aqara_specs", history_src="aqara_specs", ha_src="ha_homekit", plan_src="aqara_specs", unverified=""),
 dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
- price=69.99, price_note="Amazon UK RRP (deals as low as £29.99)", price_src="amz_blink",
+ price=59.99, price_note="UK RRP without Sync Module, from Blink's launch pricing; no UK shop besides Amazon found, so the table says Check price", price_src="tr_blink", buy="amz_blink", price_check=True,
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
  extra_src="sandisk_stick", kit_src="camel_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
  sub=2.50, sub_name="Blink Basic",
@@ -275,10 +284,10 @@ dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=[
  sub_text="Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month",
  ha_text="Official integration, but it goes through Blink's cloud.", wifi="2.4 GHz (Blink requirement)",
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
- src=["amz_blink","camel_sm2","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
+ src=["tr_blink","camel_sm2","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
  rec_src="blink_sm2", history_src="blink_sm2", ha_src="ha_blink", plan_src="blink_plans", unverified=""),
 dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["battery"], ha=0,
- price=79.99, price_note="Amazon UK (list price £89.99)", price_src="amz_ep3x",
+ price=99.99, price_note="Chester Digital Supplies, UK retailer", price_src="chester_ep3x", buy="amz_ep3x",
  extra=0, extra_note="32 GB storage built in", free_records=True,
  sub=4.99, sub_name="EZVIZ CloudPlay 7-day",
  best="Two cameras on a budget, with storage built in",
@@ -290,8 +299,8 @@ dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["batter
  ha_text="Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.",
  wifi="2.4 GHz only",
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=0),
- src=["amz_ep3x","ezviz_blog","er_tapo","ezviz_cloud","ezviz_terms","ha_ezviz"],
- rec_src="amz_ep3x", history_src="ezviz_blog", ha_src="ha_ezviz", plan_src="ezviz_cloud", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
+ src=["chester_ep3x","ezviz_ep3x","ezviz_blog","er_tapo","ezviz_cloud","ezviz_terms","ha_ezviz"],
+ rec_src="ezviz_ep3x", history_src="ezviz_blog", ha_src="ha_ezviz", plan_src="ezviz_cloud", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
 dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["battery"], ha=0,
  price=114.99, price_note="ER Tech, UK retailer", price_src="ertech_db2",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
@@ -374,7 +383,7 @@ REQUIRED_ROW_KEYS = (
 ) + CAT["required_keys"]
 OPTIONAL_ROW_KEYS = (
     "power_note", "cards", "plan_price_region", "extra_src", "kit_src", "kit_label",
-    "kit_price",
+    "kit_price", "buy", "price_check",
 )
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
@@ -549,8 +558,8 @@ CAT["rows"] = ROWS
 CAT["sources"] = S
 
 # Amazon Associates: a row whose price links to Amazon UK carries the tag, so
-# a new Amazon row is tagged without anyone remembering to. Only price links
-# are tagged; an Amazon page cited for a sundry stays a plain citation.
+# a new Amazon row is tagged without anyone remembering to. Only price and
+# buy links are tagged; an Amazon page cited for a sundry stays a plain citation.
 AMAZON_TAG = "subfreeuk-21"
 
 
@@ -565,8 +574,10 @@ def amazon_tagged(url):
 
 
 for r in ROWS:
-    name, url = S[r["price_src"]]
-    S[r["price_src"]] = (name, amazon_tagged(url))
+    for key in (r["price_src"], r.get("buy")):
+        if key:
+            name, url = S[key]
+            S[key] = (name, amazon_tagged(url))
 
 # footnote numbering
 order=[]

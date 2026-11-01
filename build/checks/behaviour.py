@@ -1341,7 +1341,10 @@ def price_link_check(page):
     unlinked = [p["id"] for p in state["prices"] if not p["href"].startswith("http")]
     if unlinked:
         problems.append(f"prices with no link to their source: {unlinked[:3]}")
-    unpriced = [p["id"] for p in state["prices"] if "£" not in p["text"]]
+    # "Check price" is the one allowed non-figure: a row whose only UK
+    # seller is Amazon, whose price the page must never quote.
+    unpriced = [p["id"] for p in state["prices"]
+                if "£" not in p["text"] and "Check price" not in p["text"]]
     if unpriced:
         problems.append(f"price cells with no figure in them: {unpriced[:3]}")
     unnamed = [p["id"] for p in state["prices"] if " at " not in p["name"]]

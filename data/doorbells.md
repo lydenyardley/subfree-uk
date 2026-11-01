@@ -5,14 +5,14 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 | Doorbell | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | TP-Link Tapo TD21 | Yes | [£44.99](https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21) | 5 | £70.36 | £152.63 | The tightest budget | Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it. |
-| EZVIZ EP3x Pro | Yes | [£79.99](https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD?tag=subfreeuk-21) | 6 | £79.99 | £259.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
 | Reolink Video Doorbell PoE | Yes | [£69.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £95.36 | — | The most reliable, fully local setup, if you can run an Ethernet cable | Needs an Ethernet cable to the door and a PoE switch or injector. |
 | Reolink Video Doorbell (Battery) | Yes | [£99.99](https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak) | 7 | £99.99 | £250.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49). |
+| EZVIZ EP3x Pro | Yes | [£99.99](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) | 6 | £99.99 | £279.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
+| Aqara Video Doorbell G4 | Yes | [£79.98](https://www.aqara-shop.co.uk/product/aqara-smart-video-doorbell-g4/) | 6 | £105.35 | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
 | TP-Link Tapo D230S1 | Yes | [£84.99](https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell) | 6 | £110.36 | £192.63 | An easy battery doorbell that keeps footage indoors on its chime/hub | The microSD card is extra, and Home Assistant gets settings and alerts but not the live video. |
-| Aqara Video Doorbell G4 | Yes | [£84.99](https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG?tag=subfreeuk-21) | 6 | £110.36 | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
+| Blink Battery Doorbell 2K+ | Only with extra kit | [£59.99](https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss) | 2 | £111.97 | £149.99 | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
 | eufy Video Doorbell C31 | Yes | [£89.99](https://www.eufy.com/uk/products/t8223311) | 6 | £115.36 | £233.63 | A cheap eufy with 24/7 recording, if you can hardwire it | 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately. |
 | Reolink Video Doorbell WiFi | Yes | [£93.49](https://store.reolink.com/gb/video-doorbells/) | 7 | £118.86 | £258.37 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
-| Blink Battery Doorbell 2K+ | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C?tag=subfreeuk-21) | 2 | £121.97 | £159.99 | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
 | EZVIZ DB2 Pro Kit | Yes | [£114.99](https://www.ertech.co.uk/product/db2-pro/) | 5 | £140.36 | £294.63 | Flats and rentals: no wiring, and footage stays indoors in the chime | 2.4 GHz Wi-Fi only, and the card is sold separately. |
 | eufy Video Doorbell E340 | Yes | [£169.99](https://www.eufy.com/uk/products/T8214311) | 7 | £169.99 | £313.63 | Busy doorsteps with lots of parcels: a second camera looks straight down | Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022. |
 | Arlo Essential Video Doorbell 2K (2nd gen) | Only with extra kit | [£84.99](https://www.argos.co.uk/product/4379311) | 3 | £202.05 | £372.63 | People who already own Arlo cameras | Recording needs a £7.99/month plan or a separate hub costing about £105. |
@@ -165,8 +165,8 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 ### Aqara Video Doorbell G4
 - **Best for:** Free face recognition, Android or iPhone
 - **Main catch:** Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.
-- **Price:** £84.99 (Amazon UK)
-- **3-year cost, no plan:** £84.99 + £25.37 (SanDisk 64 GB microSD card) = £110.36
+- **Price:** £79.98 (Aqara UK Shop (RRP £119))
+- **3-year cost, no plan:** £79.98 + £25.37 (SanDisk 64 GB microSD card) = £105.35
 - **3-year cost, with plan:** No subscription offered or needed
 - **Storage:** microSD (up to 512 GB) in the indoor chime
 - **Free:** live view yes; alerts yes; smart detection: Free: face recognition on the device
@@ -174,28 +174,28 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Paywalled:** Nothing essential. HomeKit Secure Video needs Apple's paid iCloud+
 - **Plans:** None needed
 - **Home Assistant:** Reported to work locally through Home Assistant's HomeKit Device integration; two-way audio isn't available there.
-- **Sources:** [Amazon UK: Aqara G4](https://www.amazon.co.uk/Aqara-Doorbell-Included-Recognition-Automations/dp/B0BPHTL7MG?tag=subfreeuk-21) · [Aqara EU store](https://eu.aqara.com/products/aqara-video-doorbell-g4) · [Aqara G4 specifications](https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Aqara UK Shop: G4](https://www.aqara-shop.co.uk/product/aqara-smart-video-doorbell-g4/) · [Aqara EU store](https://eu.aqara.com/products/aqara-video-doorbell-g4) · [Aqara G4 specifications](https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
 
 ### Blink Battery Doorbell 2K+
 - **Best for:** The cheapest way into Amazon's ecosystem, if you catch a deal
 - **Main catch:** Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.
-- **Price:** £69.99 (Amazon UK RRP (deals as low as £29.99))
-- **3-year cost, no plan:** £69.99 + £51.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £121.97
-- **3-year cost, with plan:** £69.99 + 36 × £2.50 (Blink Basic) = £159.99
+- **Price:** £59.99 (UK RRP without Sync Module, from Blink's launch pricing; no UK shop besides Amazon found, so the table says Check price)
+- **3-year cost, no plan:** £59.99 + £51.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £111.97
+- **3-year cost, with plan:** £59.99 + 36 × £2.50 (Blink Basic) = £149.99
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted
 - **Free:** live view capped at 5 minutes; alerts yes; smart detection: Paid (person and vehicle detection)
 - **History without plan:** None without a Sync Module 2
 - **Paywalled:** Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions
 - **Plans:** Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month
 - **Home Assistant:** Official integration, but it goes through Blink's cloud.
-- **Sources:** [Amazon UK: Blink 2K+](https://www.amazon.co.uk/blink-battery-doorbell-2k-/dp/B0G62K1Y6C?tag=subfreeuk-21) · [camelcamelcamel (Sync Module 2)](https://uk.camelcamelcamel.com/product/B08BJ9ZCZC) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Amazon UK: SanDisk Ultra Curve 64 GB](https://www.amazon.co.uk/SANDISK-Computers-Desktops-RescuePRO-Recovery/dp/B0B42FNF15)
+- **Sources:** [Trusted Reviews: Blink 2K+ UK prices](https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss) · [camelcamelcamel (Sync Module 2)](https://uk.camelcamelcamel.com/product/B08BJ9ZCZC) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Amazon UK: SanDisk Ultra Curve 64 GB](https://www.amazon.co.uk/SANDISK-Computers-Desktops-RescuePRO-Recovery/dp/B0B42FNF15)
 
 ### EZVIZ EP3x Pro
 - **Best for:** Two cameras on a budget, with storage built in
 - **Main catch:** Expert Reviews found its motion detection unreliable and the app confusing.
-- **Price:** £79.99 (Amazon UK (list price £89.99))
-- **3-year cost, no plan:** £79.99 = £79.99
-- **3-year cost, with plan:** £79.99 + 36 × £4.99 (EZVIZ CloudPlay 7-day) = £259.63
+- **Price:** £99.99 (Chester Digital Supplies, UK retailer)
+- **3-year cost, no plan:** £99.99 = £99.99
+- **3-year cost, with plan:** £99.99 + 36 × £4.99 (EZVIZ CloudPlay 7-day) = £279.63
 - **Storage:** 32 GB built in, no card needed
 - **Free:** live view yes; alerts yes; smart detection: Free: human and package detection
 - **History without plan:** Yes, on built-in storage
@@ -203,7 +203,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Plans:** Optional CloudPlay. UK price is app-only; EU €4.99/month (7 days), so treat the plan column as an estimate
 - **Home Assistant:** Official integration, but it goes through EZVIZ's cloud; this battery model isn't named in its supported list.
 - **Unverified:** CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote.
-- **Sources:** [Amazon UK: EZVIZ EP3x Pro](https://www.amazon.co.uk/EZVIZ-Dual-Lens-Doorbell-Detection-EP3X/dp/B0F2DXSGFD?tag=subfreeuk-21) · [EZVIZ UK: no-subscription guide](https://www.ezviz.com/uk/blog/detail/best-video-doorbells-without-monthly-subscription-fees/2609214160772537) · [Expert Reviews: EZVIZ EP3x Pro review](https://www.expertreviews.co.uk/technology/home-security/ezviz-ep3x-pro-video-doorbell-review) · [EZVIZ CloudPlay (EU prices)](https://www.ezviz.com/page/cloudplay) · [EZVIZ CloudPlay UK terms](https://www.ezviz.com/uk/legal/cloudplay-paid-subscription-terms) · [Home Assistant: EZVIZ](https://www.home-assistant.io/integrations/ezviz/)
+- **Sources:** [Chester Digital Supplies: EP3x Pro](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) · [EZVIZ UK: EP3x Pro](https://www.ezviz.com/uk/product/ep3x+pro/55935) · [EZVIZ UK: no-subscription guide](https://www.ezviz.com/uk/blog/detail/best-video-doorbells-without-monthly-subscription-fees/2609214160772537) · [Expert Reviews: EZVIZ EP3x Pro review](https://www.expertreviews.co.uk/technology/home-security/ezviz-ep3x-pro-video-doorbell-review) · [EZVIZ CloudPlay (EU prices)](https://www.ezviz.com/page/cloudplay) · [EZVIZ CloudPlay UK terms](https://www.ezviz.com/uk/legal/cloudplay-paid-subscription-terms) · [Home Assistant: EZVIZ](https://www.home-assistant.io/integrations/ezviz/)
 
 ### EZVIZ DB2 Pro Kit
 - **Best for:** Flats and rentals: no wiring, and footage stays indoors in the chime

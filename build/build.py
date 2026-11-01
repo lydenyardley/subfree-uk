@@ -285,8 +285,17 @@ def build(cat):
         # the same address.
         pm = money(r["price"], None)
         psrc = S[r["price_src"]]
-        price = fig(r, cl, "price", pm, f'{pm} at {psrc[0]}', cls="buy",
-                    attrs=f' title="Check the price at {e(psrc[0])}"')
+        # No figure is ever Amazon's price: the price comes from another UK
+        # shop, and the Amazon link under it is only where to buy. A row with
+        # no other UK seller says "Check price"; its totals use a cited RRP.
+        shown = "Check price" if r.get("price_check") else pm
+        price = fig(r, cl, "price", shown, f'{pm} at {psrc[0]}',
+                    cls="buy chk" if r.get("price_check") else "buy",
+                    attrs=f' title="Price source: {e(psrc[0])}"')
+        if r.get("buy"):
+            bu = S[r["buy"]][1]
+            price += (f'<a class="amz" href="{e(bu)}" rel="{rel(bu)}">'
+                      f'Amazon</a>')
         # Each figure a reader might doubt carries its own card. The words are
         # the same ones the cell shows, so the card cannot drift from the figure.
         rec_lbl = REC_LABEL[r["rec"]]
@@ -341,7 +350,7 @@ def build(cat):
 
     data_js = json.dumps({r["id"]: {
         "name": f"{r['brand']} {r['model']}", "rec": REC_LABEL[r["rec"]], "recCls": r["rec"],
-        "price": money(r["price"], None), "score": f"{r['score_total']}/{score_max}",
+        "price": "Check price" if r.get("price_check") else money(r["price"], None), "score": f"{r['score_total']}/{score_max}",
         "tone": cat["verdicts"][r["verdict"]][1] if r["verdict"] else "",
         "vtag": cat["verdicts"][r["verdict"]][0] if r["verdict"] else "",
         "nosub3": money(r["nosub3"], None),
