@@ -14,7 +14,7 @@ from catalog import CATEGORIES
 from .js import AUDIT_JS, COST_JS, HEADER_JS, PHONE_JS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-PAGES = [cat["page"] for cat in CATEGORIES] + [cat["alias"] for cat in CATEGORIES]
+PAGES = [cat["page"] for cat in CATEGORIES] + [cat["alias"] for cat in CATEGORIES if cat.get("alias")]
 GENERATED = PAGES + [
     cat[name] for cat in CATEGORIES for name in ("csv", "md")
 ] + [
@@ -107,7 +107,10 @@ def open_compare(page, ids=None):
 def _from_dataset():
     import rows as module
 
-    return shortlist(module.ROWS), family(module.ROWS), cheapest(module.ROWS)
+    # The browser audit drives the first category's page, so its fixtures are
+    # drawn from that page's rows, not from every category in the dataset.
+    page = module.DATASETS[module.CATEGORIES[0]["slug"]]
+    return shortlist(page.ROWS), family(page.ROWS), cheapest(page.ROWS)
 
 
 try:
@@ -119,9 +122,14 @@ except Exception:                    # the dataset itself is the failure to repo
 class Context:
     """The page under test, the data behind it, and what this run has measured."""
 
-    def __init__(self, audit, dataset, dataset_problems, pages, external=False):
+    def __init__(self, audit, module, dataset_problems, pages, external=False):
         self.audit = audit
-        self.dataset = dataset
+        self.module = module
+        # `dataset` is the page under test, not the whole file: the browser
+        # checks drive one category's page and read the rows that page shows.
+        self.dataset = (
+            module.DATASETS[module.CATEGORIES[0]["slug"]] if module else None
+        )
         self.dataset_problems = dataset_problems
         self.pages = pages
         self.external = external

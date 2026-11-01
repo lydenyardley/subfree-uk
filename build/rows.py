@@ -1,4 +1,4 @@
-"""The doorbell dataset, its sources and the figures derived from them.
+"""The doorbell and camera dataset, its sources and the figures derived from them.
 
 No writes and no exits: reading this module is free, so a tool that wants the
 data, or the day it was checked, does not rewrite the page. `build.py` imports
@@ -15,13 +15,15 @@ from datetime import date
 from math import ceil
 from urllib.parse import urlparse
 
-from catalog import DOORBELLS as CAT
+from catalog import CATEGORIES, DOORBELLS as CAT
 
-# The one hand-typed fact: the day the prices and plans were checked. ISO, so
-# the age can be counted; build/check.py warns after 30 days and fails at 60.
-CHECKED_ISO = "2026-10-19"
-_CHECKED_DATE = date.fromisoformat(CHECKED_ISO)
-CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
+# Each category carries the day its own prices and plans were checked, because
+# a second category lands on a different day from the first. ISO, so the age
+# can be counted; build/check.py warns after 30 days and fails at 60.
+for _cat in CATEGORIES:
+    _day = date.fromisoformat(_cat["checked_iso"])
+    _cat["checked_date"] = _day
+    _cat["checked"] = f"{_day.day} {_day:%B %Y}"
 
 # The two sundries the 3-year sums need, read on 26 October 2026 as the best
 # UK price a buyer can pay for the leading brand's right product: the High
@@ -34,7 +36,6 @@ CHECKED = f"{_CHECKED_DATE.day} {_CHECKED_DATE:%B %Y}"
 # A row that buys one names it in extra_src, so its card lists the price.
 CARD = 26.99   # SanDisk High Endurance 64 GB microSDXC (SDSQQNR-064G-GN6IA), Argos
 STICK = 15.99  # SanDisk Cruzer Blade 64 GB USB flash drive (SDCZ50), Argos
-MONTHS = CAT["months"]
 
 # Shared sources (footnote numbers are assigned automatically)
 S = {
@@ -74,14 +75,6 @@ S = {
  "tr_arlo": ("Trusted Reviews, 2026", "https://www.trustedreviews.com/reviews/arlo-essential-3-2k-security-camera"),
  "ambient_arlo": ("The Ambient", "https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/"),
  "aqara_uk": ("EasyGates: Aqara G4", "https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/"),
- "tr_blink": ("Trusted Reviews: Blink 2K+ UK prices", "https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss"),
- "chester_ep3x": ("Chester Digital Supplies: EP3x Pro", "https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro"),
- "ezviz_ep3x": ("EZVIZ UK: EP3x Pro", "https://www.ezviz.com/uk/product/ep3x+pro/55935"),
- "amz_ring": ("Amazon UK: Ring Battery Doorbell 2K", "https://www.amazon.co.uk/dp/B0FHJ91JY5"),
- "amz_nest": ("Amazon UK: Nest Doorbell (battery)", "https://www.amazon.co.uk/dp/B0D96LS7Z2"),
- "amz_e340": ("Amazon UK: eufy E340", "https://www.amazon.co.uk/dp/B0CF8RPX5M"),
- "amz_c31": ("Amazon UK: eufy C31", "https://www.amazon.co.uk/dp/B0GSFQL25B"),
- "amz_td21": ("Amazon UK: Tapo TD21", "https://www.amazon.co.uk/dp/B0DGLVB89G"),
  "amz_aqara": ("Amazon UK: Aqara G4", "https://www.amazon.co.uk/dp/B0BPHTL7MG"),
  "aqara_eu": ("Aqara EU store", "https://eu.aqara.com/products/aqara-video-doorbell-g4"),
  "aqara_specs": ("Aqara G4 specifications", "https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/"),
@@ -104,12 +97,52 @@ S = {
  "ha_eufy": ("Home Assistant: eufy (ha-eufy-sdk)", "https://github.com/mega-yfue/ha-eufy-sdk"),
  "ha_arlo": ("Home Assistant: Aarlo (community)", "https://github.com/twrecked/hass-aarlo"),
  "hik_4gon": ("4Gon: Hikvision doorbell (discontinued)", "https://www.4gon.co.uk/hikvision-24v-dc-wifi-video-doorbell-dskb6003wip-p-8309.html"),
+ # Cameras: the UK store's own page carries the price the sums use, and the
+ # vendor product page carries the recording, storage and detection facts.
+ "reo_gb_home": ("Reolink UK store", "https://store.reolink.com/gb/"),
+ "reo_argus": ("Reolink UK: Argus 4 Pro", "https://reolink.com/gb/product/argus-4-pro/"),
+ "reo_rlc820a": ("Reolink UK: RLC-820A", "https://reolink.com/gb/product/rlc-820a/"),
+ "reo_e1out": ("Reolink UK: E1 Outdoor Pro", "https://reolink.com/gb/product/e1-outdoor-pro/"),
+ "tapo_c660": ("Tapo UK: C660 KIT", "https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit"),
+ "eufy_s340": ("eufy UK: SoloCam S340", "https://www.anker.com/uk/products/t81703w1"),
+ "eufy_e30": ("eufy UK: Indoor Cam E30", "https://www.anker.com/uk/products/t8417221"),
+ "ha_eufy_cam": ("Home Assistant: eufy-security (community)", "https://github.com/fuatakgun/eufy_security"),
+ "aqara_g3": ("Aqara UK: Camera Hub G3", "https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/"),
+ "aqara_e1": ("Aqara UK: Camera E1", "https://www.aqara-shop.co.uk/product/aqara-camera-e1/"),
+ "ring_outpro": ("Ring UK: Outdoor Camera Pro (plug-in)", "https://en-uk.ring.com/products/stick-up-cam-pro-plug-in"),
+ "amz_blink_cam": ("Amazon UK: Blink Outdoor 4", "https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X"),
+ "amz_sm2": ("Amazon UK: Blink Sync Module 2", "https://www.amazon.co.uk/dp/B08BJ9ZCZC"),
+ "blink_storage": ("Blink: local storage options", "https://support.blinkforhome.com/en_GB/blink-storage-options"),
+ "tr_blink": ("Trusted Reviews: Blink 2K+ UK prices", "https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss"),
+ "chester_ep3x": ("Chester Digital Supplies: EP3x Pro", "https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro"),
+ "ezviz_ep3x": ("EZVIZ UK: EP3x Pro", "https://www.ezviz.com/uk/product/ep3x+pro/55935"),
+ "amz_ring": ("Amazon UK: Ring Battery Doorbell 2K", "https://www.amazon.co.uk/dp/B0FHJ91JY5"),
+ "amz_nest": ("Amazon UK: Nest Doorbell (battery)", "https://www.amazon.co.uk/dp/B0D96LS7Z2"),
+ "amz_e340": ("Amazon UK: eufy E340", "https://www.amazon.co.uk/dp/B0CF8RPX5M"),
+ "amz_c31": ("Amazon UK: eufy C31", "https://www.amazon.co.uk/dp/B0GSFQL25B"),
+ "amz_td21": ("Amazon UK: Tapo TD21", "https://www.amazon.co.uk/dp/B0DGLVB89G"),
 }
+
+# Amazon Associates: a row whose price links to Amazon UK carries the tag, so
+# a new Amazon row is tagged without anyone remembering to. Only price and
+# buy links are tagged; an Amazon page cited for a sundry stays a plain citation.
+AMAZON_TAG = "subfreeuk-21"
+
+
+def amazon_tagged(url):
+    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+    u = urlsplit(url)
+    if not u.netloc.endswith("amazon.co.uk"):
+        return url
+    q = [(k, v) for k, v in parse_qsl(u.query, keep_blank_values=True) if k != "tag"]
+    q.append(("tag", AMAZON_TAG))
+    return urlunsplit(u._replace(query=urlencode(q)))
+
 
 # rec: 'yes' records free out of the box / 'kit' needs extra hardware or very limited / 'no'
 # score parts: rec 0-2, live 0-1, alerts 0-1, ai 0-1, storage_in_box 0-1, ha 0-2  (max 8)
 ROWS = [
-dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power=["battery","wired"], ha=0,
+dict(cat="doorbells", id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power=["battery","wired"], ha=0,
  price=79.99, price_note="Ring UK, in stock", price_src="ring_prod", buy="amz_ring",
  extra=0, extra_note="", free_records=False,
  sub=4.99, sub_name="Ring Solo",
@@ -124,7 +157,7 @@ dict(id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power
  score=dict(rec=0,live=1,alerts=1,ai=0,storage=0,ha=0),
  src=["ring_prod","ring_plans","indy_ring","ha_ring"],
  rec_src="ring_plans", history_src="ring_plans", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
-dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", power=["battery","wired"], ha=0,
+dict(cat="doorbells", id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", power=["battery","wired"], ha=0,
  price=179.99, price_note="Google Store UK", price_src="nest_prod", buy="amz_nest",
  extra=0, extra_note="", free_records=False,
  sub=8.00, sub_name="Google Home Premium Standard",
@@ -139,7 +172,7 @@ dict(id="nest", brand="Google Nest", model="Doorbell (battery)", rec="brief", po
  score=dict(rec=1,live=1,alerts=1,ai=1,storage=0,ha=0),
  src=["nest_prod","nest_prem","nest_plans","ha_nest"],
  rec_src="nest_plans", history_src="nest_plans", ha_src="ha_nest", plan_src="nest_prem", unverified=""),
-dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power=["battery","wired"], ha=1,
+dict(cat="doorbells", id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power=["battery","wired"], ha=1,
  price=169.99, price_note="eufy UK", price_src="eufy_prod", buy="amz_e340",
  extra=0, extra_note="8 GB storage built in", free_records=True,
  sub=3.99, sub_name="eufy Cloud Backup Basic",
@@ -154,7 +187,7 @@ dict(id="eufy-e340", brand="eufy", model="Video Doorbell E340", rec="yes", power
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
  src=["eufy_prod","eufy_cloud","verge_eufy","sha_nosub","ha_eufy"],
  rec_src="eufy_prod", history_src="eufy_prod", ha_src="ha_eufy", plan_src="eufy_cloud", unverified=""),
-dict(id="eufy-c31", brand="eufy", model="Video Doorbell C31", rec="yes", power=["battery","wired"], ha=1,
+dict(cat="doorbells", id="eufy-c31", brand="eufy", model="Video Doorbell C31", rec="yes", power=["battery","wired"], ha=1,
  price=89.99, price_note="eufy UK", price_src="eufy_c31", buy="amz_c31",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=3.99, sub_name="eufy Cloud Backup Basic",
@@ -169,7 +202,7 @@ dict(id="eufy-c31", brand="eufy", model="Video Doorbell C31", rec="yes", power=[
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
  src=["eufy_c31","eufy_cloud","ha_eufy","sandisk_card"],
  rec_src="eufy_c31", history_src="eufy_c31", ha_src="ha_eufy", plan_src="eufy_cloud", unverified=""),
-dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", power=["wired"], ha=2,
+dict(cat="doorbells", id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", power=["wired"], ha=2,
  price=93.49, price_note="Reolink UK sale price (RRP £109.99)", price_src="reo_store",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=4.58, sub_name="Reolink Cloud Upgraded single-device",
@@ -184,7 +217,7 @@ dict(id="reo-wifi", brand="Reolink", model="Video Doorbell WiFi", rec="yes", pow
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
  src=["reo_store","ha_reo","reo_cloud","sha_nosub","sandisk_card"],
  rec_src="reo_store", history_src="reo_store", ha_src="ha_reo", plan_src="reo_cloud", unverified=""),
-dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power=["poe"], ha=2,
+dict(cat="doorbells", id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power=["poe"], ha=2,
  price=69.99, price_note="Reolink UK sale price (RRP £99.99)", price_src="reo_store",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No Reolink Cloud plan",
@@ -197,7 +230,7 @@ dict(id="reo-poe", brand="Reolink", model="Video Doorbell PoE", rec="yes", power
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
  src=["reo_store","ha_reo","reo_faq","sandisk_card"],
  rec_src="reo_faq", history_src="reo_faq", ha_src="ha_reo", plan_src="reo_faq", unverified=""),
-dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes", power=["battery","wired"], ha=1,
+dict(cat="doorbells", id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes", power=["battery","wired"], ha=1,
  price=99.99, price_note="Screwfix, includes 64 GB card (Reolink UK also £99.99)", price_src="screwfix_reo",
  extra=0, extra_note="64 GB card included (Screwfix)", free_records=True,
  sub=4.17, sub_name="Reolink Cloud Standard (up to 5 cameras)",
@@ -211,7 +244,7 @@ dict(id="reo-batt", brand="Reolink", model="Video Doorbell (Battery)", rec="yes"
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
  src=["screwfix_reo","reo_batt","reo_hub","reo_cloud","ha_reo"],
  rec_src="reo_batt", history_src="reo_batt", ha_src="ha_reo", plan_src="reo_cloud", unverified=""),
-dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["battery"], ha=1,
+dict(cat="doorbells", id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["battery"], ha=1,
  price=84.99, price_note="Tapo UK (RRP £94.99)", price_src="tapo_d230",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
@@ -226,7 +259,7 @@ dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["ba
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
  src=["tapo_d230","tapo_care","ha_tplink","er_tapo","sandisk_card"],
  rec_src="tapo_d230", history_src="tapo_d230", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
-dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
+dict(cat="doorbells", id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
  price=44.99, price_note="Tapo UK, currently sold out (RRP £56.00)", price_src="tapo_td21", buy="amz_td21",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
@@ -239,7 +272,7 @@ dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["batt
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
  src=["tapo_td21","tapo_care","tapo_td21_manual","ha_tplink","sandisk_card"],
  rec_src="tapo_td21", history_src="tapo_td21", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
-dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery"], ha=0,
+dict(cat="doorbells", id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec="kit", power=["battery"], ha=0,
  power_note="Can be wired to an existing chime for trickle charging, but still runs on its battery.",
  price=84.99, price_note="Argos half price, doorbell + chime bundle (was £169.99)", price_src="argos_arlo",
  extra=round(109.99 + STICK, 2), extra_note="+ Arlo SmartHub £109.99 + SanDisk 64 GB USB stick",
@@ -256,7 +289,7 @@ dict(id="arlo", brand="Arlo", model="Essential Video Doorbell 2K (2nd gen)", rec
  score=dict(rec=1,live=1,alerts=1,ai=0,storage=0,ha=0),
  src=["argos_arlo","arlo_blog","arlo_plans","arlo_faq","arlo_doorbell","arlo_hubcompat","arlo_hub","tr_arlo","ambient_arlo","ha_arlo","sandisk_stick"],
  rec_src="arlo_blog", history_src="arlo_doorbell", ha_src="ha_arlo", plan_src="arlo_plans", unverified=""),
-dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
+dict(cat="doorbells", id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=["battery","wired"], ha=1,
  price=69.00, price_note="EasyGates, UK retailer (RRP £119)", price_src="aqara_uk", buy="amz_aqara",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan needed (iCloud+ only for HomeKit Secure Video)",
@@ -271,7 +304,7 @@ dict(id="aqara-g4", brand="Aqara", model="Video Doorbell G4", rec="yes", power=[
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
  src=["aqara_uk","aqara_eu","aqara_specs","ha_homekit","sandisk_card"],
  rec_src="aqara_specs", history_src="aqara_specs", ha_src="ha_homekit", plan_src="aqara_specs", unverified=""),
-dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
+dict(cat="doorbells", id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
  price=59.99, price_note="UK RRP without Sync Module, from Blink's launch pricing; no UK shop besides Amazon found, so the table says Check price", price_src="tr_blink", buy="amz_blink", price_check=True,
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
  extra_src="sandisk_stick", kit_src="camel_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
@@ -286,7 +319,7 @@ dict(id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=[
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
  src=["tr_blink","camel_sm2","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
  rec_src="blink_sm2", history_src="blink_sm2", ha_src="ha_blink", plan_src="blink_plans", unverified=""),
-dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["battery"], ha=0,
+dict(cat="doorbells", id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["battery"], ha=0,
  price=99.99, price_note="Chester Digital Supplies, UK retailer", price_src="chester_ep3x", buy="amz_ep3x",
  extra=0, extra_note="32 GB storage built in", free_records=True,
  sub=4.99, sub_name="EZVIZ CloudPlay 7-day",
@@ -301,7 +334,7 @@ dict(id="ezviz-ep3x", brand="EZVIZ", model="EP3x Pro", rec="yes", power=["batter
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=0),
  src=["chester_ep3x","ezviz_ep3x","ezviz_blog","er_tapo","ezviz_cloud","ezviz_terms","ha_ezviz"],
  rec_src="ezviz_ep3x", history_src="ezviz_blog", ha_src="ha_ezviz", plan_src="ezviz_cloud", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
-dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["battery"], ha=0,
+dict(cat="doorbells", id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["battery"], ha=0,
  price=114.99, price_note="ER Tech, UK retailer", price_src="ertech_db2",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=4.99, sub_name="EZVIZ CloudPlay 7-day",
@@ -315,7 +348,7 @@ dict(id="ezviz-db2", brand="EZVIZ", model="DB2 Pro Kit", rec="yes", power=["batt
  score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
  src=["ertech_db2","ezviz_blog","ezviz_cloud","ezviz_terms","ha_ezviz","sandisk_card"],
  rec_src="ertech_db2", history_src="ertech_db2", ha_src="ha_ezviz", plan_src="ezviz_cloud", plan_price_region="EU", unverified="CloudPlay's UK price is app-only, so the £4.99 in the plan column is the published EU price, not a UK quote."),
-dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wired"], ha=1,
+dict(cat="doorbells", id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wired"], ha=1,
  price=295.00, price_note="Only UK listing found (fitted install); the model is discontinued", price_src="eagle_hik",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=None, sub_name="No plan",
@@ -327,7 +360,181 @@ dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wire
  score=dict(rec=2,live=1,alerts=1,ai=0,storage=0,ha=1),
  src=["eagle_hik","hik_ds","hik_4gon","sandisk_card"],
  rec_src="hik_ds", history_src="hik_ds", ha_src="hik_ds", plan_src="hik_ds", unverified=""),
+
+# ---------- cameras ----------
+# The same shape as the doorbells, with `cat` choosing the record that renders
+# the row. A camera's no-plan sum buys a card where the camera has no storage of
+# its own; the Blink's sum buys the kit it needs before it records at all.
+dict(cat="cameras", id="reo-rlc820a", brand="Reolink", model="RLC-820A", rec="yes", power=["poe"], ha=2,
+ price=67.99, price_note="Reolink UK store sale price (RRP £79.99)", price_src="reo_gb_home",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="A wired install on a budget: 4K for £68, with nothing held back",
+ catch="Needs a PoE switch or injector, an Ethernet run to the camera, and a card.",
+ storage="microSD (up to 512 GB), a Reolink NVR, or FTP; card not included", live="Yes", alerts="Yes",
+ ai="Free: person, vehicle and animal detection on the device",
+ history="Yes, motion-triggered, scheduled or 24/7 recording", paywalled="Nothing. Reolink Cloud is optional",
+ sub_text="None needed. Reolink records to a microSD card or NVR; Reolink Cloud is optional",
+ ha_text="Official, fully local integration; the camera works with no internet connection.",
+ wifi="Wired Ethernet",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
+ src=["reo_gb_home","reo_rlc820a","ha_reo","sandisk_card"],
+ rec_src="reo_rlc820a", history_src="reo_rlc820a", ha_src="ha_reo", plan_src="reo_rlc820a", unverified=""),
+dict(cat="cameras", id="reo-argus4", brand="Reolink", model="Argus 4 Pro", rec="yes", power=["battery"], ha=2,
+ power_note="The battery lasts up to three months on its own.",
+ price=169.99, price_note="Reolink UK store, 1 camera with a Solar Panel 2", price_src="reo_gb_home",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="A wide, dark driveway: 180° from one camera, with no fees",
+ catch="The card is extra, and the 180° panorama runs at 15fps rather than 25fps.",
+ storage="microSD (up to 512 GB) or a Reolink Home Hub; card not included", live="Yes", alerts="Yes",
+ ai="Free: person, vehicle and animal detection on the device",
+ history="Yes, motion-triggered clips on a card or Home Hub", paywalled="Nothing. Reolink Cloud is optional",
+ sub_text="None needed. Reolink records to a microSD card or Home Hub; Reolink Cloud is optional",
+ ha_text="Official, fully local integration. Battery cameras wake on a PIR event, so some entities update on a schedule.",
+ wifi="Dual-band 2.4/5 GHz (Wi-Fi 6)",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
+ src=["reo_gb_home","reo_argus","ha_reo","sandisk_card"],
+ rec_src="reo_argus", history_src="reo_argus", ha_src="ha_reo", plan_src="reo_argus", unverified=""),
+dict(cat="cameras", id="reo-e1out", brand="Reolink", model="E1 Outdoor Pro", rec="yes", power=["wired"], ha=2,
+ price=129.99, price_note="Reolink UK store", price_src="reo_gb_home",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="A wide garden: 355° pan, 3× optical zoom and no fees",
+ catch="Mains power at the camera, it is only IP65, and the card is extra.",
+ storage="microSD (up to 512 GB), a Reolink NVR, a Home Hub, or FTP/NAS; card not included",
+ live="Yes", alerts="Yes", ai="Free: person, vehicle and animal detection on the device",
+ history="Yes, motion-triggered, scheduled or 24/7 recording", paywalled="Nothing. Reolink Cloud is optional",
+ sub_text="None needed. Reolink records to a microSD card, NVR or Home Hub; Reolink Cloud is optional",
+ ha_text="Official, fully local integration; RTSP, ONVIF and RTMP are exposed for other local apps.",
+ wifi="Dual-band 2.4/5 GHz (Wi-Fi 6)",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=2),
+ src=["reo_gb_home","reo_e1out","ha_reo","sandisk_card"],
+ rec_src="reo_e1out", history_src="reo_e1out", ha_src="ha_reo", plan_src="reo_e1out", unverified=""),
+dict(cat="cameras", id="tapo-c660", brand="TP-Link Tapo", model="C660 KIT", rec="yes", power=["battery"], ha=0,
+ power_note="It can also charge over USB-C.",
+ price=127.99, price_note="Tapo UK sale price (RRP £179.99)", price_src="tapo_c660",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=2.99, sub_name="Tapo Care",
+ best="A sunny wall with no socket: 4K, solar and a card slot",
+ catch="Not on Home Assistant's supported Tapo camera list, and the card is extra.",
+ storage="microSD (up to 512 GB) on the camera; card not included", live="Yes", alerts="Yes",
+ ai="Free: person, pet and vehicle detection on the device",
+ history="Yes, event clips on the card; 24/7 recording with a card",
+ paywalled="30-day cloud history, rich notifications, Smart Sort",
+ sub_text="Optional Tapo Care £2.99/month or £29.49/year (1 camera)",
+ ha_text="Home Assistant's local TP-Link integration lists the C520WS and other Tapo cameras, but not this C660 KIT. Treat live view as unsupported.",
+ wifi="Dual-band 2.4/5 GHz",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=0),
+ src=["tapo_c660","tapo_care","ha_tplink","sandisk_card"],
+ rec_src="tapo_c660", history_src="tapo_c660", ha_src="ha_tplink", plan_src="tapo_care",
+ unverified="Home Assistant support for this exact model is not listed on the integration's supported-device page."),
+dict(cat="cameras", id="eufy-s340", brand="eufy", model="SoloCam S340", rec="yes", power=["battery"], ha=1,
+ power_note="The battery lasts up to three months without sun.",
+ price=179.00, price_note="eufy UK list price; a £50 coupon was advertised", price_src="eufy_s340",
+ extra=0, extra_note="8 GB storage built in", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="A garden corner with sun: 360° pan and 8 GB on board",
+ catch="8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on.",
+ storage="8 GB built in, non-removable; a HomeBase S380 adds up to 16 TB",
+ live="Yes", alerts="Yes", ai="Free: human and vehicle detection on the device",
+ history="Yes, event clips on the built-in 8 GB", paywalled="Nothing essential; cloud backup is optional",
+ sub_text="None needed. eufy records to its built-in storage; cloud backup is optional",
+ ha_text="No official camera integration. The community eufy-security add-on logs in through your eufy account.",
+ wifi="Wi-Fi (the band is not stated on the UK page)",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=1,ha=1),
+ src=["eufy_s340","ha_eufy_cam"],
+ rec_src="eufy_s340", history_src="eufy_s340", ha_src="ha_eufy_cam", plan_src="eufy_s340", unverified=""),
+dict(cat="cameras", id="eufy-e30", brand="eufy", model="Indoor Cam E30", rec="yes", power=["wired"], ha=1,
+ price=69.99, price_note="eufy UK list price; a £14 coupon was advertised", price_src="eufy_e30",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="A room, a pet or a nanny cam: 4K and on-device AI",
+ catch="The card is extra, and the camera only joins 2.4 GHz Wi-Fi.",
+ storage="microSD (sold separately) or a HomeBase S380", live="Yes", alerts="Yes",
+ ai="Free: person, pet, audio and crying detection on the device",
+ history="Yes, motion-triggered clips on a card or HomeBase",
+ paywalled="Nothing essential; cloud backup is optional",
+ sub_text="None needed. eufy records to a card; cloud backup is optional",
+ ha_text="No official camera integration. The community eufy-security add-on logs in through your eufy account.",
+ wifi="2.4 GHz only",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
+ src=["eufy_e30","ha_eufy_cam","sandisk_card"],
+ rec_src="eufy_e30", history_src="eufy_e30", ha_src="ha_eufy_cam", plan_src="eufy_e30", unverified=""),
+dict(cat="cameras", id="aqara-g3", brand="Aqara", model="Camera Hub G3", rec="yes", power=["wired"], ha=1,
+ price=79.99, price_note="Aqara UK Shop sale price (RRP £119.99)", price_src="aqara_g3",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="A hallway that also needs a Zigbee hub",
+ catch="The card is extra, and HomeKit Secure Video records at 1080p.",
+ storage="microSD (up to 128 GB); HomeKit Secure Video needs iCloud+", live="Yes", alerts="Yes",
+ ai="Free: on-device face, gesture, person and pet recognition",
+ history="Yes, on the card; HomeKit Secure Video keeps 10 days in iCloud+",
+ paywalled="Nothing essential. HomeKit Secure Video needs Apple's iCloud+",
+ sub_text="None needed. The camera records to a card; HomeKit Secure Video is optional",
+ ha_text="Works locally through Home Assistant's HomeKit Device integration; pair it as a HomeKit accessory.",
+ wifi="Dual-band 2.4/5 GHz",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
+ src=["aqara_g3","ha_homekit","sandisk_card"],
+ rec_src="aqara_g3", history_src="aqara_g3", ha_src="ha_homekit", plan_src="aqara_g3", unverified=""),
+dict(cat="cameras", id="aqara-e1", brand="Aqara", model="Camera E1", rec="yes", power=["wired"], ha=1,
+ price=48.98, price_note="Aqara UK Shop sale price (RRP £69.98)", price_src="aqara_e1",
+ extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
+ sub=None, sub_name="No plan needed",
+ best="The cheapest way to keep footage without a plan",
+ catch="The card and the power supply are both extra.",
+ storage="microSD (up to 512 GB), or SMB 3.0 NAS with a card inserted", live="Yes", alerts="Yes",
+ ai="Free: on-device person detection and tracking",
+ history="Yes, on a card; 24 hours of events are free in Aqara's cloud",
+ paywalled="Nothing essential. 30-day cloud history is a paid option",
+ sub_text="None needed. 24 hours of event cloud is included; a paid membership is optional",
+ ha_text="Works locally through Home Assistant's HomeKit Device integration; pair it as a HomeKit accessory.",
+ wifi="Wi-Fi 6, dual-band 2.4/5 GHz",
+ score=dict(rec=2,live=1,alerts=1,ai=1,storage=0,ha=1),
+ src=["aqara_e1","ha_homekit","sandisk_card"],
+ rec_src="aqara_e1", history_src="aqara_e1", ha_src="ha_homekit", plan_src="aqara_e1", unverified=""),
+dict(cat="cameras", id="ring-outpro", brand="Ring", model="Outdoor Camera Pro (plug-in)", rec="no", power=["wired"], ha=0,
+ price=179.99, price_note="Ring UK", price_src="ring_outpro",
+ extra=0, extra_note="", free_records=False,
+ sub=4.99, sub_name="Ring Solo",
+ best="People already paying for Ring and Alexa",
+ catch="Saves no video at all without the £4.99-a-month plan.",
+ storage="None. Recording is cloud-only.", live="Yes", alerts="Yes",
+ ai="Paid (person, package and vehicle alerts on Ring's plans)",
+ history="None", paywalled="All recording and playback (up to 180 days), smart alerts, 24/7 recording",
+ sub_text="Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99, Pro £15.99",
+ ha_text="Official integration, but it goes through Ring's cloud. No local-only option.",
+ wifi="2.4 GHz only",
+ score=dict(rec=0,live=1,alerts=1,ai=0,storage=0,ha=0),
+ src=["ring_outpro","ring_plans","ha_ring"],
+ rec_src="ring_outpro", history_src="ring_outpro", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
+dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit", power=["battery"], ha=0,
+ price=69.99, price_note="Amazon UK, includes a Sync Module Core (which has no local storage)", price_src="amz_blink_cam",
+ extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
+ extra_src="sandisk_stick", kit_src="amz_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
+ sub=2.50, sub_name="Blink Basic",
+ best="The cheapest way into Amazon's cameras, if you catch a deal",
+ catch="Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes.",
+ storage="Only through a Sync Module 2 + USB stick (1–256 GB); the camera has no storage",
+ live="Capped at 5 minutes", alerts="Yes", ai="Paid (person and vehicle detection)",
+ history="None without a Sync Module 2",
+ paywalled="Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions",
+ sub_text="Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month",
+ ha_text="Official integration, but it goes through Blink's cloud and has no live view.",
+ wifi="2.4 GHz only",
+ score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
+ src=["amz_blink_cam","amz_sm2","blink_storage","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
+ rec_src="blink_storage", history_src="blink_storage", ha_src="ha_blink", plan_src="blink_plans", unverified=""),
 ]
+
+# A row's Amazon price and buy links carry the tag, so a new Amazon row is
+# tagged without anyone remembering to. An Amazon page cited for a sundry
+# stays a plain citation.
+for _r in ROWS:
+    for _key in (_r["price_src"], _r.get("buy")):
+        if _key:
+            _name, _url = S[_key]
+            S[_key] = (_name, amazon_tagged(_url))
 
 # ---------- each row's verdict and its plain words ----------
 # Authored beside the rows and attached to them below, so a row carries its own
@@ -335,6 +542,9 @@ dict(id="hik", brand="Hikvision", model="DS-KB6003-WIP", rec="yes", power=["wire
 VERDICT = {
     "reo-poe": "best", "reo-wifi": "wired", "reo-batt": "batt",
     "tapo-d230": "easy", "ring": "avoid", "blink": "avoid", "arlo": "avoid",
+    "reo-rlc820a": "best", "reo-argus4": "batt", "reo-e1out": "ptz",
+    "tapo-c660": "solar", "aqara-g3": "indoor", "aqara-e1": "value",
+    "ring-outpro": "avoid", "blink-out4": "avoid",
 }
 PLAIN = {
     "ring": ("Runs on the battery, or you can wire it to your existing chime.",
@@ -343,8 +553,6 @@ PLAIN = {
              "None. The doorbell has no storage of its own and no hub to hold the footage."),
     "eufy-e340": ("Runs on the battery, or you can wire it to your existing chime.",
                   "8 GB is built into the doorbell, so it records on its own. The optional HomeBase S380 (16 GB, expandable) holds more."),
-    "eufy-c31": ("Runs on its removable battery, or you can wire it to your existing doorbell wiring (24/7 recording needs the wiring, with the old chime bypassed).",
-                 "A microSD card (up to 128 GB, not included) in the doorbell. The optional HomeBase S380 holds more."),
     "reo-wifi": ("Wired to your existing doorbell chime.",
                  "A microSD card in the doorbell (up to 256 GB), or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video."),
     "reo-poe": ("Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.",
@@ -367,6 +575,26 @@ PLAIN = {
                   "A microSD card (up to 256 GB) in the indoor chime that comes with it."),
     "hik": ("Wired to your existing doorbell chime.",
             "A microSD card (up to 128 GB), and it can stream to an NVR over RTSP."),
+    "reo-rlc820a": ("Powered by an Ethernet cable (PoE): one cable carries both power and video.",
+                    "A microSD card in the camera (up to 512 GB), a Reolink NVR, or an FTP server."),
+    "reo-argus4": ("Runs on its rechargeable battery, or on the solar panel in the box.",
+                   "A microSD card in the camera (up to 512 GB), or a Reolink Home Hub indoors."),
+    "reo-e1out": ("Mains power from the 12V adapter; there is no battery.",
+                  "A microSD card (up to 512 GB), a Reolink NVR, a Home Hub, or FTP/NAS."),
+    "tapo-c660": ("Runs on its rechargeable battery and the solar panel in the box.",
+                  "A microSD card (up to 512 GB) in the camera."),
+    "eufy-s340": ("Runs on its built-in battery and the solar panel in the box.",
+                  "8 GB is built into the camera. A HomeBase S380 adds up to 16 TB."),
+    "eufy-e30": ("Plugged into the mains.",
+                 "A microSD card (sold separately), or a HomeBase S380."),
+    "aqara-g3": ("Plugged into the mains over USB-C; the power supply is not included.",
+                 "A microSD card (up to 128 GB), or Apple's iCloud+ through HomeKit Secure Video."),
+    "aqara-e1": ("Plugged into the mains over USB-C; the 2A power supply is not included.",
+                 "A microSD card (up to 512 GB), or an SMB 3.0 NAS with a card inserted."),
+    "ring-outpro": ("Plugged into a standard socket.",
+                    "None. The camera has no storage of its own."),
+    "blink-out4": ("Runs on two AA lithium batteries.",
+                   "Recording needs a Sync Module 2 and a USB stick (1–256 GB)."),
 }
 
 # ---------- row shape ----------
@@ -375,15 +603,14 @@ PLAIN = {
 # build runs this before it writes anything, and the audit runs it over the
 # files that shipped.
 REQUIRED_ROW_KEYS = (
-    "id", "brand", "model", "rec", "power", "ha", "price", "price_note",
+    "cat", "id", "brand", "model", "rec", "ha", "price", "price_note",
     "price_src", "extra", "extra_note", "free_records", "sub", "sub_name",
-    "best", "catch", "storage", "live", "alerts", "ai", "history",
-    "paywalled", "sub_text", "ha_text", "wifi", "score", "src", "unverified",
+    "best", "catch", "sub_text", "ha_text", "score", "src", "unverified",
     "rec_src", "history_src", "ha_src", "plan_src",
-) + CAT["required_keys"]
+)
 OPTIONAL_ROW_KEYS = (
     "power_note", "cards", "plan_price_region", "extra_src", "kit_src", "kit_label",
-    "kit_price", "buy", "price_check",
+    "kit_price",
 )
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
@@ -400,19 +627,29 @@ def row_problems(cat=None):
     than printed blank.
     """
     cat = cat or CAT
-    rows = cat.get("rows") or ROWS
-    sources = cat.get("sources") or S
+    rows = cat.get("rows")
+    if rows is None:
+        rows = [r for r in ROWS if r.get("cat") == cat["slug"]]
+    sources = S
+    rec_label = {key: label for key, label, _ in cat["rec"]}
+    power_label = dict(cat["powers"])
+    part_max = {key: maximum for key, _, maximum in cat["score_parts"]}
+    required = tuple(dict.fromkeys(REQUIRED_ROW_KEYS + tuple(cat["required_keys"])))
+    allowed = required + OPTIONAL_ROW_KEYS + DERIVED_ROW_KEYS
     problems = []
+    if not rows:
+        problems.append(f"{cat['slug']}: no rows are attached to the record")
     for r in rows:
         rid = r.get("id", "(no id)")
-        missing = [k for k in REQUIRED_ROW_KEYS if k not in r]
-        allowed = REQUIRED_ROW_KEYS + OPTIONAL_ROW_KEYS + DERIVED_ROW_KEYS
+        missing = [k for k in required if k not in r]
         unknown = [k for k in r if k not in allowed]
         if missing: problems.append(f"{rid}: missing {', '.join(missing)}")
         if unknown: problems.append(f"{rid}: unknown {', '.join(unknown)}")
+        if r.get("cat") != cat["slug"]:
+            problems.append(f"{rid}: cat {r.get('cat')!r} is not {cat['slug']!r}")
         for key in ("price_src", "rec_src", "history_src", "ha_src", "plan_src", "extra_src", "kit_src"):
             if key in r and r[key] not in sources:
-                problems.append(f"{rid}: {key} {r[key]!r} is not in the category's sources")
+                problems.append(f"{rid}: {key} {r[key]!r} is not in the source register")
             if key in r and r[key] not in r.get("src", []):
                 problems.append(f"{rid}: {key} {r[key]!r} is not in the row's src list")
         if r.get("cards", 1) < 1:
@@ -429,28 +666,28 @@ def row_problems(cat=None):
         # The fields a new row is most likely to get wrong, checked against the
         # vocabulary the page prints, so a typo names its row instead of raising
         # a KeyError inside the CSV writer or printing a blank cell.
-        if r.get("rec") not in REC_LABEL:
+        if r.get("rec") not in rec_label:
             problems.append(
-                f"{rid}: rec {r.get('rec')!r} is not one of {', '.join(REC_LABEL)}"
+                f"{rid}: rec {r.get('rec')!r} is not one of {', '.join(rec_label)}"
             )
         for value in r.get("power") or ():
-            if value not in POWER_LABEL:
+            if value not in power_label:
                 problems.append(
-                    f"{rid}: power {value!r} is not one of {', '.join(POWER_LABEL)}"
+                    f"{rid}: power {value!r} is not one of {', '.join(power_label)}"
                 )
         if not isinstance(r.get("ha"), int) or isinstance(r.get("ha"), bool) or not 0 <= r["ha"] <= 2:
             problems.append(f"{rid}: ha {r.get('ha')!r} is not a whole number from 0 to 2")
         parts = r.get("score") or {}
         for key, value in parts.items():
-            if key not in PART_MAX:
+            if key not in part_max:
                 problems.append(
-                    f"{rid}: score {key!r} is not one of {', '.join(PART_MAX)}"
+                    f"{rid}: score {key!r} is not one of {', '.join(part_max)}"
                 )
-            elif not isinstance(value, int) or not 0 <= value <= PART_MAX[key]:
+            elif not isinstance(value, int) or not 0 <= value <= part_max[key]:
                 problems.append(
-                    f"{rid}: score {key} is {value!r}, outside 0 to {PART_MAX[key]}"
+                    f"{rid}: score {key} is {value!r}, outside 0 to {part_max[key]}"
                 )
-        missing_parts = [key for key in PART_MAX if key not in parts]
+        missing_parts = [key for key in part_max if key not in parts]
         if missing_parts:
             problems.append(f"{rid}: score is missing {', '.join(missing_parts)}")
         verdict = r.get("verdict")
@@ -482,17 +719,22 @@ def row_problems(cat=None):
     for key, (_, url) in sources.items():
         if urlparse(url).scheme != "https":
             problems.append(f"{key}: {url!r} is not an https page")
-    ids = {r["id"] for r in rows}
-    if rows is ROWS:      # the doorbell module's own tables
-        for rid in VERDICT:
-            if rid not in ids:
-                problems.append(f"VERDICT has an entry for a row that does not exist: {rid}")
-        for rid in PLAIN:
-            if rid not in ids:
-                problems.append(f"PLAIN has an entry for a row that does not exist: {rid}")
     headlines = [r["id"] for r in rows if r.get("verdict") == cat["headline"]]
     if not headlines:
         problems.append(f"no row carries the headline verdict {cat['headline']!r}")
+    return problems
+
+
+def authored_problems():
+    """Every hand-authored verdict and plain sentence names a row that exists."""
+    problems = []
+    ids = {r["id"] for r in ROWS}
+    for rid in VERDICT:
+        if rid not in ids:
+            problems.append(f"VERDICT has an entry for a row that does not exist: {rid}")
+    for rid in PLAIN:
+        if rid not in ids:
+            problems.append(f"PLAIN has an entry for a row that does not exist: {rid}")
     return problems
 
 
@@ -503,85 +745,92 @@ def money(x, decimals=2):
     if decimals is None: decimals = 0 if float(x).is_integer() else 2
     return f"£{x:,.{decimals}f}"
 
-for r in ROWS:
-    r["cards"] = r.get("cards", 1)
-    r["plan_region"] = r.get("plan_price_region", "UK")
-    # A second card is a second purchase: the base extra has one already.
-    if r["cards"] > 1: r["extra"] = round(r["extra"] + CARD * (r["cards"] - 1), 2)
-    r["score_total"] = sum(r["score"].values())
-    r["verdict"] = VERDICT.get(r["id"])
-    r["plain"] = PLAIN.get(r["id"])
-    r["nosub3"] = round(r["price"] + r["extra"], 2)
-    r["sub3"] = round(r["price"] + MONTHS * r["sub"], 2) if r["sub"] is not None else None
-    # cheapest way to keep recordings for 3 years
-    opts = []
-    if r["free_records"]: opts.append(r["nosub3"])
-    if r["sub3"] is not None: opts.append(r["sub3"])
-    # A row with neither route has no total to print. `row_problems()` rejects
-    # it by name before anything is written; `None` here keeps the module
-    # importable so that the guard can run at all.
-    r["keep3"] = min(opts) if opts else None
-    # Which of the two 3-year figures the sort uses, and what to call it. The
-    # page says so in words and bolds that cell, so the order never looks broken.
-    if r["keep3"] is None:
-        r["keep_basis"], r["keep_note"] = "none", "no way to keep recordings"
-    elif r["free_records"] and (r["sub3"] is None or r["nosub3"] <= r["sub3"]):
-        r["keep_basis"], r["keep_note"] = "nosub", "records free, no plan"
-    else:
-        r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
-    m_free = f"{money(r['price'])}" + (f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})" if r["extra"] else "") + f" = {money(r['nosub3'])}"
-    if not r["free_records"]: m_free += " (but no recordings)" if r["rec"]=="no" else " (3 hours of history only)"
-    m_sub = (f"{money(r['price'])} + {MONTHS} × {money(r['sub'])} ({r['sub_name']}) = {money(r['sub3'])}" if r["sub3"] is not None else "No subscription offered or needed")
-    r["maths_free"], r["maths_sub"] = m_free, m_sub
-
-# 'brief' is a time limit, not missing hardware: Nest keeps 3 hours with no kit.
-# The vocabulary comes from the category record, so the page, the CSV, the
-# comparison and the checks all print the same words.
-REC_LABEL = {key: label for key, label, _ in CAT["rec"]}
-REC_RANK = {key: rank for key, _, rank in CAT["rec"]}
-POWER_LABEL = dict(CAT["powers"])
-SCORE_PARTS = list(CAT["score_parts"])
-SCORE_MAX = CAT["score_max"]
-PART_MAX = {key: maximum for key, _, maximum in SCORE_PARTS}
-# The slider's ends are the data's own: a row priced below a typed-in floor
-# would disappear from the default view of the page it was added to, and a
-# ceiling off the handle's 5-step grid would snap the dearest row out of range
-# just as quietly.
-MINP = int(min(r["price"] for r in ROWS) // 10 * 10)
-MAXP = int(ceil(max(r["price"] for r in ROWS) / 5) * 5)
-
-
-# The category record is where a category is described, so that a second one is
-# a second record and its rows, not an edit to every page of the build. The rows
-# attach themselves to their record; a record with no rows fails the audit.
-CAT["rows"] = ROWS
-CAT["sources"] = S
-
-# Amazon Associates: a row whose price links to Amazon UK carries the tag, so
-# a new Amazon row is tagged without anyone remembering to. Only price and
-# buy links are tagged; an Amazon page cited for a sundry stays a plain citation.
-AMAZON_TAG = "subfreeuk-21"
-
-
-def amazon_tagged(url):
-    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
-    u = urlsplit(url)
-    if not u.netloc.endswith("amazon.co.uk"):
-        return url
-    q = [(k, v) for k, v in parse_qsl(u.query, keep_blank_values=True) if k != "tag"]
-    q.append(("tag", AMAZON_TAG))
-    return urlunsplit(u._replace(query=urlencode(q)))
+def _derive(cat):
+    """One category's rows, vocabulary, source numbering and slider ends."""
+    rows = [r for r in ROWS if r.get("cat") == cat["slug"]]
+    cat["rows"] = rows
+    cat["sources"] = S
+    cat["rec_label"] = {key: label for key, label, _ in cat["rec"]}
+    cat["rec_rank"] = {key: rank for key, _, rank in cat["rec"]}
+    cat["power_label"] = dict(cat["powers"])
+    cat["score_parts"] = list(cat["score_parts"])
+    cat["score_max"] = sum(maximum for _, _, maximum in cat["score_parts"])
+    cat["part_max"] = {key: maximum for key, _, maximum in cat["score_parts"]}
+    for r in rows:
+        r["cards"] = r.get("cards", 1)
+        r["plan_region"] = r.get("plan_price_region", "UK")
+        # A second card is a second purchase: the base extra has one already.
+        if r["cards"] > 1: r["extra"] = round(r["extra"] + CARD * (r["cards"] - 1), 2)
+        r["score_total"] = sum(r["score"].values())
+        r["verdict"] = VERDICT.get(r["id"])
+        r["plain"] = PLAIN.get(r["id"])
+        r["nosub3"] = round(r["price"] + r["extra"], 2)
+        months = cat["months"]
+        r["sub3"] = round(r["price"] + months * r["sub"], 2) if r["sub"] is not None else None
+        # cheapest way to keep recordings for the category's period
+        opts = []
+        if r["free_records"]: opts.append(r["nosub3"])
+        if r["sub3"] is not None: opts.append(r["sub3"])
+        # A row with neither route has no total to print. `row_problems()`
+        # rejects it by name before anything is written; `None` here keeps the
+        # module importable so that the guard can run at all.
+        r["keep3"] = min(opts) if opts else None
+        # Which of the two figures the sort uses, and what to call it. The page
+        # says so in words and bolds that cell, so the order never looks broken.
+        if r["keep3"] is None:
+            r["keep_basis"], r["keep_note"] = "none", "no way to keep recordings"
+        elif r["free_records"] and (r["sub3"] is None or r["nosub3"] <= r["sub3"]):
+            r["keep_basis"], r["keep_note"] = "nosub", "records free, no plan"
+        else:
+            r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
+        m_free = f"{money(r['price'])}" + (f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})" if r["extra"] else "") + f" = {money(r['nosub3'])}"
+        if not r["free_records"]: m_free += " (but no recordings)" if r["rec"]=="no" else " (3 hours of history only)"
+        m_sub = (
+            f"{money(r['price'])} + {months} × {money(r['sub'])} ({r['sub_name']}) = {money(r['sub3'])}"
+            if r["sub3"] is not None
+            else cat.get("no_plan_note", "No subscription offered or needed")
+        )
+        r["maths_free"], r["maths_sub"] = m_free, m_sub
+    # The slider's ends are the data's own: a row priced below a typed-in floor
+    # would disappear from the default view of the page it was added to, and a
+    # ceiling off the handle's 5-step grid would snap the dearest row out of
+    # range just as quietly.
+    prices = [r["price"] for r in rows]
+    cat["minp"] = int(min(prices) // 10 * 10) if prices else 0
+    cat["maxp"] = int(ceil(max(prices) / 5) * 5) if prices else 0
+    # footnote numbering, per category: a reader on the cameras page sees its
+    # own register start at 1, not the doorbells' numbering with gaps in it.
+    cat["order"] = []
+    for r in rows:
+        for key in r["src"]:
+            if key not in cat["order"]:
+                cat["order"].append(key)
+    cat["fn"] = {key: i + 1 for i, key in enumerate(cat["order"])}
 
 
-for r in ROWS:
-    for key in (r["price_src"], r.get("buy")):
-        if key:
-            name, url = S[key]
-            S[key] = (name, amazon_tagged(url))
+for _category in CATEGORIES:
+    _derive(_category)
 
-# footnote numbering
-order=[]
-for r in ROWS:
-    for k in r["src"]:
-        if k not in order: order.append(k)
-FN = {k:i+1 for i,k in enumerate(order)}
+
+class Dataset:
+    """One category's data, as its page and its checks read it."""
+
+    def __init__(self, cat):
+        self.cat = cat
+        self.ROWS = cat["rows"]
+        self.S = S
+        self.FN = cat["fn"]
+        self.CARD = CARD
+        self.STICK = STICK
+        self.CHECKED = cat["checked"]
+        self.CHECKED_ISO = cat["checked_iso"]
+        self.REC_LABEL = cat["rec_label"]
+        self.REC_RANK = cat["rec_rank"]
+        self.POWER_LABEL = cat["power_label"]
+        self.SCORE_PARTS = cat["score_parts"]
+        self.SCORE_MAX = cat["score_max"]
+        self.MONTHS = cat["months"]
+        self.money = money
+
+
+DATASETS = {cat["slug"]: Dataset(cat) for cat in CATEGORIES}

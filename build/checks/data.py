@@ -101,7 +101,7 @@ def category_problems(rows, pages, cat):
             "3-yr cost with cheapest plan, monthly (£)": "" if sub3 is None else f"{sub3:.2f}",
             "Cheapest 3-yr cost to keep recordings (£)": "" if keep3 is None else f"{keep3:.2f}",
             "Plan price region": row["plan_region"],
-            "Last checked": rows.CHECKED,
+            "Last checked": cat["checked"],
         }
         for key, value in wanted.items():
             if out.get(key) != value:
@@ -276,30 +276,38 @@ def transfer_problems():
     return problems, total
 
 
-def freshness_problems(rows):
-    age = (date.today() - rows._CHECKED_DATE).days
-    if age < 0:
-        return [f"CHECKED_ISO {rows.CHECKED_ISO} is {-age} days in the future"], None
-    if age > 60:
-        return (
-            [f"the data was last checked {age} days ago (limit 60); re-check it and move CHECKED_ISO"],
-            None,
-        )
-    if age > 30:
-        return [], f"the data was last checked {age} days ago; re-check it soon"
-    return [], None
+def freshness_problems():
+    """Each category's own check date, so a new page cannot borrow an old one's."""
+    problems, notes = [], []
+    for cat in CATEGORIES:
+        day = date.fromisoformat(cat["checked_iso"])
+        age = (date.today() - day).days
+        if age < 0:
+            problems.append(
+                f"{cat['slug']}: checked_iso {cat['checked_iso']} is {-age} days in the future"
+            )
+        elif age > 60:
+            problems.append(
+                f"{cat['slug']}: the data was last checked {age} days ago (limit 60); "
+                "re-check it and move checked_iso"
+            )
+        elif age > 30:
+            notes.append(
+                f"{cat['slug']}: the data was last checked {age} days ago; re-check it soon"
+            )
+    return problems, notes
 
 
 def derived_figures(ctx):
-    if ctx.dataset is None:
+    if ctx.module is None:
         raise Skip("the dataset did not load")
-    return data_problems(ctx.dataset, ctx.pages)
+    return data_problems(ctx.module, ctx.pages)
 
 
 def slider(ctx):
-    if ctx.dataset is None:
+    if ctx.module is None:
         raise Skip("the dataset did not load")
-    return slider_problems(ctx.dataset, ctx.pages)
+    return slider_problems(ctx.module, ctx.pages)
 
 
 def transfer(ctx):
@@ -309,10 +317,10 @@ def transfer(ctx):
 
 
 def freshness(ctx):
-    if ctx.dataset is None:
+    if ctx.module is None:
         raise Skip("the dataset did not load")
-    problems, note = freshness_problems(ctx.dataset)
-    if note:
+    problems, notes = freshness_problems()
+    for note in notes:
         ctx.note(note)
     return problems
 
@@ -345,7 +353,7 @@ CHECKS = [
     ),
     Check(
         "data freshness", "static", 3,
-        lambda ctx: f"the data is dated {ctx.checked} and is inside its 60-day limit",
+        "every category's prices are dated and inside their 60-day limit",
         freshness,
     ),
     Check(

@@ -62,6 +62,8 @@ def emitted_sources(pages):
 def alias_problems(pages):
     problems = []
     for cat in CATEGORIES:
+        if not cat.get("alias"):
+            continue
         alias = pages[cat["alias"]]
         if 'http-equiv="refresh"' not in alias or "url=./" not in alias:
             problems.append(f"{cat['alias']} is not a redirect to ./")
@@ -611,7 +613,7 @@ CHECKS = [
     ),
     Check(
         "generated alias", "static", 5,
-        "doorbells.html is a small redirect to the canonical index.html",
+        "every old category filename is a small redirect to its canonical page",
         lambda ctx: alias_problems(ctx.pages),
     ),
     Check(

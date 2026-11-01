@@ -1,11 +1,11 @@
 # Working notes for agents
 
-This repo is one generated page plus its dataset. `build/rows.py` holds the
+This repo is generated pages plus their dataset. `build/rows.py` holds the
 data (`ROWS`, `S`) and every derived figure; `build/build.py` turns it into
-files. `index.html`, the `doorbells.html` redirect, `404.html`,
-`assets/page.css`, `assets/page.js`, `data/doorbells.csv` and
-`data/doorbells.md` are generated from `ROWS`. Run `python build/check.py`
-before committing.
+files. `index.html`, `cameras/index.html`, the `doorbells.html` redirect,
+`404.html`, `assets/page.css`, `assets/page.js`, the CSVs and Markdown in
+`data/`, plus the photos and `IMAGE_SOURCES.md`, are generated from `ROWS`.
+Run `python build/check.py` before committing.
 
 ## Categories
 
@@ -17,17 +17,21 @@ the method, CSV and markdown words. `build.py` renders a record and knows no
 product; `rows.py` authors every product, including its verdict and its plain
 sentences, so a product is written in one file.
 
-To bring a second category online:
+To bring another category online:
 
 1. add its record to `CATEGORIES`, with `route="cameras/"` for a page below the
    site root (`""` is the root). Asset links take one `../` per directory;
 2. add its rows to `ROWS`, each carrying a `cat` and facets drawn from that
    record;
-3. run `python build/build.py` and `python build/check.py`. `category records`
+3. add its photos to `build/make_images.py` and run it, or record an honest
+   placeholder where no official image survives;
+4. run `python build/build.py` and `python build/check.py`. `category records`
    reads the new page back and fails on a count that misses its rows, a headline
    verdict no row carries, a file name the record does not own, an asset link
    that does not resolve from its route, or two `h1`s; `category words` fails if
-   the copy still speaks another category's nouns.
+   the copy still speaks another category's nouns; `category page behaviour`
+   opens every non-root page and fails if its script reads the wrong rows, a
+   sort, the comparison, a source card, an asset or the console breaks.
 
 `row_problems()` validates every row against its category and stops the build
 with the row's id and the reason: an unknown key, a missing facet, a `rec`,

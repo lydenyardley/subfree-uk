@@ -45,9 +45,9 @@ verified" note, are in [AGENTS.md](AGENTS.md).
 
 ## Generated files
 
-`index.html`, the `doorbells.html` redirect, `assets/page.css`,
-`assets/page.js`, `data/doorbells.csv` and `data/doorbells.md` come from
-`build/build.py`. Run the build and commit the regenerated files in the same
+`index.html`, `cameras/index.html`, the `doorbells.html` redirect,
+`assets/page.css`, `assets/page.js`, `data/doorbells.csv`, `data/doorbells.md`,
+`data/cameras.csv` and `data/cameras.md` come from `build/build.py`. Run the build and commit the regenerated files in the same
 commit as the source change, so every commit can be deployed as it stands.
 The asset URLs carry a content version; the files themselves keep their names,
 so an old cached page can still load them.

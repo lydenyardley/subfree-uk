@@ -23,8 +23,20 @@ IMGS={
  "blink":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/feb6535d-c34d-48dd-a015-648dd5786bac/Blink_Battery_Doorbell_2K.png?format=1000w","https://blinkforhome.com/products",(0.30,0.02,0.72,0.98),False),
  "ezviz-ep3x":("https://mfs.ezvizlife.com/62d7d264ab031e75591d277638d4c440.png","https://www.ezviz.com/uk/product/ep3x-pro/55935",(0,0,0.255,1),True),
  "ezviz-db2":("https://s3.amazonaws.com/mfs.ezvizlife.com/f6a3b42474eefe13047add4b7b3c89c3.jpg","https://www.ezviz.com/uk/product/db2-pro-kit/42371",(0.28,0.2,0.43,0.79),True),
+ "reo-argus4":("https://home-cdn.reolink.us/wp-content/uploads/2024/06/argus-4-pro-whitesolar-panel-2-white.png","https://reolink.com/gb/product/argus-4-pro/",None,True),
+ "reo-rlc820a":("https://home-cdn.reolink.us/wp-content/uploads/2023/03/200425471679286347.6671.png","https://reolink.com/gb/product/rlc-820a/",None,True),
+ "reo-e1out":("https://home-cdn.reolink.us/wp-content/uploads/2023/05/160805511684224351.237.png","https://reolink.com/gb/product/e1-outdoor-pro/",None,True),
+ "tapo-c660":("https://uk.store.tapo.com/cdn/shop/files/Tapo_C660_KIT_Solar-Powered_Pan-Tilt-Zoom_4K_Security_Camera.jpg?v=1760541897&width=2048","https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit",None,True),
+ "eufy-s340":("https://cdn.shopify.com/s/files/1/0746/3999/9151/files/T8170-DTC.png?v=1788149525","https://www.anker.com/uk/products/t81703w1",None,True),
+ "eufy-e30":("https://cdn.shopify.com/s/files/1/0746/3999/9151/files/Frame_2147226768.png?v=1788149693","https://www.anker.com/uk/products/t8417221",None,True),
+ "aqara-g3":("https://eu.aqara.com/cdn/shop/files/G3_1.webp","https://eu.aqara.com/products/aqara-2k-security-indoor-camera-hub-g3",None,True),
+ "aqara-e1":("https://eu.aqara.com/cdn/shop/files/aqara-Camera_E1.webp?v=1774333578","https://eu.aqara.com/products/aqara-2k-indoor-security-camera-e1",None,True),
+ "ring-outpro":("https://en-uk.ring.com/cdn/shop/files/Ring_GROUPER_White-Plugin_1500x1500_01.jpg?v=1757078401","https://en-uk.ring.com/products/stick-up-cam-pro-plug-in",None,True),
 }
-PLACEHOLDER={"hik":"Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image."}
+PLACEHOLDER={
+ "hik":"Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image.",
+ "blink-out4":"Blink's own site no longer lists the Outdoor 4 (its current cameras are the Outdoor 2K+), so the only official image left is the Amazon UK listing, which does not license a self-hosted copy.",
+}
 def flat(im):
     im=im.convert("RGBA"); bg=Image.new("RGBA",im.size,(255,255,255,255)); bg.alpha_composite(im); return bg.convert("RGB")
 def trim(im):
@@ -46,7 +58,7 @@ for k,(u,page,box,tr) in IMGS.items():
     meta[k]={"src":u,"page":page,"cropped":bool(box)}
 for k,why in PLACEHOLDER.items(): meta[k]={"placeholder":True,"why":why}
 json.dump(meta,open(os.path.join(HERE,"images.json"),"w"),indent=1)
-L=["# Product image sources","","Every photo is the manufacturer's own product image, downloaded once, cropped to the doorbell where the original showed extra items (phone, chime, award badge), flattened onto white and saved as WebP (`-sm` 120×160 for table rows, `-lg` 360×480 for details). Nothing is hotlinked.","","| File | Original image | Found on |","|---|---|---|"]
+L=["# Product image sources","","Every photo is the manufacturer's own product image, downloaded once, cropped to the product where the original showed extra items (phone, chime, award badge), flattened onto white and saved as WebP (`-sm` 120×160 for table rows, `-lg` 360×480 for details). Nothing is hotlinked.","","| File | Original image | Found on |","|---|---|---|"]
 for k,v in meta.items():
     if v.get("placeholder"): L.append(f"| — ({k}) | None: neutral placeholder used | {v['why']} |")
     else: L.append(f"| `img/{k}-sm.webp`, `img/{k}-lg.webp` | {v['src']}{' (cropped)' if v['cropped'] else ''} | {v['page']} |")

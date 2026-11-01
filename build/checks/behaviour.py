@@ -76,12 +76,21 @@ def filters_check(page):
     """The phone filter panel is collapsed, and has to come back when the window widens."""
     problems = []
     page.set_viewport_size({"width": 900, "height": 900})
-    page.wait_for_timeout(150)
+    # The media-query listener is asynchronous, and a busy run can deliver it
+    # after a fixed pause. Wait for the state the check is about, rather than
+    # racing it, so the result does not depend on how many checks share the run.
+    try:
+        page.wait_for_function("() => document.getElementById('filters').open", timeout=1500)
+    except Exception:
+        pass
     wide = page.evaluate(FILTERS_JS)
     if not wide["open"] or not wide["visible"]:
         problems.append(f"the filter panel stays closed at 900px: {wide}")
     page.set_viewport_size({"width": 390, "height": 844})
-    page.wait_for_timeout(150)
+    try:
+        page.wait_for_function("() => !document.getElementById('filters').open", timeout=1500)
+    except Exception:
+        pass
     narrow = page.evaluate(FILTERS_JS)
     if narrow["open"] or narrow["visible"]:
         problems.append(f"the filter panel stays open at 390px: {narrow}")

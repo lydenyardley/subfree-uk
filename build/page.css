@@ -665,7 +665,12 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
 @media (max-width:520px){
  .mast-long{display:none}
  .mast-short{display:inline}
- .mast{padding:.75rem 0}
+ /* The switcher and the theme button fit beside the brand at 390px only with
+    tighter gaps and a narrower button; below that they take a row of their
+    own, because at 320px even that is not enough. */
+ .mast{padding:.5rem 0;gap:.5rem}
+ .cats{gap:.75rem}
+ #theme{padding:0 .75rem}
  .intro{padding:.75rem 0}
  .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
  .verdict{display:none}
@@ -692,6 +697,12 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .fbody{flex-direction:column;align-items:stretch;gap:1rem;padding:1rem;border:1px solid var(--rule);border-top:0}
  .fbody .opts{gap:0.5rem 1rem}
  .range{flex:none;width:100%;max-width:none}
+}
+@media (max-width:380px){
+ .mast{flex-wrap:wrap;row-gap:.5rem}
+ .mast>div{flex:1 1 100%}
+ .cats{order:2;flex:1 1 auto;margin-left:0;gap:1.25rem}
+ #theme{order:3}
 }
 /* Paper has no click, so the sheet keeps what the script hides: the numbered
    markers and the register, and the figures lose the underline that says they

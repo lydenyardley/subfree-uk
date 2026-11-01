@@ -23,9 +23,7 @@ EMAIL = "lydenyardley+subfreeuk@posteo.net"
 
 from catalog import CATEGORIES, words
 from rows import (
-    CARD, CHECKED, CHECKED_ISO, FN, MAXP, MINP, MONTHS, POWER_LABEL,
-    REC_LABEL, REC_RANK, ROWS, S, SCORE_MAX, SCORE_PARTS, STICK,
-    _CHECKED_DATE, money, order, row_problems,
+    CARD, DATASETS, ROWS, S, STICK, authored_problems, money, row_problems,
 )
 
 # ---------- HTML ----------
@@ -38,14 +36,14 @@ def rel(url):
 EU_NOTE = "EU price, not a UK quote"
 
 
-def fn(keys):
+def fn(ds, keys):
     return ", ".join(
-        f'<a class="fn" href="#fn{FN[k]}" title="{e(S[k][0])}">{FN[k]}</a>'
+        f'<a class="fn" href="#fn{ds.FN[k]}" title="{e(ds.S[k][0])}">{ds.FN[k]}</a>'
         for k in keys
     )
 
 
-def srclinks(keys):
+def srclinks(ds, keys):
     """The row's own list of sources, as links to the pages themselves.
 
     A row names every page its record comes from, so that list leaves for those
@@ -54,8 +52,8 @@ def srclinks(keys):
     to its entry, which is what the audit counts.
     """
     return ", ".join(
-        f'<a class="sref" href="{e(S[k][1])}" data-fn="{FN[k]}" title="{e(S[k][0])}" '
-        f'rel="{rel(S[k][1])}">{e(S[k][0])}</a>'
+        f'<a class="sref" href="{e(ds.S[k][1])}" data-fn="{ds.FN[k]}" title="{e(ds.S[k][0])}" '
+        f'rel="{rel(ds.S[k][1])}">{e(ds.S[k][0])}</a>'
         for k in keys
     )
 
@@ -101,7 +99,7 @@ def claims(r):
     return {k: {f: v for f, v in c.items() if f == "keys" or v} for k, c in out.items()}
 
 
-def src_label(cl, key, words):
+def src_label(ds, cl, key, words):
     """The figure's words and the page its card opens, so a screen reader hears
     where the click leads without going there first.
 
@@ -109,10 +107,10 @@ def src_label(cl, key, words):
     which is what keeps an apostrophe an apostrophe in the words the reader
     hears rather than its entities.
     """
-    return f"{words}, source: {', '.join(S[k][0] for k in cl[key]['keys'])}"
+    return f"{words}, source: {', '.join(ds.S[k][0] for k in cl[key]['keys'])}"
 
 
-def fig(r, cl, key, text, label, cls="", attrs=""):
+def fig(ds, r, cl, key, text, label, cls="", attrs=""):
     """One figure with its source card on it.
 
     The anchor is a real link to the page the figure came from, so on paper and
@@ -123,10 +121,10 @@ def fig(r, cl, key, text, label, cls="", attrs=""):
     from. `label` is what the click says it does.
     """
     keys = cl[key]["keys"]
-    more = "".join(f" data-more=\"{' '.join(str(FN[k]) for k in keys[1:])}\"" if len(keys) > 1 else "")
-    return (f'<a class="src{" " + cls if cls else ""}" href="{e(S[keys[0]][1])}"{more}{attrs}'
-            f' data-claim="{key}" data-id="{r["id"]}" data-fn="{FN[keys[0]]}" '
-            f'rel="{rel(S[keys[0]][1])}" aria-haspopup="dialog" '
+    more = "".join(f" data-more=\"{' '.join(str(ds.FN[k]) for k in keys[1:])}\"" if len(keys) > 1 else "")
+    return (f'<a class="src{" " + cls if cls else ""}" href="{e(ds.S[keys[0]][1])}"{more}{attrs}'
+            f' data-claim="{key}" data-id="{r["id"]}" data-fn="{ds.FN[keys[0]]}" '
+            f'rel="{rel(ds.S[keys[0]][1])}" aria-haspopup="dialog" '
             f'aria-label="{e(label)}">{text}</a>')
 
 
@@ -138,7 +136,7 @@ def has_photo(r):
     return bool(IMG.get(r["id"], {})) and not IMG.get(r["id"], {}).get("placeholder")
 
 
-def photo(r, size):
+def photo(r, size, prefix=""):
     name = f"{r['brand']} {r['model']}"
     w, h = (45, 60) if size == "sm" else (180, 240)
     m = IMG.get(r["id"], {})
@@ -148,22 +146,22 @@ def photo(r, size):
         attrs = 'aria-hidden="true"' if size == "sm" else f'role="img" aria-label="No photo available for {e(name)}"'
         return f'<span class="ph ph-{size}" {attrs} style="width:{w}px;height:{h}px"><span>No photo</span></span>'
     alt = "" if size == "sm" else e(name)
-    return f'<img class="ph ph-{size}" src="img/{r["id"]}-{size}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{alt}">'
+    return f'<img class="ph ph-{size}" src="{prefix}img/{r["id"]}-{size}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="{alt}">'
 
 
-def zoom(r, size):
+def zoom(r, size, prefix=""):
     # Both sizes are 2x files, so the lightbox shows the large one at its own
     # width. Placeholders stay plain: there is nothing bigger to open.
     m = IMG.get(r["id"], {})
     if m.get("placeholder") or not m:
-        return photo(r, size)
+        return photo(r, size, prefix)
     name = e(f"{r['brand']} {r['model']}")
     # Two photos on one row, so the two names say which one opens: the row's
     # thumbnail sits beside the name, the large one only inside the details.
     # Both open the full-size photo, so neither name claims to open a thumbnail.
     which = "photo" if size == "sm" else "photo full size"
-    return (f'<button type="button" class="zoom" data-full="img/{r["id"]}-lg.webp" data-name="{name}" '
-            f'aria-label="View {name} {which}">{photo(r, size)}<span class="zi" aria-hidden="true"></span></button>')
+    return (f'<button type="button" class="zoom" data-full="{prefix}img/{r["id"]}-lg.webp" data-name="{name}" '
+            f'aria-label="View {name} {which}">{photo(r, size, prefix)}<span class="zi" aria-hidden="true"></span></button>')
 
 
 def vlink(ids, text):
@@ -171,14 +169,18 @@ def vlink(ids, text):
 
 
 ROW_FIG = re.compile(r"\{([pc]):([a-z0-9-]+)\}")
-BY_ID = {r["id"]: r for r in ROWS}
 ROW_LINK = re.compile(r"\{v:([a-z0-9-]+):([^}]+)\}")
 
 
-def with_links(text):
+def with_links(text, by_id):
     """`{v:ID:Words}` becomes a link to that row, so the editorial lead can
-    name a product without the record holding markup for a specific id."""
-    text = ROW_FIG.sub(lambda m: f"£{round(BY_ID[m.group(2)]['price' if m.group(1) == 'p' else 'nosub3']):,}", text)
+    name a product without the record holding markup for a specific id.
+    `{p:ID}` and `{c:ID}` print its price and its no-plan 3-year cost, to the
+    pound, so the answer near the top cannot drift from the table."""
+    text = ROW_FIG.sub(
+        lambda m: f"£{round(by_id[m.group(2)]['price' if m.group(1) == 'p' else 'nosub3']):,}",
+        text,
+    )
     return ROW_LINK.sub(lambda m: vlink([m.group(1)], m.group(2)), text)
 
 
@@ -210,7 +212,7 @@ def kit_phrase(rows):
     if not named:
         return ""
     # The sentence reads "Blink's Sync Module 2 at £39.99, Arlo's SmartHub at
-    # £109.99, and a 64 GB card at £26.99 or a stick at £15.99".
+    # £105.07, and a 64 GB card at £25.37 or a stick at £11.99".
     return ", ".join(named) + ", and "
 
 
@@ -258,14 +260,91 @@ def md_cell(text):
     return str(text).replace("|", "\\|").replace("\n", " ").strip()
 
 
+def data_map(ds, cat, prefix=""):
+    """The row record the script reads, keyed by product id."""
+    score_max = ds.SCORE_MAX
+    claims_by_id = {r["id"]: claims(r) for r in ds.ROWS}
+    return {r["id"]: {
+        "name": f"{r['brand']} {r['model']}", "rec": ds.REC_LABEL[r["rec"]], "recCls": r["rec"],
+        "price": "Check price" if r.get("price_check") else money(r["price"], None), "score": f"{r['score_total']}/{score_max}",
+        "tone": cat["verdicts"][r["verdict"]][1] if r["verdict"] else "",
+        "vtag": cat["verdicts"][r["verdict"]][0] if r["verdict"] else "",
+        "nosub3": money(r["nosub3"], None),
+        "sub3": money(r["sub3"], None) if r["sub3"] is not None else "No plan",
+        "keep3": r["keep3"], "keepNote": r["keep_note"], "region": r["plan_region"],
+        "best": r["best"], "catch": r["catch"], "power": " / ".join(ds.POWER_LABEL[p] for p in r["power"]),
+        "storage": r["storage"], "live": r["live"], "alerts": r["alerts"], "ai": r["ai"],
+        "history": r["history"], "paywalled": r["paywalled"],
+        "plan": r["sub_text"], "ha": r["ha_text"], "wifi": r["wifi"],
+        "claims": {k: {f: v for f, v in c.items() if f != "keys"} for k, c in claims_by_id[r["id"]].items()},
+        "img": "" if not has_photo(r) else f'{prefix}img/{r["id"]}-sm.webp',
+        "imgLg": "" if not has_photo(r) else f'{prefix}img/{r["id"]}-lg.webp',
+    } for r in ds.ROWS}
+
+
+def category_js(ds, cat):
+    """The words the script speaks for one category, keyed by slug."""
+    period, padj = cat["period"], cat["period_adj"]
+    return {
+        "noun": cat["noun"], "nouns": cat["nouns"],
+        "period": period, "periodAdj": padj, "months": ds.MONTHS,
+        "cap": cat["cap"], "scoreMax": ds.SCORE_MAX,
+        "compare": [[label, key] for label, key in cat["compare"]],
+        "pin": cat["pin"],
+        "sortNotes": {key: note for key, _, note in cat["sort"]},
+        "defaultSort": cat["sort"][0][0],
+        "claims": {k: v.format(period=period, period_adj=padj) for k, v in cat["claims"].items()},
+        "shown": cat["shown"], "noMatch": cat["no_match"], "empty": cat["empty_line"],
+        "cmpCaption": cat["cmp_caption"],
+    }
+
+
+SHARED = None
+
+
+def shared_assets():
+    """The one stylesheet and script every page loads.
+
+    The script carries all categories, keyed by slug, because it lives at one
+    address shared by every route; each page names its category on `<body>`
+    and the script reads its own record. Building it once keeps the content
+    hash the same on every page, so a nested route and the root cannot point at
+    different scripts.
+    """
+    global SHARED
+    if SHARED is None:
+        data, cats, dates = {}, {}, {}
+        for c in CATEGORIES:
+            ds = DATASETS[c["slug"]]
+            written = words(c)
+            prefix = "../" * c["route"].count("/")
+            data[c["slug"]] = data_map(ds, written, prefix)
+            cats[c["slug"]] = category_js(ds, written)
+            dates[c["slug"]] = ds.CHECKED
+        js = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
+              .replace("/*@@DATA@@*/{}", json.dumps(data, ensure_ascii=False))
+              .replace("/*@@CAT@@*/{}", json.dumps(cats, ensure_ascii=False))
+              .replace("/*@@DATES@@*/{}", json.dumps(dates, ensure_ascii=False)))
+        SHARED = js, page_css()
+    return SHARED
+
+
 def build(cat):
     """Every file one category owns, as `{filename: text}`, plus its data rows."""
+    ds = DATASETS[cat["slug"]]
     cat = words(cat)
-    rows = cat["rows"]
+    rows = ds.ROWS
     n = len(rows)
     period, padj = cat["period"], cat["period_adj"]
     # A nested route needs the assets one level up; the root needs them plain.
     prefix = "../" * cat["route"].count("/")
+    # The vocabulary, dates and numbering are this category's own, so a second
+    # page cannot borrow the first one's words or its footnote numbers.
+    S, FN, order = ds.S, ds.FN, cat["order"]
+    CHECKED, CHECKED_ISO, MONTHS = ds.CHECKED, ds.CHECKED_ISO, ds.MONTHS
+    MINP, MAXP = cat["minp"], cat["maxp"]
+    REC_LABEL, REC_RANK = ds.REC_LABEL, ds.REC_RANK
+    POWER_LABEL, SCORE_PARTS, SCORE_MAX = ds.POWER_LABEL, ds.SCORE_PARTS, ds.SCORE_MAX
     score_max = SCORE_MAX
     claims_by_id = {r["id"]: claims(r) for r in rows}
 
@@ -289,7 +368,7 @@ def build(cat):
         # shop, and the Amazon link under it is only where to buy. A row with
         # no other UK seller says "Check price"; its totals use a cited RRP.
         shown = "Check price" if r.get("price_check") else pm
-        price = fig(r, cl, "price", shown, f'{pm} at {psrc[0]}',
+        price = fig(ds, r, cl, "price", shown, f'{pm} at {psrc[0]}',
                     cls="buy chk" if r.get("price_check") else "buy",
                     attrs=f' title="Price source: {e(psrc[0])}"')
         if r.get("buy"):
@@ -299,15 +378,15 @@ def build(cat):
         # Each figure a reader might doubt carries its own card. The words are
         # the same ones the cell shows, so the card cannot drift from the figure.
         rec_lbl = REC_LABEL[r["rec"]]
-        rec_fig = fig(r, cl, "rec", f'<span class="rec-t">{rec_lbl}</span>', src_label(cl, "rec", rec_lbl))
+        rec_fig = fig(ds, r, cl, "rec", f'<span class="rec-t">{rec_lbl}</span>', src_label(ds, cl, "rec", rec_lbl))
         nosub_words = money(r["nosub3"], None)
-        nosub_fig = fig(r, cl, "nosub", nosub_words, src_label(cl, "nosub", nosub_words))
+        nosub_fig = fig(ds, r, cl, "nosub", nosub_words, src_label(ds, cl, "nosub", nosub_words))
         sub_words = money(r["sub3"], None) if r["sub3"] is not None else "No plan"
-        sub_fig = fig(r, cl, "plan", sub_words if r["sub3"] is not None else f'<span class="noplan">{sub_words}</span>',
-                      src_label(cl, "plan", sub_words))
-        hist_fig = fig(r, cl, "history", e(r["history"]), src_label(cl, "history", r["history"]))
-        ha_fig = fig(r, cl, "ha", e(r["ha_text"]), src_label(cl, "ha", r["ha_text"]))
-        plan_fig = fig(r, cl, "plan", e(r["sub_text"]), src_label(cl, "plan", r["sub_text"]))
+        sub_fig = fig(ds, r, cl, "plan", sub_words if r["sub3"] is not None else f'<span class="noplan">{sub_words}</span>',
+                      src_label(ds, cl, "plan", sub_words))
+        hist_fig = fig(ds, r, cl, "history", e(r["history"]), src_label(ds, cl, "history", r["history"]))
+        ha_fig = fig(ds, r, cl, "ha", e(r["ha_text"]), src_label(ds, cl, "ha", r["ha_text"]))
+        plan_fig = fig(ds, r, cl, "plan", e(r["sub_text"]), src_label(ds, cl, "plan", r["sub_text"]))
         ncls = " keep" if r["keep_basis"] == "nosub" else ""
         scls = " keep" if r["keep_basis"] == "sub" else ""
         # The bold figure follows the sort. The default sort is the 3-year cost
@@ -318,8 +397,8 @@ def build(cat):
         rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}" data-keep="{r['keep_basis']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else 0}" data-score="{sc}" data-region="{r['plan_region']}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
-<th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm")}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
-<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{rec_fig}{fn([r['rec_src']])}</span></td>
+<th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm",prefix)}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
+<td class="c-rec" data-label="Records free?"><span class="rec rec-{r['rec']}">{rec_fig}{fn(ds, [r['rec_src']])}</span></td>
 <td class="c-price num" data-label="Price">{price}</td>
 <td class="c-score" data-label="Free features"><span class="score"><b>{sc}</b>/{score_max}</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/score_max:.3f})"></i></span></td>
 <td class="c-nosub num{ncls}" data-label="{padj} cost, no plan"><span class="figv">{nosub_fig}{'' if r['free_records'] else '<span class="note">no recordings</span>' if r['rec']=='no' else '<span class="note">3 hrs history</span>'}</span></td>
@@ -327,8 +406,8 @@ def build(cat):
 <td class="c-catch" data-label="Main catch"><span class="catch-t">{e(r['catch'])}</span><div class="more-w"><button type="button" class="more" aria-expanded="false" aria-controls="d-{r['id']}"><span class="more-t">Costs &amp; sources</span></button></div></td>
 </tr>
 <tr class="detail" id="d-{r['id']}"><td colspan="8"><div class="dgrid">
-<figure class="dimg">{zoom(r,"lg")}
-<p class="srcs">Sources: {srclinks(r['src'])}</p></figure>
+<figure class="dimg">{zoom(r,"lg",prefix)}
+<p class="srcs">Sources: {srclinks(ds, r['src'])}</p></figure>
 <dl class="dspec">
 <div class="pair"><dt>Power</dt><dd>{e(r['plain'][0])}{pnote}</dd></div>
 <div class="pair"><dt>Wi-Fi</dt><dd>{e(r['wifi'])}</dd></div>
@@ -336,10 +415,10 @@ def build(cat):
 <div class="pair"><dt>Live view</dt><dd>{e(r['live'])}</dd></div>
 <div class="pair"><dt>Motion alerts</dt><dd>{e(r['alerts'])}</dd></div>
 <div class="pair"><dt>Smart detection</dt><dd>{e(r['ai'])}</dd></div>
-<div class="pair"><dt>History without a plan</dt><dd>{hist_fig} {fn([r['history_src']])}</dd></div>
+<div class="pair"><dt>History without a plan</dt><dd>{hist_fig} {fn(ds, [r['history_src']])}</dd></div>
 <div class="pair"><dt>Behind the paywall</dt><dd>{e(r['paywalled'])}</dd></div>
 <div class="pair"><dt>Plans</dt><dd>{plan_fig}</dd></div>
-<div class="pair"><dt>Home Assistant</dt><dd>{ha_fig} {fn([r['ha_src']])}</dd></div>
+<div class="pair"><dt>Home Assistant</dt><dd>{ha_fig} {fn(ds, [r['ha_src']])}</dd></div>
 <div class="pair"><dt>{period}, no plan</dt><dd class="maths">{e(r['maths_free'])}</dd></div>
 <div class="pair"><dt>{period}, with plan</dt><dd class="maths">{e(r['maths_sub'])}</dd></div>
 <div class="pair"><dt>Score breakdown</dt><dd>{"; ".join(f"{lbl} {r['score'][k]}/{mx}" for k, lbl, mx in SCORE_PARTS)}</dd></div>
@@ -348,44 +427,7 @@ def build(cat):
 </td></tr>
 </tbody>''')
 
-    data_js = json.dumps({r["id"]: {
-        "name": f"{r['brand']} {r['model']}", "rec": REC_LABEL[r["rec"]], "recCls": r["rec"],
-        "price": "Check price" if r.get("price_check") else money(r["price"], None), "score": f"{r['score_total']}/{score_max}",
-        "tone": cat["verdicts"][r["verdict"]][1] if r["verdict"] else "",
-        "vtag": cat["verdicts"][r["verdict"]][0] if r["verdict"] else "",
-        "nosub3": money(r["nosub3"], None),
-        "sub3": money(r["sub3"], None) if r["sub3"] is not None else "No plan",
-        "keep3": r["keep3"], "keepNote": r["keep_note"], "region": r["plan_region"],
-        "best": r["best"], "catch": r["catch"], "power": " / ".join(POWER_LABEL[p] for p in r["power"]),
-        "storage": r["storage"], "live": r["live"], "alerts": r["alerts"], "ai": r["ai"],
-        "history": r["history"], "paywalled": r["paywalled"],
-        "plan": r["sub_text"], "ha": r["ha_text"], "wifi": r["wifi"],
-        "claims": {k: {f: v for f, v in c.items() if f != "keys"} for k, c in claims_by_id[r["id"]].items()},
-        "img": "" if not has_photo(r) else f'img/{r["id"]}-sm.webp',
-        "imgLg": "" if not has_photo(r) else f'img/{r["id"]}-lg.webp',
-    } for r in rows}, ensure_ascii=False)
-
-    # What the script needs to speak the category's words and read the record's
-    # tables. A page carries only its own category, so a second page cannot
-    # borrow the first one's vocabulary.
-    js_cat = {
-        "noun": cat["noun"], "nouns": cat["nouns"],
-        "period": period, "periodAdj": padj, "months": MONTHS,
-        "cap": cat["cap"], "scoreMax": score_max,
-        "compare": [[label, key] for label, key in cat["compare"]],
-        "pin": cat["pin"],
-        "sortNotes": {key: note for key, _, note in cat["sort"]},
-        "defaultSort": cat["sort"][0][0],
-        "claims": {k: v.format(period=period, period_adj=padj) for k, v in cat["claims"].items()},
-        "shown": cat["shown"], "noMatch": cat["no_match"], "empty": cat["empty_line"],
-        "cmpCaption": cat["cmp_caption"],
-    }
-
-    page_js = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
-               .replace("/*@@DATA@@*/{}", data_js)
-               .replace("/*@@CAT@@*/{}", json.dumps(js_cat, ensure_ascii=False))
-               .replace("@@CHECKED@@", CHECKED))
-    page_css_text = page_css()
+    page_js, page_css_text = shared_assets()
     css_url = f"{prefix}{CSS_FILE}?v={content_version(page_css_text)}"
     js_url = f"{prefix}{JS_FILE}?v={content_version(page_js)}"
 
@@ -424,20 +466,21 @@ def build(cat):
     )
     default_note = cat["sort"][0][2]
 
-    # The short answer is the category's own: three linked sentences, each
-    # naming the row it is about.
+    # The short answer is the category's own: linked sentences, each naming
+    # the row it is about.
+    by_id = {r["id"]: r for r in rows}
     short_html = (
-        f'<p class="vshort"><b class="vlab">{e(cat["short_head"])}</b>\n'
+        f'<p class="vshort"><b class="vlab">{e(cat.get("short_head", "Short answer"))}</b>\n'
         + "".join(
-            f'<span class="v-{tone}">{with_links(sentence)}</span>\n'
+            f'<span class="v-{tone}">{with_links(sentence, by_id)}</span>\n'
             for tone, sentence in zip(cat["short_tones"], cat["short"])
         )
         + "</p>"
     )
     aside_html = (
-        f'<aside class="verdict">\n<h2>{e(cat["short_head"])}</h2>\n'
+        f'<aside class="verdict">\n<h2>{e(cat.get("short_head", "Short answer"))}</h2>\n'
         + "".join(
-            f'<p class="v-{tone}"><b>{e(head)}</b> {with_links(link + rest)}</p>\n'
+            f'<p class="v-{tone}"><b>{e(head)}</b> {with_links(link + rest, by_id)}</p>\n'
             for tone, head, link, rest in cat["aside"]
         )
         + "</aside>"
@@ -451,7 +494,7 @@ def build(cat):
     nav = ""
     if len(CATEGORIES) > 1:
         nav = '<nav class="cats" aria-label="Categories">' + "".join(
-            f'<a href="{prefix}{other["route"]}"{" aria-current=\"page\"" if other["slug"] == cat["slug"] else ""}>{e(other["nouns"].capitalize())}</a>'
+            f'<a href="{prefix}{other["route"]}"{" aria-current=\"page\"" if other["slug"] == cat["slug"] else ""}>{e(other.get("nav") or other["nouns"].capitalize())}</a>'
             for other in CATEGORIES
         ) + "</nav>"
 
@@ -475,7 +518,7 @@ def build(cat):
 <link rel="icon" href="{prefix}favicon.svg" type="image/svg+xml">
 <script>{THEME_JS}</script>
 <link rel="stylesheet" href="{css_url}">
-</head><body>
+</head><body data-cat="{cat['slug']}">
 <a class="skip" href="#tbl">{cat["skip"]}</a>
 <div class="wrap">
 <header class="mast-head">
@@ -608,26 +651,29 @@ def build(cat):
         for line in cat["method"]["md"]
     ]
 
-    return {
+    files = {
         cat["page"]: page,
-        cat["alias"]: alias,
-        cat["csv"]: csv_text(rows, cat),
+        cat["csv"]: csv_text(ds, rows, cat),
         cat["md"]: "\n".join(md),
         CSS_FILE: page_css_text,
         JS_FILE: page_js,
-    }, page_js, page_css_text
+    }
+    # A category that never had an old filename has no redirect to write.
+    if cat.get("alias"):
+        files[cat["alias"]] = alias
+    return files, page_js, page_css_text
 
 
-def csv_text(rows, cat):
+def csv_text(ds, rows, cat):
     """The CSV a reader can open, one row per product, every figure with its page."""
     out = io.StringIO()
     w = csv.writer(out)
-    w.writerow([head.format(score_max=SCORE_MAX) for head in cat["csv_head"]])
+    w.writerow([head.format(score_max=ds.SCORE_MAX) for head in cat["csv_head"]])
     for r in rows:
-        w.writerow([r["brand"], r["model"], REC_LABEL[r["rec"]], "/".join(POWER_LABEL[p] for p in r["power"]), f"{r['price']:.2f}", r["price_note"], S[r["price_src"]][1],
+        w.writerow([r["brand"], r["model"], ds.REC_LABEL[r["rec"]], "/".join(ds.POWER_LABEL[p] for p in r["power"]), f"{r['price']:.2f}", r["price_note"], ds.S[r["price_src"]][1],
                     r["best"], r["catch"], r["score_total"], f"{r['nosub3']:.2f}", "" if r["sub3"] is None else f"{r['sub3']:.2f}", f"{r['keep3']:.2f}", r["maths_free"], r["maths_sub"],
                     r["storage"], r["live"], r["alerts"], r["ai"], r["history"], r["paywalled"], r["sub_text"], r["plan_region"], r["ha_text"], r["wifi"],
-                    " ; ".join(S[k][1] for k in r["src"]), r["unverified"], CHECKED])
+                    " ; ".join(ds.S[k][1] for k in r["src"]), r["unverified"], ds.CHECKED])
     return out.getvalue()
 
 
@@ -658,18 +704,20 @@ def not_found(cats):
 
 
 def write():
-    problems = []
+    problems = authored_problems()
     for cat in CATEGORIES:
         if not cat.get("rows"):
             problems.append(f"{cat['slug']}: the category has no rows attached")
             continue
         problems.extend(row_problems(cat))
+        checked = date.fromisoformat(cat["checked_iso"])
+        if checked > date.today():
+            problems.append(
+                f"{cat['slug']}: checked_iso is {cat['checked_iso']}, which is in the future; "
+                "fix the date before building"
+            )
     if problems:
         raise SystemExit("Row problems:\n  " + "\n  ".join(problems))
-    if _CHECKED_DATE > date.today():
-        raise SystemExit(
-            f"CHECKED_ISO is {CHECKED_ISO}, which is in the future; fix the date before building"
-        )
     for cat in CATEGORIES:
         files, _, _ = build(cat)
         for name, text in files.items():
@@ -687,7 +735,10 @@ def write():
             os.remove(os.path.join(assets, name))
 
     print(len(ROWS), "rows written")
-    for r in sorted(ROWS, key=lambda r: r["keep3"]): print(f"{r['brand']:14} {r['model']:38} score {r['score_total']}  nosub {r['nosub3']:8.2f}  sub {r['sub3'] if r['sub3'] else '-':>8}  keep {r['keep3']:.2f}")
+    for r in sorted(ROWS, key=lambda r: (r["keep3"] is None, r["keep3"] or 0)):
+        print(f"{r['brand']:14} {r['model']:38} score {r['score_total']}  "
+              f"nosub {r['nosub3']:8.2f}  sub {r['sub3'] if r['sub3'] else '-':>8}  "
+              f"keep {r['keep3']:.2f}")
     open_rows = [r for r in ROWS if r["unverified"]]
     print(f"\nUnverified ({len(open_rows)} of {len(ROWS)} rows):" + (" none" if not open_rows else ""))
     for r in open_rows: print(f"  {r['brand']} {r['model']}: {r['unverified'].replace('£','GBP ')}")

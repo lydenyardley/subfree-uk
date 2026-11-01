@@ -1,5 +1,5 @@
 (function(){
-var D=/*@@DATA@@*/{},CHECKED='@@CHECKED@@',CAT=/*@@CAT@@*/{},CLAIM_WHAT=CAT.claims;
+var DATA=/*@@DATA@@*/{},CATS=/*@@CAT@@*/{},DATES=/*@@DATES@@*/{},SLUG=document.body.getAttribute('data-cat'),D=DATA[SLUG],CHECKED=DATES[SLUG],CAT=CATS[SLUG],CLAIM_WHAT=CAT.claims;
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
 // The category's sentences carry placeholders; the page fills them, so a
 // second category can say "cameras" without a line of script changing.

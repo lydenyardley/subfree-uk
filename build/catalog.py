@@ -52,8 +52,9 @@ SORT = [
 ]
 
 # The method paragraphs. `{card}`, `{stick}`, `{months}`, `{period}` and the
-# kit figures are filled from the data at build time.
-METHOD = {
+# kit figures are filled from the data at build time. Each category writes its
+# own, so a camera page cannot inherit a doorbell's warning.
+DOORBELL_METHOD = {
     "no_plan": (
         "<sup>a</sup> <b>{period}, no plan</b> = price + anything you must add "
         "to record for free ({kit}, each the cheapest UK price we found, on a "
@@ -118,19 +119,76 @@ CSV_HEAD =    [
     "Unverified / re-check", "Last checked",
 ]
 
-MD_HEAD = (
+DOORBELL_MD_HEAD = (
     "# UK video doorbells without a subscription",
     "Last checked {checked}. {n} doorbells. As an Amazon Associate I earn from qualifying purchases.",
     "| Doorbell | Records free? | Price | Score /{score_max} | {period_short}, "
     "no plan | {period_short}, with plan | Best for | Main catch |",
 )
 
+CAMERA_METHOD = {
+    "no_plan": (
+        "<sup>a</sup> <b>{period}, no plan</b> = price + anything you must add "
+        "to record for free ({kit}, each the cheapest UK price we found, on a "
+        "page that publishes it). Cameras with no free recording are shown next "
+        "to the figure."
+    ),
+    "with_plan": (
+        "<sup>b</sup> <b>{period}, with plan</b> = price + {months} × the "
+        "cheapest UK monthly plan that adds cloud recording for one camera. "
+        "Paying yearly is usually cheaper. A camera that records free without a "
+        "plan is still priced against its optional one, so the two columns "
+        "compare like with like. Every model's sums are under <i>Details</i>."
+    ),
+    "score": (
+        "<b>Free-feature score (out of {score_max}):</b> records for free "
+        "(2 = out of the box, 1 = with extra kit or only briefly), free live "
+        "view (1), free motion alerts (1), free smart detection (1), storage "
+        "included in the box (1), local Home Assistant support (2 = official "
+        "and local, 1 = unofficial or generic)."
+    ),
+    "terms": (
+        "<b>Plain terms.</b> <i>PoE</i> (Power over Ethernet) sends power and "
+        "video down one network cable. An <i>NVR</i> is a recorder box that "
+        "stores footage from several cameras. A <i>microSD</i> card is the "
+        "small memory card that sits inside many cameras or their hub. "
+        "<i>2.4 GHz only</i> means the camera cannot join a 5 GHz network, so "
+        "it will not show up on a phone that is on 5 GHz. <i>Home Assistant</i> "
+        "is free software that keeps your smart home on your own network "
+        "instead of a manufacturer's cloud."
+    ),
+    "left_out": (
+        "Batteries, electricity, installation and future price rises are left "
+        "out. Anything not yet confirmed is listed under <i>Not yet verified</i> "
+        "in each model's details."
+    ),
+    "photos": (
+        "Photos are the manufacturers' own, from their product pages: "
+        "{credits}.{missing}"
+    ),
+    "md": [
+        "Without a plan: hardware price + anything extra you need to record "
+        "for free (a 64 GB SanDisk microSD card at {card} or SanDisk USB stick "
+        "at {stick}, each the cheapest UK price we found, at Amazon UK).",
+        "With a plan: hardware price + {months} × the cheapest UK monthly plan "
+        "that adds recording for one camera. Paying yearly is usually cheaper.",
+        "Batteries, electricity, installation and price rises are left out.",
+    ],
+}
+
+CAMERA_MD_HEAD = (
+    "# UK security cameras without a subscription",
+    "Last checked {checked}. {n} cameras. No affiliate links.",
+    "| Camera | Records free? | Price | Score /{score_max} | {period_short}, "
+    "no plan | {period_short}, with plan | Best for | Main catch |",
+)
+
 NOT_FOUND = {
     "title": "Page not found | SubFree UK",
-    "description": "That page does not exist. The UK video doorbell comparison is on the home page.",
+    "description": "That page does not exist. The UK comparisons are on the home page and the cameras page.",
     "h1": "Page not found",
-    "say": "That link does not lead anywhere. The {what} is on the home page, and it is one page.",
-    "what": "comparison of UK video doorbells that record without a subscription",
+    "say": "That link does not lead anywhere. The {what} are on the home page and the cameras page.",
+    "what": "comparisons of UK video doorbells and security cameras that record without a subscription",
 }
 
 
@@ -144,6 +202,8 @@ DOORBELLS = {
 
     "noun": "doorbell",
     "nouns": "doorbells",
+    "nav": "Doorbells",
+    "checked_iso": "2026-10-19",
 
     "title": "Video doorbells that work without a subscription (UK)",
     "description": "{n} UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.",
@@ -165,6 +225,8 @@ DOORBELLS = {
     "period_adj": "3-year",
     "period_short": "3 yrs",
     "cap": 3,
+    # What the plan column says when the row has no plan to price.
+    "no_plan_note": "No subscription offered or needed",
 
     # The editorial lead, which is a judgement about this category's rows rather
     # than a figure: `{v:ID:Words}` becomes a link to that row.
@@ -270,14 +332,154 @@ DOORBELLS = {
     "pin": ("rec", "price", "nosub3", "sub3"),
 
     "sort": SORT,
-    "method": METHOD,
+    "method": DOORBELL_METHOD,
     "plain_part": PLAIN_PART,
     "csv_head": CSV_HEAD,
-    "md_head": MD_HEAD,
+    "md_head": DOORBELL_MD_HEAD,
     "not_found": NOT_FOUND,
 }
 
-CATEGORIES = [DOORBELLS]
+CAMERAS = {
+    "slug": "cameras",
+    "route": "cameras/",
+    "alias": None,
+    "csv": "data/cameras.csv",
+    "md": "data/cameras.md",
+    "page": "cameras/index.html",
+
+    "noun": "security camera",
+    "nouns": "security cameras",
+    "nav": "Cameras",
+    "checked_iso": "2026-11-01",
+
+    "title": "Security cameras that work without a subscription (UK)",
+    "description": "{n} UK security cameras compared: what is free, what is paywalled, and what each costs over three years.",
+    "h1": "Security cameras that work without a subscription",
+    "dek": "{n} UK security cameras, checked against manufacturer pages: free features, paywalls and {period} costs.",
+    "mast": "No subscriptions",
+    "mast_long": "Gadgets that work without a subscription",
+    "skip": "Skip to the camera table",
+    "table_name": "Security camera comparison",
+    "table_caption": "{table_name}: {n} models, 8 columns",
+    "cmp_caption": "Side-by-side comparison of {count} {nouns}",
+    "count_line": "Tick up to {cap} {nouns} to compare.",
+    "empty_line": "Nothing matches those filters.",
+    "no_match": "No {nouns} match those filters",
+    "shown": "{shown} of {total} {nouns} shown",
+
+    "months": 36,
+    "period": "3 years",
+    "period_adj": "3-year",
+    "period_short": "3 yrs",
+    "cap": 3,
+    "no_plan_note": "No plan needed: the free route keeps the recording",
+
+    # The editorial lead, which is a judgement about this category's rows rather
+    # than a figure: `{v:ID:Words}` becomes a link to that row.
+    "short": (
+        '{v:reo-rlc820a:Reolink RLC-820A} is the best overall without fees.',
+        '{v:reo-argus4:Reolink Argus 4 Pro} is the best wire-free one.',
+        '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-out4:Blink} needs extra kit.',
+    ),
+    "short_tones": ("best", "batt", "avoid"),
+    "aside": (
+        ("best", "Best overall without fees:", "{v:reo-rlc820a:Reolink RLC-820A}",
+         ". It records 4K to a card or NVR, detection is free and Reolink's Home "
+         "Assistant integration is fully local. It needs a PoE switch or injector "
+         "and an Ethernet run to the camera."),
+        ("batt", "Best wire-free pick:", "{v:reo-argus4:Reolink Argus 4 Pro}",
+         ", which covers 180° from one battery camera and still records to a card "
+         "without a plan."),
+        ("avoid", "Avoid if you won't pay monthly:", "{v:ring-outpro:Ring}",
+         " records nothing without a plan, and {v:blink-out4:Blink} needs a Sync "
+         "Module 2 and a USB stick before it saves a clip."),
+    ),
+
+    "score_max": 8,
+    "score_parts": [
+        ("rec", "Records free", 2),
+        ("live", "Live view free", 1),
+        ("alerts", "Motion alerts free", 1),
+        ("ai", "Smart detection free", 1),
+        ("storage", "Storage in the box", 1),
+        ("ha", "Local / Home Assistant", 2),
+    ],
+
+    "rec": [
+        ("yes", "Yes", 2),
+        ("kit", "Only with extra kit", 1),
+        ("brief", "Only briefly (3 hrs)", 1),
+        ("no", "No", 0),
+    ],
+    "required_keys": (
+        "power", "wifi", "live", "alerts", "ai", "history", "storage",
+        "paywalled",
+    ),
+
+    "facets": [
+        ("power", "Power"),
+        ("storage", "Storage"),
+        ("live", "Live view"),
+        ("alerts", "Motion alerts"),
+        ("ai", "Smart detection"),
+        ("history", "History, no plan"),
+        ("paywalled", "Behind the paywall"),
+        ("ha", "Home Assistant"),
+        ("wifi", "Wi-Fi"),
+    ],
+    "powers": [
+        ("battery", "Battery"),
+        ("wired", "Wired"),
+        ("poe", "PoE"),
+    ],
+    "power_hint": "PoE: one cable carries both power and data.",
+    "filters": [
+        ("f-rec", "Records free, no extra kit"),
+        ("f-ha", "Local / Home Assistant"),
+    ],
+
+    "verdicts": {
+        "best": ("Best overall", "best"),
+        "ptz": ("Best for a wide garden", "batt"),
+        "solar": ("Best solar", "batt"),
+        "batt": ("Best wire-free", "batt"),
+        "indoor": ("Best indoor", "batt"),
+        "value": ("Best value", "batt"),
+        "avoid": ("Avoid without a plan", "avoid"),
+    },
+    "headline": "best",
+
+    "claims": CLAIM_WHAT,
+    "compare": [
+        ("Records free?", "rec"),
+        ("Price", "price"),
+        ("Free features", "score"),
+        ("{period_adj} cost, no plan", "nosub3"),
+        ("{period_adj} cost, with plan", "sub3"),
+        ("Best for", "best"),
+        ("Main catch", "catch"),
+        ("Power", "power"),
+        ("Storage", "storage"),
+        ("Live view", "live"),
+        ("Motion alerts", "alerts"),
+        ("Smart detection", "ai"),
+        ("History, no plan", "history"),
+        ("Behind the paywall", "paywalled"),
+        ("Plans", "plan"),
+        ("Home Assistant", "ha"),
+        ("Wi-Fi", "wifi"),
+    ],
+    "pin": ("rec", "price", "nosub3", "sub3"),
+
+    "sort": SORT,
+    "method": CAMERA_METHOD,
+    "plain_part": PLAIN_PART,
+    "csv_head": CSV_HEAD,
+    "md_head": CAMERA_MD_HEAD,
+    "not_found": NOT_FOUND,
+}
+
+CATEGORIES = [DOORBELLS, CAMERAS]
 BY_SLUG = {cat["slug"]: cat for cat in CATEGORIES}
 
 
