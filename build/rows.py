@@ -548,6 +548,26 @@ MAXP = int(ceil(max(r["price"] for r in ROWS) / 5) * 5)
 CAT["rows"] = ROWS
 CAT["sources"] = S
 
+# Amazon Associates: a row whose price links to Amazon UK carries the tag, so
+# a new Amazon row is tagged without anyone remembering to. Only price links
+# are tagged; an Amazon page cited for a sundry stays a plain citation.
+AMAZON_TAG = "subfreeuk-21"
+
+
+def amazon_tagged(url):
+    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+    u = urlsplit(url)
+    if not u.netloc.endswith("amazon.co.uk"):
+        return url
+    q = [(k, v) for k, v in parse_qsl(u.query, keep_blank_values=True) if k != "tag"]
+    q.append(("tag", AMAZON_TAG))
+    return urlunsplit(u._replace(query=urlencode(q)))
+
+
+for r in ROWS:
+    name, url = S[r["price_src"]]
+    S[r["price_src"]] = (name, amazon_tagged(url))
+
 # footnote numbering
 order=[]
 for r in ROWS:

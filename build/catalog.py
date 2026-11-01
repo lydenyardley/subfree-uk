@@ -120,7 +120,7 @@ CSV_HEAD =    [
 
 MD_HEAD = (
     "# UK video doorbells without a subscription",
-    "Last checked {checked}. {n} doorbells. No affiliate links.",
+    "Last checked {checked}. {n} doorbells. As an Amazon Associate I earn from qualifying purchases.",
     "| Doorbell | Records free? | Price | Score /{score_max} | {period_short}, "
     "no plan | {period_short}, with plan | Best for | Main catch |",
 )

@@ -193,7 +193,7 @@ function claimCell(id,claim,html){
  var row=document.getElementById('m-'+id),t=row&&row.querySelector('a.src[data-claim="'+claim+'"]');
  if(!t)return html;
  var a=['href','data-fn','data-more','aria-label'].map(function(k){var v=t.getAttribute(k);return v?' '+k+'="'+esc(v)+'"':''}).join('');
- return '<a class="src"'+a+' data-claim="'+esc(claim)+'" data-id="'+esc(id)+'" rel="nofollow noopener noreferrer" aria-haspopup="dialog">'+html+'</a>';
+ return '<a class="src"'+a+' data-claim="'+esc(claim)+'" data-id="'+esc(id)+'" rel="'+esc(t.getAttribute('rel')||'nofollow noopener noreferrer')+'" aria-haspopup="dialog">'+html+'</a>';
 }
 function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
 // The comparison is wider than a phone, and a table that is cut off with no
@@ -681,7 +681,7 @@ function openCard(t){
  list.forEach(function(entry,i){
   if(i)box.appendChild(document.createTextNode(', '));
   var a=document.createElement('a');
-  a.href=entry.url;a.rel='nofollow noopener noreferrer';a.textContent=entry.name;
+  a.href=entry.url;a.rel=/amazon\.co\.uk.*[?&]tag=/.test(entry.url)?'sponsored nofollow noopener':'nofollow noopener noreferrer';a.textContent=entry.name;
   box.appendChild(a);
  });
  cardFrom=t;

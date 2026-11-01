@@ -30,6 +30,11 @@ from rows import (
 
 # ---------- HTML ----------
 e = html.escape
+
+
+def rel(url):
+    """A paid link says so to search engines; every other link keeps no referrer."""
+    return "sponsored nofollow noopener" if "tag=" in url and "amazon.co.uk" in url else "nofollow noopener noreferrer"
 EU_NOTE = "EU price, not a UK quote"
 
 
@@ -50,7 +55,7 @@ def srclinks(keys):
     """
     return ", ".join(
         f'<a class="sref" href="{e(S[k][1])}" data-fn="{FN[k]}" title="{e(S[k][0])}" '
-        f'rel="nofollow noopener noreferrer">{e(S[k][0])}</a>'
+        f'rel="{rel(S[k][1])}">{e(S[k][0])}</a>'
         for k in keys
     )
 
@@ -121,7 +126,7 @@ def fig(r, cl, key, text, label, cls="", attrs=""):
     more = "".join(f" data-more=\"{' '.join(str(FN[k]) for k in keys[1:])}\"" if len(keys) > 1 else "")
     return (f'<a class="src{" " + cls if cls else ""}" href="{e(S[keys[0]][1])}"{more}{attrs}'
             f' data-claim="{key}" data-id="{r["id"]}" data-fn="{FN[keys[0]]}" '
-            f'rel="nofollow noopener noreferrer" aria-haspopup="dialog" '
+            f'rel="{rel(S[keys[0]][1])}" aria-haspopup="dialog" '
             f'aria-label="{e(label)}">{text}</a>')
 
 
@@ -390,7 +395,7 @@ def build(cat):
         groups.setdefault(src_host(S[k][1]), []).append(k)
     fn_list = "".join(
         f'<section class="fns-g"><h3>{e(host)}</h3><ol class="fns">'
-        + "".join(f'<li id="fn{FN[k]}" value="{FN[k]}"><a href="{e(S[k][1])}" rel="nofollow noopener noreferrer">{e(S[k][0])}</a></li>' for k in keys)
+        + "".join(f'<li id="fn{FN[k]}" value="{FN[k]}"><a href="{e(S[k][1])}" rel="{rel(S[k][1])}">{e(S[k][0])}</a></li>' for k in keys)
         + '</ol></section>'
         for host, keys in sorted(groups.items(), key=lambda kv: FN[kv[1][0]]))
 
@@ -470,7 +475,7 @@ def build(cat):
 <div>
 <h1>{cat["h1"]}</h1>
 <p class="dek">{cat["dek"].format(n=n, period=padj)}</p>
-<p class="meta"><b>Last checked {CHECKED}.</b> No affiliate links, no tracking, no cookies. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
+<p class="meta"><b>Last checked {CHECKED}.</b> Amazon links are paid links. No cookies. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
 {short_html}</div>
 {aside_html}</div>
 </header>
@@ -536,7 +541,7 @@ def build(cat):
 <details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
 <footer class="foot">
-<p>Last checked {CHECKED}. {n} UK {cat["nouns"]}, no affiliate links, no tracking. <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>
+<p>Last checked {CHECKED}. {n} UK {cat["nouns"]}, no tracking. <span class="aff">As an Amazon Associate I earn from qualifying purchases.</span> <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>
 <p>SubFree UK is a personal comparison of UK {cat["nouns"]}, put together by <a href="{GITHUB}">lydenyardley</a> to show which ones record without a subscription. Every price links to the page it came from, so you can check it yourself. Spotted a mistake? <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
 </footer>
 </main>
