@@ -227,7 +227,7 @@ dict(id="tapo-d230", brand="TP-Link Tapo", model="D230S1", rec="yes", power=["ba
  src=["tapo_d230","tapo_care","ha_tplink","er_tapo","sandisk_card"],
  rec_src="tapo_d230", history_src="tapo_d230", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
 dict(id="tapo-td21", brand="TP-Link Tapo", model="TD21", rec="yes", power=["battery"], ha=0,
- price=44.99, price_note="Tapo UK sale price (RRP £56.00)", price_src="tapo_td21", buy="amz_td21",
+ price=44.99, price_note="Tapo UK, currently sold out (RRP £56.00)", price_src="tapo_td21", buy="amz_td21",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="The tightest budget",
