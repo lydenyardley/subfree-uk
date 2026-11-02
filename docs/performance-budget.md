@@ -23,10 +23,10 @@ they always are.
 
 | File | Budget, gzipped | Measured 2 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 22,960 |
+| `index.html` | 24,000 | 22,961 |
 | `assets/page.css` | 18,000 | 16,793 |
-| `assets/page.js` | 26,000 | 25,677 |
-| The three together, a first visit | 65,500 | 65,430 |
+| `assets/page.js` | 26,000 | 25,693 |
+| The three together, a first visit | 65,500 | 65,447 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -55,8 +55,7 @@ What it cost when the header rule became one painter: two short comments rather
 than four long ones. The bars and the transparent borders are a few bytes; the
 prose that explains why they are bars is what grew, so it was cut back to the
 fact — a collapsed border and a box round to different device rows — and the
-first visit now sits at 65,430 with 70 bytes left, 7 more than before the
-change.
+first visit now sits at 65,447 with 53 bytes left.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
 models added five doorbells and a camera row: about 700 gzipped bytes of table
