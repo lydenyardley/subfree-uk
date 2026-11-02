@@ -1,24 +1,30 @@
 # UK video doorbells without a subscription
 
-Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from qualifying purchases.
+Last checked 2 November 2026. 21 doorbells. As an Amazon Associate I earn from qualifying purchases.
 
 | Doorbell | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | TP-Link Tapo TD21 | Yes | [£44.99](https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21) | 5 | £71.98 | £152.63 | The tightest budget | Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it. |
 | Aqara Video Doorbell G4 | Yes | [£69.00](https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/) | 6 | £95.99 | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
-| Reolink Video Doorbell PoE | Yes | [£69.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £96.98 | — | The most reliable, fully local setup, if you can run an Ethernet cable | Needs an Ethernet cable to the door and a PoE switch or injector. |
 | Reolink Video Doorbell (Battery) | Yes | [£99.99](https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak) | 7 | £99.99 | £250.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49). |
 | EZVIZ EP3x Pro | Yes | [£99.99](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) | 6 | £99.99 | £279.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
-| TP-Link Tapo D230S1 | Yes | [£84.99](https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell) | 6 | £111.98 | £192.63 | An easy battery doorbell that keeps footage indoors on its chime/hub | The microSD card is extra, and Home Assistant gets settings and alerts but not the live video. |
-| Blink Battery Doorbell 2K+ | Only with extra kit | [£59.99](https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss) | 2 | £115.97 | £149.99 | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
+| Blink Battery Doorbell 2K+ | Only with extra kit | [£59.99](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) | 2 | £115.97 | £149.99 | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
 | eufy Video Doorbell C31 | Yes | [£89.99](https://www.eufy.com/uk/products/t8223311) | 6 | £116.98 | £233.63 | A cheap eufy with 24/7 recording, if you can hardwire it | 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately. |
-| Reolink Video Doorbell WiFi | Yes | [£93.49](https://store.reolink.com/gb/video-doorbells/) | 7 | £120.48 | £258.37 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
+| TP-Link Tapo D235 | Yes | [£89.99](https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235) | 5 | £116.98 | £197.63 | An easy battery doorbell that can be hardwired for 24/7 recording | The microSD card is extra, and Home Assistant has no route to the live video. |
+| Reolink Video Doorbell PoE | Yes | [£99.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £126.98 | — | The most reliable, fully local setup, if you can run an Ethernet cable | Needs an Ethernet cable to the door and a PoE switch or injector. |
+| Reolink Video Doorbell WiFi | Yes | [£109.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £136.98 | £274.87 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
 | EZVIZ DB2 Pro Kit | Yes | [£114.99](https://www.ertech.co.uk/product/db2-pro/) | 5 | £141.98 | £294.63 | Flats and rentals: no wiring, and footage stays indoors in the chime | 2.4 GHz Wi-Fi only, and the card is sold separately. |
+| Aqara Doorbell Camera Hub G410 Select | Yes | [£129.98](https://www.aqara-shop.co.uk/product/aqara-doorbell-camera-hub-g410-select/) | 6 | £156.97 | — | Apple Home or Matter households that want a doorbell and a hub in one | The chime hub holds the card, which is not included, and no power supply is in the box. |
 | eufy Video Doorbell E340 | Yes | [£169.99](https://www.eufy.com/uk/products/T8214311) | 7 | £169.99 | £313.63 | Busy doorsteps with lots of parcels: a second camera looks straight down | Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022. |
-| Arlo Essential Video Doorbell 2K (2nd gen) | Only with extra kit | [£84.99](https://www.argos.co.uk/product/4379311) | 3 | £210.97 | £372.63 | People who already own Arlo cameras | Recording needs a £7.99/month plan or a separate hub costing about £110. |
+| Arlo Essential Video Doorbell 2K (2nd gen) | Only with extra kit | [£69.99](https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell) | 3 | £195.97 | £357.63 | People who already own Arlo cameras | Recording needs a £7.99/month plan or a separate hub costing about £110. |
+| TP-Link Tapo Doorbell Pro (D260) | Yes | [£219.99](https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell) | 5 | £246.98 | £327.63 | Tapo households that want 4K and radar detection with no plan | The dearest battery doorbell here, the card is extra, and Home Assistant has no route to the live video. |
 | Ring Battery Video Doorbell 2K | No | [£79.99](https://en-uk.ring.com/products/battery-doorbell-2nd-gen) | 2 | £79.99 | £259.63 | Alexa households happy to pay the monthly plan | Saves no video at all unless you pay £4.99 a month. |
+| eufy Video Doorbell S4 | Yes | [£269.99](https://www.anker.com/uk/products/e82153f1) | 7 | £269.99 | £413.63 | A busy doorstep where a tall visitor and a low parcel must both fit | The dearest doorbell here, it needs your existing wiring, and Home Assistant support is unofficial. |
 | Hikvision DS-KB6003-WIP | Yes | [£295.00](https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/) | 5 | £321.99 | — | Only worth it if an installer is fitting a Hikvision system anyway | Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295. |
+| Ring Battery Video Doorbell 4K Pro | No | [£219.99](https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen) | 2 | £219.99 | £399.63 | Ring households that want the sharpest battery doorbell | Saves no video at all unless you pay £4.99 a month. |
+| Ring Wired Video Doorbell 4K Pro | No | [£219.99](https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen) | 2 | £219.99 | £399.63 | Ring households replacing an existing wired bell | Saves no video at all unless you pay £4.99 a month, and there is no battery option. |
 | Google Nest Doorbell (battery) | Only briefly (3 hrs) | [£179.99](https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB) | 4 | £179.99 | £467.99 | Google Home households who want polished smart alerts | Only 3 hours of free history. Anything longer is £8 a month. |
+| Ring Wired Video Doorbell 4K Elite | No | [£449.99](https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen) | 2 | £449.99 | £629.63 | Gated entries and new builds that can run an Ethernet cable to the door | Saves no video at all unless you pay £4.99 a month, and it needs PoE+ from a switch or injector. |
 
 ## Detail
 
@@ -35,6 +41,49 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Plans:** Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month
 - **Home Assistant:** Official integration, but it goes through Ring's cloud. No local-only option.
 - **Sources:** [Ring UK: Battery Doorbell 2K](https://en-uk.ring.com/products/battery-doorbell-2nd-gen) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [The Independent, Feb 2026](https://www.independent.co.uk/home-improvement/ring-video-doorbell-subscription-without-b2915224.html) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
+
+### Ring Battery Video Doorbell 4K Pro
+- **Best for:** Ring households that want the sharpest battery doorbell
+- **Main catch:** Saves no video at all unless you pay £4.99 a month.
+- **Price:** £219.99 (Ring UK)
+- **3-year cost, no plan:** £219.99 (but no recordings)
+- **3-year cost, with plan:** £219.99 + 36 × £4.99 (Ring Solo) = £399.63
+- **Storage:** None. No on-device or hub storage.
+- **Free:** live view yes; alerts yes, motion and button-press alerts; smart detection: Paid (person, package and vehicle alerts on Ring's plans page)
+- **History without plan:** None
+- **Paywalled:** All recording and playback (up to 180 days), smart alerts, Extended Live View; 24/7 recording is £3/month extra per device
+- **Plans:** Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month
+- **Home Assistant:** Official integration, but it goes through Ring's cloud. No local-only option.
+- **Unverified:** Ring's UK product page does not list the Wi-Fi bands or a battery-life figure.
+- **Sources:** [Ring UK: Battery Video Doorbell 4K Pro](https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
+
+### Ring Wired Video Doorbell 4K Pro
+- **Best for:** Ring households replacing an existing wired bell
+- **Main catch:** Saves no video at all unless you pay £4.99 a month, and there is no battery option.
+- **Price:** £219.99 (Ring UK)
+- **3-year cost, no plan:** £219.99 (but no recordings)
+- **3-year cost, with plan:** £219.99 + 36 × £4.99 (Ring Solo) = £399.63
+- **Storage:** None. No on-device or hub storage.
+- **Free:** live view yes; alerts yes, motion and button-press alerts; smart detection: Paid (person, package and vehicle alerts on Ring's plans page)
+- **History without plan:** None
+- **Paywalled:** All recording and playback (up to 180 days), smart alerts, Extended Live View; 24/7 recording is £3/month extra per device
+- **Plans:** Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month
+- **Home Assistant:** Official integration, but it goes through Ring's cloud. No local-only option.
+- **Sources:** [Ring UK: Wired Video Doorbell 4K Pro](https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen) · [Ring support: Wired Doorbell 4K Pro compliance](https://ring.com/gb/en/support/articles/j5174/safety-compliance-wired-doorbell-pro-3rd-gen) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
+
+### Ring Wired Video Doorbell 4K Elite
+- **Best for:** Gated entries and new builds that can run an Ethernet cable to the door
+- **Main catch:** Saves no video at all unless you pay £4.99 a month, and it needs PoE+ from a switch or injector.
+- **Price:** £449.99 (Ring UK)
+- **3-year cost, no plan:** £449.99 (but no recordings)
+- **3-year cost, with plan:** £449.99 + 36 × £4.99 (Ring Solo) = £629.63
+- **Storage:** None. No on-device or hub storage.
+- **Free:** live view yes; alerts yes, motion and button-press alerts; smart detection: Paid (person, package and vehicle alerts on Ring's plans page)
+- **History without plan:** None
+- **Paywalled:** All recording and playback (up to 180 days), smart alerts, Extended Live View; 24/7 recording is £3/month extra per device
+- **Plans:** Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99/month, AI Pro £15.99/month
+- **Home Assistant:** Official integration, but it goes through Ring's cloud. No local-only option.
+- **Sources:** [Ring UK: Wired Video Doorbell 4K Elite](https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
 
 ### Google Nest Doorbell (battery)
 - **Best for:** Google Home households who want polished smart alerts
@@ -62,7 +111,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Paywalled:** Nothing essential; cloud backup is optional
 - **Plans:** Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices
 - **Home Assistant:** Community integration only (ha-eufy-sdk), which still logs in through your eufy account.
-- **Sources:** [eufy UK: E340](https://www.eufy.com/uk/products/T8214311) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [The Verge, Nov 2022](https://www.theverge.com/2022/11/30/23486753/anker-eufy-security-camera-cloud-private-encryption-authentication-storage) · [smarthomeassistant.co.uk guide](https://smarthomeassistant.co.uk/articles/smart-security/best-video-doorbell-no-subscription-uk) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk)
+- **Sources:** [eufy UK: E340](https://www.eufy.com/uk/products/T8214311) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [Anker UK: eufy cloud plan prices](https://www.anker.com/uk/blogs/security-camera/cloud-security-cameras) · [The Verge, Nov 2022](https://www.theverge.com/2022/11/30/23486753/anker-eufy-security-camera-cloud-private-encryption-authentication-storage) · [smarthomeassistant.co.uk guide](https://smarthomeassistant.co.uk/articles/smart-security/best-video-doorbell-no-subscription-uk) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk)
 
 ### eufy Video Doorbell C31
 - **Best for:** A cheap eufy with 24/7 recording, if you can hardwire it
@@ -76,14 +125,29 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Paywalled:** Nothing essential; cloud backup is optional
 - **Plans:** Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices
 - **Home Assistant:** Community integration only (ha-eufy-sdk), which still logs in through your eufy account.
-- **Sources:** [eufy UK: C31](https://www.eufy.com/uk/products/t8223311) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+- **Sources:** [eufy UK: C31](https://www.eufy.com/uk/products/t8223311) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [Anker UK: eufy cloud plan prices](https://www.anker.com/uk/blogs/security-camera/cloud-security-cameras) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+
+### eufy Video Doorbell S4
+- **Best for:** A busy doorstep where a tall visitor and a low parcel must both fit
+- **Main catch:** The dearest doorbell here, it needs your existing wiring, and Home Assistant support is unofficial.
+- **Price:** £269.99 (Anker UK, with Chime 2)
+- **3-year cost, no plan:** £269.99
+- **3-year cost, with plan:** £269.99 + 36 × £3.99 (eufy Cloud Backup Basic) = £413.63
+- **Storage:** 4 GB built into the doorbell; no card slot
+- **Free:** live view yes; alerts yes; smart detection: Free: on-device person detection and auto-framing
+- **History without plan:** Yes, event clips kept on the doorbell
+- **Paywalled:** Nothing essential; cloud backup is optional
+- **Plans:** Optional Cloud Backup £3.99/month or £39.99/year (1 device); £12.99/month for all devices
+- **Home Assistant:** Community integration only (ha-eufy-sdk), which still logs in through your eufy account.
+- **Unverified:** eufy's UK page does not state the Wi-Fi bands, and it calls the sensor 9 MP where the title says 3K.
+- **Sources:** [Anker UK: eufy Video Doorbell S4](https://www.anker.com/uk/products/e82153f1) · [eufy UK cloud plans](https://www.eufy.com/uk/cloud-storage) · [Anker UK: eufy cloud plan prices](https://www.anker.com/uk/blogs/security-camera/cloud-security-cameras) · [Home Assistant: eufy (ha-eufy-sdk)](https://github.com/mega-yfue/ha-eufy-sdk)
 
 ### Reolink Video Doorbell WiFi
 - **Best for:** Homes with existing doorbell wiring, plus Home Assistant or NVR users
 - **Main catch:** Needs doorbell transformer wiring, and the microSD card is sold separately.
-- **Price:** £93.49 (Reolink UK sale price (RRP £109.99))
-- **3-year cost, no plan:** £93.49 + £26.99 (SanDisk 64 GB microSD card) = £120.48
-- **3-year cost, with plan:** £93.49 + 36 × £4.58 (Reolink Cloud Upgraded single-device) = £258.37
+- **Price:** £109.99 (Reolink UK store)
+- **3-year cost, no plan:** £109.99 + £26.99 (SanDisk 64 GB microSD card) = £136.98
+- **3-year cost, with plan:** £109.99 + 36 × £4.58 (Reolink Cloud Upgraded single-device) = £274.87
 - **Storage:** microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF
 - **Free:** live view yes; alerts yes; smart detection: Free: person detection
 - **History without plan:** Yes, motion-triggered or 24/7 recording to card or NVR
@@ -95,8 +159,8 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 ### Reolink Video Doorbell PoE
 - **Best for:** The most reliable, fully local setup, if you can run an Ethernet cable
 - **Main catch:** Needs an Ethernet cable to the door and a PoE switch or injector.
-- **Price:** £69.99 (Reolink UK sale price (RRP £99.99))
-- **3-year cost, no plan:** £69.99 + £26.99 (SanDisk 64 GB microSD card) = £96.98
+- **Price:** £99.99 (Reolink UK store)
+- **3-year cost, no plan:** £99.99 + £26.99 (SanDisk 64 GB microSD card) = £126.98
 - **3-year cost, with plan:** No subscription offered or needed
 - **Storage:** microSD and/or NVR; RTSP/ONVIF
 - **Free:** live view yes; alerts yes; smart detection: Free: person detection
@@ -109,7 +173,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 ### Reolink Video Doorbell (Battery)
 - **Best for:** Battery install with 5 GHz Wi-Fi and no fees
 - **Main catch:** Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49).
-- **Price:** £99.99 (Screwfix, includes 64 GB card (Reolink UK also £99.99))
+- **Price:** £99.99 (Screwfix, includes 64 GB card)
 - **3-year cost, no plan:** £99.99
 - **3-year cost, with plan:** £99.99 + 36 × £4.17 (Reolink Cloud Standard (up to 5 cameras)) = £250.11
 - **Storage:** microSD in the doorbell, or a Home Hub indoors (up to 1 TB)
@@ -118,26 +182,27 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Paywalled:** Nothing
 - **Plans:** Optional Reolink Cloud. UK £4.17/month, or £2.87/month billed yearly (£34.44/year) for up to 5 cameras
 - **Home Assistant:** Official integration through a Reolink Home Hub or NVR, which streams the battery doorbell locally.
+- **Unverified:** Screwfix answers a browser check with a human-verification wall, so its £99.99 is the price the listing showed when the row was written, not a fresh read; Reolink's own UK store no longer lists this battery model.
 - **Sources:** [Screwfix: Reolink Battery](https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak) · [Reolink UK battery doorbells](https://store.reolink.com/gb/wireless-doorbell-camera/) · [Reolink UK Home Hub](https://store.reolink.com/gb/home-hub-series/) · [Reolink Cloud UK plans](https://cloud.reolink.com/cloud-plan) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/)
 
-### TP-Link Tapo D230S1
-- **Best for:** An easy battery doorbell that keeps footage indoors on its chime/hub
-- **Main catch:** The microSD card is extra, and Home Assistant gets settings and alerts but not the live video.
-- **Price:** £84.99 (Tapo UK (RRP £94.99))
-- **3-year cost, no plan:** £84.99 + £26.99 (SanDisk 64 GB microSD card) = £111.98
-- **3-year cost, with plan:** £84.99 + 36 × £2.99 (Tapo Care) = £192.63
-- **Storage:** microSD (up to 512 GB) in the indoor H200 hub
-- **Free:** live view yes; alerts yes; smart detection: Free: person detection
-- **History without plan:** Yes, on the hub's card
+### TP-Link Tapo D235
+- **Best for:** An easy battery doorbell that can be hardwired for 24/7 recording
+- **Main catch:** The microSD card is extra, and Home Assistant has no route to the live video.
+- **Price:** £89.99 (Tapo UK, in stock (RRP £119.99))
+- **3-year cost, no plan:** £89.99 + £26.99 (SanDisk 64 GB microSD card) = £116.98
+- **3-year cost, with plan:** £89.99 + 36 × £2.99 (Tapo Care) = £197.63
+- **Storage:** microSD (up to 512 GB) in the doorbell itself
+- **Free:** live view yes; alerts yes; smart detection: Free: person, pet, vehicle and package detection
+- **History without plan:** Yes, on the card; 24/7 only when hardwired
 - **Paywalled:** 30-day cloud history, snapshot notifications, Smart Sort
 - **Plans:** Optional Tapo Care from £2.99/month or £29.49/year
-- **Home Assistant:** Official TP-Link Smart Home integration, polled locally for settings and motion alerts. Hub-attached cameras still have no live view in Home Assistant.
-- **Sources:** [Tapo UK: D230S1](https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Expert Reviews: EZVIZ EP3x Pro review](https://www.expertreviews.co.uk/technology/home-security/ezviz-ep3x-pro-video-doorbell-review) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+- **Home Assistant:** Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.
+- **Sources:** [Tapo UK: D235](https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### TP-Link Tapo TD21
 - **Best for:** The tightest budget
 - **Main catch:** Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it.
-- **Price:** £44.99 (Tapo UK, currently sold out (RRP £56.00))
+- **Price:** £44.99 (Tapo UK, in stock (RRP £56.00))
 - **3-year cost, no plan:** £44.99 + £26.99 (SanDisk 64 GB microSD card) = £71.98
 - **3-year cost, with plan:** £44.99 + 36 × £2.99 (Tapo Care) = £152.63
 - **Storage:** microSD up to 512 GB, in the doorbell itself
@@ -148,19 +213,33 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Home Assistant:** Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.
 - **Sources:** [Tapo UK: TD21](https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Tapo TD21 setup guide](https://www.tapo.com/en/manuals/1094/) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
+### TP-Link Tapo Doorbell Pro (D260)
+- **Best for:** Tapo households that want 4K and radar detection with no plan
+- **Main catch:** The dearest battery doorbell here, the card is extra, and Home Assistant has no route to the live video.
+- **Price:** £219.99 (Tapo UK, sold out at the check)
+- **3-year cost, no plan:** £219.99 + £26.99 (SanDisk 64 GB microSD card) = £246.98
+- **3-year cost, with plan:** £219.99 + 36 × £2.99 (Tapo Care) = £327.63
+- **Storage:** microSD (up to 512 GB) in the doorbell itself
+- **Free:** live view yes; alerts yes; smart detection: Free: person, animal, vehicle, package and face detection, plus radar
+- **History without plan:** Yes, on the card; 24/7 only when hardwired
+- **Paywalled:** 30-day cloud history, snapshot notifications, Smart Sort
+- **Plans:** Optional Tapo Care from £2.99/month or £29.49/year
+- **Home Assistant:** Not listed as supported by Home Assistant's official TP-Link integration, and no local route is documented.
+- **Sources:** [Tapo UK: Doorbell Pro (D260)](https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+
 ### Arlo Essential Video Doorbell 2K (2nd gen)
 - **Best for:** People who already own Arlo cameras
 - **Main catch:** Recording needs a £7.99/month plan or a separate hub costing about £110.
-- **Price:** £84.99 (Argos half price, doorbell + chime bundle (was £169.99))
-- **3-year cost, no plan:** £84.99 + £125.98 (Arlo SmartHub £109.99 + SanDisk 64 GB USB stick) = £210.97
-- **3-year cost, with plan:** £84.99 + 36 × £7.99 (Arlo Secure (1 camera)) = £372.63
+- **Price:** £69.99 (Arlo UK, half price (was £139.99))
+- **3-year cost, no plan:** £69.99 + £125.98 (Arlo SmartHub £109.99 + SanDisk 64 GB USB stick) = £195.97
+- **3-year cost, with plan:** £69.99 + 36 × £7.99 (Arlo Secure (1 camera)) = £357.63
 - **Storage:** Only through an Arlo SmartHub (VMB4540, USB) or a Base Station
 - **Free:** live view yes; alerts yes; smart detection: Paid
 - **History without plan:** None without a hub
 - **Paywalled:** Cloud recording (7, 14 or 30 days depending on plan), object detection, activity zones, theft replacement
 - **Plans:** Arlo Secure £7.99/month (1 camera, 7 days), Multi-Camera £12.99, Secure Plus £19.99 (14 days), Secure Pro £24.99
 - **Home Assistant:** No official integration; only a community add-on that goes through Arlo's cloud.
-- **Sources:** [Argos: Arlo doorbell](https://www.argos.co.uk/product/4379311) · [Arlo UK blog](https://www.arlo.com/en_gb/blog/smart-security/should-you-have-a-video-doorbell-without-a-subscription) · [Arlo UK plan prices](https://www.arlo.com/en_gb/serviceplans) · [Arlo UK plans FAQ](https://www.arlo.com/en_gb/support/faq/subscriptions-and-payments/what-arlo-subscription-plans-and-cloud-recording-options-are-available) · [Arlo 2nd-gen doorbell FAQ](https://www.arlo.com/en_gb/support/faq/device-features/arlo-video-doorbell-2nd-generation-faq) · [Arlo SmartHub compatibility](https://www.arlo.com/en_gb/support/faq/connectivity-and-integrations/arlo-smarthub-and-base-station-compatibility) · [Arlo UK store: SmartHub](https://www.arlo.com/en_gb/accessories/arlo-pro-smarthub) · [Trusted Reviews, 2026](https://www.trustedreviews.com/reviews/arlo-essential-3-2k-security-camera) · [The Ambient](https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/) · [Home Assistant: Aarlo (community)](https://github.com/twrecked/hass-aarlo) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
+- **Sources:** [Arlo UK: 2K Wireless Video Doorbell](https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell) · [Arlo UK blog](https://www.arlo.com/en_gb/blog/smart-security/should-you-have-a-video-doorbell-without-a-subscription) · [Arlo UK plan prices](https://www.arlo.com/en_gb/serviceplans) · [Arlo UK plans FAQ](https://www.arlo.com/en_gb/support/faq/subscriptions-and-payments/what-arlo-subscription-plans-and-cloud-recording-options-are-available) · [Arlo 2nd-gen doorbell FAQ](https://www.arlo.com/en_gb/support/faq/device-features/arlo-video-doorbell-2nd-generation-faq) · [Arlo SmartHub compatibility](https://www.arlo.com/en_gb/support/faq/connectivity-and-integrations/arlo-smarthub-and-base-station-compatibility) · [Arlo UK store: SmartHub](https://www.arlo.com/en_gb/accessories/arlo-pro-smarthub) · [Trusted Reviews, 2026](https://www.trustedreviews.com/reviews/arlo-essential-3-2k-security-camera) · [The Ambient](https://www.the-ambient.com/reviews/arlo-pro-6-2k-review/) · [Home Assistant: Aarlo (community)](https://github.com/twrecked/hass-aarlo) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
 
 ### Aqara Video Doorbell G4
 - **Best for:** Free face recognition, Android or iPhone
@@ -176,10 +255,24 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Home Assistant:** Reported to work locally through Home Assistant's HomeKit Device integration; two-way audio isn't available there.
 - **Sources:** [EasyGates: Aqara G4](https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/) · [Aqara EU store](https://eu.aqara.com/products/aqara-video-doorbell-g4) · [Aqara G4 specifications](https://www.aqara.com/us/product/smart-video-doorbell-g4/specs/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
+### Aqara Doorbell Camera Hub G410 Select
+- **Best for:** Apple Home or Matter households that want a doorbell and a hub in one
+- **Main catch:** The chime hub holds the card, which is not included, and no power supply is in the box.
+- **Price:** £129.98 (Aqara UK Shop sale price (RRP £149.99))
+- **3-year cost, no plan:** £129.98 + £26.99 (SanDisk 64 GB microSD card) = £156.97
+- **3-year cost, with plan:** No subscription offered or needed
+- **Storage:** microSD (up to 512 GB) in the indoor chime hub, NAS, or Aqara's encrypted cloud
+- **Free:** live view yes; alerts yes; smart detection: Free: on-device face recognition and mmWave presence detection
+- **History without plan:** Yes, on the chime's card (24/7 only when wired)
+- **Paywalled:** Nothing essential. HomeKit Secure Video needs Apple's iCloud+, and Aqara's HomeGuardian plan adds cloud AI
+- **Plans:** None needed
+- **Home Assistant:** Reported to work locally through Home Assistant's HomeKit Device integration, and it streams over RTSP; the doorbell also bridges Matter devices.
+- **Sources:** [Aqara UK Shop: Doorbell Camera Hub G410 Select](https://www.aqara-shop.co.uk/product/aqara-doorbell-camera-hub-g410-select/) · [Aqara G410 specifications](https://www.aqara.com/us/product/doorbell-camera-hub-g410-specs/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+
 ### Blink Battery Doorbell 2K+
 - **Best for:** The cheapest way into Amazon's ecosystem, if you catch a deal
 - **Main catch:** Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.
-- **Price:** £59.99 (UK RRP without Sync Module, from Blink's launch pricing; no UK shop besides Amazon found, so the table says Check price)
+- **Price:** £59.99 (Amazon UK, without the Sync Module)
 - **3-year cost, no plan:** £59.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £115.97
 - **3-year cost, with plan:** £59.99 + 36 × £2.50 (Blink Basic) = £149.99
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted
@@ -188,7 +281,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Paywalled:** Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions
 - **Plans:** Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month
 - **Home Assistant:** Official integration, but it goes through Blink's cloud.
-- **Sources:** [Trusted Reviews: Blink 2K+ UK prices](https://www.trustedreviews.com/news/blinks-cheapest-new-doorbell-has-a-feature-most-budget-rivals-still-miss) · [Sync Module 2 RRP £39.99 (camelcamelcamel history; no non-Amazon UK seller)](https://uk.camelcamelcamel.com/product/B08BJ9ZCZC) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
+- **Sources:** [Amazon UK: Blink 2K+](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) · [Sync Module 2 RRP £39.99 (camelcamelcamel history; no non-Amazon UK seller)](https://uk.camelcamelcamel.com/product/B08BJ9ZCZC) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
 
 ### EZVIZ EP3x Pro
 - **Best for:** Two cameras on a budget, with storage built in

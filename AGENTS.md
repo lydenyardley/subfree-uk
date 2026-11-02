@@ -118,12 +118,48 @@ price, or, where the row has no plan, the page that says none is needed.
 
 ## Lineup
 
-Every brand a category covers must be on the page in the model its vendor
-sells now, and each record says which row that is in its `current` map. A brand
-with no entry fails `category records`, so the question cannot be skipped, and
-the entry has to name a row of that brand. It cannot see a launch nobody heard
-about, so re-read the vendors' own stores whenever you move `checked_iso`: the
-rings page spent a week offering Ring 4 as the current Oura.
+Every brand a category covers must be on the page in the **newest** model its
+vendor sells now, and each record says which row that is in its `current` map.
+Not merely a model still on sale: the doorbells page carried the Tapo D230S1
+after Tapo's UK store had stopped listing it, and named it as the brand's
+current doorbell. A brand with no entry fails `category records`, so the
+question cannot be skipped, and the entry has to name a row of that brand.
+Where a brand sells more than one newest model, the entry names the one the
+table covers. A brand with no consumer product in that category carries a pair
+instead, the last model and the reason, so the gap is recorded rather than
+hidden: Hikvision's two Wi-Fi doorbells are both end of life and its UK
+catalogue now sells wired intercom door stations.
+
+A launch is a new row, not a rewrite of `current`. Walking a brand's own store
+collection page, rather than the one product page already in the table, is what
+finds it: the 4K models, the S4 and the D260 were all missing while an older
+model of the same brand sat in the table looking current. Prices for those new
+rows are checked on the day they are added, and a model the store lists but has
+sold out still gets its row, with the stock state in `price_note`.
+
+The map asks one question per brand, so it cannot see a newer model beside a
+row that is still on sale, and no check can browse a vendor's store. Re-read
+the collections for every brand whenever you move `checked_iso`: the rings page
+spent a week offering Ring 4 as the current Oura. A row that names a withdrawn
+product is a data edit: rename it if the vendor renamed the same product
+(Ring's Stick Up Cam Pro became the Outdoor Camera 4K Pro), and replace it if
+the product is gone (the D230S1's row became the D235).
+
+A brand that sells through a marketplace instead of a UK shop of its own is the
+blind spot. Blink has no store, so its collection page is
+`blinkforhome.com/products` and the Amazon listing the table already cites is
+not it: the Outdoor 4 stayed the page's current Blink after Blink had put the
+Outdoor 2K+ on sale beside it, and the 2K+ was found on the listing's own
+family menu, one click from the row that was already there. Read the brand's
+devices page first, then the listing's navigation for the models that page does
+not carry.
+
+A placeholder photo is the same warning from the other side. `make_images.py`
+records a placeholder only where the vendor's own site has no picture of the
+model, and a model still on sale always has one, so the row named in `current`
+is not allowed to be a placeholder: `lineup photo` fails with the brand and the
+row. The Outdoor 4's placeholder said its successor was the 2K+ in so many
+words, and was read past at the price check.
 
 ## Dates
 
@@ -132,6 +168,14 @@ for that category. It is the day its prices and plans were checked, it is
 printed on the page, and the build refuses a date in the future.
 `build/check.py` warns after 30 days and fails after 60. Move it only after
 re-checking the data.
+
+`build/refresh.py` is the weekly nudge. It prints every page behind a row's
+price and plan, grouped by category, and exits non-zero once a category is seven
+days past its check; `.github/workflows/refresh.yml` runs it every Monday and
+files the list as an issue, adding to the one already open. It reads no vendor
+page and edits no data — a scheduled runner cannot see a price a page draws in
+the browser, and moving `checked_iso` for a page nobody opened would be a lie —
+so the issue is the trigger and the reading stays a person's job.
 
 ## Change checks
 

@@ -4,6 +4,7 @@ import base64
 import csv
 import gzip
 import hashlib
+import json
 import os
 import re
 import sys
@@ -29,9 +30,13 @@ WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verifi
 TRANSFER_BUDGET = {
     "index.html": 24_000,
     "assets/page.css": 18_000,
-    "assets/page.js": 25_000,
+    "assets/page.js": 26_000,
 }
-TRANSFER_TOTAL = 61_000
+# The total moved with the newest models: five doorbells and a camera are about
+# 3.3KB gzipped of real table copy, and Ring's two wired 4K doorbells are two
+# more rows, so the ceiling follows the rows rather than the copy being cut to
+# fit a number set when the table was smaller.
+TRANSFER_TOTAL = 65_500
 
 
 def load_rows():
@@ -439,6 +444,37 @@ def paid_links(ctx):
     return paid_link_problems(ctx.module)
 
 
+def lineup_photo_problems(meta):
+    """A row called a brand's current model is a model the vendor still shows.
+
+    The photo is the trace left behind when it stops. `make_images.py` records a
+    placeholder only where the vendor's own site has no image of the model, and
+    a model still on sale always has one: Blink's devices page kept a card for
+    the Outdoor 2K+ after dropping the Outdoor 4, and the placeholder on the row
+    named as current was the only warning, read past at the price check.
+    """
+    problems = []
+    for cat in CATEGORIES:
+        for brand, named in (cat.get("current") or {}).items():
+            if isinstance(named, tuple):
+                continue
+            photo = meta.get(named) or {}
+            if not photo or photo.get("placeholder"):
+                problems.append(
+                    f"{cat['slug']}: {brand}'s current model {named} has no photo of "
+                    "its own, so its vendor's site no longer shows it, or "
+                    "make_images.py has not been run since the row was added; read "
+                    "the brand's devices page for the model that replaced it"
+                )
+    return problems
+
+
+def lineup_photo(ctx):
+    path = os.path.join(ROOT, "build", "images.json")
+    with open(path, encoding="utf-8") as handle:
+        return lineup_photo_problems(json.load(handle))
+
+
 def transfer(ctx):
     problems, total = transfer_problems()
     ctx.note(f"a first visit is {total:,} bytes gzipped across the page, its CSS and its script")
@@ -494,6 +530,11 @@ CHECKS = [
         "paid links", "static", 26,
         "every price that links to a paying shop carries our tag and says it is paid",
         paid_links,
+    ),
+    Check(
+        "lineup photo", "static", 96,
+        "a brand's current model is one its vendor still shows, not a row carrying a placeholder photo",
+        lineup_photo,
     ),
     Check(
         "price range", "static", 7,

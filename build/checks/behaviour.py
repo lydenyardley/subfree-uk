@@ -192,9 +192,15 @@ def recovery_check(page, dataset):
         "() => ({count: document.getElementById('count').textContent, "
         "live: document.getElementById('live').textContent})"
     )
-    if filtered["count"] == "14" or "doorbells shown" not in filtered["live"]:
+    # The filter ticks every row that records free with nothing more to buy, so
+    # its count is the data's, not a number typed here; 14 became wrong the day
+    # a fifteenth free-recording doorbell landed.
+    free_rows = sum(1 for row in dataset.ROWS if row["rec"] == "yes")
+    shown = f"of {len(dataset.ROWS)} {dataset.cat['nouns']} shown"
+    if filtered["count"] != str(free_rows) or shown not in filtered["live"]:
         problems.append(
-            f"filtering set {filtered['count']} rows and announced {filtered['live']!r}"
+            f"filtering set {filtered['count']} rows and announced {filtered['live']!r}, "
+            f"expected {free_rows} and {shown!r}"
         )
 
     for handle, value in (("#f-min", window[0]), ("#f-max", window[1])):
@@ -805,13 +811,19 @@ def sources_check(page, source_count):
     Every figure carries its own card now, so a reader with a script never opens
     this list; it is what the printed sheet and the reader without a script
     read, which is why it stays on the page and why its layout is still
-    measured. The measurement shows it, and puts the page back as it was.
+    measured. The measurement takes the `js` class off the page, which is the
+    only way to read the layout the reader without a script gets: with a script
+    the working spans the row and this list is off the screen. The page is put
+    back as it was before this returns.
     """
     problems = []
 
     def read():
         return page.evaluate(
             """() => {
+                const root = document.documentElement;
+                const hadJs = root.classList.contains('js');
+                root.classList.remove('js');
                 const box = document.getElementById('sources');
                 const restore = box.style.display;
                 box.style.display = 'block';
@@ -873,9 +885,10 @@ def sources_check(page, source_count):
                     groups: groups
                 };
                 // Put the page back as the check found it: with a script the
-                // register is off the screen, and the checks after this one read
-                // the live page.
+                // register is off the screen and the working spans the row, and
+                // the checks after this one read the live page.
                 box.style.display = restore;
+                if (hadJs) root.classList.add('js');
                 return out;
             }"""
         )

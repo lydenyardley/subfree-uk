@@ -99,7 +99,7 @@ def phone_first_paint(phone):
         f"sort note lines={phone['sortNoteLines']}"
     ]
 
-def short_answer_check(page):
+def short_answer_check(page, dataset):
     """The phone keeps the situation picks and the warning one short line each.
 
     The desktop's longer verdict block is hidden on a phone. The audit's item 8
@@ -141,11 +141,13 @@ def short_answer_check(page):
         )
     # Two lines by situation: wired, no wires, cheapest, then the warning that
     # Ring needs a plan and Blink and Arlo need hardware. Each carries its price.
-    wants = (
-        ("Reolink", "£"),
-        ("Tapo D230S1", "£"),
-        ("Tapo TD21", "£"),
-        ("Ring", "Blink", "Arlo"),
+    # Each line names the row it links to, so the words come from the record's
+    # own `{v:ID:Words}` jumps rather than a product name typed here: the day
+    # the D230S1 was replaced by the D235, a typed name failed a page that was
+    # right.
+    wants = tuple(
+        tuple(m.group(1) for m in re.finditer(r"\{v:[a-z0-9-]+:([^}]+)\}", line))
+        for line in dataset.cat["short"]
     )
     # CI's runner draws system-ui in DejaVu Sans, wider than most desktops'
     # fonts, and a wrapped line there pushed the first product past 600px.
@@ -300,6 +302,52 @@ def filters_row_check(page):
                 problems.append(
                     f"{where} the power hint is {state['hint']}px wide, expected 200 or more"
                 )
+        if font:
+            page.evaluate("() => document.documentElement.style.removeProperty('--sans')")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.wait_for_timeout(120)
+    return problems
+
+def filter_label_check(page):
+    """A filter label never runs past its own group into the next one.
+
+    The labels were held on one line, so they could not shrink with their group:
+    at 521px under a font 15% wider than the page's own, `Records free, no extra
+    kit` ended 23px past the Show only column and landed on the Power box. Each
+    width is measured in the page's own font and again at Verdana, because the
+    page's own face is the one that hides it.
+    """
+    read = """() => {
+        const out = [];
+        document.querySelectorAll('.fbody fieldset').forEach((field) => {
+            const box = field.getBoundingClientRect();
+            field.querySelectorAll('.opts label').forEach((label) => {
+                const r = label.getBoundingClientRect();
+                out.push({
+                    text: label.textContent.trim(),
+                    over: Math.round(r.right - box.right),
+                    under: Math.round(box.left - r.left)
+                });
+            });
+        });
+        return out;
+    }"""
+    problems = []
+    wide = "Verdana, DejaVu Sans, sans-serif"
+    for font, suffix in (("", ""), (wide, " under the wider fallback")):
+        if font:
+            page.evaluate(
+                "(font) => document.documentElement.style.setProperty('--sans', font)", font
+            )
+        for width in (521, 600, 780):
+            page.set_viewport_size({"width": width, "height": 900})
+            page.wait_for_timeout(90)
+            for label in page.evaluate(read):
+                if label["over"] > 0 or label["under"] > 0:
+                    problems.append(
+                        f"at {width}px{suffix} the {label['text']!r} label runs "
+                        f"{label['over'] or label['under']}px past its group"
+                    )
         if font:
             page.evaluate("() => document.documentElement.style.removeProperty('--sans')")
     page.set_viewport_size({"width": 1280, "height": 900})
@@ -471,7 +519,9 @@ def mast_remit_check(page):
     """The masthead keeps saying what the site is at 390, and the count says doorbells.
 
     The long remit is the masthead's only statement of scope and it is the first
-    thing a phone drops, which left the narrowest width with no scope at all.
+    thing a phone drops, which left the narrowest width with no scope at all. The
+    two remits are one element and one class each, so the remit's own block
+    display must not out-rank the switch that hides one of them.
     """
     state = page.evaluate(
         """() => ({
@@ -482,8 +532,11 @@ def mast_remit_check(page):
         })"""
     )
     problems = []
-    if not state["remit"]:
-        problems.append("the masthead states no remit at 390")
+    want = [CATEGORIES[0]["mast"]]
+    if state["remit"] != want:
+        problems.append(
+            f"the masthead states {state['remit']} at 390, expected only {want}"
+        )
     if f"{CATEGORIES[0]['nouns']} to compare" not in state["count"]:
         problems.append(f"the count line reads {state['count']!r}")
     return problems
@@ -619,6 +672,55 @@ def desktop_short_answer_check(page):
         problems.append(f"the short answer box shows {state['prices']} prices, expected at least 4")
     return problems
 
+def method_columns_check(page):
+    """With a script the working spans the row, in two columns of its own.
+
+    Every figure opens a card with its page behind it, so the numbered register
+    is off the screen for a reader with a script. The section kept the register's
+    track anyway and the working set in 80ch with an empty half of the row beside
+    it, which is what this measures: the copy spans the row, its two columns are
+    separated, and at least one paragraph starts in the second one.
+    """
+    page.locator("section.method").scroll_into_view_if_needed()
+    page.wait_for_timeout(120)
+    state = page.evaluate(
+        """() => {
+            const copy = document.querySelector('.method-copy');
+            const sec = document.querySelector('section.method');
+            const register = document.getElementById('sources');
+            const box = copy.getBoundingClientRect();
+            const cs = getComputedStyle(copy);
+            const right = Array.from(copy.querySelectorAll('p')).filter((p) => {
+                const r = p.getBoundingClientRect();
+                return r.left > box.left + box.width / 2 && r.width < box.width * 0.75;
+            }).length;
+            return {
+                columns: cs.columnCount,
+                gap: parseFloat(cs.columnGap) || 0,
+                fill: box.width / sec.getBoundingClientRect().width,
+                right,
+                register: register ? getComputedStyle(register).display : 'none'
+            };
+        }"""
+    )
+    problems = []
+    if state["register"] != "none":
+        problems.append(
+            "the numbered register is on screen for a reader with a script, "
+            "so every figure opens the same list twice"
+        )
+    if state["columns"] != "2":
+        problems.append(f"the working sets in {state['columns']} column(s), expected 2")
+    if state["gap"] < 16:
+        problems.append(f"the working's two columns are {state['gap']:.0f}px apart")
+    if state["fill"] < 0.97:
+        problems.append(
+            f"the working fills {state['fill']:.0%} of its row, leaving the rest empty"
+        )
+    if state["right"] < 1:
+        problems.append("every paragraph of the working starts in the first column")
+    return problems
+
 CHECKS = [
     Check(
         "emitted sources", "static", 4,
@@ -651,7 +753,7 @@ CHECKS = [
     Check(
         "phone short answer", "phone", 24,
         "the situation picks and the warning are on the phone, two lines each at most",
-        lambda ctx: short_answer_check(ctx.page),
+        lambda ctx: short_answer_check(ctx.page, ctx.dataset),
     ),
     Check(
         "phone table header", "phone", 12,
@@ -691,6 +793,11 @@ CHECKS = [
         "filters row", "compare", 50,
         "every option group reads on one row from 900 up, the sort control keeps its own line below 1280, and the slider takes the spare width",
         lambda ctx: filters_row_check(ctx.page),
+    ),
+    Check(
+        "filter labels", "compare", 28,
+        "a filter label never runs past its own group into the next one",
+        lambda ctx: filter_label_check(ctx.page),
     ),
     Check(
         "price cells", "compare", 57, "price cells carry no footnote numbers",
@@ -752,6 +859,11 @@ CHECKS = [
         "compare target", "compare", 87,
         "the compare label is a 44x44 target at 1280 and at 390",
         lambda ctx: compare_target_check(ctx.page),
+    ),
+    Check(
+        "method columns", "compare", 95,
+        "with a script the working spans the row in two columns, with the register hidden",
+        lambda ctx: method_columns_check(ctx.page),
     ),
     Check(
         "overflow", "compare", 78,

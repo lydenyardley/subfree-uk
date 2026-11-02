@@ -422,7 +422,31 @@ DOORBELLS = {
     "noun": "doorbell",
     "nouns": "doorbells",
     "nav": "Doorbells",
-    "checked_iso": "2026-10-19",
+    "checked_iso": "2026-11-02",
+
+    # Each brand's newest model in this category, read from the vendor's own UK
+    # store. Where a brand sells more than one newest model — a battery and a
+    # wired version, say — the entry names the one this table covers. The table
+    # carries the newest model, not merely a model still on sale: a page that
+    # names last year's doorbell is the gap this map exists to catch. A pair
+    # records a brand whose current product is not a consumer doorbell at all,
+    # with the reason.
+    "current": {
+        "Ring": "ring-4kpro",
+        "Google Nest": "nest",
+        "eufy": "eufy-s4",
+        "Reolink": "reo-wifi",
+        "TP-Link Tapo": "tapo-d260",
+        "Arlo": "arlo",
+        "Aqara": "aqara-g410",
+        "Blink": "blink",
+        "EZVIZ": "ezviz-ep3x",
+        "Hikvision": (
+            "DS-KB6003-WIP",
+            "discontinued: Hikvision's UK catalogue lists wired video-intercom "
+            "door stations, and both of its Wi-Fi doorbells are end of life",
+        ),
+    },
 
     "title": "Video doorbells that work without a subscription (UK)",
     "description": "{n} UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.",
@@ -453,7 +477,7 @@ DOORBELLS = {
     # rounded to the pound, so the short answer never drifts from the table.
     "short": (
         'Wired doorbell: {v:reo-wifi:Reolink WiFi}, {p:reo-wifi}',
-        'Renting or no wires: {v:tapo-d230:Tapo D230S1}, {p:tapo-d230}',
+        'Renting or no wires: {v:tapo-d235:Tapo D235}, {p:tapo-d235}',
         'Cheapest that records free: {v:tapo-td21:Tapo TD21}, {p:tapo-td21}',
         '{v:ring:Ring} needs a plan. {v:blink:Blink} and {v:arlo:Arlo} need extra kit.',
     ),
@@ -462,8 +486,8 @@ DOORBELLS = {
     "aside": (
         ("pick", "Already have a wired doorbell:", "{v:reo-wifi:Reolink WiFi}",
          ", {p:reo-wifi} ({c:reo-wifi} over 3 yrs). Same wires, records to a card (or the {v:reo-poe:PoE}, {p:reo-poe}, if you can run a cable)."),
-        ("pick", "Renting or no wires:", "{v:tapo-d230:Tapo D230S1}",
-         ", {p:tapo-d230} ({c:tapo-d230}). Battery, footage kept indoors."),
+        ("pick", "Renting or no wires:", "{v:tapo-d235:Tapo D235}",
+         ", {p:tapo-d235} ({c:tapo-d235}). Battery, or hardwired for 24/7."),
         ("pick", "Cheapest that records free:", "{v:tapo-td21:Tapo TD21}",
          ", {p:tapo-td21} ({c:tapo-td21}). Basic, card sits in the doorbell."),
         ("avoid", "Avoid if you won't pay monthly:", "{v:ring:Ring}",
@@ -571,6 +595,18 @@ CAMERAS = {
     "nav": "Cameras",
     "checked_iso": "2026-11-01",
 
+    # Each brand's newest model in this category, read from the vendor's own UK
+    # store. Where a brand sells more than one newest model, the entry names the
+    # one this table covers.
+    "current": {
+        "Reolink": "reo-argus4",
+        "TP-Link Tapo": "tapo-c660",
+        "eufy": "eufy-s340",
+        "Aqara": "aqara-g100",
+        "Ring": "ring-outpro",
+        "Blink": "blink-out2k",
+    },
+
     "title": "Security cameras that work without a subscription (UK)",
     "description": "{n} UK security cameras compared: what is free, what is paywalled, and what each costs over three years.",
     "h1": "Security cameras that work without a subscription",
@@ -598,7 +634,7 @@ CAMERAS = {
     "short": (
         '{v:reo-rlc820a:Reolink RLC-820A} is the best overall without fees.',
         '{v:reo-argus4:Reolink Argus 4 Pro} is the best wire-free one.',
-        '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-out4:Blink} needs extra kit.',
+        '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-out2k:Blink} needs extra kit.',
     ),
     "short_tones": ("best", "batt", "avoid"),
     "short_head": "The short answer",
@@ -611,7 +647,7 @@ CAMERAS = {
          ", which covers 180° from one battery camera and still records to a card "
          "without a plan."),
         ("avoid", "Avoid if you won't pay monthly:", "{v:ring-outpro:Ring}",
-         " records nothing without a plan, and {v:blink-out4:Blink} needs a Sync "
+         " records nothing without a plan, and {v:blink-out2k:Blink} needs a Sync "
          "Module 2 and a USB stick before it saves a clip."),
     ),
 

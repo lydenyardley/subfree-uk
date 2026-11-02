@@ -5,7 +5,8 @@ records what we found and what changed when the tag went live on 1 November
 2026, because the site's no-affiliate claim depended on it.
 
 **Status: live. Every row's Amazon UK price and buy links carry
-`tag=subfreeuk-21`, and Awin is joined as publisher 3141383.** The intro says
+`tag=subfreeuk-21`, and Awin is joined as publisher 3141383. Webgains declined
+the application on 2 November 2026.** The intro says
 "Some links are paid links. No cookies." and every category page's footer
 carries "As an Amazon Associate I earn from qualifying purchases."
 
@@ -19,8 +20,9 @@ operating agreement change; re-check each one before signing up.
 
 ## Short version
 
-- We can realistically join first-party programmes for **eufy, Reolink, Arlo,
-  Aqara and Tapo**, all through affiliate networks (Awin, Webgains, Impact).
+- We can realistically join first-party programmes for **eufy, Reolink, Arlo
+  and Aqara**, through Awin or Impact. **Tapo** only had a Webgains listing, and
+  Webgains declined the application; its links stay plain until that changes.
 - **Ring, Google Nest, Blink and Hikvision** have no publisher-facing UK
   programme we could find. For those, retailer programmes are the route:
   **Amazon Associates UK**, **Currys via Awin**, or **eBay Partner Network**.
@@ -53,7 +55,7 @@ the paid links.
 | Reolink | Yes | Awin or Impact (own page does not say which serves the UK) | Apply and be approved; invites sites, blogs, YouTube | 6-20% in tiers by volume | [reolink.com/affiliate](https://reolink.com/us/affiliate/), affiliate@reolink.com |
 | Arlo | Yes, UK | Awin | Apply; no published minimum audience | 10%, 30-day cookie, validated 30 days after sale | [Awin listing](https://ui.awin.com/merchant-profile/122884) |
 | Aqara | Yes, UK | Awin | Apply; higher rates mentioned for content sites | 5%, 30-day cookie | [Awin listing](https://ui.awin.com/merchant-profile/99139) |
-| TP-Link Tapo | UK listing exists | Webgains | Unverified | Reported 5%, up to 14 days; not confirmed from the listing page itself | [Webgains listing](https://www.webgains.com/front/publisher/program/view/programID/296930) (page did not load when checked) |
+| TP-Link Tapo | UK listing exists | Webgains | **Declined** 2 Nov 2026: "no data insights via our third-party tracking tool indicating low/no traffic" | Reported 5%, up to 14 days; not confirmed from the listing page itself | [Webgains listing](https://www.webgains.com/front/publisher/program/view/programID/296930) (page did not load when checked). Reapply only when traffic can be shown |
 | EZVIZ | Yes | Impact | Apply; UK availability not confirmed | Not published on the page we read | [EZVIZ affiliates](https://www.ezviz.com/ca/page/affiliate-program) (Canada locale) |
 | Ring | None found for publishers | - | - | - | Use Amazon UK or Currys instead |
 | Google Nest | None found for hardware (Workspace only) | - | - | - | Use Amazon UK or Currys instead |
@@ -61,8 +63,8 @@ the paid links.
 | Hikvision | None found; partner programme is for installers | - | - | - | Use Amazon UK or eBay instead |
 
 Unconfirmed and worth a direct email before building anything: Reolink's UK
-network, Tapo's UK rate and acceptance, EZVIZ UK availability, and whether any
-programme will accept a one-page site.
+network, EZVIZ UK availability, and whether any programme will accept a
+one-page site now that Webgains has said no to it.
 
 ## Awin
 
@@ -98,6 +100,34 @@ Currys (1599) for the Galaxy Ring and the RingConn Gen 2, whose offers are the
 live part of the integration. Argos sells four of these rings and has no
 programme we are in, so its links stay plain, and a shop whose id is not
 confirmed stays plain too: a wrong id credits another advertiser.
+
+## Webgains
+
+**Declined 2 November 2026.** The application was refused with one reason:
+"No data insights via our third-party tracking tool indicating low/no traffic."
+Webgains judges an applicant's audience through a third-party traffic tool,
+and its message says that tool found no traffic to review.
+
+That is a statement about how the site is measured, not about the site. This
+site runs no analytics, no pixels and no consent banner, so there is nothing
+for a traffic-verification tool to find on it: nothing to detect on the page,
+and no dashboard history in a provider that was never installed. Whatever a
+network's tool would count, it cannot count a page that measures nothing.
+
+What it changes here:
+
+- **No Webgains advertiser id is wired, so no code changes.** `AWIN_MERCHANTS`
+  remains the only paid-link map on this site, and Tapo's links were already
+  plain because no id was confirmed.
+- **Tapo has no route.** Its programme was listed only through Webgains, so it
+  joins Ring, Google Nest, Blink and Hikvision in the plain-link column. The
+  table above is updated to say so.
+- **Reapplying needs evidence, not a better pitch.** Either a traffic source a
+  network can read (an analytics provider, or Search Console access shared
+  with them), or a network that accepts a manual audience summary. Any choice
+  that puts a script on the page touches the "No cookies" footer and the
+  privacy line in the intro, so it is a decision to take deliberately, not a
+  side effect of an affiliate form.
 
 ## How a price is chosen
 
@@ -249,8 +279,9 @@ keep matching the HTML.
 1. Awin is joined (publisher 3141383). Read each merchant's advertiser id out of
    the account and put the ones we can price in GBP into `AWIN_MERCHANTS`, so
    their offers carry a paid link instead of a plain one.
-2. Ask Reolink which network serves UK, and ask Webgains/TP-Link for the UK
-   Tapo terms. Email EZVIZ about UK availability.
+2. Ask Reolink which network serves UK. Tapo is closed off for now: Webgains
+   declined, so its links stay plain until a network that reads this site
+   accepts us. Email EZVIZ about UK availability.
 3. Decide the Amazon question before applying to Associates: either drop
    Amazon as a price source for those three rows, or show "Check price" and no
    figure.
@@ -264,7 +295,10 @@ keep matching the HTML.
 
 - Does any programme accept a single-page site with no newsletter or audience
   figures? Awin publishers are reviewed per advertiser, so the answer may
-  differ by brand.
+  differ by brand; Webgains does not, unless the traffic is measurable.
+- Which traffic proof would satisfy Webgains on a reapplication, and is it
+  worth a script on a page that currently sets no cookie? Search Console
+  access or a privacy-friendly counter both change that claim.
 - Which Amazon category a video doorbell falls into (5%, 3% or 2.5%) is not
   confirmed.
 - Whether Reolink's UK traffic converts through Awin or Impact.

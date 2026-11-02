@@ -4,6 +4,21 @@
   "page": "https://en-uk.ring.com/products/battery-doorbell-2nd-gen",
   "cropped": false
  },
+ "ring-4kpro": {
+  "src": "https://en-uk.ring.com/cdn/shop/files/Bigfoot_Deep_Silver_device_1500x1500_36477aae-8427-473d-bb3c-eefee22faf5e.png?v=1774944640",
+  "page": "https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen",
+  "cropped": false
+ },
+ "ring-wpro": {
+  "src": "https://cdn.shopify.com/s/files/1/2418/9735/files/Ring_Starlit-WIRED_1500x1500_01.jpg?v=1756798210",
+  "page": "https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen",
+  "cropped": false
+ },
+ "ring-elite": {
+  "src": "https://cdn.shopify.com/s/files/1/2418/9735/files/Cinco_Deep_Silver_device_1500x1500_5ddceb48-b655-46d5-a7bf-db9a16a8b8d4.png?v=1774944937",
+  "page": "https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen",
+  "cropped": false
+ },
  "nest": {
   "src": "https://lh3.googleusercontent.com/7as7cJnLssK4ejvx-4zNQCRmNoupXijD6fkO4orVEB54bB0SRfQn75qzZNnT4Ud4gqOabRfO-8J0YIBRKkMG9yvK5QWKz2FwRQ=rw-rj-sc0xffffffff",
   "page": "https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB",
@@ -17,6 +32,11 @@
  "eufy-c31": {
   "src": "https://cdn.shopify.com/s/files/1/0504/1094/6753/files/E8223111_E8223J11_E8223J11-11_E8223T11_T8223111_T8223111-80__ProductImage_nocopy.png",
   "page": "https://www.eufy.com/uk/products/t8223311",
+  "cropped": false
+ },
+ "eufy-s4": {
+  "src": "https://cdn.shopify.com/s/files/1/0746/3999/9151/files/T8224311-UK-RI01-1_3f640e8f-e4eb-43db-a928-7a159c249128.png?v=1792403525",
+  "page": "https://www.anker.com/uk/products/e82153f1",
   "cropped": false
  },
  "reo-wifi": {
@@ -34,9 +54,14 @@
   "page": "https://reolink.com/gb/product/reolink-doorbell-battery/",
   "cropped": false
  },
- "tapo-d230": {
-  "src": "https://uk.store.tapo.com/cdn/shop/files/Tapo_D230S1_Wireless_Battery_Video_Doorbell_Chime_Hub_Included_54898c57-a43f-4e71-bde1-0a5a33cb0bc7.png?v=1757084237&width=2048",
-  "page": "https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell",
+ "tapo-d235": {
+  "src": "https://uk.store.tapo.com/cdn/shop/files/D235-award.jpg?v=1772017345&width=2048",
+  "page": "https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235",
+  "cropped": true
+ },
+ "tapo-d260": {
+  "src": "https://uk.store.tapo.com/cdn/shop/files/D260-4k.jpg?v=1787566661&width=2048",
+  "page": "https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell",
   "cropped": true
  },
  "tapo-td21": {
@@ -54,10 +79,20 @@
   "page": "https://eu.aqara.com/products/aqara-video-doorbell-g4",
   "cropped": true
  },
+ "aqara-g410": {
+  "src": "https://eu.aqara.com/cdn/shop/files/Aqara_Smart_Video_Doorbell_G410_1.webp?v=1751957883",
+  "page": "https://eu.aqara.com/products/aqara-doorbell-camera-hub-g410",
+  "cropped": true
+ },
  "blink": {
   "src": "https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/feb6535d-c34d-48dd-a015-648dd5786bac/Blink_Battery_Doorbell_2K.png?format=1000w",
   "page": "https://blinkforhome.com/products",
   "cropped": true
+ },
+ "blink-out2k": {
+  "src": "https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/2300b960-b1fa-493f-a919-7aeffe5c547e/2K%2B+Blink+Outdoor+2K%2B.png",
+  "page": "https://blinkforhome.com/products",
+  "cropped": false
  },
  "ezviz-ep3x": {
   "src": "https://mfs.ezvizlife.com/62d7d264ab031e75591d277638d4c440.png",
@@ -108,6 +143,11 @@
   "src": "https://eu.aqara.com/cdn/shop/files/aqara-Camera_E1.webp?v=1774333578",
   "page": "https://eu.aqara.com/products/aqara-2k-indoor-security-camera-e1",
   "cropped": false
+ },
+ "aqara-g100": {
+  "src": "https://eu.aqara.com/cdn/shop/files/aqara-camera-g100-1.webp?v=1773400773",
+  "page": "https://eu.aqara.com/products/aqara-camera-g100",
+  "cropped": true
  },
  "ring-outpro": {
   "src": "https://en-uk.ring.com/cdn/shop/files/Ring_GROUPER_White-Plugin_1500x1500_01.jpg?v=1757078401",
@@ -160,6 +200,6 @@
  },
  "blink-out4": {
   "placeholder": true,
-  "why": "Blink's own site no longer lists the Outdoor 4 (its current cameras are the Outdoor 2K+), so the only official image left is the Amazon UK listing, which does not license a self-hosted copy."
+  "why": "Blink's own devices page no longer lists the Outdoor 4, so the only official image left is the Amazon UK listing, which does not license a self-hosted copy."
  }
 }

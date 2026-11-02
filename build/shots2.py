@@ -20,7 +20,7 @@ with sync_playwright() as p:
     d=page(1280,"dark"); d.click("#m-reo-poe button.more"); d.screenshot(path=os.path.join(OUTD,f"shot2-1280-dark.png"),full_page=True)
     # review extras: jump + flash, toggle persistence
     # The same link is in the phone short answer, which is hidden at this width.
-    j=page(1280); j.click(".verdict a.jump[data-ids=tapo-d230]"); j.wait_for_timeout(700); j.screenshot(path=os.path.join(TMP,"jump.png"))
+    j=page(1280); j.click(".verdict a.jump[data-ids=tapo-d235]"); j.wait_for_timeout(700); j.screenshot(path=os.path.join(TMP,"jump.png"))
     j.click("#theme"); print("stored:",j.evaluate("localStorage.getItem('theme')"),"attr:",j.evaluate("document.documentElement.dataset.theme"))
     j.reload(); print("after reload attr:",j.evaluate("document.documentElement.dataset.theme"),"btn:",j.inner_text("#theme"))
     j.screenshot(path=os.path.join(TMP,"dark-top.png"))

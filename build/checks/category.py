@@ -227,6 +227,22 @@ def own_words(pages):
     return problems
 
 
+SUMMARY_JS = """() => {
+    const summary = document.querySelector('nav.cats details summary');
+    const css = getComputedStyle(summary);
+    const arrow = getComputedStyle(summary, '::after').transform;
+    const parts = arrow === 'none' ? null
+        : arrow.slice(arrow.indexOf('(') + 1, -1).split(',').map(Number);
+    return {
+        pad: css.paddingTop + ' ' + css.paddingRight,
+        // The chevron is a turned square: its angle says which way it points
+        // and the length of its offset says how far it is nudged from the
+        // word. A rotation turns the offset too, so the two are read apart.
+        angle: parts ? Math.round(Math.atan2(parts[1], parts[0]) * 180 / Math.PI) : null,
+        nudge: parts ? Math.round(Math.hypot(parts[4], parts[5]) * 10) / 10 : null
+    };
+}"""
+
 def records(ctx):
     problems = record_problems(ctx.pages)
     # A category that never audited its brands' lineups is not failed, because
@@ -294,9 +310,22 @@ def page_behaviour(ctx):
         else:
             if page.evaluate("() => document.querySelector('nav.cats details').open"):
                 problems.append(f"{cat['page']} opens its category menu before a click")
+            # The switcher's own metrics: a summary that reaches its text and a
+            # chevron that turns on the diagonal it closes back along.
+            closed = page.evaluate(SUMMARY_JS)
             page.click("nav.cats summary")
             if not page.evaluate("() => document.querySelector('nav.cats details').open"):
                 problems.append(f"{cat['page']} does not open its category menu")
+            page.wait_for_timeout(250)
+            opened = page.evaluate(SUMMARY_JS)
+            if closed["pad"] != "0px 8px":
+                problems.append(
+                    f"{cat['page']} pads the category menu {closed['pad']!r}, expected 0px 8px"
+                )
+            if (closed["angle"], closed["nudge"]) != (45, 3):
+                problems.append(f"{cat['page']} points the closed chevron {closed}")
+            if (opened["angle"], opened["nudge"]) != (-135, 3):
+                problems.append(f"{cat['page']} points the open chevron {opened}")
             if page.locator("nav.cats details a").count() != len(CATEGORIES):
                 problems.append(f"{cat['page']} does not list every category")
             if page.locator("nav.cats details a[aria-current=page]").count() != 1:

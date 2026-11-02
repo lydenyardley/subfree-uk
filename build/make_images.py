@@ -10,17 +10,30 @@ UA={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 C
 # id: (image url, page it appears on, crop box as fractions l,t,r,b or None, trim whitespace?)
 IMGS={
  "ring":("https://en-uk.ring.com/cdn/shop/files/1_Slate_Sunray_Front_ad46b95a-0b98-4a7e-8f06-0304b31312eb.jpg?v=1779257638","https://en-uk.ring.com/products/battery-doorbell-2nd-gen",None,True),
+ "ring-4kpro":("https://en-uk.ring.com/cdn/shop/files/Bigfoot_Deep_Silver_device_1500x1500_36477aae-8427-473d-bb3c-eefee22faf5e.png?v=1774944640","https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen",None,True),
+ "ring-wpro":("https://cdn.shopify.com/s/files/1/2418/9735/files/Ring_Starlit-WIRED_1500x1500_01.jpg?v=1756798210","https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen",None,True),
+ "ring-elite":("https://cdn.shopify.com/s/files/1/2418/9735/files/Cinco_Deep_Silver_device_1500x1500_5ddceb48-b655-46d5-a7bf-db9a16a8b8d4.png?v=1774944937","https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen",None,True),
  "nest":("https://lh3.googleusercontent.com/7as7cJnLssK4ejvx-4zNQCRmNoupXijD6fkO4orVEB54bB0SRfQn75qzZNnT4Ud4gqOabRfO-8J0YIBRKkMG9yvK5QWKz2FwRQ=rw-rj-sc0xffffffff","https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB",None,True),
  "eufy-e340":("https://cdn.shopify.com/s/files/1/0504/1094/6753/files/T8214321-UK-DTC-RI00-ExpertReviews.png?v=1749789318","https://www.eufy.com/uk/products/T8214311",(0.55,0,1,1),True),
  "eufy-c31":("https://cdn.shopify.com/s/files/1/0504/1094/6753/files/E8223111_E8223J11_E8223J11-11_E8223T11_T8223111_T8223111-80__ProductImage_nocopy.png","https://www.eufy.com/uk/products/t8223311",None,True),
+ "eufy-s4":("https://cdn.shopify.com/s/files/1/0746/3999/9151/files/T8224311-UK-RI01-1_3f640e8f-e4eb-43db-a928-7a159c249128.png?v=1792403525","https://www.anker.com/uk/products/e82153f1",None,True),
  "reo-wifi":("https://home-cdn.reolink.us/wp-content/uploads/2022/05/170610101652767810.7304.png","https://reolink.com/gb/product/reolink-video-doorbell-wifi/",(0,0,0.5,1),True),
  "reo-poe":("https://home-cdn.reolink.us/wp-content/uploads/2023/07/070730451688715045.0661.png","https://reolink.com/gb/product/reolink-video-doorbell-poe/",(0.5,0,1,1),True),
  "reo-batt":("https://home-cdn.reolink.us/wp-content/uploads/2024/10/doorbell-battery-1pack.png","https://reolink.com/gb/product/reolink-doorbell-battery/",None,True),
- "tapo-d230":("https://uk.store.tapo.com/cdn/shop/files/Tapo_D230S1_Wireless_Battery_Video_Doorbell_Chime_Hub_Included_54898c57-a43f-4e71-bde1-0a5a33cb0bc7.png?v=1757084237&width=2048","https://uk.store.tapo.com/products/tapo-d230s1-smart-battery-video-doorbell",(0.1,0,0.47,1),True),
+ # Both Tapo heroes are 2000px squares with a badge and a phone in them, so
+ # the crop keeps the doorbell and cuts the marketing around it.
+ "tapo-d235":("https://uk.store.tapo.com/cdn/shop/files/D235-award.jpg?v=1772017345&width=2048","https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235",(0.36,0.03,0.62,0.97),True),
+ "tapo-d260":("https://uk.store.tapo.com/cdn/shop/files/D260-4k.jpg?v=1787566661&width=2048","https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell",(0.26,0.10,0.72,0.98),True),
  "tapo-td21":("https://uk.store.tapo.com/cdn/shop/files/0002290-RedesigntheDoorbellMainImage21.png?v=1776441614&width=2048","https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21",(0.1,0,0.47,1),True),
  "arlo":("https://www.arlo.com/content/dam/arlo/2024-content/products/essential-wd-2k/en/si-compressed/arlo-2k-wireless-video-doorbell-white.png","https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell",None,True),
  "aqara-g4":("https://eu.aqara.com/cdn/shop/files/Aqara-Smart-Video-Doorbell-G4.webp?v=1729063964","https://eu.aqara.com/products/aqara-video-doorbell-g4",(0,0,0.46,1),True),
+ # The UK shop's own hero is a photo of the retail boxes, so the doorbell is
+ # taken from Aqara's product page instead, cropped past the chime beside it.
+ "aqara-g410":("https://eu.aqara.com/cdn/shop/files/Aqara_Smart_Video_Doorbell_G410_1.webp?v=1751957883","https://eu.aqara.com/products/aqara-doorbell-camera-hub-g410",(0,0,0.50,1),True),
  "blink":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/feb6535d-c34d-48dd-a015-648dd5786bac/Blink_Battery_Doorbell_2K.png?format=1000w","https://blinkforhome.com/products",(0.30,0.02,0.72,0.98),False),
+ # The 2K+ render is the one card on Blink's own devices page, so it is the
+ # official picture of the model Blink sells now; the Outdoor 4 has no card left.
+ "blink-out2k":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/2300b960-b1fa-493f-a919-7aeffe5c547e/2K%2B+Blink+Outdoor+2K%2B.png","https://blinkforhome.com/products",None,True),
  "ezviz-ep3x":("https://mfs.ezvizlife.com/62d7d264ab031e75591d277638d4c440.png","https://www.ezviz.com/uk/product/ep3x-pro/55935",(0,0,0.255,1),True),
  "ezviz-db2":("https://s3.amazonaws.com/mfs.ezvizlife.com/f6a3b42474eefe13047add4b7b3c89c3.jpg","https://www.ezviz.com/uk/product/db2-pro-kit/42371",(0.28,0.2,0.43,0.79),True),
  "reo-argus4":("https://home-cdn.reolink.us/wp-content/uploads/2024/06/argus-4-pro-whitesolar-panel-2-white.png","https://reolink.com/gb/product/argus-4-pro/",None,True),
@@ -31,6 +44,7 @@ IMGS={
  "eufy-e30":("https://cdn.shopify.com/s/files/1/0746/3999/9151/files/Frame_2147226768.png?v=1788149693","https://www.anker.com/uk/products/t8417221",None,True),
  "aqara-g3":("https://eu.aqara.com/cdn/shop/files/G3_1.webp","https://eu.aqara.com/products/aqara-2k-security-indoor-camera-hub-g3",None,True),
  "aqara-e1":("https://eu.aqara.com/cdn/shop/files/aqara-Camera_E1.webp?v=1774333578","https://eu.aqara.com/products/aqara-2k-indoor-security-camera-e1",None,True),
+ "aqara-g100":("https://eu.aqara.com/cdn/shop/files/aqara-camera-g100-1.webp?v=1773400773","https://eu.aqara.com/products/aqara-camera-g100",(0,0,0.50,1),True),
  "ring-outpro":("https://en-uk.ring.com/cdn/shop/files/Ring_GROUPER_White-Plugin_1500x1500_01.jpg?v=1757078401","https://en-uk.ring.com/products/stick-up-cam-pro-plug-in",None,True),
  # The Oura render sits on a studio gradient with the finish swatches below
  # it, so it is cropped rather than trimmed against white.
@@ -48,7 +62,7 @@ IMGS={
 }
 PLACEHOLDER={
  "hik":"Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image.",
- "blink-out4":"Blink's own site no longer lists the Outdoor 4 (its current cameras are the Outdoor 2K+), so the only official image left is the Amazon UK listing, which does not license a self-hosted copy.",
+ "blink-out4":"Blink's own devices page no longer lists the Outdoor 4, so the only official image left is the Amazon UK listing, which does not license a self-hosted copy.",
 }
 def flat(im):
     im=im.convert("RGBA"); bg=Image.new("RGBA",im.size,(255,255,255,255)); bg.alpha_composite(im); return bg.convert("RGB")
