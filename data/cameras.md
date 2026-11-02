@@ -78,7 +78,7 @@ Last checked 1 November 2026. 10 cameras. As an Amazon Associate I earn from qua
 - **Best for:** A garden corner with sun: 360° pan and 8 GB on board
 - **Main catch:** 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on.
 - **Price:** £179.00 (eufy UK list price; a £50 coupon was advertised)
-- **3-year cost, no plan:** £179.00 = £179.00
+- **3-year cost, no plan:** £179.00
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** 8 GB built in, non-removable; a HomeBase S380 adds up to 16 TB
 - **Free:** live view yes; alerts yes; smart detection: Free: human and vehicle detection on the device
@@ -134,7 +134,7 @@ Last checked 1 November 2026. 10 cameras. As an Amazon Associate I earn from qua
 - **Best for:** People already paying for Ring and Alexa
 - **Main catch:** Saves no video at all without the £4.99-a-month plan.
 - **Price:** £179.99 (Ring UK)
-- **3-year cost, no plan:** £179.99 = £179.99 (but no recordings)
+- **3-year cost, no plan:** £179.99 (but no recordings)
 - **3-year cost, with plan:** £179.99 + 36 × £4.99 (Ring Solo) = £359.63
 - **Storage:** None. Recording is cloud-only.
 - **Free:** live view yes; alerts yes; smart detection: Paid (person, package and vehicle alerts on Ring's plans)

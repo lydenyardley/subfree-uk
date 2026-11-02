@@ -35,6 +35,10 @@ IMGS={
  # The Oura render sits on a studio gradient with the finish swatches below
  # it, so it is cropped rather than trimmed against white.
  "oura-4":("https://ourahealth.imgix.net/blue-sky/pop/gen4/finishes-carousel-slide-silver.png?ixlib=js-3.8.0&auto=format&fit=crop&fm=png&ar=2%3A1&crop=focalpoint&fp-x=0.5&fp-y=0.51&fp-z=1.15&q=70&w=1920&s=2e1d3272a6ead1f907787a0fde071870","https://ouraring.com/store/rings/oura-ring-4",(0.30,0.10,0.66,0.82),False),
+ # Ring 5's studio shot sits on a warm background like the Ring 4 render, so it
+ # is cropped to portrait rather than trimmed against white, which would have
+ # framed it in a white border.
+ "oura-5":("https://ourahealth.imgix.net/cooper-pdp/or5-silver-alt.png?ixlib=js-3.8.0&auto=format&fit=max&fm=png&q=70&w=640&s=c1abb1ce6418079507b352bab9ce96da","https://ouraring.com/store/rings/oura-ring-5/silver",(0.22,0.04,0.78,0.96),False),
  "ultra-air":("https://public-web-assets.uh-static.com/web_v2/illustrations/ring-air-front.png","https://www.ultrahuman.com/ring/",None,True),
  "rc-2":("https://ringconn.com/cdn/shop/files/RingConn_Smart_Ring_Gen_2-Royal_Gold.png?v=1780302336&width=1200","https://ringconn.com/products/ringconn-gen-2",None,True),
  "rc-2-air":("https://ringconn.com/cdn/shop/files/ringconn_gen_2_air_1.png?v=1780302386&width=600","https://ringconn.com/products/ringconn-gen-2-air",None,True),

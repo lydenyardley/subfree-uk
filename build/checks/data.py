@@ -22,13 +22,16 @@ WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verifi
 
 # What the three files a first visit reads may weigh, gzipped. The budget is in
 # docs/performance-budget.md; each line has headroom over today's figure, and a
-# change that doubles the page cannot pass by being a little over.
+# change that doubles the page cannot pass by being a little over. The script
+# carries every row of every category, so its figure follows the row count: the
+# third category, and the ring it was missing, took it past the ceiling that was
+# set when the page had two.
 TRANSFER_BUDGET = {
     "index.html": 24_000,
     "assets/page.css": 18_000,
-    "assets/page.js": 24_000,
+    "assets/page.js": 25_000,
 }
-TRANSFER_TOTAL = 60_000
+TRANSFER_TOTAL = 61_000
 
 
 def load_rows():

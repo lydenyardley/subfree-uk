@@ -116,6 +116,15 @@ price, or, where the row has no plan, the page that says none is needed.
   printed sheet and the reader without a script, and the script hides both: the
   card is where a reader with a browser finds the page behind a number.
 
+## Lineup
+
+Every brand a category covers must be on the page in the model its vendor
+sells now, and each record says which row that is in its `current` map. A brand
+with no entry fails `category records`, so the question cannot be skipped, and
+the entry has to name a row of that brand. It cannot see a launch nobody heard
+about, so re-read the vendors' own stores whenever you move `checked_iso`: the
+rings page spent a week offering Ring 4 as the current Oura.
+
 ## Dates
 
 Each record's `checked_iso` in `build/catalog.py` is the one hand-typed date

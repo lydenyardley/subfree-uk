@@ -23,21 +23,24 @@ they always are.
 
 | File | Budget, gzipped | Measured 2 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 19,778 |
+| `index.html` | 24,000 | 19,762 |
 | `assets/page.css` | 18,000 | 15,986 |
-| `assets/page.js` | 24,000 | 23,941 |
-| The three together, a first visit | 60,000 | 59,705 |
+| `assets/page.js` | 25,000 | 24,047 |
+| The three together, a first visit | 61,000 | 59,795 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
 output, no machine in between. `build/check.py`'s `transfer budget` check
 rebuilds, gzips the three files at level 9 and fails above any ceiling.
 
-The headroom is now nearly spent: the script sits 59 bytes under its ceiling and
-a first visit 295 bytes under the total, so the next script change is a trim or
-a deliberate ceiling change rather than a sentence that fits. The ceilings
-should come down to whatever the page actually needs once it settles, not stay
-where a three-category page first landed.
+The script's ceiling moved by a thousand bytes with the third category, and that
+is a decision rather than a fix. Every row of every category ships in the
+script, so a row costs about 150 gzipped bytes: the smart ring table plus the
+Ring 5 it was missing took the script from 23,900 to 24,047, past a ceiling set
+when the page had two categories. Trimming copy to fit would have been the
+alternative, and the copy is the product. The headroom is still thin — 953 bytes
+on the script, 1,205 on a first visit — so the next script change is a trim
+rather than a sentence that fits.
 The comparison's rows are in the script rather than in a JSON block on purpose:
 the same bytes on the wire, one more parse, and one more copy to fall out of
 step with `ROWS`. If the budget does bind, that is the first trade to revisit.

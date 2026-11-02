@@ -119,6 +119,11 @@
   "page": "https://ouraring.com/store/rings/oura-ring-4",
   "cropped": true
  },
+ "oura-5": {
+  "src": "https://ourahealth.imgix.net/cooper-pdp/or5-silver-alt.png?ixlib=js-3.8.0&auto=format&fit=max&fm=png&q=70&w=640&s=c1abb1ce6418079507b352bab9ce96da",
+  "page": "https://ouraring.com/store/rings/oura-ring-5/silver",
+  "cropped": true
+ },
  "ultra-air": {
   "src": "https://public-web-assets.uh-static.com/web_v2/illustrations/ring-air-front.png",
   "page": "https://www.ultrahuman.com/ring/",

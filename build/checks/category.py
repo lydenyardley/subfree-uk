@@ -9,6 +9,7 @@ which is what a copy-pasted page looks like when the second category lands.
 import os
 import posixpath
 import re
+from html import escape as html_escape
 
 from catalog import CATEGORIES
 from .context import ROOT
@@ -119,6 +120,36 @@ def record_problems(pages):
                 problems.append(f"{slug}: the category menu does not mark one current page")
             if len(re.findall(r"<a ", markup)) != len(CATEGORIES):
                 problems.append(f"{slug}: the category menu does not link every category")
+        # A lineup is checked, not assumed. Every brand in a table names the
+        # model it is selling now, and that model is one of the brand's rows: the
+        # rings page shipped a generation behind, with Ring 5 already on sale,
+        # because nothing ever asked the question per brand.
+        current = cat.get("current")
+        if current is not None:
+            unasked = sorted({row["brand"] for row in rows} - set(current))
+            if unasked:
+                problems.append(
+                    f"{slug}: no current model named for {', '.join(unasked)}"
+                )
+            for brand, named in current.items():
+                if isinstance(named, tuple):
+                    model, why = named
+                    if not str(why).strip():
+                        problems.append(
+                            f"{slug}: {brand} is marked as having no current model "
+                            "without saying why"
+                        )
+                    continue
+                found = [row for row in rows if row["id"] == named]
+                if not found:
+                    problems.append(
+                        f"{slug}: {brand}'s current model {named!r} is not a row"
+                    )
+                elif found[0]["brand"] != brand:
+                    problems.append(
+                        f"{slug}: {brand}'s current model {named!r} belongs to "
+                        f"{found[0]['brand']}"
+                    )
         # An editorial jump goes to a row that is on the page. The rings page
         # shipped two links keyed to a name that was not a row id, so a reader
         # clicking "RingConn Gen 3" in the lead landed nowhere at all.
@@ -153,7 +184,9 @@ def record_problems(pages):
                 problems.append(
                     f"{row['id']}: the table does not name {row['offer_at']!r} as where the price is"
                 )
-            winning = cat["sources"][row["price_src"]][1]
+            # Escaped, because an Awin deep link carries `&` between its
+            # parameters and the markup cannot.
+            winning = html_escape(cat["sources"][row["price_src"]][1])
             if winning not in markup:
                 problems.append(
                     f"{row['id']}: the price does not link to the shop it came from"
@@ -195,7 +228,17 @@ def own_words(pages):
 
 
 def records(ctx):
-    return record_problems(ctx.pages)
+    problems = record_problems(ctx.pages)
+    # A category that never audited its brands' lineups is not failed, because
+    # the fix is a human reading three shops, but it is not allowed to pass
+    # silently either: the note names it on every run until it is done.
+    for cat in CATEGORIES:
+        if cat.get("current") is None:
+            ctx.note(
+                f"{cat['slug']}: its brands' current models have not been audited; "
+                "add a `current` map at the next price check"
+            )
+    return problems
 
 
 def words(ctx):

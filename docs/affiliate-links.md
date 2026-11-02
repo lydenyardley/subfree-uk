@@ -34,12 +34,13 @@ operating agreement change; re-check each one before signing up.
   in a static page is a terms problem, not just a freshness problem.
 - **Rings now list offers.** Each ring row carries the shops that sell it and
   the page shows one of them, chosen by the rule below. RingConn Gen 2 moved to
-  Argos at £159, which is £100 under the Amazon listing. The rows with no
-  second GBP-priced shop still show an Amazon price: Oura Ring 4, Ultrahuman
-  Ring AIR (both tied on price, so Amazon's higher pay rank keeps it),
-  RingConn Gen 2 Air and Gen 3, and the Galaxy Ring. The rule reduces Amazon's
-  share of the table; it does not remove it, and only a GBP price at another
-  shop or the Product Advertising API does.
+  Argos at £159, which is £100 under the Amazon listing, and the Galaxy Ring to
+  Currys at £150.97, £82 under it. The rows with no second GBP-priced shop still
+  show an Amazon price: Oura Ring 4 and Ultrahuman Ring AIR (both tied on price,
+  so Amazon's higher pay rank keeps it), and RingConn Gen 2 Air and Gen 3, which
+  no UK retailer stocks in GBP at all. The rule reduces Amazon's share of the
+  table; it does not remove it, and only a GBP price at another shop or the
+  Product Advertising API does.
 - The claim is changed, not quietly kept. The old "No affiliate links" line is
 gone from the intro, the footers and the Markdown, and the replacement names
 the paid links.
@@ -85,17 +86,18 @@ link, never guessed:
 | Merchant | `awinmid` | Where |
 |---|---|---|
 | Ultrahuman | 69428 | [Awin profile](https://ui.awin.com/merchant-profile/69428). 7% to $10k, 10% to $35k, 15% after; 45-day cookie |
-| Currys | 1599 | [Awin profile](https://ui.awin.com/merchant-profile/1599). 3% for editorial |
+| Currys | 1599 | [Awin profile](https://ui.awin.com/merchant-profile/1599). 3% for editorial; carries the Galaxy Ring and RingConn Gen 2 offers |
 | Very | 3090 | [Awin profile](https://ui.awin.com/merchant-profile/3090) |
 | John Lewis | 1203 | One third-party affiliate link only; confirm in the account before use |
 | Argos | none found | Argos links elsewhere run through `anrdoezrs.net` (CJ), not Awin |
 | Samsung UK, Oura, RingConn, Amazfit | none found | No UK advertiser id located |
 
 `AWIN_MERCHANTS` in `build/rows.py` maps a source key to its advertiser id, and
-the tagging loop rewrites those sources into `cread.php` links. It is empty
-today: no merchant we can price in GBP has a confirmed id, and a wrong id
-credits another advertiser, so those offers stay plain links until the id is
-read out of the account.
+the tagging loop rewrites those sources into `cread.php` links. It carries
+Currys (1599) for the Galaxy Ring and the RingConn Gen 2, whose offers are the
+live part of the integration. Argos sells four of these rings and has no
+programme we are in, so its links stay plain, and a shop whose id is not
+confirmed stays plain too: a wrong id credits another advertiser.
 
 ## How a price is chosen
 

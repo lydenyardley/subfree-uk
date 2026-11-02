@@ -146,6 +146,11 @@ S = {
  "argos_oura4": ("Argos: Oura Ring 4", "https://www.argos.co.uk/product/7727465"),
  "argos_ultra": ("Argos: Ultrahuman Ring AIR", "https://www.argos.co.uk/product/4165587"),
  "argos_rc2": ("Argos: RingConn Gen 2", "https://www.argos.co.uk/product/7614640"),
+ "currys_rc2": ("Currys: RingConn Gen 2", "https://www.currys.co.uk/products/ringconn-gen-2-smart-ring-matte-black-size-7-10278293.html"),
+ "currys_samsung": ("Currys: Samsung Galaxy Ring", "https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html"),
+ "oura_store5": ("Oura: Ring 5", "https://ouraring.com/store/rings/oura-ring-5/silver"),
+ "argos_oura5": ("Argos: Oura Ring 5", "https://www.argos.co.uk/product/8565956"),
+ "currys_oura5": ("Currys: Oura Ring 5", "https://www.currys.co.uk/products/oura-ring-5-silver-size-8-10304738.html"),
  "amazfit_uk": ("Amazfit UK: Helio Ring", "https://uk.amazfit.com/products/amazfit-helio-ring"),
  "amazfit_aura": ("Amazfit UK: Zepp Aura", "https://uk.amazfit.com/pages/zepp-aura"),
  "ha_zepp": ("Home Assistant: Zepp2Hass (community)", "https://community.home-assistant.io/t/zepp2hass-connect-your-amazfit-zepp-watch-to-home-assistant/973979"),
@@ -185,7 +190,12 @@ def awin_tagged(url, merchant):
 # Awin advertiser ids, by source key. The id belongs to the merchant, not to us:
 # a wrong one credits another advertiser, so a shop whose id is not confirmed in
 # the Awin account stays a plain link rather than a mistracked one.
-AWIN_MERCHANTS = {}
+# Currys is on Awin (advertiser 1599, 3% for editorial), so its offers are the
+# live part of the integration. Argos sells two of these rings and has no
+# programme we are in, so its links stay plain.
+AWIN_MERCHANTS = {
+    "currys_rc2": 1599, "currys_samsung": 1599, "currys_oura5": 1599,
+}
 
 
 # ---------- where to buy ----------
@@ -606,6 +616,31 @@ dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit"
 # the vendor charges one, the membership. `free_records` is the same decision
 # as before: does the product give its data with no plan? `power` buckets the
 # vendor's battery figure, and `wifi` carries the phones it works with.
+dict(cat="rings", id="oura-5", brand="Oura", model="Ring 5", rec="brief", power=["nine"], ha=1,
+ offers=[
+  dict(shop="Oura", src="oura_store5", price=399.00, pay=PAY_RETAIL,
+        note="Silver; the gold and rose finishes are £499"),
+  dict(shop="Argos", src="argos_oura5", price=399.00, pay=PAY_RETAIL, note="Silver, standard sizes"),
+  dict(shop="Currys", src="currys_oura5", price=399.00, pay=PAY_AMAZON, note="Silver, size 8"),
+ ],
+ extra=0, extra_note="", free_records=False,
+ sub=5.99, sub_name="Oura Membership",
+ best="The current Oura, if the newest sensors are worth the membership to you",
+ catch="Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings.",
+ storage="Oura's cloud. Oura lets you download your data from the Membership Hub even without a plan.",
+ live="No. 24/7 heart rate is part of the membership.",
+ alerts="No. Wellness alerts are part of the membership.",
+ ai="No. Only the three daily scores are free. Sleep stages, HRV, SpO2 and temperature need the membership.",
+ history="Three daily scores only. Sleep stages, HRV, SpO2 and trends need the membership.",
+ paywalled="Detailed sleep stages, 24/7 heart rate and HRV, SpO2, temperature, stress, cardiovascular age, VO2 max, women's health, reports and the API",
+ sub_text="Oura Membership £5.99/month or £69.99/year after tax. The first month is free",
+ ha_text="A community HACS integration brings the ring's data into Home Assistant through Oura's cloud API. Oura blocks API access without an active membership, so the integration needs the plan too.",
+ wifi="iPhone and Android",
+ power_note="Oura quotes 6 to 9 days, depending on use.",
+ score=dict(rec=1,sleep=0,hr=0,spo2=0,extra=0,ha=1),
+ src=["oura_store5","argos_oura5","currys_oura5","oura_membership","oura_free","ha_oura"],
+ rec_src="oura_free", history_src="oura_free", ha_src="ha_oura", plan_src="oura_membership",
+ nosub_say="£399 buys the ring. Without the membership only three daily scores work.", unverified=""),
 dict(cat="rings", id="oura-4", brand="Oura", model="Ring 4", rec="brief", power=["eight"], ha=1,
  offers=[
   dict(shop="Argos", src="argos_oura4", price=244.00, pay=PAY_RETAIL, note="Silver, size 6"),
@@ -656,6 +691,8 @@ dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=[
   dict(shop="Argos", src="argos_rc2", price=159.00, pay=PAY_RETAIL,
         note="Matte Black, size 7; £258 list, on sale"),
   dict(shop="Amazon UK", src="amz_rc2", price=259.00, pay=PAY_AMAZON, note="as listed"),
+  dict(shop="Currys", src="currys_rc2", price=259.00, pay=PAY_AMAZON,
+        note="Matte Black, size 7"),
  ],
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
  best="The best value RingConn: 12 days, sleep-apnea insights and no subscription",
@@ -670,7 +707,7 @@ dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=[
  ha_text="No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.",
  wifi="iPhone and Android",
  score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
- src=["amz_rc2","argos_rc2","rc2_product","rc_nosub","ha_index"],
+ src=["amz_rc2","argos_rc2","currys_rc2","rc2_product","rc_nosub","ha_index"],
  rec_src="rc_nosub", history_src="rc2_product", ha_src="ha_index", plan_src="rc_nosub",
  nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
 dict(cat="rings", id="rc-2-air", brand="RingConn", model="Gen 2 Air", rec="yes", power=["ten"], ha=0,
@@ -710,7 +747,12 @@ dict(cat="rings", id="rc-3", brand="RingConn", model="Gen 3", rec="yes", power=[
  rec_src="rc_nosub", history_src="rc3_product", ha_src="ha_index", plan_src="rc_nosub",
  nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
 dict(cat="rings", id="samsung-ring", brand="Samsung", model="Galaxy Ring", rec="yes", power=["seven"], ha=0,
- price=233.38, price_note="Amazon UK, size 7 Titanium Black; other sizes and colours list at £399", price_src="amz_samsung",
+ offers=[
+  dict(shop="Currys", src="currys_samsung", price=150.97, pay=PAY_AMAZON,
+        note="Titanium Gold, size 14; every other size is £399"),
+  dict(shop="Amazon UK", src="amz_samsung", price=233.38, pay=PAY_AMAZON,
+        note="Titanium Black, size 7"),
+ ],
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
  best="Samsung phone owners: no subscription and the deepest Samsung Health integration",
  catch="Android only, with no iPhone support, and no Home Assistant route.",
@@ -724,10 +766,10 @@ dict(cat="rings", id="samsung-ring", brand="Samsung", model="Galaxy Ring", rec="
  ha_text="No official or community Home Assistant integration was found. The data stays in Samsung Health.",
  wifi="Android 11+ only; not iPhone",
  score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
- src=["amz_samsung","samsung_support","ha_index"],
+ src=["amz_samsung","currys_samsung","samsung_support","ha_index"],
  rec_src="amz_samsung", history_src="samsung_support", ha_src="ha_index", plan_src="amz_samsung",
  nosub_say="No subscription. The ring and its data are the whole cost.",
- unverified="Samsung's UK product page did not render a price. The £399 list figure is for the other Amazon variants; £233.38 is size 7 in Titanium Black."),
+ unverified="Samsung's UK product page renders no price, so the £399 list comes from Currys's other sizes. The £150.97 shown is one colour in one size, size 14."),
 dict(cat="rings", id="amazfit-helio", brand="Amazfit", model="Helio Ring", rec="yes", power=["four"], ha=0,
  price=149.90, price_note="Amazfit UK sale price, RRP £269; size 10 is out of stock", price_src="amazfit_uk",
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
@@ -781,7 +823,7 @@ VERDICT = {
     "ring-outpro": "avoid", "blink-out4": "avoid",
     "rc-3": "best", "rc-2": "value",
     "ultra-air": "ha", "samsung-ring": "galaxy", "amazfit-helio": "budget",
-    "oura-4": "avoid",
+    "oura-5": "avoid",
 }
 PLAIN = {
     "ring": ("Runs on the battery, or you can wire it to your existing chime.",
@@ -846,6 +888,8 @@ PLAIN = {
              "RingConn's cloud holds the history, and the app shows it on the phone."),
     "samsung-ring": ("A rechargeable ring battery that Samsung says lasts up to 7 days on the largest sizes.",
                      "Samsung Health's cloud holds the history, and the phone app shows it."),
+    "oura-5": ("A rechargeable ring battery Oura quotes at 6 to 9 days depending on use.",
+               "Oura's cloud holds the history, and the phone app shows it."),
     "amazfit-helio": ("A rechargeable ring battery that Amazfit's UK page does not put a figure on. Retailer spec sheets say about four days.",
                       "Zepp's cloud holds the history, and the phone app shows it."),
 }
@@ -1092,7 +1136,14 @@ def _derive(cat):
             r["keep_basis"], r["keep_note"] = "nosub", cat["labels"]["keep_free"]
         else:
             r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
-        m_free = f"{money(r['price'])}" + (f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})" if r["extra"] else "") + f" = {money(r['nosub3'])}"
+        # A row that buys nothing extra has no sum to show: "£309.00 = £309.00"
+        # is arithmetic the reader did not ask for and reads like a mistake.
+        m_free = f"{money(r['price'])}"
+        if r["extra"]:
+            m_free += (
+                f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})"
+                f" = {money(r['nosub3'])}"
+            )
         if not r["free_records"]:
             m_free += cat["labels"]["maths_no_route"] if r["rec"] == "no" else cat["labels"]["maths_brief"]
         m_sub = (

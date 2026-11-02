@@ -26,7 +26,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Best for:** Alexa households happy to pay the monthly plan
 - **Main catch:** Saves no video at all unless you pay £4.99 a month.
 - **Price:** £79.99 (Ring UK, in stock)
-- **3-year cost, no plan:** £79.99 = £79.99 (but no recordings)
+- **3-year cost, no plan:** £79.99 (but no recordings)
 - **3-year cost, with plan:** £79.99 + 36 × £4.99 (Ring Solo) = £259.63
 - **Storage:** None. No on-device or hub storage.
 - **Free:** live view yes; alerts yes, motion and button-press alerts; smart detection: Paid (person, package and vehicle alerts on Ring's plans page)
@@ -40,7 +40,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Best for:** Google Home households who want polished smart alerts
 - **Main catch:** Only 3 hours of free history. Anything longer is £8 a month.
 - **Price:** £179.99 (Google Store UK)
-- **3-year cost, no plan:** £179.99 = £179.99 (3 hours of history only)
+- **3-year cost, no plan:** £179.99 (3 hours of history only)
 - **3-year cost, with plan:** £179.99 + 36 × £8.00 (Google Home Premium Standard) = £467.99
 - **Storage:** None
 - **Free:** live view yes; alerts yes; smart detection: Free: person, parcel, animal and vehicle alerts; Google sells 'smarter' AI notifications as Premium
@@ -54,7 +54,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Best for:** Busy doorsteps with lots of parcels: a second camera looks straight down
 - **Main catch:** Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022.
 - **Price:** £169.99 (eufy UK)
-- **3-year cost, no plan:** £169.99 = £169.99
+- **3-year cost, no plan:** £169.99
 - **3-year cost, with plan:** £169.99 + 36 × £3.99 (eufy Cloud Backup Basic) = £313.63
 - **Storage:** 8 GB in the doorbell; optional HomeBase S380 (16 GB, expandable)
 - **Free:** live view yes; alerts yes; smart detection: Free: person and package detection on the device
@@ -110,7 +110,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Best for:** Battery install with 5 GHz Wi-Fi and no fees
 - **Main catch:** Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49).
 - **Price:** £99.99 (Screwfix, includes 64 GB card (Reolink UK also £99.99))
-- **3-year cost, no plan:** £99.99 = £99.99
+- **3-year cost, no plan:** £99.99
 - **3-year cost, with plan:** £99.99 + 36 × £4.17 (Reolink Cloud Standard (up to 5 cameras)) = £250.11
 - **Storage:** microSD in the doorbell, or a Home Hub indoors (up to 1 TB)
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and package detection
@@ -194,7 +194,7 @@ Last checked 19 October 2026. 15 doorbells. As an Amazon Associate I earn from q
 - **Best for:** Two cameras on a budget, with storage built in
 - **Main catch:** Expert Reviews found its motion detection unreliable and the app confusing.
 - **Price:** £99.99 (Chester Digital Supplies, UK retailer)
-- **3-year cost, no plan:** £99.99 = £99.99
+- **3-year cost, no plan:** £99.99
 - **3-year cost, with plan:** £99.99 + 36 × £4.99 (EZVIZ CloudPlay 7-day) = £279.63
 - **Storage:** 32 GB built in, no card needed
 - **Free:** live view yes; alerts yes; smart detection: Free: human and package detection

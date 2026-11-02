@@ -710,7 +710,19 @@ RINGS = {
     "noun": "smart ring",
     "nouns": "smart rings",
     "nav": "Smart rings",
-    "checked_iso": "2026-11-01",
+    "checked_iso": "2026-11-02",
+
+    # The model each brand is selling now, as of the date above. A brand in the
+    # table with no entry here fails `category records`, so a lineup cannot be
+    # left un-asked: the gap that shipped a page of Ring 4 with Ring 5 already
+    # on sale was nobody being made to answer this question per brand.
+    "current": {
+        "Oura": "oura-5",
+        "RingConn": "rc-3",
+        "Ultrahuman": "ultra-air",
+        "Samsung": "samsung-ring",
+        "Amazfit": "amazfit-helio",
+    },
 
     "title": "Smart rings that work without a subscription (UK)",
     "description": "{n} UK smart rings compared: what each tracks without a membership, what is paywalled, and what it costs over three years.",
@@ -737,7 +749,7 @@ RINGS = {
     "short": (
         '{v:rc-3:RingConn Gen 3} is the best overall without a subscription.',
         '{v:rc-2:RingConn Gen 2} is the best value.',
-        '{v:oura-4:Oura Ring 4} needs a £5.99 monthly membership for its detail.',
+        '{v:oura-5:Oura Ring 5} needs a £5.99 monthly membership for its detail.',
     ),
     "short_tones": ("best", "batt", "avoid"),
     "short_head": "The short answer",
@@ -749,9 +761,10 @@ RINGS = {
         ("batt", "Best value:", "{v:rc-2:RingConn Gen 2}",
          ", which keeps its data free for {p:rc-2}, adds the sleep-apnea "
          "insights the Air leaves out, and lasts up to 12 days on a charge."),
-        ("avoid", "Avoid if you won't pay monthly:", "{v:oura-4:Oura Ring 4}",
+        ("avoid", "Avoid if you won't pay monthly:", "{v:oura-5:Oura Ring 5}",
          " shows only three daily scores without its membership; the sleep "
-         "stages, HRV, SpO2 and trends need £5.99 a month."),
+         "stages, HRV, SpO2 and trends need £5.99 a month. The {v:oura-4:Ring 4}"
+         " is the same ring a generation back, for {p:oura-4}."),
     ),
 
     "score_max": 8,
@@ -790,6 +803,7 @@ RINGS = {
         ("six", "Up to 6 days"),
         ("seven", "Up to 7 days"),
         ("eight", "Up to 8 days"),
+        ("nine", "Up to 9 days"),
         ("ten", "Up to 10 days"),
         ("twelve", "Up to 12 days"),
         ("fourteen", "Up to 14 days"),
@@ -800,7 +814,7 @@ RINGS = {
     # maker's exact figure.
     "power_filters": [
         ("up to 6 days", ("four", "six")),
-        ("7 to 10 days", ("seven", "eight", "ten")),
+        ("7 to 10 days", ("seven", "eight", "nine", "ten")),
         ("over 10 days", ("twelve", "fourteen")),
     ],
     "filters": [
