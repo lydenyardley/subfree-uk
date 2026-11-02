@@ -1,0 +1,49 @@
+name: Prices
+
+# The one thing a scheduled job can do for a hand-checked dataset: say when it
+# is due, and hand over the links. It cannot read the vendors itself, and it
+# must not move `checked_iso` for a page no one opened, so it files the list and
+# stops there.
+on:
+  schedule:
+    # Monday morning, so the week starts with the work it has to do.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  recheck:
+    name: List the prices to re-check
+    runs-on: ubuntu-latest
+    steps:
+      # Actions are pinned by commit, with the tag they were on in the comment,
+      # as in the audit: a moved tag must not change what this run did.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: "3.13"
+      # The list needs the dataset and nothing else: no browser, no network.
+      - name: Write the list
+        id: due
+        run: |
+          set +e
+          python build/refresh.py > refresh.md
+          echo "due=$?" >> "$GITHUB_OUTPUT"
+          cat refresh.md >> "$GITHUB_STEP_SUMMARY"
+      # One open issue is the standing reminder; each week adds to it rather than
+      # opening a second. Closing it is how the work is declared done.
+      - name: File it, or add to the open one
+        if: steps.due.outputs.due == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh issue list --state open --search 'Weekly price check in:title' \
+                --json number --jq '.[0].number // empty')
+          if [ -n "$n" ]; then
+            gh issue comment "$n" --body-file refresh.md
+          else
+            gh issue create --title "Weekly price check" --body-file refresh.md
+          fi
