@@ -26,8 +26,8 @@ unknown facet or an invalid value fails by name rather than printing nothing.
 CLAIM_WHAT = {
     "rec": "Records free without a plan",
     "price": "The price",
-    "nosub": "The {period} cost with no plan",
-    "plan": "The {period} cost with a plan",
+    "nosub": "The {period_adj} cost with no plan",
+    "plan": "The {period_adj} cost with a plan",
     "history": "The recorded history without a plan",
     "ha": "The Home Assistant line",
 }
@@ -183,12 +183,221 @@ CAMERA_MD_HEAD = (
     "no plan | {period_short}, with plan | Best for | Main catch |",
 )
 
+# A ring's 3-year figure is the price plus a membership, not a recorder and a
+# card, so its score asks different questions and its table has different
+# columns. The keys are the same ones the build reads; only the words change.
+RING_CLAIMS = {
+    "rec": "Works without a subscription",
+    "price": "The price",
+    "nosub": "The {period_adj} cost with no subscription",
+    "plan": "The {period_adj} cost with the membership",
+    "history": "The data you keep without a plan",
+    "ha": "The Home Assistant line",
+}
+RING_SORT = [
+    ("keep3", "{period_adj} cost to keep the data",
+     "Order: {period_adj} cost to keep the data (the bold figure)."),
+    ("price", "Price, low to high", "Order: price, low to high."),
+    ("score", "Free-data score, high to low", "Order: free-data score, high to low."),
+    ("recv", "No subscription first", "Order: no subscription first."),
+    ("nosub3", "{period_adj} cost, no subscription",
+     "Order: {period_adj} cost with no subscription."),
+    ("sub3", "{period_adj} cost, with membership",
+     "Order: {period_adj} cost with a membership (the bold figure)."),
+    ("model", "Model, A to Z", "Order: model name, A to Z."),
+]
+
+RING_METHOD = {
+    "no_plan": (
+        "<sup>a</sup> <b>{period}, no subscription</b> = the ring's price, "
+        "because no maker charges for the app itself. What the free tier "
+        "keeps differs: Oura keeps three daily scores, and the other rings "
+        "keep their full data. Each row says which."
+    ),
+    "with_plan": (
+        "<sup>b</sup> <b>{period}, with membership</b> = the price + {months} × "
+        "the cheapest monthly membership. Only Oura charges one: £5.99 a "
+        "month, or £69.99 a year, which works out cheaper. A ring with no "
+        "membership says so in that column, so the two totals compare like "
+        "with like. Every ring's sums are under <i>Details</i>."
+    ),
+    "score": (
+        "<b>Free-data score (out of {score_max}):</b> works without a "
+        "subscription (2 = every core metric free, 1 = scores only or a free "
+        "trial, 0 = a membership is required), sleep detail free (1), heart "
+        "rate free (1), SpO2 and temperature free (1), advanced "
+        "insights free (1), local Home Assistant support (2 = official and "
+        "local, 1 = unofficial or cloud)."
+    ),
+    "terms": (
+        "<b>Plain terms.</b> A <i>smart ring</i> is a finger-worn tracker with "
+        "no screen: it sends what it measures to a phone app. <i>HRV</i> "
+        "(heart-rate variability) is the variation between heartbeats, used as "
+        "a recovery signal. <i>SpO2</i> is blood-oxygen saturation. A "
+        "<i>membership</i> is the subscription some brands charge before the app "
+        "shows its detailed data. <i>Home Assistant</i> is free software that "
+        "keeps your smart home on your own network instead of a manufacturer's "
+        "cloud."
+    ),
+    "left_out": (
+        "A phone, electricity, sizing kits and future price rises are left out. "
+        "Anything not yet confirmed is listed under <i>Not yet verified</i> in "
+        "each ring's details."
+    ),
+    "photos": (
+        "Photos are the manufacturers' own, from their product pages: "
+        "{credits}.{missing}"
+    ),
+    "md": [
+        "With no subscription: the ring's price, because no maker charges for "
+        "the app itself. Oura's free tier keeps three daily scores; the other "
+        "rings keep their full data.",
+        "With a membership: price + {months} × the cheapest monthly membership "
+        "(Oura's £5.99). Paying yearly is cheaper.",
+        "A phone, electricity, sizing kits and price rises are left out.",
+    ],
+}
+
+RING_MD_HEAD = (
+    "# UK smart rings that work without a subscription",
+    "Last checked {checked}. {n} smart rings. No affiliate links.",
+    "| Smart ring | Subscription? | Price | Score /{score_max} | {period_short}, "
+    "no subscription | {period_short}, with membership | Best for | Main catch |",
+)
+
+RING_CSV_HEAD = [
+    "Brand", "Model", "Subscription needed?", "Battery",
+    "UK price (£)", "Price note", "Price source", "Best for", "Main catch",
+    "Free-data score (/{score_max})", "3-yr cost without subscription (£)",
+    "3-yr cost with membership, monthly (£)",
+    "Cheapest 3-yr cost to keep the data (£)", "Maths: without",
+    "Maths: with", "Where the data lives", "Live heart rate free?",
+    "Wellness alerts free?", "Sleep & recovery insights",
+    "Data history without a subscription", "What's paywalled",
+    "Membership & UK price", "Membership price region",
+    "Home Assistant / local-only", "Works with", "Sources",
+    "Unverified / re-check", "Last checked",
+]
+
+RING_LABELS = {
+    "rec_col": "Subscription?",
+    "score_col": "Free data",
+    "nosub_col": "{period_adj} cost, no subscription",
+    "sub_col": "{period_adj} cost, with membership",
+    "nosub_how": "{period_adj} cost without a subscription",
+    "sub_how": "{period_adj} cost with the membership",
+    "detail": {
+        "power": "Battery", "wifi": "Works with",
+        "storage": "Where the data lives", "live": "Live heart rate",
+        "alerts": "Wellness alerts", "ai": "Sleep & recovery insights",
+        "history": "Data without a plan", "paywalled": "Behind the membership",
+        "plans": "Membership", "nosub": "{period}, no subscription",
+        "sub": "{period}, with membership",
+    },
+    "rec_note": {
+        "yes": "", "brief": "scores only", "no": "membership only",
+    },
+    "keep_sub_note": "cheapest for this ring: with membership",
+    "keep_free": "no subscription, nothing more to pay",
+    "maths_no_route": " (but no data without a membership)",
+    "maths_brief": " (three daily scores only)",
+    "no_plan_cell": "No membership",
+    "footer": "to show which ones work without a subscription",
+    "rec_filter_why": "none works without a subscription",
+    "ha_filter_why": "none works with Home Assistant",
+    "keep_label": "Cheapest way to keep the data for {period}",
+    "md": {
+        "storage": "Where the data lives",
+        "free": "Free",
+        "free_line": "live heart rate: {live}; wellness alerts: {alerts}; "
+                     "sleep and recovery insights: {ai}",
+        "free_lower": False,
+        "history": "Data without a plan",
+        "paywalled": "Behind the membership",
+        "plans": "Membership",
+        "ha": "Home Assistant",
+        "unverified": "Not yet verified",
+    },
+}
+
+# The labels the shared table and details panel print. A category carries its
+# own words where they differ; the doorbells' are the default, because that was
+# the page before there were categories. `labels()` merges a record's overrides
+# one level into the nested maps, so a ring record can change `detail.power` to
+# "Battery" without restating the other eleven rows.
+DEFAULT_LABELS = {
+    "rec_col": "Records free?",
+    "score_col": "Free features",
+    "nosub_col": "{period_adj} cost, no plan",
+    "sub_col": "{period_adj} cost, with plan",
+    "nosub_how": "{period_adj} cost without a plan",
+    "sub_how": "{period_adj} cost with a plan",
+    "catch_col": "Main catch",
+    "detail": {
+        "power": "Power", "wifi": "Wi-Fi", "storage": "Storage",
+        "live": "Live view", "alerts": "Motion alerts",
+        "ai": "Smart detection", "history": "History without a plan",
+        "paywalled": "Behind the paywall", "plans": "Plans",
+        "ha": "Home Assistant", "score": "Score breakdown",
+        "nosub": "{period}, no plan", "sub": "{period}, with plan",
+    },
+    "rec_note": {
+        "yes": "", "kit": "extra kit needed", "brief": "3 hrs history",
+        "no": "no recordings",
+    },
+    "keep_sub_note": "cheapest for this model: with plan",
+    "keep_free": "records free, no plan",
+    "maths_no_route": " (but no recordings)",
+    "maths_brief": " (3 hours of history only)",
+    "no_plan_cell": "No plan",
+    "no_plan_note": "No subscription offered or needed",
+    "footer": "to show which ones record without a subscription",
+    "rec_filter_why": "none records free with no extra kit",
+    "ha_filter_why": "none works locally with Home Assistant",
+    "keep_label": "Cheapest way to record for {period}",
+    "md": {
+        "storage": "Storage",
+        "free": "Free",
+        "free_line": "live view {live}; alerts {alerts}; smart detection: {ai}",
+        "history": "History without plan",
+        "paywalled": "Paywalled",
+        "plans": "Plans",
+        "ha": "Home Assistant",
+        "unverified": "Unverified",
+    },
+}
+
+
+def labels(cat):
+    """A category's labels: the default words with the record's overrides."""
+    out = {}
+    for source in (DEFAULT_LABELS, cat.get("labels") or {}):
+        for key, value in source.items():
+            if isinstance(value, dict):
+                out.setdefault(key, {})
+                out[key].update(value)
+            else:
+                out[key] = value
+    return out
+
+
+# The CSV's columns, in order, named by the meaning each one carries. The
+# header words are the category's; the check reads a figure back by this key
+# rather than by an English label that a second category may word differently.
+CSV_KEYS = (
+    "brand", "model", "rec", "power", "price", "price_note", "price_src",
+    "best", "catch", "score_total", "nosub3", "sub3", "keep3", "maths_free",
+    "maths_sub", "storage", "live", "alerts", "ai", "history", "paywalled",
+    "sub_text", "plan_region", "ha_text", "wifi", "sources", "unverified",
+    "checked",
+)
+
 NOT_FOUND = {
     "title": "Page not found | SubFree UK",
-    "description": "That page does not exist. The UK comparisons are on the home page and the cameras page.",
+    "description": "That page does not exist. The UK comparisons are on the home page, the cameras page and the smart rings page.",
     "h1": "Page not found",
-    "say": "That link does not lead anywhere. The {what} are on the home page and the cameras page.",
-    "what": "comparisons of UK video doorbells and security cameras that record without a subscription",
+    "say": "That link does not lead anywhere. The {what} are on the home page, the cameras page and the smart rings page.",
+    "what": "comparisons of UK video doorbells, security cameras and smart rings that work without a subscription",
 }
 
 
@@ -479,13 +688,168 @@ CAMERAS = {
     "not_found": NOT_FOUND,
 }
 
-CATEGORIES = [DOORBELLS, CAMERAS]
+RINGS = {
+    "slug": "rings",
+    "route": "rings/",
+    "alias": None,
+    "csv": "data/rings.csv",
+    "md": "data/rings.md",
+    "page": "rings/index.html",
+
+    "noun": "smart ring",
+    "nouns": "smart rings",
+    "nav": "Smart rings",
+    "checked_iso": "2026-11-01",
+
+    "title": "Smart rings that work without a subscription (UK)",
+    "description": "{n} UK smart rings compared: what each tracks without a membership, what is paywalled, and what it costs over three years.",
+    "h1": "Smart rings that work without a subscription",
+    "dek": "{n} UK smart rings, checked against manufacturer pages and UK prices: free data, memberships and {period} costs.",
+    "mast": "No subscriptions",
+    "mast_long": "Gadgets that work without a subscription",
+    "skip": "Skip to the smart ring table",
+    "table_name": "Smart ring comparison",
+    "table_caption": "{table_name}: {n} models, 8 columns",
+    "cmp_caption": "Side-by-side comparison of {count} {nouns}",
+    "count_line": "Tick up to {cap} {nouns} to compare.",
+    "empty_line": "Nothing matches those filters.",
+    "no_match": "No {nouns} match those filters",
+    "shown": "{shown} of {total} {nouns} shown",
+
+    "months": 36,
+    "period": "3 years",
+    "period_adj": "3-year",
+    "period_short": "3 yrs",
+    "cap": 3,
+    "no_plan_note": "No membership offered or needed",
+
+    "short": (
+        '{v:ringconn-3:RingConn Gen 3} is the best overall without a subscription.',
+        '{v:ringconn-2-air:RingConn Gen 2 Air} is the best value.',
+        '{v:oura-4:Oura Ring 4} needs a £5.99 monthly membership for its detail.',
+    ),
+    "short_tones": ("best", "batt", "avoid"),
+    "aside": (
+        ("best", "Best overall without a subscription:", "{v:ringconn-3:RingConn Gen 3}",
+         ". It tracks sleep, HRV, SpO2, temperature and overnight vascular trends, "
+         "lasts up to 14 days and adds nothing to the price. It has no Home "
+         "Assistant integration."),
+        ("batt", "Best value:", "{v:ringconn-2-air:RingConn Gen 2 Air}",
+         ", which keeps its data free for £179, and still lasts up to 10 "
+         "days on a charge."),
+        ("avoid", "Avoid if you won't pay monthly:", "{v:oura-4:Oura Ring 4}",
+         " shows only three daily scores without its membership; the sleep "
+         "stages, HRV, SpO2 and trends need £5.99 a month."),
+    ),
+
+    "score_max": 8,
+    "score_parts": [
+        ("rec", "No subscription", 2),
+        ("sleep", "Sleep detail free", 1),
+        ("hr", "Heart rate free", 1),
+        ("spo2", "SpO2 & temperature free", 1),
+        ("extra", "Advanced insights free", 1),
+        ("ha", "Local / Home Assistant", 2),
+    ],
+
+    "rec": [
+        ("yes", "No subscription", 2),
+        ("brief", "Scores only without a plan", 1),
+        ("no", "Membership required", 0),
+    ],
+    "required_keys": (
+        "power", "wifi", "live", "alerts", "ai", "history", "storage",
+        "paywalled",
+    ),
+
+    "facets": [
+        ("power", "Battery"),
+        ("wifi", "Works with"),
+        ("storage", "Where the data lives"),
+        ("live", "Live heart rate"),
+        ("alerts", "Wellness alerts"),
+        ("ai", "Sleep & recovery insights"),
+        ("history", "Data without a plan"),
+        ("paywalled", "Behind the membership"),
+        ("ha", "Home Assistant"),
+    ],
+    "powers": [
+        ("four", "Up to 4 days"),
+        ("six", "Up to 6 days"),
+        ("seven", "Up to 7 days"),
+        ("eight", "Up to 8 days"),
+        ("ten", "Up to 10 days"),
+        ("twelve", "Up to 12 days"),
+        ("fourteen", "Up to 14 days"),
+    ],
+    "power_hint": "Battery life is the maker's figure with the main features on, unless the row says otherwise.",
+    "filters": [
+        ("f-rec", "Works without a subscription"),
+        ("f-ha", "Home Assistant"),
+    ],
+
+    "verdicts": {
+        "best": ("Best overall", "best"),
+        "value": ("Best value", "batt"),
+        "ha": ("Best for Home Assistant", "batt"),
+        "galaxy": ("Best for Samsung phones", "batt"),
+        "budget": ("Cheapest", "batt"),
+        "avoid": ("Avoid without a membership", "avoid"),
+    },
+    "headline": "best",
+
+    "claims": RING_CLAIMS,
+    "compare": [
+        ("Subscription?", "rec"),
+        ("Price", "price"),
+        ("Free data", "score"),
+        ("{period_adj} cost, no subscription", "nosub3"),
+        ("{period_adj} cost, with membership", "sub3"),
+        ("Best for", "best"),
+        ("Main catch", "catch"),
+        ("Battery", "power"),
+        ("Where the data lives", "storage"),
+        ("Live heart rate", "live"),
+        ("Wellness alerts", "alerts"),
+        ("Sleep & recovery insights", "ai"),
+        ("Data without a plan", "history"),
+        ("Behind the membership", "paywalled"),
+        ("Membership", "plan"),
+        ("Home Assistant", "ha"),
+        ("Works with", "wifi"),
+    ],
+    "pin": ("rec", "price", "nosub3", "sub3"),
+
+    "sort": RING_SORT,
+    "method": RING_METHOD,
+    "plain_part": PLAIN_PART,
+    "labels": RING_LABELS,
+    "csv_head": RING_CSV_HEAD,
+    "md_head": RING_MD_HEAD,
+    "not_found": NOT_FOUND,
+}
+
+CATEGORIES = [DOORBELLS, CAMERAS, RINGS]
 BY_SLUG = {cat["slug"]: cat for cat in CATEGORIES}
+
+
+def _written(value, cat):
+    """A label's placeholders filled, recursively, so no page formats them."""
+    if isinstance(value, str):
+        # Only the period's two placeholders are the record's to fill. A label
+        # that carries another field's placeholder, such as the markdown free
+        # line, is left for the page that has that row.
+        return (value.replace("{period_adj}", cat["period_adj"])
+                .replace("{period}", cat["period"]))
+    if isinstance(value, dict):
+        return {key: _written(item, cat) for key, item in value.items()}
+    return value
 
 
 def words(cat):
     """The record's prose with its period written out, once, for every page."""
     out = dict(cat)
+    out["labels"] = _written(labels(cat), cat)
     out["sort"] = [
         (key, label.format(period=cat["period"], period_adj=cat["period_adj"]),
          note.format(period=cat["period"], period_adj=cat["period_adj"]))

@@ -824,6 +824,7 @@ def scroller_check(page):
         """() => {
             const s = document.querySelector('.cmp-scroll');
             const first = document.querySelector('#cmp-table thead th[data-id]');
+            const rowHead = document.querySelector('#cmp-table tbody th');
             return {
                 tab: s.tabIndex,
                 role: s.getAttribute('role'),
@@ -831,7 +832,9 @@ def scroller_check(page):
                 over: s.scrollWidth - s.clientWidth,
                 left: Math.round(s.scrollLeft),
                 snap: getComputedStyle(s).scrollSnapType,
-                align: first ? getComputedStyle(first).scrollSnapAlign : ''
+                align: first ? getComputedStyle(first).scrollSnapAlign : '',
+                firstLeft: first ? Math.round(first.getBoundingClientRect().left) : 0,
+                labelRight: rowHead ? Math.round(rowHead.getBoundingClientRect().right) : 0
             };
         }"""
     )
@@ -841,6 +844,14 @@ def scroller_check(page):
         problems.append(f"the comparison scroller is unnamed: {state}")
     if state["over"] <= 0:
         problems.append("the comparison does not overflow at 390px, so it cannot be scrolled")
+    # A snap point is measured from the scroll padding. The sticky label column
+    # is as wide as its longest label, so a fixed padding let the first product
+    # open underneath it, where its own figures could not be read.
+    if state["firstLeft"] < state["labelRight"] - 1:
+        problems.append(
+            f"the first product opens at {state['firstLeft']}px, under the label "
+            f"column that ends at {state['labelRight']}px"
+        )
     # The cue tells the reader which model is next; the snap is what makes a
     # swipe land on a model rather than between two.
     if "mandatory" not in state["snap"] or state["align"] != "start":

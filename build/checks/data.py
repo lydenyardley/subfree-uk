@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-from catalog import CATEGORIES
+from catalog import CATEGORIES, CSV_KEYS
 from .context import ROOT
 from .registry import Check, Skip
 
@@ -92,21 +92,37 @@ def category_problems(rows, pages, cat):
         # A row with neither route has no total; `row_problems()` has already
         # named it, so the recompute does not raise a second time.
         keep3 = min(options) if options else None
-        wanted = {
-            "Brand": row["brand"],
-            "Model": row["model"],
-            "UK price (£)": f"{price:.2f}",
-            f"Free-feature score (/{cat['score_max']})": str(sum(row["score"].values())),
-            "3-yr cost without subscription (£)": f"{nosub3:.2f}",
-            "3-yr cost with cheapest plan, monthly (£)": "" if sub3 is None else f"{sub3:.2f}",
-            "Cheapest 3-yr cost to keep recordings (£)": "" if keep3 is None else f"{keep3:.2f}",
-            "Plan price region": row["plan_region"],
-            "Last checked": cat["checked"],
+        values = {
+            "brand": row["brand"], "model": row["model"],
+            "rec": cat["rec_label"][row["rec"]],
+            "power": "/".join(cat["power_label"][p] for p in row["power"]),
+            "price": f"{price:.2f}", "price_note": row["price_note"],
+            "price_src": rows.S[row["price_src"]][1], "best": row["best"],
+            "catch": row["catch"], "score_total": str(sum(row["score"].values())),
+            "nosub3": f"{nosub3:.2f}",
+            "sub3": "" if sub3 is None else f"{sub3:.2f}",
+            "keep3": "" if keep3 is None else f"{keep3:.2f}",
+            "maths_free": row["maths_free"], "maths_sub": row["maths_sub"],
+            "storage": row["storage"], "live": row["live"],
+            "alerts": row["alerts"], "ai": row["ai"],
+            "history": row["history"], "paywalled": row["paywalled"],
+            "sub_text": row["sub_text"], "plan_region": row["plan_region"],
+            "ha_text": row["ha_text"], "wifi": row["wifi"],
+            "sources": " ; ".join(rows.S[k][1] for k in row["src"]),
+            "unverified": row["unverified"], "checked": cat["checked"],
         }
-        for key, value in wanted.items():
-            if out.get(key) != value:
+        if len(cat["csv_head"]) != len(CSV_KEYS):
+            problems.append(
+                f"{cat['slug']}: the CSV has {len(cat['csv_head'])} columns, "
+                f"but its rows carry {len(CSV_KEYS)}"
+            )
+            continue
+        shown = [head.format(score_max=cat["score_max"]) for head in cat["csv_head"]]
+        for label, key in zip(shown, CSV_KEYS):
+            want = values[key]
+            if out.get(label) != want:
                 problems.append(
-                    f"{row['id']}: CSV {key} is {out.get(key)!r}, recomputed {value!r}"
+                    f"{row['id']}: CSV {label!r} is {out.get(label)!r}, recomputed {want!r}"
                 )
         if (row["keep3"], row["nosub3"], row["sub3"]) != (keep3, nosub3, sub3):
             problems.append(f"{row['id']}: a derived figure drifted from price, extra and plan")
@@ -133,13 +149,18 @@ def category_problems(rows, pages, cat):
     # behind, and the assumption it replaced cannot come back.
     with open(os.path.join(ROOT, cat["md"]), encoding="utf-8") as handle:
         markdown = handle.read()
+    # A category whose rows buy a card or a hub has to price it in the method.
+    # A ring buys neither, so its note is not made to print a figure its sums
+    # never use.
+    buys_sundries = any(row.get("extra_src") or row.get("kit_src") for row in table)
     for name, text in ((cat["page"], index), (cat["md"], markdown)):
-        for sundry, figure in (("microSD card", rows.CARD), ("USB stick", rows.STICK)):
-            if f"{sundry} at {rows.money(figure)}" not in text:
-                problems.append(
-                    f"the {name} method note does not price the {sundry} "
-                    f"at {rows.money(figure)}"
-                )
+        if buys_sundries:
+            for sundry, figure in (("microSD card", rows.CARD), ("USB stick", rows.STICK)):
+                if f"{sundry} at {rows.money(figure)}" not in text:
+                    problems.append(
+                        f"the {name} method note does not price the {sundry} "
+                        f"at {rows.money(figure)}"
+                    )
         if "not from a cited source" in text:
             problems.append(f"the {name} method note still calls a sundry an assumption")
     return problems

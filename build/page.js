@@ -92,8 +92,8 @@ function apply(){
   else nb.textContent='Show '+nm+' at '+pr;
   // The message names the filter that emptied the list, not just that it is empty.
   var why=['no '+CAT.noun+' costs between £'+lo+' and £'+hi];
-  if(rec)why.push('none records free with no extra kit');
-  if(ha)why.push('none works locally with Home Assistant');
+  if(rec)why.push(CAT.recFilterWhy);
+  if(ha)why.push(CAT.haFilterWhy);
   if(pw.length)why.push('none is '+(pw.length>1?'either ':'')+pw.join(' or '));
   var msg=why.join(', and ')+'.';
   et.textContent=msg.charAt(0).toUpperCase()+msg.slice(1)+(near?' The closest is '+nm+' at '+pr+'.':'');
@@ -199,7 +199,19 @@ function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
 // The comparison is wider than a phone, and a table that is cut off with no
 // sign of it reads as a table that ends there. The cue names the column that
 // is off the edge, and an edge fade says there is more.
-var cmpScroll=$('.cmp-scroll'),cmpCue=$('#cmp-cue'); function cmpCueUpdate(){
+var cmpScroll=$('.cmp-scroll'),cmpCue=$('#cmp-cue');
+// A snap point is measured from the scroll padding, and the sticky label
+// column is as wide as its longest label rather than the 76px the stylesheet
+// assumes. Left alone, the first product snapped to 76px and sat under the
+// rest of the label on a phone. Measure the column that is really there.
+function cmpPad(){
+ if(!cmpScroll)return;
+ var label=cmpScroll.querySelector('#cmp-table tbody th');
+ if(!label)return;
+ var w=Math.ceil(label.getBoundingClientRect().width);
+ if(w>0)cmpScroll.style.scrollPaddingLeft=w+'px';
+}
+function cmpCueUpdate(){
  if(!cmpScroll||!cmpCue)return;
  var wrap=cmpScroll.parentNode;
  if(cmpScroll.scrollWidth-cmpScroll.clientWidth<=2){
@@ -236,7 +248,7 @@ function cueScroll(){
  if(cueFrame)return;
  cueFrame=requestAnimationFrame(function(){cueFrame=0;cmpCueUpdate()});
 }
-if(cmpScroll){cmpScroll.addEventListener('scroll',cueScroll,{passive:true});addEventListener('resize',cueScroll)}
+if(cmpScroll){cmpScroll.addEventListener('scroll',cueScroll,{passive:true});addEventListener('resize',function(){cmpPad();cueScroll()})}
 // The cue needs the width of a table that has just been built, so it costs a
 // layout. Ask for it on the frame after the table is on screen, not in the
 // middle of the open.
@@ -295,7 +307,7 @@ function buildCmp(){
  // it is measured against. "+£15.00" without a baseline is not a comparison.
  var lowId=null;
  s.forEach(function(id){var v=D[id].keep3;if(typeof v==='number'&&isFinite(v)&&(lowId===null||v<D[lowId].keep3))lowId=id});
- h+='<tr class="cmp-cost" data-pin="1"><th scope="row">Cheapest way to record for '+esc(CAT.period)+'</th>'+s.map(function(id){var v=D[id].keep3;
+ h+='<tr class="cmp-cost" data-pin="1"><th scope="row">'+esc(CAT.keepLabel)+'</th>'+s.map(function(id){var v=D[id].keep3;
   if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
@@ -323,6 +335,7 @@ function buildCmp(){
 function render(){
  buildCmp();
  $('#compare').hidden=false;
+ cmpPad();
  queueCue();
 }
 // Identical rows are the one part of a comparison that carries no decision, so
@@ -672,7 +685,8 @@ function openCard(t){
  });
  if(!list.length)return false;
  $('#card-h',card).textContent=d.name+' \u00b7 '+(CLAIM_WHAT[t.dataset.claim]||'');
- cardLine('.card-say',c.say);
+ var sayField={price:'priceNote',rec:'history',history:'history',ha:'ha'}[t.dataset.claim];
+ cardLine('.card-say',c.say||(sayField&&d[sayField]));
  cardLine('.card-arc',c.arc);
  cardLine('.card-note',c.note);
  var box=$('.card-srcs',card);

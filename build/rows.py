@@ -15,7 +15,7 @@ from datetime import date
 from math import ceil
 from urllib.parse import urlparse
 
-from catalog import CATEGORIES, DOORBELLS as CAT
+from catalog import CATEGORIES, DOORBELLS as CAT, labels
 
 # Each category carries the day its own prices and plans were checked, because
 # a second category lands on a different day from the first. ISO, so the age
@@ -121,6 +121,30 @@ S = {
  "amz_e340": ("Amazon UK: eufy E340", "https://www.amazon.co.uk/dp/B0CF8RPX5M"),
  "amz_c31": ("Amazon UK: eufy C31", "https://www.amazon.co.uk/dp/B0GSFQL25B"),
  "amz_td21": ("Amazon UK: Tapo TD21", "https://www.amazon.co.uk/dp/B0DGLVB89G"),
+ # Smart rings: Amazon UK listings carry the GBP price for one size, and the
+ # vendor's own page carries what the ring measures. The membership page is
+ # Oura's; the others publish that no plan is needed.
+ "amz_oura4": ("Amazon UK: Oura Ring 4", "https://www.amazon.co.uk/dp/B0D9WWB3WX"),
+ "oura_membership": ("Oura Membership UK", "https://ouraring.com/membership"),
+ "oura_free": ("Oura support: what a membership adds", "https://support.ouraring.com/hc/en-us/articles/4409086524819-Oura-Membership"),
+ "ha_oura": ("Home Assistant: Oura (community)", "https://github.com/louispires/Oura-Home-Assistant-Integration"),
+ "amz_ultra": ("Amazon UK: Ultrahuman Ring AIR", "https://www.amazon.co.uk/dp/B0H3B3GL17"),
+ "uh_ring": ("Ultrahuman Ring AIR", "https://www.ultrahuman.com/ring/"),
+ "uh_nosub": ("Ultrahuman: Ring AIR vs Ring PRO (no subscription)", "https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/"),
+ "ha_ultra": ("Home Assistant: Ultrahuman (community)", "https://github.com/anant-j/Ultrahuman"),
+ "amz_rc2": ("Amazon UK: RingConn Gen 2", "https://www.amazon.co.uk/dp/B0DG2QKMFX"),
+ "rc2_product": ("RingConn Gen 2", "https://ringconn.com/products/ringconn-gen-2"),
+ "amz_rc2a": ("Amazon UK: RingConn Gen 2 Air", "https://www.amazon.co.uk/dp/B0DWK4QQ7H"),
+ "rc2a_product": ("RingConn Gen 2 Air", "https://ringconn.com/products/ringconn-gen-2-air"),
+ "amz_rc3": ("Amazon UK: RingConn Gen 3", "https://www.amazon.co.uk/dp/B0GVSGY854"),
+ "rc3_product": ("RingConn Gen 3", "https://ringconn.com/products/ringconn-gen-3"),
+ "rc_nosub": ("RingConn: what the rings cost to run", "https://ringconn.com/blogs/guides/ringconn-cost-guide"),
+ "amz_samsung": ("Amazon UK: Samsung Galaxy Ring", "https://www.amazon.co.uk/dp/B0DNTFZLDZ"),
+ "samsung_support": ("Samsung UK: how to use Galaxy Ring", "https://www.samsung.com/uk/support/mobile-devices/how-to-use-the-samsung-galaxy-ring/"),
+ "amazfit_uk": ("Amazfit UK: Helio Ring", "https://uk.amazfit.com/products/amazfit-helio-ring"),
+ "amazfit_aura": ("Amazfit UK: Zepp Aura", "https://uk.amazfit.com/pages/zepp-aura"),
+ "ha_zepp": ("Home Assistant: Zepp2Hass (community)", "https://community.home-assistant.io/t/zepp2hass-connect-your-amazfit-zepp-watch-to-home-assistant/973979"),
+ "ha_index": ("Home Assistant integrations", "https://www.home-assistant.io/integrations/"),
 }
 
 # Amazon Associates: a row whose price links to Amazon UK carries the tag, so
@@ -525,6 +549,142 @@ dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit"
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
  src=["amz_blink_cam","amz_sm2","blink_storage","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
  rec_src="blink_storage", history_src="blink_storage", ha_src="ha_blink", plan_src="blink_plans", unverified=""),
+
+# ---------- smart rings ----------
+# A ring has no recording and no recorder, so its sums are the price and, where
+# the vendor charges one, the membership. `free_records` is the same decision
+# as before: does the product give its data with no plan? `power` buckets the
+# vendor's battery figure, and `wifi` carries the phones it works with.
+dict(cat="rings", id="oura-4", brand="Oura", model="Ring 4", rec="brief", power=["eight"], ha=1,
+ price=244.00, price_note="Amazon UK, Silver, size 9; other sizes and finishes differ", price_src="amz_oura4",
+ extra=0, extra_note="", free_records=False,
+ sub=5.99, sub_name="Oura Membership",
+ best="The most detailed sleep and recovery data, if you will pay monthly",
+ catch="Without the £5.99 monthly membership, only three daily scores work.",
+ storage="Oura's cloud. Oura lets you download your data from the Membership Hub even without a plan.",
+ live="No. 24/7 heart rate is part of the membership.",
+ alerts="No. Wellness alerts are part of the membership.",
+ ai="No. Only the three daily scores are free. Sleep stages, HRV, SpO2 and temperature need the membership.",
+ history="Three daily scores only. Sleep stages, HRV, SpO2 and trends need the membership.",
+ paywalled="Detailed sleep stages, 24/7 heart rate and HRV, SpO2, temperature, stress, cardiovascular age, VO2 max, women's health, reports and the API",
+ sub_text="Oura Membership £5.99/month or £69.99/year after tax. The first month is free",
+ ha_text="A community HACS integration brings the ring's data into Home Assistant through Oura's cloud API. Oura blocks API access without an active membership, so the integration needs the plan too.",
+ wifi="iPhone and Android",
+ score=dict(rec=1,sleep=0,hr=0,spo2=0,extra=0,ha=1),
+ src=["amz_oura4","oura_membership","oura_free","ha_oura"],
+ rec_src="oura_free", history_src="oura_free", ha_src="ha_oura", plan_src="oura_membership",
+ nosub_say="£244 buys the ring. Without the membership only three daily scores work.", unverified=""),
+dict(cat="rings", id="ultra-air", brand="Ultrahuman", model="Ring AIR", rec="yes", power=["six"], ha=1,
+ price=329.00, price_note="Amazon UK", price_src="amz_ultra",
+ extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
+ best="Home Assistant tinkerers: the data is free, and a HACS integration pulls it in",
+ catch="No SpO2 reading, and the Home Assistant route is a community cloud integration.",
+ storage="Ultrahuman's cloud. The app holds the history and shows it on the phone.",
+ live="Yes, in the app.",
+ alerts="Yes, recovery and movement nudges.",
+ ai="Free: sleep stages, HRV, skin temperature, stress, recovery and cycle insights.",
+ history="Yes, full history in the app.",
+ paywalled="Nothing needed. No subscription. Ultrahuman Max adds replacements and plug-ins but is not required",
+ sub_text="No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra", plan_say="No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra.",
+ ha_text="A community HACS integration reads the ring through Ultrahuman's cloud API. It is not local, and it needs your account.",
+ wifi="iPhone and Android",
+ score=dict(rec=2,sleep=1,hr=1,spo2=0,extra=1,ha=1),
+ src=["amz_ultra","uh_ring","uh_nosub","ha_ultra"],
+ rec_src="uh_nosub", history_src="uh_ring", ha_src="ha_ultra", plan_src="uh_nosub",
+ nosub_say="No subscription. The ring and its data are the whole cost.",
+ unverified="Ultrahuman's UK page does not publish minimum iOS or Android versions; check the app store listing."),
+dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=["twelve"], ha=0,
+ price=259.00, price_note="Amazon UK", price_src="amz_rc2",
+ extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
+ best="The cheaper RingConn, with the same free core data",
+ catch="No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail.",
+ storage="RingConn's cloud. The app holds the history and shows it on the phone.",
+ live="Yes, in the app.",
+ alerts="App reminders only.",
+ ai="Free: sleep stages, HRV, SpO2, skin temperature, stress and sleep-apnea insights.",
+ history="Yes, full history in the app.",
+ paywalled="Nothing needed. No app subscription for the core data",
+ sub_text="No subscription. RingConn says the ring's core features need no plan", plan_say="No subscription. RingConn says the ring's core features need no plan.",
+ ha_text="No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.",
+ wifi="iPhone and Android",
+ score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
+ src=["amz_rc2","rc2_product","rc_nosub","ha_index"],
+ rec_src="rc_nosub", history_src="rc2_product", ha_src="ha_index", plan_src="rc_nosub",
+ nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
+dict(cat="rings", id="rc-2-air", brand="RingConn", model="Gen 2 Air", rec="yes", power=["ten"], ha=0,
+ price=179.00, price_note="Amazon UK", price_src="amz_rc2a",
+ extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
+ best="The cheapest way into a ring that keeps its data free",
+ catch="No sleep-apnea insights, no vibration, and no Home Assistant.",
+ storage="RingConn's cloud. The app holds the history and shows it on the phone.",
+ live="Yes, in the app.",
+ alerts="App reminders only.",
+ ai="Free: sleep stages, HRV, SpO2, skin temperature and stress.",
+ history="Yes, full history in the app.",
+ paywalled="Nothing needed. No app subscription for the core data",
+ sub_text="No subscription. RingConn says the ring's core features need no plan", plan_say="No subscription. RingConn says the ring's core features need no plan.",
+ ha_text="No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.",
+ wifi="iPhone and Android",
+ score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=0,ha=0),
+ src=["amz_rc2a","rc2a_product","rc_nosub","ha_index"],
+ rec_src="rc_nosub", history_src="rc2a_product", ha_src="ha_index", plan_src="rc_nosub",
+ nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
+dict(cat="rings", id="rc-3", brand="RingConn", model="Gen 3", rec="yes", power=["fourteen"], ha=0,
+ price=309.00, price_note="Amazon UK", price_src="amz_rc3",
+ extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
+ best="The best all-round ring: 14 days, no subscription and the deepest sleep data",
+ catch="No Home Assistant integration, and it costs £50 more than the Gen 2.",
+ storage="RingConn's cloud. The app holds the history and shows it on the phone.",
+ live="Yes, in the app.",
+ alerts="Yes, vibration alerts on the ring.",
+ ai="Free: sleep stages, HRV, SpO2, temperature, stress, apnea risk and overnight vascular trends.",
+ history="Yes, full history in the app.",
+ paywalled="Nothing needed. No app subscription for the core data",
+ sub_text="No subscription. RingConn says the ring's core features need no plan", plan_say="No subscription. RingConn says the ring's core features need no plan.",
+ ha_text="No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.",
+ wifi="iPhone and Android",
+ score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
+ src=["amz_rc3","rc3_product","rc_nosub","ha_index"],
+ rec_src="rc_nosub", history_src="rc3_product", ha_src="ha_index", plan_src="rc_nosub",
+ nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
+dict(cat="rings", id="samsung-ring", brand="Samsung", model="Galaxy Ring", rec="yes", power=["seven"], ha=0,
+ price=233.38, price_note="Amazon UK, size 7 Titanium Black; other sizes and colours list at £399", price_src="amz_samsung",
+ extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
+ best="Samsung phone owners: no subscription and the deepest Samsung Health integration",
+ catch="Android only, with no iPhone support, and no Home Assistant route.",
+ storage="Samsung Health's cloud. The phone app holds the history.",
+ live="Yes, in Samsung Health.",
+ alerts="Yes, through Samsung Health notifications.",
+ ai="Free: sleep stages, heart rate, SpO2, skin temperature, stress, Energy Score and cycle tracking.",
+ history="Yes, in Samsung Health.",
+ paywalled="Nothing needed. Samsung charges no subscription for the ring's data",
+ sub_text="No subscription. Samsung Health is free with the ring", plan_say="No subscription. Samsung Health is free with the ring.",
+ ha_text="No official or community Home Assistant integration was found. The data stays in Samsung Health.",
+ wifi="Android 11+ only; not iPhone",
+ score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
+ src=["amz_samsung","samsung_support","ha_index"],
+ rec_src="amz_samsung", history_src="samsung_support", ha_src="ha_index", plan_src="amz_samsung",
+ nosub_say="No subscription. The ring and its data are the whole cost.",
+ unverified="Samsung's UK product page did not render a price. The £399 list figure is for the other Amazon variants; £233.38 is size 7 in Titanium Black."),
+dict(cat="rings", id="amazfit-helio", brand="Amazfit", model="Helio Ring", rec="yes", power=["four"], ha=0,
+ price=149.90, price_note="Amazfit UK sale price, RRP £269; size 10 is out of stock", price_src="amazfit_uk",
+ extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
+ best="The cheapest smart ring, with no subscription for the basics",
+ catch="Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra.",
+ storage="Zepp's cloud. The phone app holds the history.",
+ live="Yes, in Zepp.",
+ alerts="Yes, through Zepp notifications.",
+ ai="Free: sleep stages, resting heart rate, HRV, SpO2, temperature, stress and readiness.",
+ history="Yes, in Zepp.",
+ paywalled="Nothing for the core data. Zepp Aura's advanced sleep reports and unlimited AI assistant are optional paid extras",
+ sub_text="No subscription for the ring's data. Zepp Aura is an optional paid extra, priced in dollars on Amazfit's UK page", plan_say="No subscription for the ring's data. Zepp Aura is an optional paid extra.",
+ ha_text="No official integration. A community Zepp bridge exists for watches, but it is not confirmed for this ring.",
+ wifi="iPhone and Android (minimum versions not stated)",
+ score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
+ src=["amazfit_uk","amazfit_aura","ha_zepp"],
+ rec_src="amazfit_uk", history_src="amazfit_uk", ha_src="ha_zepp", plan_src="amazfit_uk",
+ nosub_say="No subscription for the ring's data. Zepp Aura is optional.",
+ unverified="Amazfit's UK page does not publish a battery-life figure; four days comes from retailer spec sheets, not the manufacturer. Zepp Aura's UK price is not published either."),
 ]
 
 # A row's Amazon price and buy links carry the tag, so a new Amazon row is
@@ -545,6 +705,9 @@ VERDICT = {
     "reo-rlc820a": "best", "reo-argus4": "batt", "reo-e1out": "ptz",
     "tapo-c660": "solar", "aqara-g3": "indoor", "aqara-e1": "value",
     "ring-outpro": "avoid", "blink-out4": "avoid",
+    "rc-3": "best", "rc-2-air": "value",
+    "ultra-air": "ha", "samsung-ring": "galaxy", "amazfit-helio": "budget",
+    "oura-4": "avoid",
 }
 PLAIN = {
     "ring": ("Runs on the battery, or you can wire it to your existing chime.",
@@ -595,6 +758,20 @@ PLAIN = {
                     "None. The camera has no storage of its own."),
     "blink-out4": ("Runs on two AA lithium batteries.",
                    "Recording needs a Sync Module 2 and a USB stick (1–256 GB)."),
+    "oura-4": ("A rechargeable ring battery that Oura says lasts five to eight days.",
+               "Oura's cloud holds the history, and Oura lets you download your data even without a membership."),
+    "ultra-air": ("A rechargeable ring battery that Ultrahuman says lasts four to six days in Turbo mode.",
+                  "Ultrahuman's cloud holds the history, and the app shows it on the phone."),
+    "rc-2": ("A rechargeable ring battery that RingConn says lasts up to 12 days.",
+             "RingConn's cloud holds the history, and the app shows it on the phone."),
+    "rc-2-air": ("A rechargeable ring battery that RingConn says lasts up to 10 days.",
+                 "RingConn's cloud holds the history, and the app shows it on the phone."),
+    "rc-3": ("A rechargeable ring battery that RingConn says lasts up to 14 days with vibration off.",
+             "RingConn's cloud holds the history, and the app shows it on the phone."),
+    "samsung-ring": ("A rechargeable ring battery that Samsung says lasts up to 7 days on the largest sizes.",
+                     "Samsung Health's cloud holds the history, and the phone app shows it."),
+    "amazfit-helio": ("A rechargeable ring battery that Amazfit's UK page does not put a figure on. Retailer spec sheets say about four days.",
+                      "Zepp's cloud holds the history, and the phone app shows it."),
 }
 
 # ---------- row shape ----------
@@ -610,7 +787,7 @@ REQUIRED_ROW_KEYS = (
 )
 OPTIONAL_ROW_KEYS = (
     "power_note", "cards", "plan_price_region", "extra_src", "kit_src", "kit_label",
-    "kit_price",
+    "kit_price", "nosub_say", "plan_say",
 )
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
@@ -750,6 +927,7 @@ def _derive(cat):
     rows = [r for r in ROWS if r.get("cat") == cat["slug"]]
     cat["rows"] = rows
     cat["sources"] = S
+    cat["labels"] = labels(cat)
     cat["rec_label"] = {key: label for key, label, _ in cat["rec"]}
     cat["rec_rank"] = {key: rank for key, _, rank in cat["rec"]}
     cat["power_label"] = dict(cat["powers"])
@@ -780,11 +958,12 @@ def _derive(cat):
         if r["keep3"] is None:
             r["keep_basis"], r["keep_note"] = "none", "no way to keep recordings"
         elif r["free_records"] and (r["sub3"] is None or r["nosub3"] <= r["sub3"]):
-            r["keep_basis"], r["keep_note"] = "nosub", "records free, no plan"
+            r["keep_basis"], r["keep_note"] = "nosub", cat["labels"]["keep_free"]
         else:
             r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
         m_free = f"{money(r['price'])}" + (f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})" if r["extra"] else "") + f" = {money(r['nosub3'])}"
-        if not r["free_records"]: m_free += " (but no recordings)" if r["rec"]=="no" else " (3 hours of history only)"
+        if not r["free_records"]:
+            m_free += cat["labels"]["maths_no_route"] if r["rec"] == "no" else cat["labels"]["maths_brief"]
         m_sub = (
             f"{money(r['price'])} + {months} × {money(r['sub'])} ({r['sub_name']}) = {money(r['sub3'])}"
             if r["sub3"] is not None

@@ -668,10 +668,12 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  /* The switcher and the theme button fit beside the brand at 390px only with
     tighter gaps and a narrower button; below that they take a row of their
     own, because at 320px even that is not enough. */
- .mast{padding:.5rem 0;gap:.5rem}
- .cats{gap:.75rem}
- #theme{padding:0 .75rem}
- .intro{padding:.75rem 0}
+ /* Three categories no longer fit beside the brand and the theme button on
+    one 390px row, so the switcher takes its own row underneath them. */
+ .mast{padding:.35rem 0;gap:.4rem .5rem;flex-wrap:wrap}
+ .cats{order:3;flex:1 1 100%;margin-left:0;gap:1.1rem}
+ #theme{order:2;margin-left:auto;padding:0 .75rem}
+ .intro{padding:.5rem 0}
  .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
  .verdict{display:none}
  /* The situation picks and the warning, one line each with no gap, so the
@@ -698,11 +700,8 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .fbody .opts{gap:0.5rem 1rem}
  .range{flex:none;width:100%;max-width:none}
 }
-@media (max-width:380px){
- .mast{flex-wrap:wrap;row-gap:.5rem}
- .mast>div{flex:1 1 100%}
- .cats{order:2;flex:1 1 auto;margin-left:0;gap:1.25rem}
- #theme{order:3}
+@media (max-width:330px){
+ .cats{gap:.8rem}
 }
 /* Paper has no click, so the sheet keeps what the script hides: the numbered
    markers and the register, and the figures lose the underline that says they

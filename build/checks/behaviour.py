@@ -297,7 +297,7 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
                 nestClass: nest.querySelector('.rec').className,
                 planWords: subs.filter((td) => /No plan/.test(td.textContent)).length,
                 planRows: Array.from(document.querySelectorAll('#tbl tbody.item'))
-                    .filter((row) => row.dataset.sub3 === '0').length,
+                    .filter((row) => row.dataset.noplan === '1').length,
                 planDashes: subs.filter((td) => /\u2014/.test(td.textContent)).length,
                 priceLabel: pseudo(price).content,
                 catchLabel: pseudo(catchCell).content,
@@ -520,7 +520,7 @@ def card_check(page, dataset, checked):
         id_ = row["id"]
         title = (
             f"{row['brand']} {row['model']} \u00b7 "
-            + CLAIM_WHAT[claim].format(period=CAT["period"])
+            + CLAIM_WHAT[claim].format(period=CAT["period"], period_adj=CAT["period_adj"])
         )
         state = read(id_, claim)
         if state.get("missing"):

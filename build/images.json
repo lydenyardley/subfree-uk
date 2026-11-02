@@ -114,6 +114,41 @@
   "page": "https://en-uk.ring.com/products/stick-up-cam-pro-plug-in",
   "cropped": false
  },
+ "oura-4": {
+  "src": "https://ourahealth.imgix.net/blue-sky/pop/gen4/finishes-carousel-slide-silver.png?ixlib=js-3.8.0&auto=format&fit=crop&fm=png&ar=2%3A1&crop=focalpoint&fp-x=0.5&fp-y=0.51&fp-z=1.15&q=70&w=1920&s=2e1d3272a6ead1f907787a0fde071870",
+  "page": "https://ouraring.com/store/rings/oura-ring-4",
+  "cropped": true
+ },
+ "ultra-air": {
+  "src": "https://public-web-assets.uh-static.com/web_v2/illustrations/ring-air-front.png",
+  "page": "https://www.ultrahuman.com/ring/",
+  "cropped": false
+ },
+ "rc-2": {
+  "src": "https://ringconn.com/cdn/shop/files/RingConn_Smart_Ring_Gen_2-Royal_Gold.png?v=1780302336&width=1200",
+  "page": "https://ringconn.com/products/ringconn-gen-2",
+  "cropped": false
+ },
+ "rc-2-air": {
+  "src": "https://ringconn.com/cdn/shop/files/ringconn_gen_2_air_1.png?v=1780302386&width=600",
+  "page": "https://ringconn.com/products/ringconn-gen-2-air",
+  "cropped": false
+ },
+ "rc-3": {
+  "src": "https://ringconn.com/cdn/shop/files/1a_9e4056a6-6b65-41d1-804e-03aaa2818425.webp?v=1780302453&width=600",
+  "page": "https://ringconn.com/products/ringconn-gen-3",
+  "cropped": false
+ },
+ "samsung-ring": {
+  "src": "https://images.samsung.com/is/image/samsung/p6pim/uk/2407/gallery/uk-galaxy-ring-q500-sm-q500nzkaeub-542183975?$720_576_JPG$",
+  "page": "https://www.samsung.com/uk/rings/galaxy-ring/galaxy-ring-titanium-black-size-10-sm-q500nzkaeub/",
+  "cropped": false
+ },
+ "amazfit-helio": {
+  "src": "https://uk.amazfit.com/cdn/shop/files/Helioring_1024x1024.jpg?v=1716446501",
+  "page": "https://uk.amazfit.com/products/amazfit-helio-ring",
+  "cropped": false
+ },
  "hik": {
   "placeholder": true,
   "why": "Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image."
