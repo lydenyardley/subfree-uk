@@ -76,9 +76,16 @@ def alias_problems(pages):
     return problems
 
 def phone_first_paint(phone):
+    """The table starts on the first screen, with the filters out of the way.
+
+    The bound is the viewport rather than a round number under it. A literal 600
+    failed a page that was above the fold on every platform: a Linux CI box lays
+    the same copy out about 16px taller than Windows, so the number was
+    measuring the font stack, not the design.
+    """
     if (
         not phone["open"]
-        and phone["firstRowTop"] < 600
+        and phone["firstRowTop"] <= phone["viewport"]
         and phone["verdict"] == "none"
         and phone["shortAnswer"] == "block"
         and phone["sortNoteLines"] <= 1
