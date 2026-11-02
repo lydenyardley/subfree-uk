@@ -1,11 +1,18 @@
 # Affiliate links: what is available and what it would cost us
 
-Research done 18 October 2026. This page records what we found before adding any
-affiliate link to the site, because three of the current claims depend on it:
-"No affiliate links" (the intro), "No affiliate links, no tracking, no cookies"
-in `data/doorbells.md`, and the use of Amazon product pages as price sources.
+Research done 18 October 2026, before the first affiliate tag shipped. This page
+records what we found and what changed when the tag went live on 1 November
+2026, because the site's no-affiliate claim depended on it.
 
-**Status: research only. No affiliate links are live.**
+**Status: live. Every row's Amazon UK price and buy links carry
+`tag=subfreeuk-21`, and Awin is joined as publisher 3141383.** The intro says
+"Some links are paid links. No cookies." and every category page's footer
+carries "As an Amazon Associate I earn from qualifying purchases."
+
+Which links are paid is now data, not a pattern over the URL: `rows.py` builds
+`SPONSORED` where it tags the links, and the markup and the script read `rel`
+from that. A paid link that is not Amazon was previously emitted as an ordinary
+`nofollow`, which is both a Google and an ASA problem.
 
 Nothing here is legal advice. Commission rates, network terms and Amazon's
 operating agreement change; re-check each one before signing up.
@@ -19,13 +26,23 @@ operating agreement change; re-check each one before signing up.
   **Amazon Associates UK**, **Currys via Awin**, or **eBay Partner Network**.
 - Every programme can reject small publishers. Applying is not the same as
   being accepted.
-- **Amazon is the awkward one.** Three rows currently take their price from an
-  Amazon listing (Aqara G4, Blink 2K+, EZVIZ EP3x Pro). Amazon's linking terms
-  only allow prices that Amazon serves through a link or the Product
-  Advertising API, so hard-coded Amazon prices in a static page are a terms
-  problem, not just a freshness problem.
-- Adding links means changing the site's "no affiliate links, no tracking"
-  claim. That claim is currently true and worth keeping until the links ship.
+- **Amazon is the awkward one.** Doorbell and camera prices come from the
+  vendor or another UK shop, and their Amazon link is only where to buy. The
+  ring rows are different: most are priced from Amazon UK listings, so those
+  are the rows where Amazon's rule that a price must come through a link or
+  the Product Advertising API still needs checking. A hard-coded Amazon price
+  in a static page is a terms problem, not just a freshness problem.
+- **Rings now list offers.** Each ring row carries the shops that sell it and
+  the page shows one of them, chosen by the rule below. RingConn Gen 2 moved to
+  Argos at £159, which is £100 under the Amazon listing. The rows with no
+  second GBP-priced shop still show an Amazon price: Oura Ring 4, Ultrahuman
+  Ring AIR (both tied on price, so Amazon's higher pay rank keeps it),
+  RingConn Gen 2 Air and Gen 3, and the Galaxy Ring. The rule reduces Amazon's
+  share of the table; it does not remove it, and only a GBP price at another
+  shop or the Product Advertising API does.
+- The claim is changed, not quietly kept. The old "No affiliate links" line is
+gone from the intro, the footers and the Markdown, and the replacement names
+the paid links.
 
 ## Brand programmes
 
@@ -45,6 +62,61 @@ operating agreement change; re-check each one before signing up.
 Unconfirmed and worth a direct email before building anything: Reolink's UK
 network, Tapo's UK rate and acceptance, EZVIZ UK availability, and whether any
 programme will accept a one-page site.
+
+## Awin
+
+Joined 2 November 2026. **Publisher ID 3141383.** A deep link is a plain URL;
+nothing loads on this site:
+
+```
+https://www.awin1.com/cread.php?awinmid=<advertiser>&awinaffid=3141383&ued=<encoded destination>
+```
+
+`ued` is percent-encoded. `clickref` is real and accepted in practice but is not
+in Awin's published parameter table, so we do not rely on it. The redirect sets
+Awin's own cookie on `awin1.com` and forwards to the shop; the page we serve
+still sets none, which is why the footer says "No cookies" and no longer claims
+"no tracking". Awin's Publisher MasterTag is an enhancement (bounceless
+tracking, Convert-a-Link), not a prerequisite, and we do not load it.
+
+Advertiser ids taken from Awin's own merchant-profile pages or a live affiliate
+link, never guessed:
+
+| Merchant | `awinmid` | Where |
+|---|---|---|
+| Ultrahuman | 69428 | [Awin profile](https://ui.awin.com/merchant-profile/69428). 7% to $10k, 10% to $35k, 15% after; 45-day cookie |
+| Currys | 1599 | [Awin profile](https://ui.awin.com/merchant-profile/1599). 3% for editorial |
+| Very | 3090 | [Awin profile](https://ui.awin.com/merchant-profile/3090) |
+| John Lewis | 1203 | One third-party affiliate link only; confirm in the account before use |
+| Argos | none found | Argos links elsewhere run through `anrdoezrs.net` (CJ), not Awin |
+| Samsung UK, Oura, RingConn, Amazfit | none found | No UK advertiser id located |
+
+`AWIN_MERCHANTS` in `build/rows.py` maps a source key to its advertiser id, and
+the tagging loop rewrites those sources into `cread.php` links. It is empty
+today: no merchant we can price in GBP has a confirmed id, and a wrong id
+credits another advertiser, so those offers stay plain links until the id is
+read out of the account.
+
+## How a price is chosen
+
+A ring is sold by several UK shops and its price moves with size and finish, so
+a ring row lists `offers`: a shop, the page behind its price, the price, the
+configuration that price is for, and a `pay` rank. `offer_winner()` shows the
+cheapest, unless another offer is within **£5** of it and pays more; a tie goes
+to the cheaper offer and then to the shop's name. The winner sets the price, the
+link on it and the note beside it, so the three cannot disagree.
+
+`pay` is a rank rather than a rate because only Amazon publishes a fixed
+percentage: 2 for Amazon UK Associates, 1 for a UK shop with no programme we are
+in, 3 for a brand programme that pays more (Ultrahuman's Awin rate). Every offer
+names its configuration, because a size-7 sale price and a size-9 list price are
+not a comparison.
+
+`build/check.py` re-derives the winner from `offers`, compares it with the CSV
+and the table (`derived figures`, `category records`), and runs the rule itself
+on fixtures (`offer rule`), including the boundary at exactly £5 and £5.01. The
+page's method note prints the rule and the £5 bound, so the reader can see why
+the link goes where it does.
 
 ## Retailer fallbacks
 
@@ -134,13 +206,15 @@ consent question belongs to what happens on the device, and to any tracking we
 add ourselves. If we add click logging, pixels or link decoration, that needs a
 consent assessment.
 
-The site currently says "No affiliate links, no tracking, no cookies." Once an
+The site used to say "No affiliate links, no tracking, no cookies." Once an
 affiliate tag is in a URL, that sentence is misleading even though we set no
-cookie ourselves. Honest replacement:
+cookie ourselves. It now says, in the intro and the footer:
 
-> We set no cookies and run no analytics. Some retailer links carry an affiliate
-> tag, which lets the retailer or its network attribute a sale; the retailer's
-> own cookie policy then applies.
+> Some links are paid links. No cookies. As an Amazon Associate I earn from
+> qualifying purchases.
+
+The retailer or its network may set a cookie on its own site after the click.
+We set none here and run no analytics.
 
 Sources: [ICO storage and access technologies](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/what-are-storage-and-access-technologies/),
 [ICO cookies guidance](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/),
@@ -170,8 +244,9 @@ keep matching the HTML.
 
 ## Suggested order of work
 
-1. Join Awin (one account covers eufy, Arlo, Aqara and Currys) and apply to
-   those four programmes.
+1. Awin is joined (publisher 3141383). Read each merchant's advertiser id out of
+   the account and put the ones we can price in GBP into `AWIN_MERCHANTS`, so
+   their offers carry a paid link instead of a plain one.
 2. Ask Reolink which network serves UK, and ask Webgains/TP-Link for the UK
    Tapo terms. Email EZVIZ about UK availability.
 3. Decide the Amazon question before applying to Associates: either drop
@@ -193,3 +268,10 @@ keep matching the HTML.
 - Whether Reolink's UK traffic converts through Awin or Impact.
 - Whether a "no tracking" claim can survive any affiliate tag at all, or
   whether the intro should simply say "no analytics, no cookies on this site".
+  It now says the second thing: the footer's "no tracking" is gone.
+- Which rings can stop showing an Amazon price. The offers rule leaves Amazon
+  as the winner where it is cheapest and pays best, which is still five of the
+  seven ring rows: Oura Ring 4, RingConn Gen 2 Air and Gen 3, Ultrahuman Ring
+  AIR and the Galaxy Ring had no GBP-priced alternative we could verify. Only a
+  second priced shop, or Amazon's Product Advertising API, changes that - not
+  the routing rule.

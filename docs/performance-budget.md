@@ -21,20 +21,23 @@ they always are.
 
 ## The byte budget
 
-| File | Budget, gzipped | Measured 28 October 2026 |
+| File | Budget, gzipped | Measured 2 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 18,868 |
-| `assets/page.css` | 18,000 | 15,298 |
-| `assets/page.js` | 24,000 | 19,682 |
-| The three together, a first visit | 60,000 | 53,848 |
+| `index.html` | 24,000 | 19,778 |
+| `assets/page.css` | 18,000 | 15,986 |
+| `assets/page.js` | 24,000 | 23,941 |
+| The three together, a first visit | 60,000 | 59,705 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
 output, no machine in between. `build/check.py`'s `transfer budget` check
-rebuilds, gzips the three files at level 9 and fails above any ceiling. The
-headroom is deliberate — a tenth of the total — so a row or a sentence does not
-need a budget edit, while a second category's copy, a dependency or an inline
-data block does.
+rebuilds, gzips the three files at level 9 and fails above any ceiling.
+
+The headroom is now nearly spent: the script sits 59 bytes under its ceiling and
+a first visit 295 bytes under the total, so the next script change is a trim or
+a deliberate ceiling change rather than a sentence that fits. The ceilings
+should come down to whatever the page actually needs once it settles, not stay
+where a three-category page first landed.
 The comparison's rows are in the script rather than in a JSON block on purpose:
 the same bytes on the wire, one more parse, and one more copy to fall out of
 step with `ROWS`. If the budget does bind, that is the first trade to revisit.
