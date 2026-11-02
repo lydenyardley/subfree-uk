@@ -1,4 +1,9 @@
 """The comparison view, from the tray it grows out of to the table it becomes."""
+import io
+import math
+
+from PIL import Image
+
 from catalog import CATEGORIES, words
 from .context import FAMILY, THREE, open_compare
 from .registry import Check
@@ -151,32 +156,40 @@ def marks_check(page, rows):
     # read as the previous column's edge, so no cell carries one.
     tone = page.evaluate(
         """() => {
-            const ids = Array.from(document.querySelectorAll('input.cmp:checked')).map((c) => c.value);
             const body = Array.from(document.querySelectorAll('#cmp-table tbody tr'));
             const heads = Array.from(document.querySelectorAll('#cmp-table thead th')).slice(1);
             const sides = (tr) => Array.from(tr.children).slice(1).map((c) => getComputedStyle(c).borderLeftWidth);
-            const spec = getComputedStyle(document.querySelector('#cmp-table thead th'));
+            const specTh = document.querySelector('#cmp-table thead th');
+            const spec = getComputedStyle(specTh);
+            const specBar = getComputedStyle(specTh, '::before');
             return {
-                columns: heads.map((th, i) => {
-                    const id = ids[i];
+                // The column names its own model. Reading the id by position
+                // assumed the columns sat in the order they were ticked, which
+                // a shared link or a drag is free to change.
+                columns: heads.map((th) => {
+                    const id = th.dataset.id;
                     const main = document.getElementById('m-' + id);
                     const rowTag = main ? main.querySelector('.vtag') : null;
                     const headTag = th.querySelector('.vtag');
                     const rule = getComputedStyle(th);
+                    const bar = getComputedStyle(th, '::before');
                     return {
                         id,
                         rowTone: main ? main.getAttribute('data-v') : null,
                         tone: th.getAttribute('data-v'),
                         tag: headTag ? headTag.textContent.trim() : '',
                         rowTag: rowTag ? rowTag.textContent.trim() : '',
-                        ruleWidth: rule.borderBottomWidth,
-                        rule: rule.borderBottomColor,
+                        ruleWidth: bar.height,
+                        rule: bar.backgroundColor,
+                        border: rule.borderBottomColor,
                         toneColor: headTag ? getComputedStyle(headTag).color : ''
                     };
                 }),
                 ink: getComputedStyle(document.body).color,
-                specWidth: spec.borderBottomWidth,
-                specRule: spec.borderBottomColor,
+                paper: getComputedStyle(document.body).backgroundColor,
+                specWidth: specBar.height,
+                specRule: specBar.backgroundColor,
+                specBorder: spec.borderBottomColor,
                 cellBorders: Array.from(new Set(body.flatMap(sides)))
             };
         }"""
@@ -191,15 +204,42 @@ def marks_check(page, rows):
                 f"{column['id']}'s column badge reads {column['tag']!r}, its row {column['rowTag']!r}"
             )
         want = column["toneColor"] or tone["ink"]
+        # Every column's rule is a bar inside the header, ink or verdict colour:
+        # a border is painted at the cell's place in the grid and stays there
+        # while the cell is transformed, so a dragged column wore the colour of
+        # the slot it left until the table was rebuilt.
         if column["ruleWidth"] != "3px" or column["rule"] != want:
             problems.append(
                 f"{column['id']}'s header rule is {column['ruleWidth']} "
-                f"{column['rule']}, expected a 3px {want} for its {column['tone'] or 'no'} verdict"
+                f"{column['rule']}, expected a 3px {want}"
+                + (
+                    f" for its {column['tone']} verdict"
+                    if column["tone"]
+                    else " for a column with no verdict"
+                )
+            )
+        # One line, one painter. The border is transparent under every bar: the
+        # table paints a collapsed border with different rounding from a box, so
+        # a rule left to the table ended a device row above or below its
+        # neighbour at 133%, 140% and 200%, and a bar over an ink border also
+        # blended colour with ink in its half-covered rows.
+        if column["border"] not in ("rgba(0, 0, 0, 0)", "transparent"):
+            problems.append(
+                f"{column['id']}'s bar is painted over a {column['border']} "
+                "border, so its line has two painters"
             )
     if tone["specWidth"] != "3px" or tone["specRule"] != tone["ink"]:
         problems.append(
             f"the spec column's header rule is {tone['specWidth']} {tone['specRule']}, "
             f"expected a 3px rule in the page's ink {tone['ink']}"
+        )
+    # The label column's rule is a bar like the others. Its border is transparent
+    # because two painters of one line round to different device rows at 133%,
+    # 140% and 200%, which made one rule end above or below its neighbour.
+    if tone["specBorder"] not in ("rgba(0, 0, 0, 0)", "transparent"):
+        problems.append(
+            f"the spec column's border is painted as well ({tone['specBorder']}), "
+            "so its rule has two painters and rounds differently from the others"
         )
     if tone["cellBorders"] != ["0px"]:
         problems.append(
@@ -1153,7 +1193,9 @@ COLUMN_JS = """() => {
             const target = move.getBoundingClientRect();
             return {
                 id: th.dataset.id,
-                rule: getComputedStyle(th).borderBottomColor,
+                rule: getComputedStyle(th, '::before').content !== 'none'
+                    ? getComputedStyle(th, '::before').backgroundColor
+                    : getComputedStyle(th).borderBottomColor,
                 ruleY: Math.round(rule.bottom),
                 gripY: Math.round(grip.top + grip.height / 2),
                 gripIn: grip.left >= box.left - 1 && grip.right <= box.right + 1,
@@ -1172,6 +1214,80 @@ COLUMN_JS = """() => {
     };
 }"""
 
+MIDDRAG_JS = """() => {
+    const ths = Array.from(document.querySelectorAll('#cmp-table thead th[data-id]'));
+    const moving = ths.find((th) => th.classList.contains('moving'));
+    const paper = getComputedStyle(document.body).backgroundColor;
+    if (!moving) return { missing: true, paper };
+    const bar = getComputedStyle(moving, '::before');
+    const ruled = bar.content !== 'none';
+    const ink = getComputedStyle(document.body).color;
+    const grip = moving.querySelector('.cmp-move .grip');
+    const box = grip ? grip.getBoundingClientRect() : null;
+    const hit = box
+        ? document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+        : null;
+    // A cell's border travels with the cell, so the slot it leaves would have no
+    // rule in it. The frame stands a rule under the whole header for the length
+    // of the gesture, below every cell: a column keeps its own border and its
+    // verdict colour, and the standing rule is only seen where a cell is
+    // missing, which is the slot the column left.
+    const frame = moving.closest('.cmp-wrap');
+    const rail = getComputedStyle(frame, '::before');
+    const frameBox = frame.getBoundingClientRect();
+    const frameTop = frameBox.top;
+    return {
+        id: moving.dataset.id,
+        tone: moving.getAttribute('data-v'),
+        barOpacity: ruled ? bar.opacity : null,
+        barHeight: ruled ? bar.height : null,
+        barColour: ruled ? bar.backgroundColor : null,
+        cellZ: getComputedStyle(moving).zIndex,
+        border: getComputedStyle(moving).borderBottomColor,
+        // The rail stands in the hole only, so its span can be read back and
+        // held against the columns: ink under a bar fringes the colour.
+        rail: rail.content === 'none' ? null : {
+            height: rail.height,
+            colour: rail.backgroundColor,
+            z: rail.zIndex,
+            top: parseFloat(rail.top) + frameTop,
+            left: parseFloat(rail.left) + frameBox.left,
+            right: parseFloat(rail.left) + parseFloat(rail.width) + frameBox.left
+        },
+        row: (() => {
+            const r = moving.closest('tr').getBoundingClientRect();
+            return [r.left, r.right];
+        })(),
+        spans: Array.from(moving.closest('tr').children).map((th) => {
+            const r = th.getBoundingClientRect();
+            return [r.left, r.right];
+        }),
+        on: frame.classList.contains('arranging'),
+        ruleBottom: Math.round(moving.getBoundingClientRect().bottom),
+        paper,
+        ink,
+        hit: hit ? hit.tagName : 'nothing',
+        gripped: !!(hit && hit.closest('.cmp-move'))
+    };
+}"""
+
+def gap_of(state):
+    """The span the columns leave uncovered: what the gesture's rule must fill.
+
+    Worked out from the cells' own edges, so a rule wider or narrower than the
+    hole is a failure rather than a coincidence.
+    """
+    low, high = state["row"]
+    current, gap = low, None
+    for left, right in sorted(state["spans"]):
+        if left - current > 0.5 and gap is None:
+            gap = (current, left)
+        current = max(current, right)
+    if gap is None and high - current > 0.5:
+        gap = (current, high)
+    return gap
+
+
 def column_move_check(page):
     """A dragged column takes its slot, and the arithmetic does not follow it.
 
@@ -1180,7 +1296,9 @@ def column_move_check(page):
     slides the whole column, cost cell included, and rebuilds the table in the
     new order. The reference is the cheapest of the three, so a delta means the
     same thing wherever its column sits, and a verdict colour travels with the
-    column that owns it rather than staying in the slot it left.
+    column that owns it rather than staying in the slot it left. The header's
+    rule is one line all the way through: the frame paints it while the columns
+    are off their grid.
     """
     page.set_viewport_size({"width": 1280, "height": 900})
     page.wait_for_timeout(120)
@@ -1218,8 +1336,124 @@ def column_move_check(page):
     page.mouse.move(x, y)
     page.mouse.down()
     page.mouse.move(x - width * 0.8, y, steps=8)
+    page.wait_for_timeout(200)
+    # Mid-gesture three things have to hold at once, and none of them shows in
+    # the resting markup. The frame stands a rule where the header's edge is, so
+    # the slot the column vacated is a line and not a hole. That rule is painted
+    # under every cell, so a column keeps its own border and its verdict colour
+    # wherever it is. And it is placed half a border above the cells' own bottom
+    # edge, because a collapsed border is centred on that edge: a rail measured
+    # to the edge instead sat a pixel or two low at 100%, 125% and 150% zoom, and
+    # the line stepped as the gesture began.
+    mid = page.evaluate(MIDDRAG_JS)
+    if mid.get("missing"):
+        problems.append("no column marks itself as moving while the drag is held")
+    else:
+        rail = mid["rail"]
+        if not mid["on"] or not rail:
+            problems.append(
+                "the frame paints no rule for the gesture, so the slot a moving "
+                "column leaves breaks the line"
+            )
+        else:
+            if rail["height"] != "3px" or rail["colour"] != mid["ink"]:
+                problems.append(
+                    f"the gesture's rule is {rail['height']} {rail['colour']}, "
+                    f"expected a 3px {mid['ink']}"
+                )
+            gap = mid["ruleBottom"] - 1.5 - rail["top"]
+            if abs(gap) > 1:
+                problems.append(
+                    f"the standing rule sits at {rail['top']:.1f}px and the "
+                    f"border it stands in for at {mid['ruleBottom'] - 1.5:.1f}px, "
+                    "so the line steps when the gesture starts"
+                )
+            if float(rail["z"] or 0) > 0:
+                problems.append(
+                    f"the standing rule is painted at z-index {rail['z']}, over "
+                    "the columns rather than under them"
+                )
+            if float(mid["cellZ"] or 0) < 1:
+                problems.append(
+                    f"{moved} is not lifted over its neighbours mid-drag "
+                    f"(z-index {mid['cellZ']})"
+                )
+            # The rail fills the hole the columns leave and nothing else. Painted
+            # under a column it is ink beneath that column's own rule, and at
+            # 125%, 150% and 175% the half-covered rows of a coloured bar blended
+            # with it — a fringe that made the ink rule look thicker than the
+            # coloured ones.
+            hole = gap_of(mid)
+            span = (rail["left"], rail["right"])
+            wide = span[1] - span[0] > 0.5
+            if hole is None and wide:
+                problems.append(
+                    f"the gesture's rule spans {span[0]:.0f}..{span[1]:.0f} while the "
+                    "columns cover the row, so its ink is painted under a column's "
+                    "own rule"
+                )
+            elif hole is not None and not wide:
+                problems.append(
+                    f"the columns leave {hole[0]:.0f}..{hole[1]:.0f} uncovered and "
+                    "the rule does not fill it, so the line breaks there"
+                )
+            elif hole is not None and (
+                abs(span[0] - hole[0]) > 1 or abs(span[1] - hole[1]) > 1
+            ):
+                problems.append(
+                    f"the gesture's rule spans {span[0]:.0f}..{span[1]:.0f} but the "
+                    f"hole is {hole[0]:.0f}..{hole[1]:.0f}, so its ink is painted "
+                    "under a column's own rule"
+                )
+        # Every column's rule is its bar, ink or verdict colour, and nothing is
+        # painted under it: the table paints a collapsed border with different
+        # rounding from a box, so a rule left to the table ends a pixel above or
+        # below its neighbour at 133%, 140% and 200%.
+        if mid["barHeight"] != "3px" or not mid["barColour"]:
+            problems.append(
+                f"{moved}'s rule mid-drag is not a 3px bar "
+                f"({mid['barHeight']} {mid['barColour']}), so the table paints it"
+            )
+        if mid["border"] not in ("rgba(0, 0, 0, 0)", "transparent"):
+            problems.append(
+                f"{moved}'s bar is painted over a {mid['border']} border, so its "
+                "line has two painters"
+            )
+        if not mid["tone"] and mid["barColour"] != mid["ink"]:
+            problems.append(
+                f"{moved} has no verdict, so its rule should be the page's ink "
+                f"{mid['ink']}, not {mid['barColour']}"
+            )
+        if mid["tone"] and mid["barOpacity"] is not None and float(mid["barOpacity"]) < 0.98:
+            problems.append(
+                f"{moved}'s verdict colour faded to {mid['barOpacity']} mid-drag, "
+                "so a coloured column travels as a plain one"
+            )
+        if not mid["gripped"]:
+            problems.append(
+                f"{moved}'s handle is painted under its rule mid-drag: {mid['hit']} "
+                "is on top at the grip"
+            )
     page.mouse.up()
-    page.wait_for_timeout(900)
+    # On the way into its slot the card must still be a solid card: with the
+    # gesture's class gone but the paper dropped, the columns it passes read
+    # through it for the length of the slide.
+    page.wait_for_timeout(60)
+    landing = page.evaluate(
+        """() => {
+            const cells = Array.from(document.querySelectorAll('#cmp-table tbody [data-id].landing'));
+            return {n: cells.length,
+                    bg: cells.length ? getComputedStyle(cells[0]).backgroundColor : ''};
+        }"""
+    )
+    if not landing["n"]:
+        problems.append("the column has no card of its own on the way into its slot")
+    elif landing["bg"] == "rgba(0, 0, 0, 0)":
+        problems.append(
+            "the column turns transparent as it lands, so the columns it passes "
+            "read through it"
+        )
+    page.wait_for_timeout(840)
     after = page.evaluate(COLUMN_JS)
 
     expect = [moved, other, before["order"][2]]
@@ -1264,6 +1498,97 @@ def column_move_check(page):
             f"one ArrowRight did not put the columns back: {back['order']} is not {before['order']}"
         )
     return problems
+
+# The device ratios a reader's screen renders at: the Windows scaling steps and
+# the 133% browser zoom lands on, where the coloured rule was seen a device row
+# taller than the ink at 100%, 140% and 200% and level at 133%, 150% and 175%.
+RULE_RATIOS = (1, 1.25, 4 / 3, 1.4, 1.5, 1.75, 2)
+
+# A header cell's box ends where its collapsed border is painted, so the band is
+# photographed 4 CSS px above that edge and 4 below: two of paper, the 3px rule,
+# and enough of the row underneath to see a rule that hangs past the edge.
+RULE_JS = """() => Array.from(document.querySelectorAll('#cmp-table thead th')).map((th) => {
+  const box = th.getBoundingClientRect();
+  return {id: th.dataset.id || 'spec', left: box.left, right: box.right, bottom: box.bottom};
+})"""
+
+
+def header_rows(image, heads):
+    """The device rows each header cell's rule covers, read off one photograph.
+
+    All four cells are in the same picture, so the rows are the rows the screen
+    draws and they are directly comparable. The probe is a quarter of the way
+    across its cell, clear of the grip pill over the middle of the rule and of the
+    cell's antialiased edge. A row counts as the rule when it is far from paper,
+    which keeps the tint under the header out of the count.
+    """
+    left = min(head["left"] for head in heads)
+    per_css = image.width / (max(head["right"] for head in heads) - left)
+    paper = image.getpixel((image.width - 2, 0))
+    rows = {}
+    for head in heads:
+        x = int((head["left"] + (head["right"] - head["left"]) * 0.25 - left) * per_css)
+        rows[head["id"]] = [
+            row
+            for row in range(image.height)
+            if max(abs(seen - want) for seen, want in zip(image.getpixel((x, row)), paper)) > 80
+        ]
+    return rows
+
+
+def header_rule_check(ctx):
+    """Every header rule covers the same device rows, at every device ratio.
+
+    A comparison's header is one line across four columns, three of them carrying
+    a verdict colour. Measured at whole pixels the rules always agreed; at 133%,
+    140% and 200% the coloured rules ended a device row below the ink, because a
+    border and a box are rounded by different painters. Two painters of one line
+    is what this measures: each column's rule is photographed at the ratio and the
+    rows it covers are compared with its neighbours'.
+    """
+    problems = []
+    for scale in RULE_RATIOS:
+        context = ctx.browser.new_context(
+            viewport={"width": 1280, "height": 900}, device_scale_factor=scale
+        )
+        try:
+            page = context.new_page()
+            page.goto(ctx.url, wait_until="load")
+            open_compare(page, ctx.three)
+            page.evaluate("() => document.querySelector('#cmp-table').scrollIntoView({block: 'start'})")
+            page.wait_for_timeout(120)
+            heads = page.evaluate(RULE_JS)
+            if len(heads) < 2:
+                problems.append(f"at {scale:g}x the comparison has {len(heads)} header cells")
+                continue
+            clip = {
+                "x": min(head["left"] for head in heads),
+                "y": max(head["bottom"] for head in heads) - 4,
+                "width": max(head["right"] for head in heads) - min(head["left"] for head in heads),
+                "height": 8,
+            }
+            image = Image.open(io.BytesIO(page.screenshot(clip=clip))).convert("RGB")
+            rows = header_rows(image, heads)
+            expected = math.ceil(3 * scale)
+            for name, painted in rows.items():
+                if not abs(len(painted) - expected) <= 1:
+                    problems.append(
+                        f"at {scale:g}x {name}'s header rule covers {len(painted)} device "
+                        f"rows, expected {expected}"
+                    )
+                elif painted != list(range(painted[0], painted[0] + len(painted))):
+                    problems.append(
+                        f"at {scale:g}x {name}'s header rule is broken across rows {painted}"
+                    )
+            if len({tuple(painted) for painted in rows.values()}) > 1:
+                shapes = ", ".join(f"{name} {painted}" for name, painted in rows.items())
+                problems.append(
+                    f"at {scale:g}x the header rules cover different device rows: {shapes}"
+                )
+        finally:
+            context.close()
+    return problems
+
 
 CHECKS = [
     Check(
@@ -1319,8 +1644,13 @@ CHECKS = [
         lambda ctx: photo_line_check(ctx.page),
     ),
     Check(
+        "compare header rules", "compare", 97,
+        "every column's header rule covers the same device rows at 100%, 125%, 133%, 140%, 150%, 175% and 200%",
+        header_rule_check,
+    ),
+    Check(
         "compare column move", "compare", 90,
-        "a dragged column takes its slot and keeps its verdict rule, the cost row moves with it, the figures do not move, and the handle sits on the rule in a 44px target",
+        "a dragged column takes its slot and keeps its verdict rule, the cost row moves with it, the figures do    not move, its colour travels with it, and the slot it leaves keeps the ink rule",
         lambda ctx: column_move_check(ctx.page),
     ),
 ]

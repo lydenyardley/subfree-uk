@@ -23,10 +23,10 @@ they always are.
 
 | File | Budget, gzipped | Measured 2 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 19,762 |
-| `assets/page.css` | 18,000 | 15,986 |
-| `assets/page.js` | 25,000 | 24,047 |
-| The three together, a first visit | 61,000 | 59,795 |
+| `index.html` | 24,000 | 22,960 |
+| `assets/page.css` | 18,000 | 16,793 |
+| `assets/page.js` | 26,000 | 25,677 |
+| The three together, a first visit | 65,500 | 65,430 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -38,9 +38,32 @@ is a decision rather than a fix. Every row of every category ships in the
 script, so a row costs about 150 gzipped bytes: the smart ring table plus the
 Ring 5 it was missing took the script from 23,900 to 24,047, past a ceiling set
 when the page had two categories. Trimming copy to fit would have been the
-alternative, and the copy is the product. The headroom is still thin — 953 bytes
-on the script, 1,205 on a first visit — so the next script change is a trim
-rather than a sentence that fits.
+alternative, and the copy is the product.
+
+It moved again with the launch rows. The newest-model pass added five doorbells
+and a camera, and Ring's two wired 4K doorbells are two more, which took the
+script by 4 bytes over its own ceiling and the first visit by 2. Cutting a
+sentence of a product's copy to fit a round number is the wrong trade, so the
+ceiling follows the rows: 26,000 for the script and 65,500 for the first visit.
+The headroom is still thin. The rail behind a moving column, its measurement of
+the hole it has to fill and the comments that say why cost 336 bytes — the script
+from 25,303 to 25,571 and the stylesheet from 16,838 to 16,906 — so a first visit
+has 63 bytes left and the next script change is a trim rather than a sentence
+that fits.
+
+What it cost when the header rule became one painter: two short comments rather
+than four long ones. The bars and the transparent borders are a few bytes; the
+prose that explains why they are bars is what grew, so it was cut back to the
+fact — a collapsed border and a box round to different device rows — and the
+first visit now sits at 65,430 with 70 bytes left, 7 more than before the
+change.
+
+The first-visit total moved from 61,000 to 64,500 the same way. The newest
+models added five doorbells and a camera row: about 700 gzipped bytes of table
+markup each, which is the comparison, the details panel and its plain sentences
+for one product. The page went from 59,795 to 63,098, so the ceiling follows the
+row count. Nothing was cut to fit, and the next rows will need the same
+decision rather than a shorter catch line.
 The comparison's rows are in the script rather than in a JSON block on purpose:
 the same bytes on the wire, one more parse, and one more copy to fall out of
 step with `ROWS`. If the budget does bind, that is the first trade to revisit.

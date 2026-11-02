@@ -348,6 +348,7 @@ var cstage=$('#cmp-table'),cdrag=null,craf=0,clastX=0,cquiet=false,CMOVED=160;
 function cCells(id){return $$('[data-id="'+id+'"]',cstage)}
 function cPlace(id,px){cCells(id).forEach(function(el){el.style.transform=px?'translateX('+px+'px)':''})}
 function cLift(id,on){cCells(id).forEach(function(el){el.classList.toggle('moving',on)})}
+function cLand(id,on){cCells(id).forEach(function(el){el.classList.toggle('landing',on)})}
 function cSlots(){
  var ths=[].slice.call(cstage.tHead.rows[0].children).slice(1);
  return ths.map(function(th){return th.offsetLeft});
@@ -376,6 +377,43 @@ function cNearest(x,d){
  var dx=Math.max(lo,Math.min(hi,x-d.x0));
  return {dx:dx,t:cTarget(d.m,dx,d.slots)};
 }
+// The rule the gesture needs under a slot a column has left. Its top is the
+// header's bottom less half a border, because a collapsed border is painted
+// centred on the cell's edge, and it stays fractional so it snaps to the device
+// grid as the border beside it does.
+var cfram=cstage.closest('.cmp-scroll').parentNode,ctick=0;
+function cHole(){
+ var row=cstage.tHead.rows[0],r=row.getBoundingClientRect(),st=cfram.style;
+ var spans=[].map.call(row.children,function(c){var b=c.getBoundingClientRect();return [b.left,b.right]});
+ var x=r.left,g=null,i;
+ spans.sort(function(a,b){return a[0]-b[0]});
+ for(i=0;i<spans.length;i++){
+  if(spans[i][0]-x>0.5&&!g)g=[x,spans[i][0]];
+  if(spans[i][1]>x)x=spans[i][1];
+ }
+ if(!g&&r.right-x>0.5)g=[x,r.right];
+ st.setProperty('--rule-x',(g?g[0]-r.left:0)+'px');
+ st.setProperty('--rule-w',(g?g[1]-g[0]:0)+'px');
+}
+// The columns take 160ms to arrive, so the hole is measured every frame.
+function cTick(){
+ ctick=0;
+ if(!cfram||!cfram.classList.contains('arranging'))return;
+ cHole();
+ ctick=requestAnimationFrame(cTick);
+}
+function cRule(th,on){
+ if(!cfram)return;
+ if(on){
+  var y=th.getBoundingClientRect().bottom-cfram.getBoundingClientRect().top-1.5;
+  cfram.style.setProperty('--rule-y',y+'px');
+  cHole();
+  cfram.classList.add('arranging');
+  if(!ctick)ctick=requestAnimationFrame(cTick);
+ }else{
+  cfram.classList.remove('arranging');
+ }
+}
 cstage.addEventListener('pointerdown',function(e){
  if(e.button!==0||cquiet)return;
  var h=e.target.closest('.cmp-move');
@@ -384,6 +422,7 @@ cstage.addEventListener('pointerdown',function(e){
  if(m<0)return;
  cdrag={id:id,m:m,ord:ord,slots:cSlots(),x0:e.clientX,t:m};
  try{h.setPointerCapture(e.pointerId)}catch(err){}
+ cRule(h.closest('th'),true);
  cstage.classList.add('arranging');
  cLift(id,true);
  h.focus({preventScroll:true});
@@ -419,11 +458,16 @@ function cRelease(n){
  if(!n||n.t===d.m){
   d.ord.forEach(function(id){cPlace(id,0);cLift(id,false)});
   cstage.classList.remove('arranging');
+  cRule(null,false);
   return;
  }
  cquiet=true;
  cShuffle(d.ord,d.m,n.t,d.slots);
+ // The card gives up the gesture's grip but not its paper: it is still on its
+ // way to the slot, and a transparent card would let the columns it passes read
+ // through it for the length of the slide.
  cLift(d.id,false);
+ cLand(d.id,true);
  void cstage.offsetWidth;
  cPlace(d.id,d.slots[n.t]-d.slots[d.m]);
  setTimeout(function(){
@@ -435,14 +479,17 @@ function cRelease(n){
 // column does not jump into its slot.
 function cMove(id,t,fromPointer){
  var ord=cmpIds(),m=ord.indexOf(id);
- if(m<0||m===t){cstage.classList.remove('arranging');return}
+ if(m<0||m===t){cstage.classList.remove('arranging');cRule(null,false);cLand(id,false);return}
  var next=ord.slice(),x=next.splice(m,1)[0];
  next.splice(t,0,x);
  cmpOrder=next;
  render();
  // The gesture is over once the column has landed: the positioning that let it
- // fly is not needed at rest, so it leaves with the drag.
+ // fly, the rule it needed and the paper under the other columns are not needed
+ // at rest, so they leave with the drag.
  cstage.classList.remove('arranging');
+ cRule(null,false);
+ cLand(id,false);
  syncUrl();
  say(cmpName(id)+' moved to column '+(t+1)+' of '+ord.length);
  var h=cstage.querySelector('.cmp-move[data-move="'+id+'"]');
