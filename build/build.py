@@ -23,7 +23,8 @@ EMAIL = "lydenyardley+subfreeuk@posteo.net"
 
 from catalog import CATEGORIES, CSV_KEYS, words
 from rows import (
-    CARD, DATASETS, ROWS, S, STICK, authored_problems, money, row_problems,
+    CARD, DATASETS, ROWS, S, SPONSORED, STICK, authored_problems, money,
+    row_problems,
 )
 
 # ---------- HTML ----------
@@ -31,8 +32,13 @@ e = html.escape
 
 
 def rel(url):
-    """A paid link says so to search engines; every other link keeps no referrer."""
-    return "sponsored nofollow noopener" if "tag=" in url and "amazon.co.uk" in url else "nofollow noopener noreferrer"
+    """A paid link says so to search engines; every other link keeps no referrer.
+
+    Which pages are paid is the data's answer, not a pattern over the address:
+    `rows.py` builds the set where it tags the links, so an Awin click and an
+    Amazon tag are both marked and a new network is one entry there.
+    """
+    return "sponsored nofollow noopener" if url in SPONSORED else "nofollow noopener noreferrer"
 EU_NOTE = "EU price, not a UK quote"
 
 
@@ -264,12 +270,20 @@ def md_cell(text):
 
 
 # A claim whose card sentence is already one of the row's own fields is not
-# shipped twice. The script falls back to the field, so the page's data carries
-# each sentence once; the price note is the one field added for that reason.
-CLAIM_FIELD = {"price": "priceNote", "rec": "history", "history": "history", "ha": "ha"}
+# shipped twice: the data names the field, and the script reads it. `nosub`
+# and `plan` each have two possible fields because a row with a plan and one
+# without answer the same question with different rows of their own.
+SAY_FIELDS = {
+    "price": ("priceNote",),
+    "rec": ("history",),
+    "history": ("history",),
+    "ha": ("ha",),
+    "plan": ("plan", "storage"),
+    "nosub": ("storage", "history"),
+}
 
 
-def data_map(ds, cat, prefix=""):
+def data_map(ds, cat):
     """The row record the script reads, keyed by product id."""
     score_max = ds.SCORE_MAX
     claims_by_id = {r["id"]: claims(r) for r in ds.ROWS}
@@ -291,15 +305,16 @@ def data_map(ds, cat, prefix=""):
             "storage": r["storage"], "live": r["live"], "alerts": r["alerts"],
             "ai": r["ai"], "history": r["history"], "paywalled": r["paywalled"],
             "plan": r["sub_text"], "ha": r["ha_text"], "wifi": r["wifi"],
-            "img": "" if not has_photo(r) else f'{prefix}img/{r["id"]}-sm.webp',
-            "imgLg": "" if not has_photo(r) else f'{prefix}img/{r["id"]}-lg.webp',
+            "img": bool(has_photo(r)),
         }
         d["claims"] = {}
         for key, claim in claims_by_id[r["id"]].items():
             item = {f: v for f, v in claim.items() if f != "keys"}
-            field = CLAIM_FIELD.get(key)
-            if field and item.get("say") == d[field]:
-                item.pop("say")
+            for field in SAY_FIELDS.get(key, ()):
+                if item.get("say") == d[field]:
+                    item.pop("say")
+                    item["f"] = field
+                    break
             d["claims"][key] = item
         out[r["id"]] = d
     return out
@@ -309,9 +324,8 @@ def category_js(ds, cat):
     """The words the script speaks for one category, keyed by slug."""
     period, padj = cat["period"], cat["period_adj"]
     return {
-        "noun": cat["noun"], "nouns": cat["nouns"],
-        "period": period, "periodAdj": padj, "months": ds.MONTHS,
-        "cap": cat["cap"], "scoreMax": ds.SCORE_MAX,
+        "noun": cat["noun"], "nouns": cat["nouns"], "imgp": "../" * cat["route"].count("/") + "img/",
+        "periodAdj": padj, "checked": ds.CHECKED,
         "compare": [[label, key] for label, key in cat["compare"]],
         "pin": cat["pin"],
         "sortNotes": {key: note for key, _, note in cat["sort"]},
@@ -339,18 +353,15 @@ def shared_assets():
     """
     global SHARED
     if SHARED is None:
-        data, cats, dates = {}, {}, {}
+        data, cats = {}, {}
         for c in CATEGORIES:
             ds = DATASETS[c["slug"]]
             written = words(c)
-            prefix = "../" * c["route"].count("/")
-            data[c["slug"]] = data_map(ds, written, prefix)
+            data[c["slug"]] = data_map(ds, written)
             cats[c["slug"]] = category_js(ds, written)
-            dates[c["slug"]] = ds.CHECKED
         js = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
               .replace("/*@@DATA@@*/{}", json.dumps(data, ensure_ascii=False))
-              .replace("/*@@CAT@@*/{}", json.dumps(cats, ensure_ascii=False))
-              .replace("/*@@DATES@@*/{}", json.dumps(dates, ensure_ascii=False)))
+              .replace("/*@@CAT@@*/{}", json.dumps(cats, ensure_ascii=False)))
         SHARED = js, page_css()
     return SHARED
 
@@ -375,9 +386,22 @@ def build(cat):
     score_max = SCORE_MAX
     claims_by_id = {r["id"]: claims(r) for r in rows}
 
+    # A category may band its power vocabulary, because seven exact battery
+    # buckets are too many to tick. A band's words join the row's tokens, so the
+    # script's one exact-token test still finds the row without a second map.
+    power_bands = cat.get("power_filters") or []
+    power_opts = (
+        [(label, label, members) for label, members in power_bands]
+        if power_bands
+        else [(key, label, (key,)) for key, label in cat["powers"]]
+    )
+
     rows_html = []
     for i, r in enumerate(rows):
-        pw = " ".join(r["power"])
+        pw_parts = list(r["power"]) + [
+            band for band, members in power_bands if set(members) & set(r["power"])
+        ]
+        pw = "|".join(pw_parts)
         sc = r["score_total"]
         tone = cat["verdicts"][r["verdict"]][1] if r["verdict"] else ""
         vattr = f' data-v="{tone}"' if tone else ""
@@ -401,7 +425,7 @@ def build(cat):
         if r.get("buy"):
             bu = S[r["buy"]][1]
             price += (f'<a class="amz" href="{e(bu)}" rel="{rel(bu)}">'
-                      f'Amazon</a>')
+                      f'{e(r.get("buy_label", "Amazon"))}</a>')
         # Each figure a reader might doubt carries its own card. The words are
         # the same ones the cell shows, so the card cannot drift from the figure.
         rec_lbl = REC_LABEL[r["rec"]]
@@ -522,10 +546,14 @@ def build(cat):
 
     nav = ""
     if len(CATEGORIES) > 1:
-        nav = '<nav class="cats" aria-label="Categories">' + "".join(
-            f'<a href="{prefix}{other["route"]}"{" aria-current=\"page\"" if other["slug"] == cat["slug"] else ""}>{e(other.get("nav") or other["nouns"].capitalize())}</a>'
+        # Three categories no longer fit beside the brand as links, so the
+        # masthead holds one disclosure. It is a native details, so every
+        # keyboard and screen reader already knows how to open it.
+        nav = ('<nav class="cats" aria-label="Categories"><details class="catmenu">'
+               '<summary>Categories</summary><ul>' + "".join(
+            f'<li><a href="{prefix}{other["route"]}"{" aria-current=\"page\"" if other["slug"] == cat["slug"] else ""}>{e(other.get("nav") or other["nouns"].capitalize())}</a></li>'
             for other in CATEGORIES
-        ) + "</nav>"
+        ) + "</ul></details></nav>")
 
     kit = kit_phrase(rows)
     page = f'''<!doctype html>
@@ -556,7 +584,7 @@ def build(cat):
 <div>
 <h1>{cat["h1"]}</h1>
 <p class="dek">{cat["dek"].format(n=n, period=padj)}</p>
-<p class="meta"><b>Last checked {CHECKED}.</b> Amazon links are paid links. No cookies. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
+<p class="meta"><b>Last checked {CHECKED}.</b> Some links are paid links. No cookies. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
 {short_html}</div>
 {aside_html}</div>
 </header>
@@ -571,7 +599,7 @@ def build(cat):
 {chr(10).join(f'<label><input type="checkbox" id="{id_}"> {e(label)}</label>' for id_, label in cat["filters"])}
 </div></fieldset>
 <fieldset><legend>Power</legend><div class="opts">
-{chr(10).join(f'<label><input type="checkbox" class="f-pw" value="{key}"> {e(label)}</label>' for key, label in cat["powers"])}
+{chr(10).join(f'<label><input type="checkbox" class="f-pw" value="{e(value)}"> {e(label)}</label>' for value, label, _ in power_opts)}
 </div><p class="hint">{e(cat["power_hint"])}</p></fieldset>
 <fieldset class="range"><legend>Price</legend>
 <div class="dual">
@@ -614,6 +642,7 @@ def build(cat):
 <h2>How we worked it out</h2>
 <p id="m-a">{method("no_plan", kit=kit+"a 64 GB SanDisk microSD card at " + money(CARD) + " or SanDisk USB stick at " + money(STICK))}</p>
 <p id="m-b">{method("with_plan")}</p>
+{f'<p>{method("offers")}</p>' if cat["method"].get("offers") else ''}
 <p>{method("score")}</p>
 <p>{method("terms")}</p>
 <p>{method("left_out")}</p>
@@ -622,7 +651,7 @@ def build(cat):
 <details class="srcs" id="sources" open><summary><h2 class="srcs-t">Sources <span class="srcs-n">{len(order)} links</span></h2></summary><div class="fns-wrap">{fn_list}</div></details>
 </section>
 <footer class="foot">
-<p>Last checked {CHECKED}. {n} UK {cat["nouns"]}, no tracking. <span class="aff">As an Amazon Associate I earn from qualifying purchases.</span> <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>
+<p>Last checked {CHECKED}. {n} UK {cat["nouns"]}. <span class="aff">As an Amazon Associate I earn from qualifying purchases.</span> <a href="{GITHUB}/issues/new">Open an issue</a> · <a href="#tbl">Back to the table</a> · <a href="#top">Back to top</a>.</p>
 <p>SubFree UK is a personal comparison of UK {cat["nouns"]}, put together by <a href="{GITHUB}">lydenyardley</a> {L['footer']}. Every price links to the page it came from, so you can check it yourself. Spotted a mistake? <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
 </footer>
 </main>

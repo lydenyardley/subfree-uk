@@ -1,10 +1,15 @@
 (function(){
-var DATA=/*@@DATA@@*/{},CATS=/*@@CAT@@*/{},DATES=/*@@DATES@@*/{},SLUG=document.body.getAttribute('data-cat'),D=DATA[SLUG],CHECKED=DATES[SLUG],CAT=CATS[SLUG],CLAIM_WHAT=CAT.claims;
+var DATA=/*@@DATA@@*/{},CATS=/*@@CAT@@*/{},SLUG=document.body.dataset.cat,D=DATA[SLUG],CAT=CATS[SLUG],CHECKED=CAT.checked,CLAIM_WHAT=CAT.claims;
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
-// The category's sentences carry placeholders; the page fills them, so a
-// second category can say "cameras" without a line of script changing.
+// The category's sentences carry placeholders, not a second script.
 function cat(s,values){return String(s).replace(/\{(\w+)\}/g,function(m,k){var v=values&&values[k];if(v===undefined)v=CAT[k];return v===undefined?m:v})}
 var root=document.documentElement,mq=window.matchMedia('(prefers-color-scheme: dark)'),tb=$('#theme');
+// The category menu is a native disclosure; outside clicks and Escape close it.
+var menu=$('.catmenu');
+if(menu){
+ document.addEventListener('click',function(e){if(menu.open&&!menu.contains(e.target))menu.open=false});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.open){menu.open=false;menu.querySelector('summary').focus()}});
+}
 function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':mq.matches}
 // The label is two spans and the stylesheet shows the one the theme needs, so
 // the first frame is right before any script runs. The name is set here.
@@ -67,7 +72,7 @@ function apply(){
  fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
  var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){return x.value}),n=0;
  function ok(t,plo,phi){return (!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=plo&&+t.dataset.price<=phi)&&
-  (!pw.length||pw.some(function(p){return t.dataset.power.split(' ').indexOf(p)>-1}))}
+  (!pw.length||pw.some(function(p){return t.dataset.power.split('|').indexOf(p)>-1}))}
  items.forEach(function(t){var show=ok(t,lo,hi);t.hidden=!show;if(show)n++});
  $('#count').textContent=n; $('#empty').hidden=n>0;
  var near=null;
@@ -200,16 +205,10 @@ function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
 // sign of it reads as a table that ends there. The cue names the column that
 // is off the edge, and an edge fade says there is more.
 var cmpScroll=$('.cmp-scroll'),cmpCue=$('#cmp-cue');
-// A snap point is measured from the scroll padding, and the sticky label
-// column is as wide as its longest label rather than the 76px the stylesheet
-// assumes. Left alone, the first product snapped to 76px and sat under the
-// rest of the label on a phone. Measure the column that is really there.
-function cmpPad(){
- if(!cmpScroll)return;
- var label=cmpScroll.querySelector('#cmp-table tbody th');
- if(!label)return;
- var w=Math.ceil(label.getBoundingClientRect().width);
- if(w>0)cmpScroll.style.scrollPaddingLeft=w+'px';
+// The sticky label column is wider than the 76px the stylesheet assumes.
+function pad(){
+ var l=cmpScroll&&cmpScroll.querySelector('#cmp-table tbody th');
+ if(l&&l.offsetWidth)cmpScroll.style.scrollPaddingLeft=l.offsetWidth+'px';
 }
 function cmpCueUpdate(){
  if(!cmpScroll||!cmpCue)return;
@@ -248,7 +247,7 @@ function cueScroll(){
  if(cueFrame)return;
  cueFrame=requestAnimationFrame(function(){cueFrame=0;cmpCueUpdate()});
 }
-if(cmpScroll){cmpScroll.addEventListener('scroll',cueScroll,{passive:true});addEventListener('resize',function(){cmpPad();cueScroll()})}
+if(cmpScroll){cmpScroll.addEventListener('scroll',cueScroll,{passive:true});addEventListener('resize',function(){pad();cueScroll()})}
 // The cue needs the width of a table that has just been built, so it costs a
 // layout. Ask for it on the frame after the table is on screen, not in the
 // middle of the open.
@@ -300,7 +299,7 @@ function buildCmp(){
   var d=D[id],tone=d.tone?' data-v="'+esc(d.tone)+'"':'';
   // Every column carries the badge line, written or not, so the photos below
   // it start on one row: an empty badge is the same box as a written one.
-  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span><span class="vtag'+(d.vtag?' v-'+esc(d.tone):'')+'">'+(d.vtag?esc(d.vtag):'')+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(d.imgLg)+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(d.img)+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'<button type="button" class="cmp-move" data-move="'+esc(id)+'" aria-label="Move '+esc(cmpName(id))+' left or right. Column '+(i+1)+' of '+s.length+'."><span class="grip" aria-hidden="true">'+GRIP+'</span></button></th>';
+  return '<th scope="col" data-id="'+esc(id)+'"'+tone+'><span class="cmp-name">'+esc(d.name)+'</span><span class="vtag'+(d.vtag?' v-'+esc(d.tone):'')+'">'+(d.vtag?esc(d.vtag):'')+'</span>'+(d.img?'<span class="cmp-photo"><button type="button" class="zoom" data-full="'+esc(CAT.imgp+id+'-lg.webp')+'" data-name="'+esc(d.name)+'" aria-label="View '+esc(d.name)+' photo"><img src="'+esc(CAT.imgp+id+'-sm.webp')+'" width="45" height="60" alt="" loading="lazy" decoding="async"><span class="zi" aria-hidden="true"></span></button></span>':'')+'<button type="button" class="cmp-move" data-move="'+esc(id)+'" aria-label="Move '+esc(cmpName(id))+' left or right. Column '+(i+1)+' of '+s.length+'."><span class="grip" aria-hidden="true">'+GRIP+'</span></button></th>';
  }).join('')+'</tr></thead><tbody>';
  var keep=s.map(function(id){return D[id].keep3}),valid=keep.filter(function(v){return typeof v==='number'&&isFinite(v)}),low=valid.length?Math.min.apply(null,valid):Infinity;
  // The cheapest column can be scrolled out of view, so a delta names the model
@@ -335,7 +334,7 @@ function buildCmp(){
 function render(){
  buildCmp();
  $('#compare').hidden=false;
- cmpPad();
+ pad();
  queueCue();
 }
 // Identical rows are the one part of a comparison that carries no decision, so
@@ -643,7 +642,7 @@ var card=$('#card'),cardFrom=null;
 function fnEntry(n){
  var a=n?document.getElementById('fn'+n):null;
  a=a&&a.querySelector('a');
- return a?{name:a.textContent.trim(),url:a.href}:null;
+ return a?{name:a.textContent.trim(),url:a.href,paid:/(^|\s)sponsored(\s|$)/.test(a.rel||'')}:null;
 }
 function cardLine(selector,text){
  var el=$(selector,card);
@@ -685,8 +684,7 @@ function openCard(t){
  });
  if(!list.length)return false;
  $('#card-h',card).textContent=d.name+' \u00b7 '+(CLAIM_WHAT[t.dataset.claim]||'');
- var sayField={price:'priceNote',rec:'history',history:'history',ha:'ha'}[t.dataset.claim];
- cardLine('.card-say',c.say||(sayField&&d[sayField]));
+ cardLine('.card-say',c.say||d[c.f]);
  cardLine('.card-arc',c.arc);
  cardLine('.card-note',c.note);
  var box=$('.card-srcs',card);
@@ -695,7 +693,7 @@ function openCard(t){
  list.forEach(function(entry,i){
   if(i)box.appendChild(document.createTextNode(', '));
   var a=document.createElement('a');
-  a.href=entry.url;a.rel=/amazon\.co\.uk.*[?&]tag=/.test(entry.url)?'sponsored nofollow noopener':'nofollow noopener noreferrer';a.textContent=entry.name;
+  a.href=entry.url;a.rel=entry.paid?'sponsored nofollow noopener':'nofollow noopener noreferrer';a.textContent=entry.name;
   box.appendChild(a);
  });
  cardFrom=t;

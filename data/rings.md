@@ -1,16 +1,16 @@
 # UK smart rings that work without a subscription
 
-Last checked 1 November 2026. 7 smart rings. No affiliate links.
+Last checked 1 November 2026. 7 smart rings. As an Amazon Associate I earn from qualifying purchases.
 
 | Smart ring | Subscription? | Price | Score /8 | 3 yrs, no subscription | 3 yrs, with membership | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra. |
-| RingConn Gen 2 Air | No subscription | [£179.00](https://www.amazon.co.uk/dp/B0DWK4QQ7H) | 5 | £179.00 | — | The cheapest way into a ring that keeps its data free | No sleep-apnea insights, no vibration, and no Home Assistant. |
-| Samsung Galaxy Ring | No subscription | [£233.38](https://www.amazon.co.uk/dp/B0DNTFZLDZ) | 6 | £233.38 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
-| RingConn Gen 2 | No subscription | [£259.00](https://www.amazon.co.uk/dp/B0DG2QKMFX) | 6 | £259.00 | — | The cheaper RingConn, with the same free core data | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
-| RingConn Gen 3 | No subscription | [£309.00](https://www.amazon.co.uk/dp/B0GVSGY854) | 6 | £309.00 | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
-| Ultrahuman Ring AIR | No subscription | [£329.00](https://www.amazon.co.uk/dp/B0H3B3GL17) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
-| Oura Ring 4 | Scores only without a plan | [£244.00](https://www.amazon.co.uk/dp/B0D9WWB3WX) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
+| RingConn Gen 2 | No subscription | [£159.00](https://www.argos.co.uk/product/7614640) | 6 | £159.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
+| RingConn Gen 2 Air | No subscription | [£179.00](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | £179.00 | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
+| Samsung Galaxy Ring | No subscription | [£233.38](https://www.amazon.co.uk/dp/B0DNTFZLDZ?tag=subfreeuk-21) | 6 | £233.38 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
+| RingConn Gen 3 | No subscription | [£309.00](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) | 6 | £309.00 | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
+| Ultrahuman Ring AIR | No subscription | [£329.00](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
+| Oura Ring 4 | Scores only without a plan | [£244.00](https://www.amazon.co.uk/dp/B0D9WWB3WX?tag=subfreeuk-21) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 
 ## Detail
 
@@ -26,12 +26,12 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - **Behind the membership:** Detailed sleep stages, 24/7 heart rate and HRV, SpO2, temperature, stress, cardiovascular age, VO2 max, women's health, reports and the API
 - **Membership:** Oura Membership £5.99/month or £69.99/year after tax. The first month is free
 - **Home Assistant:** A community HACS integration brings the ring's data into Home Assistant through Oura's cloud API. Oura blocks API access without an active membership, so the integration needs the plan too.
-- **Sources:** [Amazon UK: Oura Ring 4](https://www.amazon.co.uk/dp/B0D9WWB3WX) · [Oura Membership UK](https://ouraring.com/membership) · [Oura support: what a membership adds](https://support.ouraring.com/hc/en-us/articles/4409086524819-Oura-Membership) · [Home Assistant: Oura (community)](https://github.com/louispires/Oura-Home-Assistant-Integration)
+- **Sources:** [Amazon UK: Oura Ring 4](https://www.amazon.co.uk/dp/B0D9WWB3WX?tag=subfreeuk-21) · [Argos: Oura Ring 4](https://www.argos.co.uk/product/7727465) · [Oura Membership UK](https://ouraring.com/membership) · [Oura support: what a membership adds](https://support.ouraring.com/hc/en-us/articles/4409086524819-Oura-Membership) · [Home Assistant: Oura (community)](https://github.com/louispires/Oura-Home-Assistant-Integration)
 
 ### Ultrahuman Ring AIR
 - **Best for:** Home Assistant tinkerers: the data is free, and a HACS integration pulls it in
 - **Main catch:** No SpO2 reading, and the Home Assistant route is a community cloud integration.
-- **Price:** £329.00 (Amazon UK)
+- **Price:** £329.00 (Amazon UK, as listed)
 - **3-year cost, no subscription:** £329.00 = £329.00
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Ultrahuman's cloud. The app holds the history and shows it on the phone.
@@ -41,13 +41,13 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - **Membership:** No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra
 - **Home Assistant:** A community HACS integration reads the ring through Ultrahuman's cloud API. It is not local, and it needs your account.
 - **Not yet verified:** Ultrahuman's UK page does not publish minimum iOS or Android versions; check the app store listing.
-- **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
+- **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) · [Argos: Ultrahuman Ring AIR](https://www.argos.co.uk/product/4165587) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
 
 ### RingConn Gen 2
-- **Best for:** The cheaper RingConn, with the same free core data
+- **Best for:** The best value RingConn: 12 days, sleep-apnea insights and no subscription
 - **Main catch:** No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail.
-- **Price:** £259.00 (Amazon UK)
-- **3-year cost, no subscription:** £259.00 = £259.00
+- **Price:** £159.00 (Argos, Matte Black, size 7; £258 list, on sale)
+- **3-year cost, no subscription:** £159.00 = £159.00
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** RingConn's cloud. The app holds the history and shows it on the phone.
 - **Free:** live heart rate: Yes, in the app.; wellness alerts: App reminders only.; sleep and recovery insights: Free: sleep stages, HRV, SpO2, skin temperature, stress and sleep-apnea insights.
@@ -55,10 +55,10 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - **Behind the membership:** Nothing needed. No app subscription for the core data
 - **Membership:** No subscription. RingConn says the ring's core features need no plan
 - **Home Assistant:** No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.
-- **Sources:** [Amazon UK: RingConn Gen 2](https://www.amazon.co.uk/dp/B0DG2QKMFX) · [RingConn Gen 2](https://ringconn.com/products/ringconn-gen-2) · [RingConn: what the rings cost to run](https://ringconn.com/blogs/guides/ringconn-cost-guide) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
+- **Sources:** [Amazon UK: RingConn Gen 2](https://www.amazon.co.uk/dp/B0DG2QKMFX?tag=subfreeuk-21) · [Argos: RingConn Gen 2](https://www.argos.co.uk/product/7614640) · [RingConn Gen 2](https://ringconn.com/products/ringconn-gen-2) · [RingConn: what the rings cost to run](https://ringconn.com/blogs/guides/ringconn-cost-guide) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
 
 ### RingConn Gen 2 Air
-- **Best for:** The cheapest way into a ring that keeps its data free
+- **Best for:** A RingConn without the sleep-apnea, vascular or vibration extras
 - **Main catch:** No sleep-apnea insights, no vibration, and no Home Assistant.
 - **Price:** £179.00 (Amazon UK)
 - **3-year cost, no subscription:** £179.00 = £179.00
@@ -69,7 +69,7 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - **Behind the membership:** Nothing needed. No app subscription for the core data
 - **Membership:** No subscription. RingConn says the ring's core features need no plan
 - **Home Assistant:** No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.
-- **Sources:** [Amazon UK: RingConn Gen 2 Air](https://www.amazon.co.uk/dp/B0DWK4QQ7H) · [RingConn Gen 2 Air](https://ringconn.com/products/ringconn-gen-2-air) · [RingConn: what the rings cost to run](https://ringconn.com/blogs/guides/ringconn-cost-guide) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
+- **Sources:** [Amazon UK: RingConn Gen 2 Air](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) · [RingConn Gen 2 Air](https://ringconn.com/products/ringconn-gen-2-air) · [RingConn: what the rings cost to run](https://ringconn.com/blogs/guides/ringconn-cost-guide) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
 
 ### RingConn Gen 3
 - **Best for:** The best all-round ring: 14 days, no subscription and the deepest sleep data
@@ -83,7 +83,7 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - **Behind the membership:** Nothing needed. No app subscription for the core data
 - **Membership:** No subscription. RingConn says the ring's core features need no plan
 - **Home Assistant:** No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.
-- **Sources:** [Amazon UK: RingConn Gen 3](https://www.amazon.co.uk/dp/B0GVSGY854) · [RingConn Gen 3](https://ringconn.com/products/ringconn-gen-3) · [RingConn: what the rings cost to run](https://ringconn.com/blogs/guides/ringconn-cost-guide) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
+- **Sources:** [Amazon UK: RingConn Gen 3](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) · [RingConn Gen 3](https://ringconn.com/products/ringconn-gen-3) · [RingConn: what the rings cost to run](https://ringconn.com/blogs/guides/ringconn-cost-guide) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
 
 ### Samsung Galaxy Ring
 - **Best for:** Samsung phone owners: no subscription and the deepest Samsung Health integration
@@ -98,7 +98,7 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - **Membership:** No subscription. Samsung Health is free with the ring
 - **Home Assistant:** No official or community Home Assistant integration was found. The data stays in Samsung Health.
 - **Not yet verified:** Samsung's UK product page did not render a price. The £399 list figure is for the other Amazon variants; £233.38 is size 7 in Titanium Black.
-- **Sources:** [Amazon UK: Samsung Galaxy Ring](https://www.amazon.co.uk/dp/B0DNTFZLDZ) · [Samsung UK: how to use Galaxy Ring](https://www.samsung.com/uk/support/mobile-devices/how-to-use-the-samsung-galaxy-ring/) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
+- **Sources:** [Amazon UK: Samsung Galaxy Ring](https://www.amazon.co.uk/dp/B0DNTFZLDZ?tag=subfreeuk-21) · [Samsung UK: how to use Galaxy Ring](https://www.samsung.com/uk/support/mobile-devices/how-to-use-the-samsung-galaxy-ring/) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
 
 ### Amazfit Helio Ring
 - **Best for:** The cheapest smart ring, with no subscription for the basics
@@ -119,3 +119,4 @@ Last checked 1 November 2026. 7 smart rings. No affiliate links.
 - With no subscription: the ring's price, because no maker charges for the app itself. Oura's free tier keeps three daily scores; the other rings keep their full data.
 - With a membership: price + 36 × the cheapest monthly membership (Oura's £5.99). Paying yearly is cheaper.
 - A phone, electricity, sizing kits and price rises are left out.
+- Where to buy: the cheapest offer checked, or a second shop within £5 of it that pays us more (never more than £5 dearer).

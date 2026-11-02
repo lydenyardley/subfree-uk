@@ -1,18 +1,18 @@
 # UK security cameras without a subscription
 
-Last checked 1 November 2026. 10 cameras. No affiliate links.
+Last checked 1 November 2026. 10 cameras. As an Amazon Associate I earn from qualifying purchases.
 
 | Camera | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
-| Aqara Camera E1 | Yes | [£48.98](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) | 6 | £74.35 | — | The cheapest way to keep footage without a plan | The card and the power supply are both extra. |
-| Reolink RLC-820A | Yes | [£67.99](https://store.reolink.com/gb/) | 7 | £93.36 | — | A wired install on a budget: 4K for £68, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
-| eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £95.36 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
-| Aqara Camera Hub G3 | Yes | [£79.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £105.36 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
-| Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X) | 2 | £121.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
-| TP-Link Tapo C660 KIT | Yes | [£127.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £153.36 | £235.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
-| Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £155.36 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
+| Aqara Camera E1 | Yes | [£48.98](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) | 6 | £75.97 | — | The cheapest way to keep footage without a plan | The card and the power supply are both extra. |
+| Reolink RLC-820A | Yes | [£67.99](https://store.reolink.com/gb/) | 7 | £94.98 | — | A wired install on a budget: 4K for £68, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
+| eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £96.98 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
+| Aqara Camera Hub G3 | Yes | [£79.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £106.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
+| Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
+| TP-Link Tapo C660 KIT | Yes | [£127.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £154.98 | £235.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
+| Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £156.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
 | eufy SoloCam S340 | Yes | [£179.00](https://www.anker.com/uk/products/t81703w1) | 7 | £179.00 | — | A garden corner with sun: 360° pan and 8 GB on board | 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on. |
-| Reolink Argus 4 Pro | Yes | [£169.99](https://store.reolink.com/gb/) | 7 | £195.36 | — | A wide, dark driveway: 180° from one camera, with no fees | The card is extra, and the 180° panorama runs at 15fps rather than 25fps. |
+| Reolink Argus 4 Pro | Yes | [£169.99](https://store.reolink.com/gb/) | 7 | £196.98 | — | A wide, dark driveway: 180° from one camera, with no fees | The card is extra, and the 180° panorama runs at 15fps rather than 25fps. |
 | Ring Outdoor Camera Pro (plug-in) | No | [£179.99](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) | 2 | £179.99 | £359.63 | People already paying for Ring and Alexa | Saves no video at all without the £4.99-a-month plan. |
 
 ## Detail
@@ -21,7 +21,7 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Best for:** A wired install on a budget: 4K for £68, with nothing held back
 - **Main catch:** Needs a PoE switch or injector, an Ethernet run to the camera, and a card.
 - **Price:** £67.99 (Reolink UK store sale price (RRP £79.99))
-- **3-year cost, no plan:** £67.99 + £25.37 (SanDisk 64 GB microSD card) = £93.36
+- **3-year cost, no plan:** £67.99 + £26.99 (SanDisk 64 GB microSD card) = £94.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), a Reolink NVR, or FTP; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -29,13 +29,13 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Nothing. Reolink Cloud is optional
 - **Plans:** None needed. Reolink records to a microSD card or NVR; Reolink Cloud is optional
 - **Home Assistant:** Official, fully local integration; the camera works with no internet connection.
-- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: RLC-820A](https://reolink.com/gb/product/rlc-820a/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: RLC-820A](https://reolink.com/gb/product/rlc-820a/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Reolink Argus 4 Pro
 - **Best for:** A wide, dark driveway: 180° from one camera, with no fees
 - **Main catch:** The card is extra, and the 180° panorama runs at 15fps rather than 25fps.
 - **Price:** £169.99 (Reolink UK store, 1 camera with a Solar Panel 2)
-- **3-year cost, no plan:** £169.99 + £25.37 (SanDisk 64 GB microSD card) = £195.36
+- **3-year cost, no plan:** £169.99 + £26.99 (SanDisk 64 GB microSD card) = £196.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB) or a Reolink Home Hub; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -43,13 +43,13 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Nothing. Reolink Cloud is optional
 - **Plans:** None needed. Reolink records to a microSD card or Home Hub; Reolink Cloud is optional
 - **Home Assistant:** Official, fully local integration. Battery cameras wake on a PIR event, so some entities update on a schedule.
-- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: Argus 4 Pro](https://reolink.com/gb/product/argus-4-pro/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: Argus 4 Pro](https://reolink.com/gb/product/argus-4-pro/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Reolink E1 Outdoor Pro
 - **Best for:** A wide garden: 355° pan, 3× optical zoom and no fees
 - **Main catch:** Mains power at the camera, it is only IP65, and the card is extra.
 - **Price:** £129.99 (Reolink UK store)
-- **3-year cost, no plan:** £129.99 + £25.37 (SanDisk 64 GB microSD card) = £155.36
+- **3-year cost, no plan:** £129.99 + £26.99 (SanDisk 64 GB microSD card) = £156.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), a Reolink NVR, a Home Hub, or FTP/NAS; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -57,13 +57,13 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Nothing. Reolink Cloud is optional
 - **Plans:** None needed. Reolink records to a microSD card, NVR or Home Hub; Reolink Cloud is optional
 - **Home Assistant:** Official, fully local integration; RTSP, ONVIF and RTMP are exposed for other local apps.
-- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: E1 Outdoor Pro](https://reolink.com/gb/product/e1-outdoor-pro/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: E1 Outdoor Pro](https://reolink.com/gb/product/e1-outdoor-pro/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### TP-Link Tapo C660 KIT
 - **Best for:** A sunny wall with no socket: 4K, solar and a card slot
 - **Main catch:** Not on Home Assistant's supported Tapo camera list, and the card is extra.
 - **Price:** £127.99 (Tapo UK sale price (RRP £179.99))
-- **3-year cost, no plan:** £127.99 + £25.37 (SanDisk 64 GB microSD card) = £153.36
+- **3-year cost, no plan:** £127.99 + £26.99 (SanDisk 64 GB microSD card) = £154.98
 - **3-year cost, with plan:** £127.99 + 36 × £2.99 (Tapo Care) = £235.63
 - **Storage:** microSD (up to 512 GB) on the camera; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, pet and vehicle detection on the device
@@ -72,7 +72,7 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Plans:** Optional Tapo Care £2.99/month or £29.49/year (1 camera)
 - **Home Assistant:** Home Assistant's local TP-Link integration lists the C520WS and other Tapo cameras, but not this C660 KIT. Treat live view as unsupported.
 - **Unverified:** Home Assistant support for this exact model is not listed on the integration's supported-device page.
-- **Sources:** [Tapo UK: C660 KIT](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Tapo UK: C660 KIT](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### eufy SoloCam S340
 - **Best for:** A garden corner with sun: 360° pan and 8 GB on board
@@ -92,7 +92,7 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Best for:** A room, a pet or a nanny cam: 4K and on-device AI
 - **Main catch:** The card is extra, and the camera only joins 2.4 GHz Wi-Fi.
 - **Price:** £69.99 (eufy UK list price; a £14 coupon was advertised)
-- **3-year cost, no plan:** £69.99 + £25.37 (SanDisk 64 GB microSD card) = £95.36
+- **3-year cost, no plan:** £69.99 + £26.99 (SanDisk 64 GB microSD card) = £96.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (sold separately) or a HomeBase S380
 - **Free:** live view yes; alerts yes; smart detection: Free: person, pet, audio and crying detection on the device
@@ -100,13 +100,13 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Nothing essential; cloud backup is optional
 - **Plans:** None needed. eufy records to a card; cloud backup is optional
 - **Home Assistant:** No official camera integration. The community eufy-security add-on logs in through your eufy account.
-- **Sources:** [eufy UK: Indoor Cam E30](https://www.anker.com/uk/products/t8417221) · [Home Assistant: eufy-security (community)](https://github.com/fuatakgun/eufy_security) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [eufy UK: Indoor Cam E30](https://www.anker.com/uk/products/t8417221) · [Home Assistant: eufy-security (community)](https://github.com/fuatakgun/eufy_security) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Aqara Camera Hub G3
 - **Best for:** A hallway that also needs a Zigbee hub
 - **Main catch:** The card is extra, and HomeKit Secure Video records at 1080p.
 - **Price:** £79.99 (Aqara UK Shop sale price (RRP £119.99))
-- **3-year cost, no plan:** £79.99 + £25.37 (SanDisk 64 GB microSD card) = £105.36
+- **3-year cost, no plan:** £79.99 + £26.99 (SanDisk 64 GB microSD card) = £106.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 128 GB); HomeKit Secure Video needs iCloud+
 - **Free:** live view yes; alerts yes; smart detection: Free: on-device face, gesture, person and pet recognition
@@ -114,13 +114,13 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Nothing essential. HomeKit Secure Video needs Apple's iCloud+
 - **Plans:** None needed. The camera records to a card; HomeKit Secure Video is optional
 - **Home Assistant:** Works locally through Home Assistant's HomeKit Device integration; pair it as a HomeKit accessory.
-- **Sources:** [Aqara UK: Camera Hub G3](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Aqara UK: Camera Hub G3](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Aqara Camera E1
 - **Best for:** The cheapest way to keep footage without a plan
 - **Main catch:** The card and the power supply are both extra.
 - **Price:** £48.98 (Aqara UK Shop sale price (RRP £69.98))
-- **3-year cost, no plan:** £48.98 + £25.37 (SanDisk 64 GB microSD card) = £74.35
+- **3-year cost, no plan:** £48.98 + £26.99 (SanDisk 64 GB microSD card) = £75.97
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), or SMB 3.0 NAS with a card inserted
 - **Free:** live view yes; alerts yes; smart detection: Free: on-device person detection and tracking
@@ -128,7 +128,7 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Nothing essential. 30-day cloud history is a paid option
 - **Plans:** None needed. 24 hours of event cloud is included; a paid membership is optional
 - **Home Assistant:** Works locally through Home Assistant's HomeKit Device integration; pair it as a HomeKit accessory.
-- **Sources:** [Aqara UK: Camera E1](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Amazon UK: SanDisk High Endurance 64 GB](https://www.amazon.co.uk/SanDisk-Endurance-Monitoring-Dashcams-MicroSDXC/dp/B07P3D6Y5B)
+- **Sources:** [Aqara UK: Camera E1](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) · [Home Assistant: HomeKit Device](https://www.home-assistant.io/integrations/homekit_controller) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Ring Outdoor Camera Pro (plug-in)
 - **Best for:** People already paying for Ring and Alexa
@@ -148,7 +148,7 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Best for:** The cheapest way into Amazon's cameras, if you catch a deal
 - **Main catch:** Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes.
 - **Price:** £69.99 (Amazon UK, includes a Sync Module Core (which has no local storage))
-- **3-year cost, no plan:** £69.99 + £51.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £121.97
+- **3-year cost, no plan:** £69.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £125.97
 - **3-year cost, with plan:** £69.99 + 36 × £2.50 (Blink Basic) = £159.99
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); the camera has no storage
 - **Free:** live view capped at 5 minutes; alerts yes; smart detection: Paid (person and vehicle detection)
@@ -156,9 +156,9 @@ Last checked 1 November 2026. 10 cameras. No affiliate links.
 - **Paywalled:** Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions
 - **Plans:** Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month
 - **Home Assistant:** Official integration, but it goes through Blink's cloud and has no live view.
-- **Sources:** [Amazon UK: Blink Outdoor 4](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X) · [Amazon UK: Blink Sync Module 2](https://www.amazon.co.uk/dp/B08BJ9ZCZC) · [Blink: local storage options](https://support.blinkforhome.com/en_GB/blink-storage-options) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Amazon UK: SanDisk Ultra Curve 64 GB](https://www.amazon.co.uk/SANDISK-Computers-Desktops-RescuePRO-Recovery/dp/B0B42FNF15)
+- **Sources:** [Amazon UK: Blink Outdoor 4](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) · [Amazon UK: Blink Sync Module 2](https://www.amazon.co.uk/dp/B08BJ9ZCZC) · [Blink: local storage options](https://support.blinkforhome.com/en_GB/blink-storage-options) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
 
 ## How the 3-year costs are worked out
-- Without a plan: hardware price + anything extra you need to record for free (a 64 GB SanDisk microSD card at £25.37 or SanDisk USB stick at £11.99, each the cheapest UK price we found, at Amazon UK).
+- Without a plan: hardware price + anything extra you need to record for free (a 64 GB SanDisk microSD card at £26.99 or SanDisk USB stick at £15.99, each the cheapest UK price we found, at Amazon UK).
 - With a plan: hardware price + 36 × the cheapest UK monthly plan that adds recording for one camera. Paying yearly is usually cheaper.
 - Batteries, electricity, installation and price rises are left out.

@@ -64,6 +64,24 @@ def record_problems(pages):
             problems.append(
                 f"{slug}: score_max is {cat['score_max']}, its parts add to {parts}"
             )
+        # The power filter is a short list of choices, not the data's whole
+        # vocabulary. A category with more than four exact values groups them;
+        # every value is covered once so no row can fall out of the filter.
+        bands = cat.get("power_filters")
+        options = bands or cat["powers"]
+        if len(options) > 4:
+            problems.append(
+                f"{slug}: the power filter offers {len(options)} choices, so it needs power_filters"
+            )
+        if bands:
+            vocab = sorted(key for key, _ in cat["powers"])
+            covered = sorted(member for _, members in bands for member in members)
+            if covered != vocab:
+                problems.append(
+                    f"{slug}: power_filters cover {covered} but the vocabulary is {vocab}"
+                )
+            if len({label for label, _ in bands}) != len(bands):
+                problems.append(f"{slug}: two power_filters bands share a label")
         keys = {key for _, key in cat["compare"]}
         stray = [key for key in cat["pin"] if key not in keys]
         if stray:
@@ -78,6 +96,68 @@ def record_problems(pages):
         # A page at a nested route reaches the shared assets one level up; this
         # is the rule that makes `/cameras/` work without a second stylesheet.
         html = pages.get(cat["page"], "")
+        # A paid link is disclosed on the page that carries it, and the old
+        # no-affiliate promise cannot survive in a stale template.
+        text = re.sub(r"\s+", " ", html)
+        if "No affiliate links" in text:
+            problems.append(f"{slug}: the page still claims there are no affiliate links")
+        if "Some links are paid links" not in text:
+            problems.append(f"{slug}: the page does not name its paid links")
+        if "No cookies" not in text:
+            problems.append(f"{slug}: the page no longer says it sets no cookie")
+        if "As an Amazon Associate I earn from qualifying purchases" not in text:
+            problems.append(f"{slug}: the page does not carry the Amazon Associates statement")
+        # One disclosure holds every category, and it names this page as current.
+        menu = re.search(r'<nav class="cats".*?</nav>', html, re.S)
+        if not menu:
+            problems.append(f"{slug}: the page has no category menu")
+        else:
+            markup = menu.group(0)
+            if markup.count('<details class="catmenu">') != 1:
+                problems.append(f"{slug}: the category menu is not one disclosure")
+            if markup.count('aria-current="page"') != 1:
+                problems.append(f"{slug}: the category menu does not mark one current page")
+            if len(re.findall(r"<a ", markup)) != len(CATEGORIES):
+                problems.append(f"{slug}: the category menu does not link every category")
+        # An editorial jump goes to a row that is on the page. The rings page
+        # shipped two links keyed to a name that was not a row id, so a reader
+        # clicking "RingConn Gen 3" in the lead landed nowhere at all.
+        on_page = set(re.findall(r'id="(m-[a-z0-9-]+)"', html))
+        for target in set(re.findall(r'class="jump" href="#(m-[a-z0-9-]+)"', html)):
+            if target not in on_page:
+                problems.append(
+                    f"{slug}: a link jumps to #{target}, which is not a row on the page"
+                )
+        # A row that lists its shops shows one of them, and the page says how
+        # that one was chosen: the link on the price goes to the winning shop,
+        # and the method states the window it may have cost the reader.
+        offered = [row for row in rows if row.get("offers")]
+        if offered and ("Where to buy." not in text or "within £5" not in text):
+            problems.append(
+                f"{slug}: rows list offers but the method never states the rule"
+            )
+        for row in offered:
+            block = re.search(
+                rf'<tbody class="item" id="m-{re.escape(row["id"])}".*?</tbody>',
+                html, re.S,
+            )
+            if not block:
+                problems.append(f"{row['id']}: has no row on the page to read its offer from")
+                continue
+            markup = block.group(0)
+            if f'data-price="{row["price"]}"' not in markup:
+                problems.append(
+                    f"{row['id']}: the table does not show the price the offers pick"
+                )
+            if markup.count(row["offer_at"]) < 1:
+                problems.append(
+                    f"{row['id']}: the table does not name {row['offer_at']!r} as where the price is"
+                )
+            winning = cat["sources"][row["price_src"]][1]
+            if winning not in markup:
+                problems.append(
+                    f"{row['id']}: the price does not link to the shop it came from"
+                )
         for name in ("assets/page.css", "assets/page.js"):
             found = re.search(rf'(?:href|src)="([^"]*{re.escape(name)}[^"]*)"', html)
             if not found:
@@ -164,6 +244,50 @@ def page_behaviour(ctx):
             problems.append(f"{cat['page']} shows {shown} rows for {len(rows)} in the data")
             page.close()
             continue
+        # The category switcher is one disclosure that opens, lists every page
+        # and marks this one. A native details needs no script to pass.
+        if page.locator("nav.cats details.catmenu").count() != 1:
+            problems.append(f"{cat['page']} has no single category menu")
+        else:
+            if page.evaluate("() => document.querySelector('nav.cats details').open"):
+                problems.append(f"{cat['page']} opens its category menu before a click")
+            page.click("nav.cats summary")
+            if not page.evaluate("() => document.querySelector('nav.cats details').open"):
+                problems.append(f"{cat['page']} does not open its category menu")
+            if page.locator("nav.cats details a").count() != len(CATEGORIES):
+                problems.append(f"{cat['page']} does not list every category")
+            if page.locator("nav.cats details a[aria-current=page]").count() != 1:
+                problems.append(f"{cat['page']} does not mark the current category")
+            page.click("h1")
+            if page.evaluate("() => document.querySelector('nav.cats details').open"):
+                problems.append(f"{cat['page']} keeps its category menu open on an outside click")
+            page.click("nav.cats summary")
+            page.keyboard.press("Escape")
+            if page.evaluate("() => document.querySelector('nav.cats details').open"):
+                problems.append(f"{cat['page']} keeps its category menu open on Escape")
+            if page.evaluate("() => document.activeElement.tagName") != "SUMMARY":
+                problems.append(f"{cat['page']} does not return focus to the menu on Escape")
+        # A banded power filter still selects by the row's exact values: every
+        # ticked band shows its rows and hides the rest.
+        bands = cat.get("power_filters")
+        if bands:
+            boxes = page.locator("input.f-pw")
+            if boxes.count() != len(bands):
+                problems.append(
+                    f"{cat['page']} offers {boxes.count()} power filters for {len(bands)} bands"
+                )
+            else:
+                for i, (_, members) in enumerate(bands):
+                    boxes.nth(i).check()
+                    page.wait_for_timeout(100)
+                    shown_ids = set(page.eval_on_selector_all(
+                        "tbody.item:not([hidden])", "els => els.map(e => e.dataset.id)"))
+                    want = {r["id"] for r in rows if set(r["power"]) & set(members)}
+                    if shown_ids != want:
+                        problems.append(
+                            f"{cat['page']} band {i + 1} shows {sorted(shown_ids)}, not {sorted(want)}"
+                        )
+                    boxes.nth(i).uncheck()
         page.select_option("#sort", "price")
         page.wait_for_timeout(200)
         first = page.locator("tbody.item:not([hidden])").first.get_attribute("data-price")
@@ -214,7 +338,7 @@ CHECKS = [
         words,
     ),
     Check(
-        "category page behaviour", "post", 93,
+        "category page behaviour", "post", 94,
         "every non-root page renders its own rows, sorts, compares, opens a source card and loads every asset",
         page_behaviour,
     ),

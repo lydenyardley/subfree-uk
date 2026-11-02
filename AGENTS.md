@@ -85,6 +85,24 @@ price, or, where the row has no plan, the page that says none is needed.
 - Re-check the derived figures after any price change. `keep3` and `sub3` are
   computed in `build/rows.py`, and `build/check.py` recomputes them from
   `price`, `extra` and `sub`; a corrected input moves the ranking.
+- A row sold by more than one shop carries `offers` instead of a price, and
+  each offer is a shop, the page behind its price, the price, the
+  configuration that price is for and a `pay` rank. `offer_winner()` shows the
+  cheapest, unless another offer is within `OFFER_WINDOW` (£5) of it and pays
+  more; ties go to the cheaper offer and then to the shop's name. The winner
+  sets `price`, `price_src` and `price_note`, so a row with offers must not
+  author any of the three. `pay` is a rank and not a rate, and it is per shop
+  rather than per row, so a new shop is one entry. Adding a shop whose price
+  you have not opened is worse than leaving the row with one offer.
+- A paid link is a fact about the source, not about its address. `rows.py`
+  builds `SPONSORED` where it tags the links, `rel()` and the source card read
+  it, and the footer's "Some links are paid links" is checked. Do not re-derive
+  "is this sponsored" from a URL pattern: that is how an Awin click shipped as
+  an ordinary `nofollow`.
+- An editorial jump (`{v:ID:Words}`) takes a row id. A name that is not an id
+  renders a link to an anchor that does not exist and scrolls nowhere, so the
+  category check reads every `class="jump"` target back against the page's own
+  row ids.
 - A claim key is what a figure's source card reads. The card opens from the
   figure in the table and in the comparison, and prints the source's name, its
   URL, the day the prices were checked, the row's own sentence for that claim

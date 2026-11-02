@@ -236,6 +236,7 @@ def filters_row_check(page):
                 (group) => new Set(Array.from(group.children).map((l) => Math.round(box(l).top))).size
             ),
             slider: Math.round(box(document.querySelector('.dual')).width),
+            hint: Math.round(box(document.querySelector('.fbody .hint')).width),
             beside: Math.abs(filters.top - sort.top) < 3,
             overlap: filters.left < sort.right && sort.left < filters.right
                 && filters.top < sort.bottom && sort.top < filters.bottom,
@@ -285,6 +286,12 @@ def filters_row_check(page):
             if state["slider"] < floor:
                 problems.append(
                     f"{where} the price slider is {state['slider']}px wide, expected {floor} or more"
+                )
+            # The power hint is a full sentence. A 26ch clamp wrapped it into a
+            # narrow column beside an empty half of the filter band.
+            if width == 1280 and state["hint"] < 200:
+                problems.append(
+                    f"{where} the power hint is {state['hint']}px wide, expected 200 or more"
                 )
         if font:
             page.evaluate("() => document.documentElement.style.removeProperty('--sans')")

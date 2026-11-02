@@ -13,7 +13,7 @@ fails by name instead of printing nothing.
 
 from datetime import date
 from math import ceil
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 from catalog import CATEGORIES, DOORBELLS as CAT, labels
 
@@ -141,6 +141,11 @@ S = {
  "rc_nosub": ("RingConn: what the rings cost to run", "https://ringconn.com/blogs/guides/ringconn-cost-guide"),
  "amz_samsung": ("Amazon UK: Samsung Galaxy Ring", "https://www.amazon.co.uk/dp/B0DNTFZLDZ"),
  "samsung_support": ("Samsung UK: how to use Galaxy Ring", "https://www.samsung.com/uk/support/mobile-devices/how-to-use-the-samsung-galaxy-ring/"),
+ # Where a ring is sold by more than one UK shop, each offer cites its own page
+ # and names the configuration its price is for.
+ "argos_oura4": ("Argos: Oura Ring 4", "https://www.argos.co.uk/product/7727465"),
+ "argos_ultra": ("Argos: Ultrahuman Ring AIR", "https://www.argos.co.uk/product/4165587"),
+ "argos_rc2": ("Argos: RingConn Gen 2", "https://www.argos.co.uk/product/7614640"),
  "amazfit_uk": ("Amazfit UK: Helio Ring", "https://uk.amazfit.com/products/amazfit-helio-ring"),
  "amazfit_aura": ("Amazfit UK: Zepp Aura", "https://uk.amazfit.com/pages/zepp-aura"),
  "ha_zepp": ("Home Assistant: Zepp2Hass (community)", "https://community.home-assistant.io/t/zepp2hass-connect-your-amazfit-zepp-watch-to-home-assistant/973979"),
@@ -161,6 +166,52 @@ def amazon_tagged(url):
     q = [(k, v) for k, v in parse_qsl(u.query, keep_blank_values=True) if k != "tag"]
     q.append(("tag", AMAZON_TAG))
     return urlunsplit(u._replace(query=urlencode(q)))
+
+
+# Awin: publisher 3141383. A deep link hands the click to the network, which
+# sets its own cookie and forwards the reader to the shop's own page; the
+# destination travels percent-encoded in `ued`. No script goes on this site, so
+# the redirect is the whole integration, and the claim in the footer that this
+# page sets no cookie stays true.
+AWIN_PUBLISHER = "3141383"
+AWIN_CLICK = "https://www.awin1.com/cread.php"
+
+
+def awin_tagged(url, merchant):
+    return (f"{AWIN_CLICK}?awinmid={merchant}&awinaffid={AWIN_PUBLISHER}"
+            f"&ued={quote(url, safe='')}")
+
+
+# Awin advertiser ids, by source key. The id belongs to the merchant, not to us:
+# a wrong one credits another advertiser, so a shop whose id is not confirmed in
+# the Awin account stays a plain link rather than a mistracked one.
+AWIN_MERCHANTS = {}
+
+
+# ---------- where to buy ----------
+# A ring is sold by several UK shops and its price moves with size and finish,
+# so a row lists the offers that were checked rather than one price. The page
+# shows one of them: the cheapest, unless another offer is within
+# OFFER_WINDOW of it and pays us more. `pay` is a rank and not a rate, because
+# only Amazon publishes a fixed percentage, and the shop's own configuration
+# travels in `note` so two prices are never compared across a size or finish.
+OFFER_WINDOW = 5.0
+PAY_RETAIL = 1   # a UK shop we have no programme with: it pays us nothing
+PAY_AMAZON = 2   # Amazon UK Associates: a small rate on the whole price
+PAY_BRAND = 3    # a brand programme that pays more again (Ultrahuman 7-15%)
+
+
+def offer_winner(offers):
+    """The offer a reader sees: cheapest, then the one that pays us most.
+
+    Only an offer within OFFER_WINDOW of the cheapest can win, so the shop that
+    pays us better can never add more than that to the price. A tie falls to
+    the cheaper offer and then to the shop's name, so the winner is a function
+    of the data rather than of the order the list is written in.
+    """
+    cheapest = min(o["price"] for o in offers)
+    near = [o for o in offers if o["price"] <= cheapest + OFFER_WINDOW + 1e-9]
+    return min(near, key=lambda o: (-o["pay"], o["price"], o["shop"]))
 
 
 # rec: 'yes' records free out of the box / 'kit' needs extra hardware or very limited / 'no'
@@ -556,7 +607,11 @@ dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit"
 # as before: does the product give its data with no plan? `power` buckets the
 # vendor's battery figure, and `wifi` carries the phones it works with.
 dict(cat="rings", id="oura-4", brand="Oura", model="Ring 4", rec="brief", power=["eight"], ha=1,
- price=244.00, price_note="Amazon UK, Silver, size 9; other sizes and finishes differ", price_src="amz_oura4",
+ offers=[
+  dict(shop="Argos", src="argos_oura4", price=244.00, pay=PAY_RETAIL, note="Silver, size 6"),
+  dict(shop="Amazon UK", src="amz_oura4", price=244.00, pay=PAY_AMAZON,
+        note="Silver, size 9; other sizes and finishes differ"),
+ ],
  extra=0, extra_note="", free_records=False,
  sub=5.99, sub_name="Oura Membership",
  best="The most detailed sleep and recovery data, if you will pay monthly",
@@ -571,11 +626,14 @@ dict(cat="rings", id="oura-4", brand="Oura", model="Ring 4", rec="brief", power=
  ha_text="A community HACS integration brings the ring's data into Home Assistant through Oura's cloud API. Oura blocks API access without an active membership, so the integration needs the plan too.",
  wifi="iPhone and Android",
  score=dict(rec=1,sleep=0,hr=0,spo2=0,extra=0,ha=1),
- src=["amz_oura4","oura_membership","oura_free","ha_oura"],
+ src=["amz_oura4","argos_oura4","oura_membership","oura_free","ha_oura"],
  rec_src="oura_free", history_src="oura_free", ha_src="ha_oura", plan_src="oura_membership",
  nosub_say="£244 buys the ring. Without the membership only three daily scores work.", unverified=""),
 dict(cat="rings", id="ultra-air", brand="Ultrahuman", model="Ring AIR", rec="yes", power=["six"], ha=1,
- price=329.00, price_note="Amazon UK", price_src="amz_ultra",
+ offers=[
+  dict(shop="Argos", src="argos_ultra", price=329.00, pay=PAY_RETAIL, note="Raw Titanium, size 9"),
+  dict(shop="Amazon UK", src="amz_ultra", price=329.00, pay=PAY_AMAZON, note="as listed"),
+ ],
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
  best="Home Assistant tinkerers: the data is free, and a HACS integration pulls it in",
  catch="No SpO2 reading, and the Home Assistant route is a community cloud integration.",
@@ -589,14 +647,18 @@ dict(cat="rings", id="ultra-air", brand="Ultrahuman", model="Ring AIR", rec="yes
  ha_text="A community HACS integration reads the ring through Ultrahuman's cloud API. It is not local, and it needs your account.",
  wifi="iPhone and Android",
  score=dict(rec=2,sleep=1,hr=1,spo2=0,extra=1,ha=1),
- src=["amz_ultra","uh_ring","uh_nosub","ha_ultra"],
+ src=["amz_ultra","argos_ultra","uh_ring","uh_nosub","ha_ultra"],
  rec_src="uh_nosub", history_src="uh_ring", ha_src="ha_ultra", plan_src="uh_nosub",
  nosub_say="No subscription. The ring and its data are the whole cost.",
  unverified="Ultrahuman's UK page does not publish minimum iOS or Android versions; check the app store listing."),
 dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=["twelve"], ha=0,
- price=259.00, price_note="Amazon UK", price_src="amz_rc2",
+ offers=[
+  dict(shop="Argos", src="argos_rc2", price=159.00, pay=PAY_RETAIL,
+        note="Matte Black, size 7; £258 list, on sale"),
+  dict(shop="Amazon UK", src="amz_rc2", price=259.00, pay=PAY_AMAZON, note="as listed"),
+ ],
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
- best="The cheaper RingConn, with the same free core data",
+ best="The best value RingConn: 12 days, sleep-apnea insights and no subscription",
  catch="No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail.",
  storage="RingConn's cloud. The app holds the history and shows it on the phone.",
  live="Yes, in the app.",
@@ -608,13 +670,13 @@ dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=[
  ha_text="No official or community Home Assistant integration is documented. The ring's data stays in RingConn's app.",
  wifi="iPhone and Android",
  score=dict(rec=2,sleep=1,hr=1,spo2=1,extra=1,ha=0),
- src=["amz_rc2","rc2_product","rc_nosub","ha_index"],
+ src=["amz_rc2","argos_rc2","rc2_product","rc_nosub","ha_index"],
  rec_src="rc_nosub", history_src="rc2_product", ha_src="ha_index", plan_src="rc_nosub",
  nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
 dict(cat="rings", id="rc-2-air", brand="RingConn", model="Gen 2 Air", rec="yes", power=["ten"], ha=0,
  price=179.00, price_note="Amazon UK", price_src="amz_rc2a",
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
- best="The cheapest way into a ring that keeps its data free",
+ best="A RingConn without the sleep-apnea, vascular or vibration extras",
  catch="No sleep-apnea insights, no vibration, and no Home Assistant.",
  storage="RingConn's cloud. The app holds the history and shows it on the phone.",
  live="Yes, in the app.",
@@ -691,10 +753,22 @@ dict(cat="rings", id="amazfit-helio", brand="Amazfit", model="Helio Ring", rec="
 # tagged without anyone remembering to. An Amazon page cited for a sundry
 # stays a plain citation.
 for _r in ROWS:
-    for _key in (_r["price_src"], _r.get("buy")):
+    _keys = [o["src"] for o in _r.get("offers", ())] + [_r.get("price_src"), _r.get("buy")]
+    for _key in _keys:
         if _key:
             _name, _url = S[_key]
             S[_key] = (_name, amazon_tagged(_url))
+for _key, _merchant in AWIN_MERCHANTS.items():
+    _name, _url = S[_key]
+    S[_key] = (_name, awin_tagged(_url, _merchant))
+
+# The pages behind a paid link, read off the data rather than guessed from the
+# address: an Awin click carries no Amazon tag, and a bot-generated regex over
+# the URL is exactly how a paid link that is not Amazon went unmarked.
+SPONSORED = frozenset(
+    url for _, url in S.values()
+    if url.startswith(AWIN_CLICK) or ("tag=" in url and "amazon.co.uk" in url)
+)
 
 # ---------- each row's verdict and its plain words ----------
 # Authored beside the rows and attached to them below, so a row carries its own
@@ -705,7 +779,7 @@ VERDICT = {
     "reo-rlc820a": "best", "reo-argus4": "batt", "reo-e1out": "ptz",
     "tapo-c660": "solar", "aqara-g3": "indoor", "aqara-e1": "value",
     "ring-outpro": "avoid", "blink-out4": "avoid",
-    "rc-3": "best", "rc-2-air": "value",
+    "rc-3": "best", "rc-2": "value",
     "ultra-air": "ha", "samsung-ring": "galaxy", "amazfit-helio": "budget",
     "oura-4": "avoid",
 }
@@ -716,6 +790,8 @@ PLAIN = {
              "None. The doorbell has no storage of its own and no hub to hold the footage."),
     "eufy-e340": ("Runs on the battery, or you can wire it to your existing chime.",
                   "8 GB is built into the doorbell, so it records on its own. The optional HomeBase S380 (16 GB, expandable) holds more."),
+    "eufy-c31": ("Runs on its removable battery, or you can wire it to your existing doorbell wiring (24/7 recording needs the wiring, with the old chime bypassed).",
+                 "A microSD card (up to 128 GB, not included) in the doorbell. The optional HomeBase S380 holds more."),
     "reo-wifi": ("Wired to your existing doorbell chime.",
                  "A microSD card in the doorbell (up to 256 GB), or a Reolink NVR. It also streams over RTSP and ONVIF, so other apps can pull the video."),
     "reo-poe": ("Powered by an Ethernet cable (PoE): one cable carries both the power and the video, so there is no separate power supply to run.",
@@ -787,11 +863,13 @@ REQUIRED_ROW_KEYS = (
 )
 OPTIONAL_ROW_KEYS = (
     "power_note", "cards", "plan_price_region", "extra_src", "kit_src", "kit_label",
-    "kit_price", "nosub_say", "plan_say",
+    "kit_price", "nosub_say", "plan_say", "buy", "buy_label", "price_check",
+    "offers",
 )
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
     "plan_region", "keep_basis", "keep_note", "verdict", "plain",
+    "offer_at", "offer_conflict",
 )
 
 def row_problems(cat=None):
@@ -829,6 +907,42 @@ def row_problems(cat=None):
                 problems.append(f"{rid}: {key} {r[key]!r} is not in the source register")
             if key in r and r[key] not in r.get("src", []):
                 problems.append(f"{rid}: {key} {r[key]!r} is not in the row's src list")
+        # A row that lists shops is only as good as the winner's citation: every
+        # offer has to resolve to its own page, a price, and a rank, or the
+        # rule silently compares a figure with no source behind it.
+        if r.get("offers"):
+            shops = []
+            if r.get("offer_conflict"):
+                problems.append(
+                    f"{rid}: names a price beside its offers; the offers are the price"
+                )
+            for offer in r["offers"]:
+                missing_offer = [k for k in ("shop", "src", "price", "pay") if k not in offer]
+                if missing_offer:
+                    problems.append(f"{rid}: an offer is missing {', '.join(missing_offer)}")
+                    continue
+                shops.append(offer["shop"])
+                if offer["src"] not in sources:
+                    problems.append(
+                        f"{rid}: the offer at {offer['shop']} cites {offer['src']!r}, "
+                        "which is not in the source register"
+                    )
+                elif offer["src"] not in r.get("src", []):
+                    problems.append(
+                        f"{rid}: the offer at {offer['shop']} cites {offer['src']!r}, "
+                        "which is not in the row's src list"
+                    )
+                if not isinstance(offer["price"], (int, float)) or offer["price"] <= 0:
+                    problems.append(f"{rid}: the offer at {offer['shop']} has no price")
+                if not isinstance(offer["pay"], int) or isinstance(offer["pay"], bool):
+                    problems.append(f"{rid}: the offer at {offer['shop']} has no pay rank")
+                if not str(offer.get("note", "")).strip():
+                    problems.append(
+                        f"{rid}: the offer at {offer['shop']} names no configuration, "
+                        "so its price cannot be compared with another shop's"
+                    )
+            if len(set(shops)) != len(shops):
+                problems.append(f"{rid}: lists the same shop twice in its offers")
         if r.get("cards", 1) < 1:
             problems.append(f"{rid}: cards must be at least 1")
         if r.get("plan_price_region", "UK") not in ("UK", "EU"):
@@ -937,6 +1051,23 @@ def _derive(cat):
     for r in rows:
         r["cards"] = r.get("cards", 1)
         r["plan_region"] = r.get("plan_price_region", "UK")
+        # A row that lists its shops has no price of its own: the offers are the
+        # price, so an authored one would be a second figure to keep in step
+        # with the winner. The conflict is recorded while the authored key is
+        # still visible; `row_problems()` names it.
+        offers = r.get("offers") or ()
+        r["offer_conflict"] = bool(
+            offers and {"price", "price_src", "price_note"} & set(r)
+        )
+        if offers:
+            won = offer_winner(offers)
+            r["price"], r["price_src"] = won["price"], won["src"]
+            r["price_note"] = (
+                f'{won["shop"]}, {won["note"]}' if won.get("note") else won["shop"]
+            )
+            r["offer_at"] = won["shop"]
+        else:
+            r["offer_at"] = ""
         # A second card is a second purchase: the base extra has one already.
         if r["cards"] > 1: r["extra"] = round(r["extra"] + CARD * (r["cards"] - 1), 2)
         r["score_total"] = sum(r["score"].values())

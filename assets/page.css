@@ -40,11 +40,21 @@ sup{font-size:11px}
 :root[data-theme=dark] #theme .t-light{display:inline}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #theme .t-dark{display:none} :root:not([data-theme=light]) #theme .t-light{display:inline}}
 /* A second category is a second page, and the masthead is how a reader crosses
-   between them. */
-.cats{display:flex;gap:1rem;margin-left:auto}
-.cats a{color:var(--ink2);text-decoration:none;border-bottom:1px solid transparent}
-.cats a:hover{color:var(--ink);border-bottom-color:currentColor}
-.cats a[aria-current=page]{color:var(--ink);border-bottom-color:var(--ink)}
+   between them. The disclosure keeps one control in the row however many
+   categories land, and the native details needs no script to open. */
+.cats{margin-left:auto}
+.catmenu{position:relative}
+.catmenu>summary{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:0 .25rem;cursor:pointer;list-style:none;color:var(--ink);white-space:nowrap}
+.catmenu>summary::-webkit-details-marker{display:none}
+.catmenu>summary::marker{content:""}
+.catmenu>summary::after{content:"";width:.42rem;height:.42rem;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s}
+.catmenu[open]>summary::after{transform:rotate(-135deg)}
+.catmenu>summary:focus-visible,.catmenu a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.catmenu ul{position:absolute;right:0;top:calc(100% + .35rem);z-index:30;min-width:13rem;margin:0;padding:.35rem;list-style:none;background:var(--paper);border:1px solid var(--ink);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.12)}
+.catmenu a{display:block;padding:.55rem .65rem;color:var(--ink2);text-decoration:none}
+.catmenu a:hover{color:var(--ink);background:var(--tint)}
+.catmenu a[aria-current=page]{color:var(--ink);font-weight:700}
+.catmenu a[aria-current=page]::after{content:"Current";float:right;font:500 11px/1.6 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}
 .intro{padding:2rem 0;display:grid;grid-template-columns:minmax(0,1.618fr) 1fr;gap:2rem;border-bottom:1px solid var(--rule)}
 h1{font-weight:700;font-size:clamp(27px,3.5vw,50px);line-height:1.12;font-family:var(--serif);margin:0 0 1rem;letter-spacing:-.01em;max-width:22ch}
 .dek{font:18px/1.45 var(--serif);color:var(--ink2);margin:0 0 1rem}
@@ -74,6 +84,9 @@ legend,.lab{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:
 .opts{display:flex;flex-wrap:wrap;gap:1rem}
 .opts label{display:inline-flex;align-items:center;gap:0.5rem;min-height:24px;font-size:14px;cursor:pointer;white-space:nowrap}
 .hint{margin:0.5rem 0 0;font-size:12px;line-height:1.35;color:var(--ink3);max-width:26ch}
+/* The full sentence has room on the wide filter band; below it the extra
+   width pushed the option groups onto a second line. */
+@media (min-width:1101px){.hint{max-width:40ch}}
 input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0}
 /* One range input per handle, stacked, so each keeps its own keyboard value.
    Only the thumbs take pointer events, which is what lets them overlap. */
@@ -671,8 +684,8 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  /* Three categories no longer fit beside the brand and the theme button on
     one 390px row, so the switcher takes its own row underneath them. */
  .mast{padding:.35rem 0;gap:.4rem .5rem;flex-wrap:wrap}
- .cats{order:3;flex:1 1 100%;margin-left:0;gap:1.1rem}
- #theme{order:2;margin-left:auto;padding:0 .75rem}
+ .cats{order:3;flex:1 1 100%;margin-left:0;display:flex;justify-content:flex-end}
+ #theme{order:2;margin-left:auto;padding:0 .6rem}
  .intro{padding:.5rem 0}
  .dek{font-size:15px;line-height:1.4;margin-bottom:0.5rem}
  .verdict{display:none}
@@ -701,7 +714,7 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
  .range{flex:none;width:100%;max-width:none}
 }
 @media (max-width:330px){
- .cats{gap:.8rem}
+ .catmenu>summary{padding:0}
 }
 /* Paper has no click, so the sheet keeps what the script hides: the numbered
    markers and the register, and the figures lose the underline that says they

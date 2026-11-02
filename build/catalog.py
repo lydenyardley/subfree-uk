@@ -178,7 +178,7 @@ CAMERA_METHOD = {
 
 CAMERA_MD_HEAD = (
     "# UK security cameras without a subscription",
-    "Last checked {checked}. {n} cameras. No affiliate links.",
+    "Last checked {checked}. {n} cameras. As an Amazon Associate I earn from qualifying purchases.",
     "| Camera | Records free? | Price | Score /{score_max} | {period_short}, "
     "no plan | {period_short}, with plan | Best for | Main catch |",
 )
@@ -221,6 +221,14 @@ RING_METHOD = {
         "membership says so in that column, so the two totals compare like "
         "with like. Every ring's sums are under <i>Details</i>."
     ),
+    "offers": (
+        "<b>Where to buy.</b> Each ring is sold by more than one UK shop, and "
+        "its price moves with size and finish, so every offer names the one it "
+        "is for. The price shown is the cheapest we found, unless a second shop "
+        "is within £5 of it and pays us more — then that shop is shown, and the "
+        "link on the price goes to it. A shop paying us never adds more than "
+        "£5 to the price of a ring."
+    ),
     "score": (
         "<b>Free-data score (out of {score_max}):</b> works without a "
         "subscription (2 = every core metric free, 1 = scores only or a free "
@@ -255,12 +263,14 @@ RING_METHOD = {
         "With a membership: price + {months} × the cheapest monthly membership "
         "(Oura's £5.99). Paying yearly is cheaper.",
         "A phone, electricity, sizing kits and price rises are left out.",
+        "Where to buy: the cheapest offer checked, or a second shop within £5 "
+        "of it that pays us more (never more than £5 dearer).",
     ],
 }
 
 RING_MD_HEAD = (
     "# UK smart rings that work without a subscription",
-    "Last checked {checked}. {n} smart rings. No affiliate links.",
+    "Last checked {checked}. {n} smart rings. As an Amazon Associate I earn from qualifying purchases.",
     "| Smart ring | Subscription? | Price | Score /{score_max} | {period_short}, "
     "no subscription | {period_short}, with membership | Best for | Main catch |",
 )
@@ -591,6 +601,7 @@ CAMERAS = {
         '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-out4:Blink} needs extra kit.',
     ),
     "short_tones": ("best", "batt", "avoid"),
+    "short_head": "The short answer",
     "aside": (
         ("best", "Best overall without fees:", "{v:reo-rlc820a:Reolink RLC-820A}",
          ". It records 4K to a card or NVR, detection is free and Reolink's Home "
@@ -724,19 +735,20 @@ RINGS = {
     "no_plan_note": "No membership offered or needed",
 
     "short": (
-        '{v:ringconn-3:RingConn Gen 3} is the best overall without a subscription.',
-        '{v:ringconn-2-air:RingConn Gen 2 Air} is the best value.',
+        '{v:rc-3:RingConn Gen 3} is the best overall without a subscription.',
+        '{v:rc-2:RingConn Gen 2} is the best value.',
         '{v:oura-4:Oura Ring 4} needs a £5.99 monthly membership for its detail.',
     ),
     "short_tones": ("best", "batt", "avoid"),
+    "short_head": "The short answer",
     "aside": (
-        ("best", "Best overall without a subscription:", "{v:ringconn-3:RingConn Gen 3}",
+        ("best", "Best overall without a subscription:", "{v:rc-3:RingConn Gen 3}",
          ". It tracks sleep, HRV, SpO2, temperature and overnight vascular trends, "
          "lasts up to 14 days and adds nothing to the price. It has no Home "
          "Assistant integration."),
-        ("batt", "Best value:", "{v:ringconn-2-air:RingConn Gen 2 Air}",
-         ", which keeps its data free for £179, and still lasts up to 10 "
-         "days on a charge."),
+        ("batt", "Best value:", "{v:rc-2:RingConn Gen 2}",
+         ", which keeps its data free for {p:rc-2}, adds the sleep-apnea "
+         "insights the Air leaves out, and lasts up to 12 days on a charge."),
         ("avoid", "Avoid if you won't pay monthly:", "{v:oura-4:Oura Ring 4}",
          " shows only three daily scores without its membership; the sleep "
          "stages, HRV, SpO2 and trends need £5.99 a month."),
@@ -783,6 +795,14 @@ RINGS = {
         ("fourteen", "Up to 14 days"),
     ],
     "power_hint": "Battery life is the maker's figure with the main features on, unless the row says otherwise.",
+    # Seven exact battery buckets is too many to tick. The filter offers three
+    # bands that cover every bucket once, while the table still prints the
+    # maker's exact figure.
+    "power_filters": [
+        ("up to 6 days", ("four", "six")),
+        ("7 to 10 days", ("seven", "eight", "ten")),
+        ("over 10 days", ("twelve", "fourteen")),
+    ],
     "filters": [
         ("f-rec", "Works without a subscription"),
         ("f-ha", "Home Assistant"),

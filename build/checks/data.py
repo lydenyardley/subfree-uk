@@ -126,6 +126,24 @@ def category_problems(rows, pages, cat):
                 )
         if (row["keep3"], row["nosub3"], row["sub3"]) != (keep3, nosub3, sub3):
             problems.append(f"{row['id']}: a derived figure drifted from price, extra and plan")
+        # A row that lists its shops shows the one the rule picks, and names the
+        # configuration that shop's price is for. Both are re-derived here, so a
+        # hand-edited price or an offers list that moved without a rebuild is
+        # caught against the rule the method note prints.
+        if row.get("offers"):
+            won = rows.offer_winner(row["offers"])
+            if (row["price"], row["price_src"]) != (won["price"], won["src"]):
+                problems.append(
+                    f"{row['id']}: the shown price is not the offer the rule picks"
+                )
+            want_note = (
+                f'{won["shop"]}, {won["note"]}' if won.get("note") else won["shop"]
+            )
+            if row["price_note"] != want_note:
+                problems.append(
+                    f"{row['id']}: price_note {row['price_note']!r} does not name the "
+                    f"winning shop and its configuration ({want_note!r})"
+                )
         for key in ("price_src", "rec_src", "history_src", "ha_src", "plan_src"):
             if row[key] not in rows.S:
                 problems.append(f"{row['id']}: {key} {row[key]!r} is not in S")
@@ -331,6 +349,93 @@ def slider(ctx):
     return slider_problems(ctx.module, ctx.pages)
 
 
+def offer_rule_problems(module):
+    """The routing rule on fixtures, so the promise the page prints is the rule.
+
+    A shop that pays us more may add at most the window to a price, and one
+    further away than that never wins however well it pays. The reader is told
+    both halves, so both are checked: the cheapest offer, then the better payer
+    inside the window, then the cheaper offer and the shop's name on a tie.
+    """
+    if not hasattr(module, "offer_winner"):
+        return ["rows.py has no offer_winner, so no offer can be chosen"]
+    C, R, A, B = 100.0, module.PAY_RETAIL, module.PAY_AMAZON, module.PAY_BRAND
+
+    def offer(shop, price, pay):
+        return dict(shop=shop, src=shop.lower(), price=price, pay=pay, note="one size")
+
+    cases = [
+        ([offer("Cheap", C, R), offer("Dear", C + 20, B)], C,
+         "a shop £20 dearer won on pay"),
+        ([offer("Cheap", C, R), offer("Near", C + 5, B)], C + 5,
+         "a shop exactly £5 dearer did not win on pay"),
+        ([offer("Cheap", C, R), offer("Far", C + 5.01, B)], C,
+         "a shop £5.01 dearer won on pay"),
+        ([offer("Amazon", C, A), offer("Brand", C, B)], C,
+         "an equal price did not go to the better payer"),
+        ([offer("Alpha", C, A), offer("Beta", C, A), offer("Gamma", C + 20, B)], C,
+         "a tie fell to something other than the name"),
+        ([offer("Only", C + 40, B)], C + 40,
+         "a row with one offer did not show it"),
+    ]
+    problems = []
+    for offers, want, why in cases:
+        got = module.offer_winner(offers)["price"]
+        if got != want:
+            problems.append(f"{why}: picked £{got:,.2f} instead of £{want:,.2f}")
+    if module.offer_winner([offer("Alpha", C, A), offer("Beta", C, A)])["shop"] != "Alpha":
+        problems.append("a full tie is not settled by the shop's name")
+    return problems
+
+
+def offer_rule(ctx):
+    if ctx.module is None:
+        raise Skip("the dataset did not load")
+    return offer_rule_problems(ctx.module)
+
+
+def paid_link_problems(module):
+    """Every price that links to a paying shop says so, and the networks agree.
+
+    The regression this encodes is real: `rel` used to be decided by matching
+    `tag=` and `amazon.co.uk` against the URL, so the first Awin click would
+    have shipped as an ordinary `nofollow` link. A price link now has to be in
+    the set built where the tagging happens, and the Awin helper has to produce
+    the shape Awin documents.
+    """
+    problems = []
+    for cat in CATEGORIES:
+        for row in cat["rows"]:
+            keys = [row["price_src"]] + [o["src"] for o in row.get("offers", ())]
+            for key in keys:
+                url = module.S[key][1]
+                if "amazon.co.uk" not in url:
+                    continue
+                if "tag=" not in url:
+                    problems.append(
+                        f"{row['id']}: the price links to Amazon without our tag"
+                    )
+                elif url not in module.SPONSORED:
+                    problems.append(
+                        f"{row['id']}: an Amazon price link is not marked as paid"
+                    )
+    if module.awin_tagged("https://example.com/p", 69428) != (
+        "https://www.awin1.com/cread.php?awinmid=69428&awinaffid=3141383"
+        "&ued=https%3A%2F%2Fexample.com%2Fp"
+    ):
+        problems.append(
+            "the Awin deep link is not the documented shape: "
+            + module.awin_tagged("https://example.com/p", 69428)
+        )
+    return problems
+
+
+def paid_links(ctx):
+    if ctx.module is None:
+        raise Skip("the dataset did not load")
+    return paid_link_problems(ctx.module)
+
+
 def transfer(ctx):
     problems, total = transfer_problems()
     ctx.note(f"a first visit is {total:,} bytes gzipped across the page, its CSS and its script")
@@ -376,6 +481,16 @@ CHECKS = [
         "data freshness", "static", 3,
         "every category's prices are dated and inside their 60-day limit",
         freshness,
+    ),
+    Check(
+        "offer rule", "static", 21,
+        "the cheapest offer wins, and a better payer only inside the £5 window",
+        offer_rule,
+    ),
+    Check(
+        "paid links", "static", 26,
+        "every price that links to a paying shop carries our tag and says it is paid",
+        paid_links,
     ),
     Check(
         "price range", "static", 7,
