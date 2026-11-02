@@ -731,8 +731,12 @@ def build(cat):
 
 def csv_text(ds, rows, cat):
     """The CSV a reader can open, one row per product, every figure with its page."""
+    # `csv` writes CRLF by default, which made the file's bytes depend on who
+    # committed it: the repo stores CSV with LF, so a Linux checkout disagreed
+    # with the generator and `rebuild` failed on a tree that was correct. One
+    # terminator everywhere, and the bytes stop depending on the platform.
     out = io.StringIO()
-    w = csv.writer(out)
+    w = csv.writer(out, lineterminator="\n")
     w.writerow([head.format(score_max=ds.SCORE_MAX) for head in cat["csv_head"]])
     for r in rows:
         values = {
