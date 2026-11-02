@@ -823,7 +823,10 @@ VERDICT = {
     "ring-outpro": "avoid", "blink-out4": "avoid",
     "rc-3": "best", "rc-2": "value",
     "ultra-air": "ha", "samsung-ring": "galaxy", "amazfit-helio": "budget",
-    "oura-5": "avoid",
+    # Both Oura rows keep the warning: the Ring 4 has the same 2/8 and the same
+    # £5.99 wall, and a reader scanning the table should not read the cheaper
+    # row as the one that works without paying.
+    "oura-5": "avoid", "oura-4": "avoid",
 }
 PLAIN = {
     "ring": ("Runs on the battery, or you can wire it to your existing chime.",
