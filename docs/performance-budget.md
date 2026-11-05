@@ -23,10 +23,10 @@ they always are.
 
 | File | Budget, gzipped | Measured 5 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 23,102 |
+| `index.html` | 24,000 | 23,101 |
 | `assets/page.css` | 18,000 | 16,796 |
 | `assets/page.js` | 30,000 | 27,433 |
-| The three together, a first visit | 70,000 | 67,331 |
+| The three together, a first visit | 70,000 | 67,330 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same

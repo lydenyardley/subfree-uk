@@ -162,12 +162,12 @@ S = {
  # Where a ring is sold by more than one UK shop, each offer cites its own page
  # and names the configuration its price is for.
  "argos_oura4": ("Argos: Oura Ring 4", "https://www.argos.co.uk/product/7727465"),
- "argos_ultra": ("Argos: Ultrahuman Ring AIR", "https://www.argos.co.uk/product/4165587"),
+ "argos_ultra": ("Argos: Ultrahuman Ring AIR", "https://www.argos.co.uk/product/4165068"),
  "argos_rc2": ("Argos: RingConn Gen 2", "https://www.argos.co.uk/product/7614640"),
  "currys_rc2": ("Currys: RingConn Gen 2", "https://www.currys.co.uk/products/ringconn-gen-2-smart-ring-matte-black-size-7-10278293.html"),
  "currys_samsung": ("Currys: Samsung Galaxy Ring", "https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html"),
  "oura_store5": ("Oura: Ring 5", "https://ouraring.com/store/rings/oura-ring-5/silver"),
- "argos_oura5": ("Argos: Oura Ring 5", "https://www.argos.co.uk/product/8565956"),
+ "argos_oura5": ("Argos: Oura Ring 5", "https://www.argos.co.uk/product/8566340"),
  "currys_oura5": ("Currys: Oura Ring 5", "https://www.currys.co.uk/products/oura-ring-5-silver-size-8-10304738.html"),
  "amazfit_uk": ("Amazfit UK: Helio Ring", "https://uk.amazfit.com/products/amazfit-helio-ring"),
  "amazfit_aura": ("Amazfit UK: Zepp Aura", "https://uk.amazfit.com/pages/zepp-aura"),
@@ -871,7 +871,7 @@ dict(cat="cameras", id="ring-outpro", brand="Ring", model="Outdoor Camera 4K Pro
  src=["ring_outpro","ring_plans","ha_ring"],
  rec_src="ring_outpro", history_src="ring_outpro", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
 dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit", power=["battery"], ha=0,
- price=69.99, price_note="Argos, pack of 1, includes a Sync Module Core (which has no local storage); Amazon UK is the same price", price_src="argos_blink_out4", buy="amz_blink_cam",
+ price=52.49, price_note="Argos, pack of 1, includes a Sync Module Core (which has no local storage); £52.49 sale, was £69.99", price_src="argos_blink_out4", buy="amz_blink_cam",
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
  extra_src="sandisk_stick", kit_src="amz_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
  sub=2.50, sub_name="Blink Basic",
@@ -912,7 +912,7 @@ dict(cat="rings", id="oura-5", brand="Oura", model="Ring 5", rec="brief", power=
  offers=[
   dict(shop="Oura", src="oura_store5", price=399.00, pay=PAY_RETAIL,
         note="Silver; the gold and rose finishes are £499"),
-  dict(shop="Argos", src="argos_oura5", price=399.00, pay=PAY_RETAIL, note="Silver, standard sizes"),
+  dict(shop="Argos", src="argos_oura5", price=399.00, pay=PAY_RETAIL, note="Silver, size 8"),
   dict(shop="Currys", src="currys_oura5", price=399.00, pay=PAY_RETAIL, note="Silver, size 8"),
  ],
  extra=0, extra_note="", free_records=False,
@@ -958,7 +958,7 @@ dict(cat="rings", id="oura-4", brand="Oura", model="Ring 4", rec="brief", power=
  nosub_say="£244 buys the ring. Without the membership only three daily scores work.", unverified=""),
 dict(cat="rings", id="ultra-air", brand="Ultrahuman", model="Ring AIR", rec="yes", power=["six"], ha=1,
  offers=[
-  dict(shop="Argos", src="argos_ultra", price=329.00, pay=PAY_RETAIL, note="Raw Titanium, size 9"),
+  dict(shop="Argos", src="argos_ultra", price=329.00, pay=PAY_RETAIL, note="Aster Black, size 9"),
   dict(shop="Amazon UK", src="amz_ultra", price=329.00, pay=PAY_AMAZON, note="as listed"),
  ],
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",

@@ -9,7 +9,7 @@ Last checked 1 November 2026. 12 cameras. As an Amazon Associate I earn from qua
 | Reolink RLC-820A | Yes | [£67.99](https://store.reolink.com/gb/) | 7 | £94.98 | — | A wired install on a budget: 4K for £68, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
 | eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £96.98 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
 | Aqara Camera Hub G3 | Yes | [£79.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £106.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
-| Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.argos.co.uk/product/7539213) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
+| Blink Outdoor 4 | Only with extra kit | [£52.49](https://www.argos.co.uk/product/7539213) | 2 | £108.47 | £142.49 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
 | TP-Link Tapo C660 KIT | Yes | [£127.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £154.98 | £235.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
 | Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £156.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
 | eufy SoloCam S340 | Yes | [£179.00](https://www.anker.com/uk/products/t81703w1) | 7 | £179.00 | — | A garden corner with sun: 360° pan and 8 GB on board | 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on. |
@@ -164,9 +164,9 @@ Last checked 1 November 2026. 12 cameras. As an Amazon Associate I earn from qua
 ### Blink Outdoor 4
 - **Best for:** The cheapest way into Amazon's cameras, if you catch a deal
 - **Main catch:** Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes.
-- **Price:** £69.99 (Argos, pack of 1, includes a Sync Module Core (which has no local storage); Amazon UK is the same price)
-- **3-year cost, no plan:** £69.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £125.97
-- **3-year cost, with plan:** £69.99 + 36 × £2.50 (Blink Basic) = £159.99
+- **Price:** £52.49 (Argos, pack of 1, includes a Sync Module Core (which has no local storage); £52.49 sale, was £69.99)
+- **3-year cost, no plan:** £52.49 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £108.47
+- **3-year cost, with plan:** £52.49 + 36 × £2.50 (Blink Basic) = £142.49
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); the camera has no storage
 - **Free:** live view capped at 5 minutes; alerts yes; smart detection: Paid (person and vehicle detection)
 - **History without plan:** None without a Sync Module 2

@@ -7,9 +7,9 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 | Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra. |
 | Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 | No subscription | [£159.00](https://www.argos.co.uk/product/7614640) | 6 | £159.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
-| Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165587) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
+| Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165068) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
-| Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8565956) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
+| Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8566340) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
 | RingConn Gen 2 Air | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | Check price | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
 | RingConn Gen 3 | No subscription | [Check price](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) | 6 | Check price | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
 
@@ -18,7 +18,7 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 ### Oura Ring 5
 - **Best for:** The current Oura, if the newest sensors are worth the membership to you
 - **Main catch:** Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings.
-- **Price:** £399.00 (Argos, Silver, standard sizes)
+- **Price:** £399.00 (Argos, Silver, size 8)
 - **3-year cost, no subscription:** £399.00 (three daily scores only)
 - **3-year cost, with membership:** £399.00 + 36 × £5.99 (Oura Membership) = £614.64
 - **Where the data lives:** Oura's cloud. Oura lets you download your data from the Membership Hub even without a plan.
@@ -27,7 +27,7 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 - **Behind the membership:** Detailed sleep stages, 24/7 heart rate and HRV, SpO2, temperature, stress, cardiovascular age, VO2 max, women's health, reports and the API
 - **Membership:** Oura Membership £5.99/month or £69.99/year after tax. The first month is free
 - **Home Assistant:** A community HACS integration brings the ring's data into Home Assistant through Oura's cloud API. Oura blocks API access without an active membership, so the integration needs the plan too.
-- **Sources:** [Oura: Ring 5](https://ouraring.com/store/rings/oura-ring-5/silver) · [Argos: Oura Ring 5](https://www.argos.co.uk/product/8565956) · [Currys: Oura Ring 5](https://www.currys.co.uk/products/oura-ring-5-silver-size-8-10304738.html) · [Oura Membership UK](https://ouraring.com/membership) · [Oura support: what a membership adds](https://support.ouraring.com/hc/en-us/articles/4409086524819-Oura-Membership) · [Home Assistant: Oura (community)](https://github.com/louispires/Oura-Home-Assistant-Integration)
+- **Sources:** [Oura: Ring 5](https://ouraring.com/store/rings/oura-ring-5/silver) · [Argos: Oura Ring 5](https://www.argos.co.uk/product/8566340) · [Currys: Oura Ring 5](https://www.currys.co.uk/products/oura-ring-5-silver-size-8-10304738.html) · [Oura Membership UK](https://ouraring.com/membership) · [Oura support: what a membership adds](https://support.ouraring.com/hc/en-us/articles/4409086524819-Oura-Membership) · [Home Assistant: Oura (community)](https://github.com/louispires/Oura-Home-Assistant-Integration)
 
 ### Oura Ring 4
 - **Best for:** The most detailed sleep and recovery data, if you will pay monthly
@@ -46,7 +46,7 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 ### Ultrahuman Ring AIR
 - **Best for:** Home Assistant tinkerers: the data is free, and a HACS integration pulls it in
 - **Main catch:** No SpO2 reading, and the Home Assistant route is a community cloud integration.
-- **Price:** £329.00 (Argos, Raw Titanium, size 9)
+- **Price:** £329.00 (Argos, Aster Black, size 9)
 - **3-year cost, no subscription:** £329.00
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Ultrahuman's cloud. The app holds the history and shows it on the phone.
@@ -56,7 +56,7 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 - **Membership:** No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra
 - **Home Assistant:** A community HACS integration reads the ring through Ultrahuman's cloud API. It is not local, and it needs your account.
 - **Not yet verified:** Ultrahuman's UK page does not publish minimum iOS or Android versions; check the app store listing.
-- **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) · [Argos: Ultrahuman Ring AIR](https://www.argos.co.uk/product/4165587) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
+- **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) · [Argos: Ultrahuman Ring AIR](https://www.argos.co.uk/product/4165068) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
 
 ### RingConn Gen 2
 - **Best for:** The best value RingConn: 12 days, sleep-apnea insights and no subscription
