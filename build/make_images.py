@@ -66,6 +66,9 @@ IMGS={
  "brother-dcp-j1310dw":("https://bie-p-001-delivery.sitecorecontenthub.cloud/api/public/content/98871d9064814cafa79e5ab3787bc5e4?v=066db67b","https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw",None,True),
  "epson-et-2951":("https://i8.amplience.net/i/epsonemear/a23212-productpicture-hires-en-int-ecotank_et2950_01_main_2000x2000px","https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035",None,True),
  "canon-pixma-g3590":("https://i1.adis.ws/i/canon/6706C008_PIXMA-G3590_02?w=1200","https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/",None,True),
+ # Canon's render includes its PIXMA Print Plan sheet, the same treatment as
+ # Epson's "3 years of ink included" sheet.
+ "canon-pixma-ts6550i":("https://i1.adis.ws/i/canon/7179C008_PIXMA-TS6550i_000?w=1200","https://www.canon.co.uk/store/canon-pixma-ts6550i-wireless-colour-3-in-1-inkjet-photo-printer/7179C008/",None,True),
 }
 PLACEHOLDER={
  "hik":"Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image.",

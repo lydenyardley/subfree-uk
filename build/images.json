@@ -214,6 +214,11 @@
   "page": "https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/",
   "cropped": false
  },
+ "canon-pixma-ts6550i": {
+  "src": "https://i1.adis.ws/i/canon/7179C008_PIXMA-TS6550i_000?w=1200",
+  "page": "https://www.canon.co.uk/store/canon-pixma-ts6550i-wireless-colour-3-in-1-inkjet-photo-printer/7179C008/",
+  "cropped": false
+ },
  "hik": {
   "placeholder": true,
   "why": "Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image."

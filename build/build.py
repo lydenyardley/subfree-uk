@@ -177,21 +177,23 @@ def vlink(ids, text):
     return f'<a class="jump" href="#m-{ids[0]}" data-ids="{" ".join(ids)}">{text}</a>'
 
 
-ROW_FIG = re.compile(r"\{([pc]):([a-z0-9-]+)\}")
+ROW_FIG = re.compile(r"\{([pck]):([a-z0-9-]+)\}")
 ROW_LINK = re.compile(r"\{v:([a-z0-9-]+):([^}]+)\}")
 
 
 def with_links(text, by_id):
     """`{v:ID:Words}` becomes a link to that row, so the editorial lead can
     name a product without the record holding markup for a specific id.
-    `{p:ID}` and `{c:ID}` print its price and its no-plan 3-year cost, to the
-    pound, so the answer near the top cannot drift from the table."""
+    `{p:ID}`, `{c:ID}` and `{k:ID}` print its price, its no-plan 3-year cost
+    and its cheaper 3-year cost, to the pound, so the answer near the top cannot
+    drift from the table."""
     def figure(m):
         row = by_id[m.group(2)]
         # A "Check price" row has no price of its own to print, so no total either.
         if row.get("price_check"):
             raise ValueError(f"{m.group(0)} names a row with no shown price")
-        return f"£{round(row['price' if m.group(1) == 'p' else 'nosub3']):,}"
+        key = {"p": "price", "c": "nosub3", "k": "keep3"}[m.group(1)]
+        return f"£{round(row[key]):,}"
     text = ROW_FIG.sub(figure, text)
     return ROW_LINK.sub(lambda m: vlink([m.group(1)], m.group(2)), text)
 

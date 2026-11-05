@@ -473,8 +473,9 @@ DOORBELLS = {
 
     # The editorial lead, which is a judgement about this category's rows rather
     # than a figure: `{v:ID:Words}` becomes a link to that row.
-    # `{p:ID}` and `{c:ID}` print a row's price and its no-plan 3-year cost,
-    # rounded to the pound, so the short answer never drifts from the table.
+    # `{p:ID}`, `{c:ID}` and `{k:ID}` print a row's price, its no-plan 3-year
+    # cost and its cheaper 3-year cost, rounded to the pound, so the short answer
+    # never drifts from the table.
     "short": (
         'Wired doorbell: {v:reo-wifi:Reolink WiFi}, {p:reo-wifi}',
         'Renting or no wires: {v:tapo-d235:Tapo D235}, {p:tapo-d235}',
@@ -1043,7 +1044,7 @@ PRINTERS = {
     # The model each brand sells now, as of the date above. HP's Envy is the
     # newest Envy all-in-one; Brother's J1310DW is the current small inkjet;
     # Epson's ET-2951 replaced the discontinued ET-2850; Canon's G3590 is the
-    # current 3-in-1 MegaTank.
+    # current 3-in-1 MegaTank, with the cartridge TS6550i covered beside it.
     "current": {
         "HP": "hp-envy-6530e",
         "Brother": "brother-dcp-j1310dw",
@@ -1075,15 +1076,18 @@ PRINTERS = {
 
     "short": (
         "{v:canon-pixma-g3590:Canon PIXMA G3590} is the best overall without an ink plan. It costs {p:canon-pixma-g3590} and its bottles cover three years.",
+        "{v:canon-pixma-ts6550i:Canon PIXMA TS6550i} costs {p:canon-pixma-ts6550i}, and its £4.49 plan brings three years to {k:canon-pixma-ts6550i}.",
         "{v:epson-et-2951:Epson EcoTank ET-2951} is the fastest tank at {p:epson-et-2951}, printing 15 mono pages a minute.",
         "{v:brother-dcp-j1310dw:Brother DCP-J1310DW} is the cheapest cartridge printer on retail ink at {c:brother-dcp-j1310dw} over 3 years.",
         "{v:hp-envy-6530e:HP Envy 6530e} needs an HP account, and retail ink takes it to {c:hp-envy-6530e}.",
     ),
-    "short_tones": ("best", "pick", "pick", "avoid"),
+    "short_tones": ("best", "pick", "pick", "pick", "avoid"),
     "short_head": "The short answer",
     "aside": (
         ("best", "Best overall without an ink plan:", "{v:canon-pixma-g3590:Canon PIXMA G3590}",
          " costs {p:canon-pixma-g3590}. Its four bottles cover 3,600 pages, double-sided printing is automatic, and nothing needs an account."),
+        ("batt", "Cheapest with an ink plan:", "{v:canon-pixma-ts6550i:Canon PIXMA TS6550i}",
+         " costs {p:canon-pixma-ts6550i}, and £4.49 a month covers 100 pages; three years come to {k:canon-pixma-ts6550i}."),
         ("batt", "Fastest tank:", "{v:epson-et-2951:Epson EcoTank ET-2951}",
          " costs {p:epson-et-2951} and prints 15 mono and 8 colour pages a minute."),
         ("batt", "Cheapest cartridge ink:", "{v:brother-dcp-j1310dw:Brother DCP-J1310DW}",
@@ -1135,6 +1139,7 @@ PRINTERS = {
 
     "verdicts": {
         "best": ("Best overall", "best"),
+        "plan": ("Cheapest with a plan", "batt"),
         "fast": ("Fastest tank", "batt"),
         "retail": ("Cheapest cartridge ink", "batt"),
         "avoid": ("Dearest to run", "avoid"),

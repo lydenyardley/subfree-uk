@@ -1,10 +1,11 @@
 # UK printers that work without an ink subscription
 
-Last checked 5 November 2026. 4 printers. As an Amazon Associate I earn from qualifying purchases.
+Last checked 5 November 2026. 5 printers. As an Amazon Associate I earn from qualifying purchases.
 
 | Printer | Retail ink? | Price | Score /8 | 3 yrs, retail ink | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Canon PIXMA G3590 | Yes | [£189.99](https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/) | 8 | £189.99 | — | A cheaper tank that still covers three years of ink | Slower than the Epson at 11/6 ipm, with the same 100-sheet tray. |
+| Canon PIXMA TS6550i | Yes | [£49.99](https://www.canon.co.uk/store/pixma-print-plan-printers/) | 7 | £415.93 | £211.63 | A cheap printer with the cheapest plan route | The £49.99 is a sale price, and the starter cartridges hold about 180 pages each. |
 | Epson EcoTank ET-2951 | Yes | [£239.99](https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035) | 8 | £239.99 | — | A busy household that wants the ink paid for up front | The dearest printer here, and the paper tray holds only 100 sheets. |
 | Brother DCP-J1310DW | Yes | [£132.23](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) | 7 | £409.69 | £293.87 | The cheapest way to print 100 pages a month with a plan | The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years. |
 | HP Envy 6530e | Original ink only | [£71.80](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) | 4 | £619.15 | £305.44 | A light household that will take the ink plan | Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink. |
@@ -38,6 +39,20 @@ Last checked 5 November 2026. 4 printers. As an Amazon Associate I earn from qua
 - **Ink plans:** None needed. Canon's optional Auto-Ink Delivery sends bottles when low
 - **Account needed:** No account needed. The Canon PRINT app is optional.
 - **Sources:** [Canon UK: PIXMA G3590](https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/)
+
+### Canon PIXMA TS6550i
+- **Best for:** A cheap printer with the cheapest plan route
+- **Main catch:** The £49.99 is a sale price, and the starter cartridges hold about 180 pages each.
+- **Price:** £49.99 (Canon UK store sale (was £89.99))
+- **3-year cost, retail ink:** £49.99 + £365.94 (6 PG-595XL/CL-586XL packs (300 pages each)) = £415.93
+- **3-year cost, with plan:** £49.99 + 36 × £4.49 (PIXMA Print Plan 100) = £211.63
+- **Ink in the box:** Starter cartridges: about 180 black and 180 colour pages
+- **Included:** 15 ipm mono, 10 ipm colour (ISO); double-sided: Automatic; scan and copy: Yes, flatbed scan and copy
+- **Ink without a plan:** Yes, PG-595 and CL-586 cartridges from any shop with no account
+- **With an ink plan:** Nothing. PIXMA Print Plan is optional
+- **Ink plans:** PIXMA Print Plan £4.49/month for 100 pages; 30 pages £2.49, 60 pages £3.99, 200 pages £8.99
+- **Account needed:** No account needed. The Canon PRINT app is optional.
+- **Sources:** [Canon UK: PIXMA TS6550i](https://www.canon.co.uk/store/canon-pixma-ts6550i-wireless-colour-3-in-1-inkjet-photo-printer/7179C008/) · [Canon UK: PIXMA Print Plan printers](https://www.canon.co.uk/store/pixma-print-plan-printers/) · [Canon UK: PG-595XL + CL-586XL value pack](https://www.canon.co.uk/store/canon-pg-595xl-cl-586xl-high-yield-ink-cartridges-photo-paper-value-pack/7170C004/) · [Canon UK: PIXMA Print Plan](https://www.canon.co.uk/printer-ink-subscription/pixma-print-plan)
 
 ### Brother DCP-J1310DW
 - **Best for:** The cheapest way to print 100 pages a month with a plan
