@@ -9,7 +9,7 @@ Last checked 1 November 2026. 12 cameras. As an Amazon Associate I earn from qua
 | Reolink RLC-820A | Yes | [£67.99](https://store.reolink.com/gb/) | 7 | £94.98 | — | A wired install on a budget: 4K for £68, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
 | eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £96.98 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
 | Aqara Camera Hub G3 | Yes | [£79.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £106.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
-| Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
+| Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.argos.co.uk/product/7539213) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
 | Blink Outdoor 2K+ | Only with extra kit | [£89.99](https://www.amazon.co.uk/blink-outdoor-camera-2k-/dp/B0F964Q9Y8?tag=subfreeuk-21) | 2 | £145.97 | £179.99 | A 2K picture from Amazon's cameras, if you will add the module anyway | Records nothing until you add a Sync Module 2 and a USB stick, and Blink's two-year battery figure is at 1080p. |
 | TP-Link Tapo C660 KIT | Yes | [£127.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £154.98 | £235.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
 | Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £156.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
@@ -164,7 +164,7 @@ Last checked 1 November 2026. 12 cameras. As an Amazon Associate I earn from qua
 ### Blink Outdoor 4
 - **Best for:** The cheapest way into Amazon's cameras, if you catch a deal
 - **Main catch:** Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes.
-- **Price:** £69.99 (Amazon UK, includes a Sync Module Core (which has no local storage))
+- **Price:** £69.99 (Argos, pack of 1, includes a Sync Module Core (which has no local storage); Amazon UK is the same price)
 - **3-year cost, no plan:** £69.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £125.97
 - **3-year cost, with plan:** £69.99 + 36 × £2.50 (Blink Basic) = £159.99
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); the camera has no storage
@@ -173,7 +173,7 @@ Last checked 1 November 2026. 12 cameras. As an Amazon Associate I earn from qua
 - **Paywalled:** Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions
 - **Plans:** Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month
 - **Home Assistant:** Official integration, but it goes through Blink's cloud and has no live view.
-- **Sources:** [Amazon UK: Blink Outdoor 4](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) · [Amazon UK: Blink Sync Module 2](https://www.amazon.co.uk/dp/B08BJ9ZCZC) · [Blink: local storage options](https://support.blinkforhome.com/en_GB/blink-storage-options) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
+- **Sources:** [Argos: Blink Outdoor 4 system, pack of 1](https://www.argos.co.uk/product/7539213) · [Amazon UK: Blink Outdoor 4](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) · [Amazon UK: Blink Sync Module 2](https://www.amazon.co.uk/dp/B08BJ9ZCZC) · [Blink: local storage options](https://support.blinkforhome.com/en_GB/blink-storage-options) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
 
 ### Blink Outdoor 2K+
 - **Best for:** A 2K picture from Amazon's cameras, if you will add the module anyway

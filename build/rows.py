@@ -121,6 +121,7 @@ S = {
  "aqara_e1": ("Aqara UK: Camera E1", "https://www.aqara-shop.co.uk/product/aqara-camera-e1/"),
  "aqara_g100": ("Aqara UK Shop: Camera G100 Select", "https://www.aqara-shop.co.uk/product/aqara-camera-g100-select/"),
  "ring_outpro": ("Ring UK: Outdoor Camera 4K Pro (plug-in)", "https://en-uk.ring.com/products/stick-up-cam-pro-plug-in"),
+ "argos_blink_out4": ("Argos: Blink Outdoor 4 system, pack of 1", "https://www.argos.co.uk/product/7539213"),
  "amz_blink_cam": ("Amazon UK: Blink Outdoor 4", "https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X"),
  "amz_sm2": ("Amazon UK: Blink Sync Module 2", "https://www.amazon.co.uk/dp/B08BJ9ZCZC"),
  "blink_storage": ("Blink: local storage options", "https://support.blinkforhome.com/en_GB/blink-storage-options"),
@@ -210,9 +211,27 @@ def awin_tagged(url, merchant):
 # Currys is on Awin (advertiser 1599, 3% for editorial), so its offers are the
 # live part of the integration. Argos sells two of these rings and has no
 # programme we are in, so its links stay plain.
-AWIN_MERCHANTS = {
+# Programme status, by Awin advertiser id, for publisher 3141383. Only an
+# approved programme is a live affiliate: a rejected or pending one earns
+# nothing, so its shop is linked plainly and ranks as PAY_RETAIL. Move an id to
+# "approved" only once Awin confirms it, then list its source keys below.
+AWIN_PROGRAMMES = {
+    1599: ("Currys", "rejected"),      # 5 Nov 2026: site does not complement brand
+    3090: ("Very", "rejected"),        # 5 Nov 2026: publisher type
+    69428: ("Ultrahuman", "pending"),
+}
+AWIN_PENDING_BRANDS = ("Arlo", "Anker/eufy", "Aqara", "Reolink")  # pending, ids unconfirmed
+
+
+def awin_live(merchant):
+    return AWIN_PROGRAMMES.get(merchant, ("", "unknown"))[1] == "approved"
+
+
+# Source key -> Awin advertiser id. Only approved programmes are tagged.
+AWIN_LINKS = {
     "currys_rc2": 1599, "currys_samsung": 1599, "currys_oura5": 1599,
 }
+AWIN_MERCHANTS = {k: m for k, m in AWIN_LINKS.items() if awin_live(m)}
 
 
 # ---------- where to buy ----------
@@ -239,6 +258,22 @@ def offer_winner(offers):
     cheapest = min(o["price"] for o in offers)
     near = [o for o in offers if o["price"] <= cheapest + OFFER_WINDOW + 1e-9]
     return min(near, key=lambda o: (-o["pay"], o["price"], o["shop"]))
+
+
+def offer_shown(offers):
+    """The offer whose price the reader sees.
+
+    The winner, unless the winner is Amazon: Amazon's rules bar showing its
+    price, so the figure comes from another UK shop at the same price, while
+    the link stays Amazon's. With no such shop the winner comes back and the
+    row says "Check price".
+    """
+    won = offer_winner(offers)
+    if won["pay"] != PAY_AMAZON:
+        return won
+    twins = [o for o in offers if o is not won and o["pay"] != PAY_AMAZON
+             and abs(o["price"] - won["price"]) < 1e-9]
+    return min(twins, key=lambda o: o["shop"]) if twins else won
 
 
 # rec: 'yes' records free out of the box / 'kit' needs extra hardware or very limited / 'no'
@@ -504,7 +539,7 @@ dict(cat="doorbells", id="aqara-g410", brand="Aqara", model="Doorbell Camera Hub
  src=["aqara_g410","aqara_g410_specs","ha_homekit","sandisk_card"],
  rec_src="aqara_g410", history_src="aqara_g410", ha_src="ha_homekit", plan_src="aqara_g410", unverified=""),
 dict(cat="doorbells", id="blink", brand="Blink", model="Battery Doorbell 2K+", rec="kit", power=["battery"], ha=0,
- price=59.99, price_note="Amazon UK, without the Sync Module", price_src="amz_blink", buy="amz_blink",
+ price=59.99, price_note="Amazon UK, without the Sync Module", price_src="amz_blink", buy="amz_blink", price_check=True,
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
  extra_src="sandisk_stick", kit_src="camel_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
  sub=2.50, sub_name="Blink Basic",
@@ -725,7 +760,7 @@ dict(cat="cameras", id="ring-outpro", brand="Ring", model="Outdoor Camera 4K Pro
  src=["ring_outpro","ring_plans","ha_ring"],
  rec_src="ring_outpro", history_src="ring_outpro", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
 dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit", power=["battery"], ha=0,
- price=69.99, price_note="Amazon UK, includes a Sync Module Core (which has no local storage)", price_src="amz_blink_cam",
+ price=69.99, price_note="Argos, pack of 1, includes a Sync Module Core (which has no local storage); Amazon UK is the same price", price_src="argos_blink_out4", buy="amz_blink_cam",
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
  extra_src="sandisk_stick", kit_src="amz_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
  sub=2.50, sub_name="Blink Basic",
@@ -739,10 +774,10 @@ dict(cat="cameras", id="blink-out4", brand="Blink", model="Outdoor 4", rec="kit"
  ha_text="Official integration, but it goes through Blink's cloud and has no live view.",
  wifi="2.4 GHz only",
  score=dict(rec=1,live=0,alerts=1,ai=0,storage=0,ha=0),
- src=["amz_blink_cam","amz_sm2","blink_storage","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
+ src=["argos_blink_out4","amz_blink_cam","amz_sm2","blink_storage","blink_plans","blink_sm2","ha_blink","sandisk_stick"],
  rec_src="blink_storage", history_src="blink_storage", ha_src="ha_blink", plan_src="blink_plans", unverified=""),
 dict(cat="cameras", id="blink-out2k", brand="Blink", model="Outdoor 2K+", rec="kit", power=["battery"], ha=0,
- price=89.99, price_note="Amazon UK, includes a Sync Module Core (which has no local storage)", price_src="amz_blink_2kp", buy="amz_blink_2kp",
+ price=89.99, price_note="Amazon UK, includes a Sync Module Core (which has no local storage)", price_src="amz_blink_2kp", buy="amz_blink_2kp", price_check=True,
  extra=round(39.99 + STICK, 2), extra_note="+ Sync Module 2 £39.99 + SanDisk 64 GB USB stick",
  extra_src="sandisk_stick", kit_src="amz_sm2", kit_label="Sync Module 2", kit_price=39.99, free_records=True,
  sub=2.50, sub_name="Blink Basic",
@@ -767,7 +802,7 @@ dict(cat="rings", id="oura-5", brand="Oura", model="Ring 5", rec="brief", power=
   dict(shop="Oura", src="oura_store5", price=399.00, pay=PAY_RETAIL,
         note="Silver; the gold and rose finishes are £499"),
   dict(shop="Argos", src="argos_oura5", price=399.00, pay=PAY_RETAIL, note="Silver, standard sizes"),
-  dict(shop="Currys", src="currys_oura5", price=399.00, pay=PAY_AMAZON, note="Silver, size 8"),
+  dict(shop="Currys", src="currys_oura5", price=399.00, pay=PAY_RETAIL, note="Silver, size 8"),
  ],
  extra=0, extra_note="", free_records=False,
  sub=5.99, sub_name="Oura Membership",
@@ -837,7 +872,7 @@ dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=[
   dict(shop="Argos", src="argos_rc2", price=159.00, pay=PAY_RETAIL,
         note="Matte Black, size 7; £258 list, on sale"),
   dict(shop="Amazon UK", src="amz_rc2", price=259.00, pay=PAY_AMAZON, note="as listed"),
-  dict(shop="Currys", src="currys_rc2", price=259.00, pay=PAY_AMAZON,
+  dict(shop="Currys", src="currys_rc2", price=259.00, pay=PAY_RETAIL,
         note="Matte Black, size 7"),
  ],
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
@@ -857,7 +892,7 @@ dict(cat="rings", id="rc-2", brand="RingConn", model="Gen 2", rec="yes", power=[
  rec_src="rc_nosub", history_src="rc2_product", ha_src="ha_index", plan_src="rc_nosub",
  nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
 dict(cat="rings", id="rc-2-air", brand="RingConn", model="Gen 2 Air", rec="yes", power=["ten"], ha=0,
- price=179.00, price_note="Amazon UK", price_src="amz_rc2a",
+ price=179.00, price_note="Amazon UK", price_src="amz_rc2a", buy="amz_rc2a", price_check=True,
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
  best="A RingConn without the sleep-apnea, vascular or vibration extras",
  catch="No sleep-apnea insights, no vibration, and no Home Assistant.",
@@ -875,7 +910,7 @@ dict(cat="rings", id="rc-2-air", brand="RingConn", model="Gen 2 Air", rec="yes",
  rec_src="rc_nosub", history_src="rc2a_product", ha_src="ha_index", plan_src="rc_nosub",
  nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
 dict(cat="rings", id="rc-3", brand="RingConn", model="Gen 3", rec="yes", power=["fourteen"], ha=0,
- price=309.00, price_note="Amazon UK", price_src="amz_rc3",
+ price=309.00, price_note="Amazon UK", price_src="amz_rc3", buy="amz_rc3", price_check=True,
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No subscription",
  best="The best all-round ring: 14 days, no subscription and the deepest sleep data",
  catch="No Home Assistant integration, and it costs £50 more than the Gen 2.",
@@ -894,7 +929,7 @@ dict(cat="rings", id="rc-3", brand="RingConn", model="Gen 3", rec="yes", power=[
  nosub_say="No subscription. The ring and its data are the whole cost.", unverified=""),
 dict(cat="rings", id="samsung-ring", brand="Samsung", model="Galaxy Ring", rec="yes", power=["seven"], ha=0,
  offers=[
-  dict(shop="Currys", src="currys_samsung", price=150.97, pay=PAY_AMAZON,
+  dict(shop="Currys", src="currys_samsung", price=150.97, pay=PAY_RETAIL,
         note="Titanium Gold, size 14; every other size is £399"),
   dict(shop="Amazon UK", src="amz_samsung", price=233.38, pay=PAY_AMAZON,
         note="Titanium Black, size 7"),
@@ -1271,12 +1306,18 @@ def _derive(cat):
             offers and {"price", "price_src", "price_note"} & set(r)
         )
         if offers:
-            won = offer_winner(offers)
-            r["price"], r["price_src"] = won["price"], won["src"]
+            won, shown = offer_winner(offers), offer_shown(offers)
+            if won["pay"] == PAY_AMAZON:
+                # Amazon may win the link but never the figure: the price shown
+                # is another UK shop's at the same price, or "Check price".
+                r["buy"] = won["src"]
+                if shown is won:
+                    r["price_check"] = True
+            r["price"], r["price_src"] = shown["price"], shown["src"]
             r["price_note"] = (
-                f'{won["shop"]}, {won["note"]}' if won.get("note") else won["shop"]
+                f'{shown["shop"]}, {shown["note"]}' if shown.get("note") else shown["shop"]
             )
-            r["offer_at"] = won["shop"]
+            r["offer_at"] = shown["shop"]
         else:
             r["offer_at"] = ""
         # A second card is a second purchase: the base extra has one already.

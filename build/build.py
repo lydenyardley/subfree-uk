@@ -419,7 +419,8 @@ def build(cat):
         # shop, and the Amazon link under it is only where to buy. A row with
         # no other UK seller says "Check price"; its totals use a cited RRP.
         shown = "Check price" if r.get("price_check") else pm
-        price = fig(ds, r, cl, "price", shown, f'{pm} at {psrc[0]}',
+        card = f'Check the current price at {psrc[0]}' if r.get("price_check") else f'{pm} at {psrc[0]}'
+        price = fig(ds, r, cl, "price", shown, card,
                     cls="buy chk" if r.get("price_check") else "buy",
                     attrs=f' title="Price source: {e(psrc[0])}"')
         if r.get("buy"):

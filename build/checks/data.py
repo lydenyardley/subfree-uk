@@ -139,7 +139,7 @@ def category_problems(rows, pages, cat):
         # hand-edited price or an offers list that moved without a rebuild is
         # caught against the rule the method note prints.
         if row.get("offers"):
-            won = rows.offer_winner(row["offers"])
+            won = rows.offer_shown(row["offers"])
             if (row["price"], row["price_src"]) != (won["price"], won["src"]):
                 problems.append(
                     f"{row['id']}: the shown price is not the offer the rule picks"
