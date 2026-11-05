@@ -1,12 +1,12 @@
 # UK smart rings that work without a subscription
 
-Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from qualifying purchases.
+Last checked 5 November 2026. 8 smart rings. As an Amazon Associate I earn from qualifying purchases.
 
 | Smart ring | Subscription? | Price | Score /8 | 3 yrs, no subscription | 3 yrs, with membership | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra. |
 | Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
-| RingConn Gen 2 | No subscription | [£159.00](https://www.argos.co.uk/product/7614640) | 6 | £159.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
+| RingConn Gen 2 | No subscription | [£259.00](https://www.argos.co.uk/product/7614640) | 6 | £259.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
 | Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165068) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 | Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8566340) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
@@ -61,8 +61,8 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 ### RingConn Gen 2
 - **Best for:** The best value RingConn: 12 days, sleep-apnea insights and no subscription
 - **Main catch:** No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail.
-- **Price:** £159.00 (Argos, Matte Black, size 7; £258 list, on sale)
-- **3-year cost, no subscription:** £159.00
+- **Price:** £259.00 (Argos, Matte Black, size 7)
+- **3-year cost, no subscription:** £259.00
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** RingConn's cloud. The app holds the history and shows it on the phone.
 - **Free:** live heart rate: Yes, in the app.; wellness alerts: App reminders only.; sleep and recovery insights: Free: sleep stages, HRV, SpO2, skin temperature, stress and sleep-apnea insights.
@@ -112,13 +112,12 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 - **Behind the membership:** Nothing needed. Samsung charges no subscription for the ring's data
 - **Membership:** No subscription. Samsung Health is free with the ring
 - **Home Assistant:** No official or community Home Assistant integration was found. The data stays in Samsung Health.
-- **Not yet verified:** Samsung's UK product page renders no price, so the £399 list comes from Currys's other sizes. The £150.97 shown is one colour in one size, size 14.
 - **Sources:** [Amazon UK: Samsung Galaxy Ring](https://www.amazon.co.uk/dp/B0DNTFZLDZ?tag=subfreeuk-21) · [Currys: Samsung Galaxy Ring](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) · [Samsung UK: how to use Galaxy Ring](https://www.samsung.com/uk/support/mobile-devices/how-to-use-the-samsung-galaxy-ring/) · [Home Assistant integrations](https://www.home-assistant.io/integrations/)
 
 ### Amazfit Helio Ring
 - **Best for:** The cheapest smart ring, with no subscription for the basics
 - **Main catch:** Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra.
-- **Price:** £149.90 (Amazfit UK sale price, RRP £269; size 10 is out of stock)
+- **Price:** £149.90 (Amazfit UK sale price, RRP £269)
 - **3-year cost, no subscription:** £149.90
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Zepp's cloud. The phone app holds the history.
