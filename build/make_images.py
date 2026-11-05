@@ -34,6 +34,15 @@ IMGS={
  # The 2K+ render is the one card on Blink's own devices page, so it is the
  # official picture of the model Blink sells now; the Outdoor 4 has no card left.
  "blink-out2k":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/2300b960-b1fa-493f-a919-7aeffe5c547e/2K%2B+Blink+Outdoor+2K%2B.png","https://blinkforhome.com/products",None,True),
+ "tapo-c675d":("https://static-product.tp-link.com/tapo-c675d-kit_v1/en/img/17-c675d_kit.png","https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit",None,True),
+ # Aqara's UK page shows the retail box; the EU product page carries the clean
+ # white camera render, as it does for the G4 and G410 doorbells.
+ "aqara-g5pro":("https://eu.aqara.com/cdn/shop/files/G5-white-wifi.webp?v=1748515993","https://eu.aqara.com/products/aqara-camera-hub-g5-pro",(0.41,0.03,0.88,0.88),True),
+ "aqara-g350":("https://www.aqara-shop.co.uk/wp-content/uploads/2026/02/Aqara-G350-cam-1.jpg","https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/",None,True),
+ "reo-altas":("https://home-cdn.reolink.us/wp-content/uploads/2024/09/Altas-PT-Ultra-sp.png","https://reolink.com/gb/product/altas-pt-ultra/",None,True),
+ # The press image shows the white and black cameras; the crop keeps the black
+ # one, and the page is Amazon's own newsroom, not a retailer listing.
+ "blink-mini4k":("https://assets.aboutamazon.com/5a/57/eb905b304e7b9c625be73fa78310/blinkmini4k-inline-amazonnews-ck101925.jpg","https://www.aboutamazon.com/news/devices/blink-4k-long-range-security-cameras",(0.50,0.25,0.73,0.98),True),
  "ezviz-ep3x":("https://mfs.ezvizlife.com/62d7d264ab031e75591d277638d4c440.png","https://www.ezviz.com/uk/product/ep3x-pro/55935",(0,0,0.255,1),True),
  "ezviz-db2":("https://s3.amazonaws.com/mfs.ezvizlife.com/f6a3b42474eefe13047add4b7b3c89c3.jpg","https://www.ezviz.com/uk/product/db2-pro-kit/42371",(0.28,0.2,0.43,0.79),True),
  "reo-argus4":("https://home-cdn.reolink.us/wp-content/uploads/2024/06/argus-4-pro-whitesolar-panel-2-white.png","https://reolink.com/gb/product/argus-4-pro/",None,True),
@@ -54,6 +63,7 @@ IMGS={
  # framed it in a white border.
  "oura-5":("https://ourahealth.imgix.net/cooper-pdp/or5-silver-alt.png?ixlib=js-3.8.0&auto=format&fit=max&fm=png&q=70&w=640&s=c1abb1ce6418079507b352bab9ce96da","https://ouraring.com/store/rings/oura-ring-5/silver",(0.22,0.04,0.78,0.96),False),
  "ultra-air":("https://public-web-assets.uh-static.com/web_v2/illustrations/ring-air-front.png","https://www.ultrahuman.com/ring/",None,True),
+ "ultra-pro":("https://public-web-assets.uh-static.com/web_v2/ring-pro/buy-v2/carousel-v4/desktop/bionic-gold/1.png","https://www.ultrahuman.com/gb/ring-pro/buy",(0.25,0.0,0.82,1.0),True),
  "rc-2":("https://ringconn.com/cdn/shop/files/RingConn_Smart_Ring_Gen_2-Royal_Gold.png?v=1780302336&width=1200","https://ringconn.com/products/ringconn-gen-2",None,True),
  "rc-2-air":("https://ringconn.com/cdn/shop/files/ringconn_gen_2_air_1.png?v=1780302386&width=600","https://ringconn.com/products/ringconn-gen-2-air",None,True),
  "rc-3":("https://ringconn.com/cdn/shop/files/1a_9e4056a6-6b65-41d1-804e-03aaa2818425.webp?v=1780302453&width=600","https://ringconn.com/products/ringconn-gen-3",None,True),

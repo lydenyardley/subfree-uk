@@ -1,6 +1,6 @@
 # UK smart rings that work without a subscription
 
-Last checked 5 November 2026. 8 smart rings. As an Amazon Associate I earn from qualifying purchases.
+Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from qualifying purchases.
 
 | Smart ring | Subscription? | Price | Score /8 | 3 yrs, no subscription | 3 yrs, with membership | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
@@ -8,6 +8,7 @@ Last checked 5 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 | Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 | No subscription | [£259.00](https://www.argos.co.uk/product/7614640) | 6 | £259.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
 | Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165068) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
+| Ultrahuman Ring PRO | No subscription | [£429.00](https://www.ultrahuman.com/gb/ring-pro/buy) | 6 | £429.00 | — | The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data | AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is unconfirmed. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 | Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8566340) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
 | RingConn Gen 2 Air | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | Check price | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
@@ -57,6 +58,21 @@ Last checked 5 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 - **Home Assistant:** A community HACS integration reads the ring through Ultrahuman's cloud API. It is not local, and it needs your account.
 - **Not yet verified:** Ultrahuman's UK page does not publish minimum iOS or Android versions; check the app store listing.
 - **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) · [Argos: Ultrahuman Ring AIR](https://www.argos.co.uk/product/4165068) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
+
+### Ultrahuman Ring PRO
+- **Best for:** The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data
+- **Main catch:** AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is unconfirmed.
+- **Price:** £429.00 (Ultrahuman UK, Bionic Gold with sizing kit)
+- **3-year cost, no subscription:** £429.00
+- **3-year cost, with membership:** No membership offered or needed
+- **Where the data lives:** Ultrahuman's cloud, plus up to 250 days on the ring and a year in the PRO charger.
+- **Free:** live heart rate: Yes, in the app.; wellness alerts: Yes, recovery and movement nudges.; sleep and recovery insights: Free: sleep stages, HRV, SpO2, skin temperature, stress, recovery, cycle and Ultra Age insights. AFib detection is a paid PowerPlug.
+- **Data without a plan:** Yes, full history in the app.
+- **Behind the membership:** Nothing needed for the core data. AFib Detection is a £49/year PowerPlug; Cycle & Ovulation Pro is £29.99/year
+- **Membership:** No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra
+- **Home Assistant:** No official integration. The community Ultrahuman HACS integration documents Ring AIR, and Ultrahuman does not confirm it works with the PRO.
+- **Not yet verified:** Ultrahuman's UK page does not confirm Home Assistant support for the Ring PRO; the community integration documents Ring AIR.
+- **Sources:** [Ultrahuman UK: Ring PRO](https://www.ultrahuman.com/gb/ring-pro/buy) · [Ultrahuman Ring PRO](https://www.ultrahuman.com/gb/ring-pro/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
 
 ### RingConn Gen 2
 - **Best for:** The best value RingConn: 12 days, sleep-apnea insights and no subscription

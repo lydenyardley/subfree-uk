@@ -600,12 +600,12 @@ CAMERAS = {
     # store. Where a brand sells more than one newest model, the entry names the
     # one this table covers.
     "current": {
-        "Reolink": "reo-argus4",
-        "TP-Link Tapo": "tapo-c660",
+        "Reolink": "reo-altas",
+        "TP-Link Tapo": "tapo-c675d",
         "eufy": "eufy-s340",
-        "Aqara": "aqara-g100",
+        "Aqara": "aqara-g350",
         "Ring": "ring-outpro",
-        "Blink": "blink-out2k",
+        "Blink": "blink-mini4k",
     },
 
     "title": "Security cameras that work without a subscription (UK)",
@@ -635,7 +635,7 @@ CAMERAS = {
     "short": (
         '{v:reo-rlc820a:Reolink RLC-820A} is the best overall without fees.',
         '{v:reo-argus4:Reolink Argus 4 Pro} is the best wire-free one.',
-        '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-out2k:Blink} needs extra kit.',
+        '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-mini4k:Blink} needs extra kit.',
     ),
     "short_tones": ("best", "batt", "avoid"),
     "short_head": "The short answer",
@@ -648,7 +648,7 @@ CAMERAS = {
          ", which covers 180° from one battery camera and still records to a card "
          "without a plan."),
         ("avoid", "Avoid if you won't pay monthly:", "{v:ring-outpro:Ring}",
-         " records nothing without a plan, and {v:blink-out2k:Blink} needs a Sync "
+         " records nothing without a plan, and {v:blink-mini4k:Blink} needs a Sync "
          "Module 2 and a USB stick before it saves a clip."),
     ),
 
@@ -702,6 +702,10 @@ CAMERAS = {
         "batt": ("Best wire-free", "batt"),
         "indoor": ("Best indoor", "batt"),
         "value": ("Best value", "batt"),
+        "dual": ("Best dual lens", "best"),
+        "hub": ("Best camera hub", "best"),
+        "pan": ("Best pan and tilt", "batt"),
+        "continuous": ("Best for 24/7", "batt"),
         "avoid": ("Avoid without a plan", "avoid"),
     },
     "headline": "best",
@@ -756,7 +760,7 @@ RINGS = {
     "current": {
         "Oura": "oura-5",
         "RingConn": "rc-3",
-        "Ultrahuman": "ultra-air",
+        "Ultrahuman": "ultra-pro",
         "Samsung": "samsung-ring",
         "Amazfit": "amazfit-helio",
     },
@@ -844,15 +848,16 @@ RINGS = {
         ("ten", "Up to 10 days"),
         ("twelve", "Up to 12 days"),
         ("fourteen", "Up to 14 days"),
+        ("fifteen", "Up to 15 days"),
     ],
     "power_hint": "Battery life is the maker's figure with the main features on, unless the row says otherwise.",
-    # Seven exact battery buckets is too many to tick. The filter offers three
+    # The exact battery buckets are too many to tick. The filter offers three
     # bands that cover every bucket once, while the table still prints the
     # maker's exact figure.
     "power_filters": [
         ("up to 6 days", ("four", "six")),
         ("7 to 10 days", ("seven", "eight", "nine", "ten")),
-        ("over 10 days", ("twelve", "fourteen")),
+        ("over 10 days", ("twelve", "fourteen", "fifteen")),
     ],
     "filters": [
         ("f-rec", "Works without a subscription"),
@@ -865,6 +870,7 @@ RINGS = {
         "ha": ("Best for Home Assistant", "batt"),
         "galaxy": ("Best for Samsung phones", "batt"),
         "budget": ("Cheapest", "batt"),
+        "premium": ("Most capable", "batt"),
         "avoid": ("Avoid without a membership", "avoid"),
     },
     "headline": "best",

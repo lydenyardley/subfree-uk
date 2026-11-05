@@ -94,6 +94,31 @@
   "page": "https://blinkforhome.com/products",
   "cropped": false
  },
+ "tapo-c675d": {
+  "src": "https://static-product.tp-link.com/tapo-c675d-kit_v1/en/img/17-c675d_kit.png",
+  "page": "https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit",
+  "cropped": false
+ },
+ "aqara-g5pro": {
+  "src": "https://eu.aqara.com/cdn/shop/files/G5-white-wifi.webp?v=1748515993",
+  "page": "https://eu.aqara.com/products/aqara-camera-hub-g5-pro",
+  "cropped": true
+ },
+ "aqara-g350": {
+  "src": "https://www.aqara-shop.co.uk/wp-content/uploads/2026/02/Aqara-G350-cam-1.jpg",
+  "page": "https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/",
+  "cropped": false
+ },
+ "reo-altas": {
+  "src": "https://home-cdn.reolink.us/wp-content/uploads/2024/09/Altas-PT-Ultra-sp.png",
+  "page": "https://reolink.com/gb/product/altas-pt-ultra/",
+  "cropped": false
+ },
+ "blink-mini4k": {
+  "src": "https://assets.aboutamazon.com/5a/57/eb905b304e7b9c625be73fa78310/blinkmini4k-inline-amazonnews-ck101925.jpg",
+  "page": "https://www.aboutamazon.com/news/devices/blink-4k-long-range-security-cameras",
+  "cropped": true
+ },
  "ezviz-ep3x": {
   "src": "https://mfs.ezvizlife.com/62d7d264ab031e75591d277638d4c440.png",
   "page": "https://www.ezviz.com/uk/product/ep3x-pro/55935",
@@ -168,6 +193,11 @@
   "src": "https://public-web-assets.uh-static.com/web_v2/illustrations/ring-air-front.png",
   "page": "https://www.ultrahuman.com/ring/",
   "cropped": false
+ },
+ "ultra-pro": {
+  "src": "https://public-web-assets.uh-static.com/web_v2/ring-pro/buy-v2/carousel-v4/desktop/bionic-gold/1.png",
+  "page": "https://www.ultrahuman.com/gb/ring-pro/buy",
+  "cropped": true
  },
  "rc-2": {
   "src": "https://ringconn.com/cdn/shop/files/RingConn_Smart_Ring_Gen_2-Royal_Gold.png?v=1780302336&width=1200",
