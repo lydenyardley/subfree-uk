@@ -25,8 +25,8 @@ they always are.
 |---|---|---|
 | `index.html` | 24,000 | 23,102 |
 | `assets/page.css` | 18,000 | 16,796 |
-| `assets/page.js` | 30,000 | 27,204 |
-| The three together, a first visit | 70,000 | 67,102 |
+| `assets/page.js` | 30,000 | 27,433 |
+| The three together, a first visit | 70,000 | 67,331 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -57,15 +57,16 @@ prose that explains why they are bars is what grew, so it was cut back to the
 fact — a collapsed border and a box round to different device rows — and the
 first visit now sits at 65,447 with 53 bytes left.
 
-The fourth category moved both ceilings again, on 5 November 2026. Four
-printers and their category record took the script from 25,693 to 27,204 and a
-first visit from 65,447 to 67,102, past ceilings that had 53 bytes of headroom.
+The fourth category moved both ceilings again, on 5 November 2026. Five
+printers and their category record took the script from 25,693 to 27,433 and a
+first visit from 65,447 to 67,331, past ceilings that had 53 bytes of headroom.
 The script carries every row of every category, and a cartridge row of printer
 copy is longer than a doorbell's because it carries its ink arithmetic and plan
 sentence. Nothing was trimmed: the ceiling follows the rows, at 30,000 for the
 script and 70,000 for a first visit. The fourth row, Canon's tank, added 233
-bytes rather than a cartridge row's 400 because it has no plan arithmetic, and
-the visitor counter added 84 to the script and 218 to the first visit.
+bytes rather than a cartridge row's 400 because it has no plan arithmetic. The
+fifth, Canon's TS6550i, added 229, and the visitor counter added 84 to the
+script and 218 to the first visit.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
 models added five doorbells and a camera row: about 700 gzipped bytes of table
