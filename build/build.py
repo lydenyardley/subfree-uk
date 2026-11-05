@@ -247,9 +247,9 @@ NARROW_JS = "if(window.matchMedia('(max-width:520px)').matches)document.getEleme
 def policy():
     return (
         "default-src 'self'; "
-        f"script-src 'self' 'sha256-{script_hash(THEME_JS)}' 'sha256-{script_hash(NARROW_JS)}'; "
-        "style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; "
-        "connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'"
+        f"script-src 'self' 'sha256-{script_hash(THEME_JS)}' 'sha256-{script_hash(NARROW_JS)}' gc.zgo.at; "
+        "style-src 'self' 'unsafe-inline'; img-src 'self' subfreeuk.goatcounter.com; font-src 'self'; "
+        "connect-src subfreeuk.goatcounter.com; base-uri 'none'; form-action 'none'; object-src 'none'"
     )
 
 
@@ -584,7 +584,7 @@ def build(cat):
 <div>
 <h1>{cat["h1"]}</h1>
 <p class="dek">{cat["dek"].format(n=n, period=padj)}</p>
-<p class="meta"><b>Last checked {CHECKED}.</b> Some links are paid links. No cookies. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
+<p class="meta"><b>Last checked {CHECKED}.</b> Some links are paid links. No cookies: visits are counted by GoatCounter, a cookie-free visitor counter. Spotted a mistake? <a href="{GITHUB}/issues/new">Open an issue</a>.</p>
 {short_html}</div>
 {aside_html}</div>
 </header>
@@ -673,6 +673,7 @@ def build(cat):
 <p class="card-date">Prices and plans checked {CHECKED}.</p>
 </dialog>
 <script src="{js_url}"></script>
+<script data-goatcounter="https://subfreeuk.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body></html>'''
     # One page, one name. The second filename used to be a byte-identical copy;
     # it is now a redirect so an old link still lands on the canonical URL.
@@ -682,7 +683,8 @@ def build(cat):
 <link rel="canonical" href="{canonical}">
 <meta name="robots" content="noindex">
 <meta http-equiv="refresh" content="0; url=./">
-</head><body><p>This page has moved to the <a href="./">UK {cat["noun"]} comparison</a>.</p></body></html>'''
+</head><body><p>This page has moved to the <a href="./">UK {cat["noun"]} comparison</a>.</p><script data-goatcounter="https://subfreeuk.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body></html>'''
 
     md = [cat['md_head'][0] + "\n",
           cat["md_head"][1].format(checked=CHECKED, n=n) + "\n",
@@ -784,6 +786,7 @@ def not_found(cats):
 {links}
 </main>
 </div>
+<script data-goatcounter="https://subfreeuk.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body></html>'''
 
 
