@@ -1346,16 +1346,17 @@ def _derive(cat):
             r["keep_basis"], r["keep_note"] = "sub", f"with the {r['sub_name']} plan"
         # A row that buys nothing extra has no sum to show: "£309.00 = £309.00"
         # is arithmetic the reader did not ask for and reads like a mistake.
-        m_free = f"{money(r['price'])}"
+        # A "Check price" row names no price, so its sums name no total either.
+        chk = r.get("price_check")
+        m_free = "Check price" if chk else f"{money(r['price'])}"
         if r["extra"]:
-            m_free += (
-                f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})"
-                f" = {money(r['nosub3'])}"
-            )
+            m_free += f" + {money(r['extra'])} ({r['extra_note'].lstrip('+ ')})"
+            m_free += "" if chk else f" = {money(r['nosub3'])}"
         if not r["free_records"]:
             m_free += cat["labels"]["maths_no_route"] if r["rec"] == "no" else cat["labels"]["maths_brief"]
         m_sub = (
-            f"{money(r['price'])} + {months} × {money(r['sub'])} ({r['sub_name']}) = {money(r['sub3'])}"
+            f"{'Check price' if chk else money(r['price'])} + {months} × {money(r['sub'])} ({r['sub_name']})"
+            + ("" if chk else f" = {money(r['sub3'])}")
             if r["sub3"] is not None
             else cat.get("no_plan_note", "No subscription offered or needed")
         )
@@ -1364,7 +1365,7 @@ def _derive(cat):
     # would disappear from the default view of the page it was added to, and a
     # ceiling off the handle's 5-step grid would snap the dearest row out of
     # range just as quietly.
-    prices = [r["price"] for r in rows]
+    prices = [r["price"] for r in rows if not r.get("price_check")]
     cat["minp"] = int(min(prices) // 10 * 10) if prices else 0
     cat["maxp"] = int(ceil(max(prices) / 5) * 5) if prices else 0
     # footnote numbering, per category: a reader on the cameras page sees its

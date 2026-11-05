@@ -7,11 +7,11 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 | Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra. |
 | Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 | No subscription | [£159.00](https://www.argos.co.uk/product/7614640) | 6 | £159.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
-| RingConn Gen 2 Air | No subscription | [£179.00](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | £179.00 | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
-| RingConn Gen 3 | No subscription | [£309.00](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) | 6 | £309.00 | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
 | Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165587) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 | Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8565956) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
+| RingConn Gen 2 Air | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | Check price | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
+| RingConn Gen 3 | No subscription | [Check price](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) | 6 | Check price | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
 
 ## Detail
 
@@ -75,8 +75,8 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 ### RingConn Gen 2 Air
 - **Best for:** A RingConn without the sleep-apnea, vascular or vibration extras
 - **Main catch:** No sleep-apnea insights, no vibration, and no Home Assistant.
-- **Price:** £179.00 (Amazon UK)
-- **3-year cost, no subscription:** £179.00
+- **Price:** Check price (Amazon UK)
+- **3-year cost, no subscription:** Check price
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** RingConn's cloud. The app holds the history and shows it on the phone.
 - **Free:** live heart rate: Yes, in the app.; wellness alerts: App reminders only.; sleep and recovery insights: Free: sleep stages, HRV, SpO2, skin temperature and stress.
@@ -89,8 +89,8 @@ Last checked 2 November 2026. 8 smart rings. As an Amazon Associate I earn from 
 ### RingConn Gen 3
 - **Best for:** The best all-round ring: 14 days, no subscription and the deepest sleep data
 - **Main catch:** No Home Assistant integration, and it costs £50 more than the Gen 2.
-- **Price:** £309.00 (Amazon UK)
-- **3-year cost, no subscription:** £309.00
+- **Price:** Check price (Amazon UK)
+- **3-year cost, no subscription:** Check price
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** RingConn's cloud. The app holds the history and shows it on the phone.
 - **Free:** live heart rate: Yes, in the app.; wellness alerts: Yes, vibration alerts on the ring.; sleep and recovery insights: Free: sleep stages, HRV, SpO2, temperature, stress, apnea risk and overnight vascular trends.

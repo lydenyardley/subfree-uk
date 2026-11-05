@@ -8,7 +8,6 @@ Last checked 2 November 2026. 21 doorbells. As an Amazon Associate I earn from q
 | Aqara Video Doorbell G4 | Yes | [£69.00](https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/) | 6 | £95.99 | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
 | Reolink Video Doorbell (Battery) | Yes | [£99.99](https://www.screwfix.com/p/reolink-d340b-wired-or-wireless-battery-video-doorbell-black/471ak) | 7 | £99.99 | £250.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a £109.99 Home Hub (bundle £180.49). |
 | EZVIZ EP3x Pro | Yes | [£99.99](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) | 6 | £99.99 | £279.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
-| Blink Battery Doorbell 2K+ | Only with extra kit | [£59.99](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) | 2 | £115.97 | £149.99 | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
 | eufy Video Doorbell C31 | Yes | [£89.99](https://www.eufy.com/uk/products/t8223311) | 6 | £116.98 | £233.63 | A cheap eufy with 24/7 recording, if you can hardwire it | 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately. |
 | TP-Link Tapo D235 | Yes | [£89.99](https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235) | 5 | £116.98 | £197.63 | An easy battery doorbell that can be hardwired for 24/7 recording | The microSD card is extra, and Home Assistant has no route to the live video. |
 | Reolink Video Doorbell PoE | Yes | [£99.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £126.98 | — | The most reliable, fully local setup, if you can run an Ethernet cable | Needs an Ethernet cable to the door and a PoE switch or injector. |
@@ -25,6 +24,7 @@ Last checked 2 November 2026. 21 doorbells. As an Amazon Associate I earn from q
 | Ring Wired Video Doorbell 4K Pro | No | [£219.99](https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen) | 2 | £219.99 | £399.63 | Ring households replacing an existing wired bell | Saves no video at all unless you pay £4.99 a month, and there is no battery option. |
 | Google Nest Doorbell (battery) | Only briefly (3 hrs) | [£179.99](https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB) | 4 | £179.99 | £467.99 | Google Home households who want polished smart alerts | Only 3 hours of free history. Anything longer is £8 a month. |
 | Ring Wired Video Doorbell 4K Elite | No | [£449.99](https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen) | 2 | £449.99 | £629.63 | Gated entries and new builds that can run an Ethernet cable to the door | Saves no video at all unless you pay £4.99 a month, and it needs PoE+ from a switch or injector. |
+| Blink Battery Doorbell 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) | 2 | Check price | Check price | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
 
 ## Detail
 
@@ -272,9 +272,9 @@ Last checked 2 November 2026. 21 doorbells. As an Amazon Associate I earn from q
 ### Blink Battery Doorbell 2K+
 - **Best for:** The cheapest way into Amazon's ecosystem, if you catch a deal
 - **Main catch:** Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.
-- **Price:** £59.99 (Amazon UK, without the Sync Module)
-- **3-year cost, no plan:** £59.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £115.97
-- **3-year cost, with plan:** £59.99 + 36 × £2.50 (Blink Basic) = £149.99
+- **Price:** Check price (Amazon UK, without the Sync Module)
+- **3-year cost, no plan:** Check price + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick)
+- **3-year cost, with plan:** Check price + 36 × £2.50 (Blink Basic)
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted
 - **Free:** live view capped at 5 minutes; alerts yes; smart detection: Paid (person and vehicle detection)
 - **History without plan:** None without a Sync Module 2

@@ -71,7 +71,7 @@ function apply(){
  fill.style.left=((lo-lo0)/(hi0-lo0)*100)+'%';
  fill.style.width=((hi-lo)/(hi0-lo0)*100)+'%';
  var rec=$('#f-rec').checked,ha=$('#f-ha').checked,pw=$$('.f-pw:checked').map(function(x){return x.value}),n=0;
- function ok(t,plo,phi){return (!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(+t.dataset.price>=plo&&+t.dataset.price<=phi)&&
+ function ok(t,plo,phi){return (!rec||t.dataset.rec==='yes')&&(!ha||+t.dataset.ha>0)&&(t.dataset.chk?plo<=lo0&&phi>=hi0:+t.dataset.price>=plo&&+t.dataset.price<=phi)&&
   (!pw.length||pw.some(function(p){return t.dataset.power.split('|').indexOf(p)>-1}))}
  items.forEach(function(t){var show=ok(t,lo,hi);t.hidden=!show;if(show)n++});
  $('#count').textContent=n; $('#empty').hidden=n>0;
@@ -79,7 +79,7 @@ function apply(){
  if(!n){
   var bestD=Infinity;
   items.forEach(function(t){
-   if(!ok(t,lo0,hi0))return;
+   if(t.dataset.chk||!ok(t,lo0,hi0))return;
    var p=+t.dataset.price,d=p<lo?lo-p:p>hi?p-hi:0;
    if(d<bestD||(d===bestD&&p<+(near?near.dataset.price:Infinity))){bestD=d;near=t}
   });
@@ -106,6 +106,7 @@ function apply(){
  if(announce&&n!==lastN)say(n?cat(CAT.shown,{shown:n,total:items.length}):cat(CAT.noMatch));
  lastN=n;
  var s=items.slice().sort(function(a,b){
+  if(skey!=='model'&&skey!=='score'&&skey!=='recv'&&!a.dataset.chk!==!b.dataset.chk)return a.dataset.chk?1:-1;
   var x=skey==='model'?a.dataset.model:+a.dataset[skey],y=skey==='model'?b.dataset.model:+b.dataset[skey];
   if(x<y)return -sdir;if(x>y)return sdir;return +a.dataset.keep3-+b.dataset.keep3;
  });
@@ -307,6 +308,7 @@ function buildCmp(){
  var lowId=null;
  s.forEach(function(id){var v=D[id].keep3;if(typeof v==='number'&&isFinite(v)&&(lowId===null||v<D[lowId].keep3))lowId=id});
  h+='<tr class="cmp-cost" data-pin="1"><th scope="row">'+esc(CAT.keepLabel)+'</th>'+s.map(function(id){var v=D[id].keep3;
+  if(D[id].chk)return '<td>Check price</td>';
   if(typeof v!=='number'||!isFinite(v))return '<td>no plan</td>';
   var cheapest=Math.abs(v-low)<0.005;
   // The total first, then what it is made of. The difference stays, but as
@@ -623,7 +625,7 @@ function m3(x){return '£'+(+x).toFixed(2)}
 function cmpName(id){return id?D[id].name.replace(' Video Doorbell',''):''}
 function shortlist(){
  return 'SubFree UK shortlist, checked '+CHECKED+'\n'+shareUrl()+'\n\n'+sel().map(function(id){var d=D[id];
-  return d.name+'\n'+d.price+' · '+CAT.periodAdj+' cost to keep recordings '+(typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\nBest for: '+d.best+'\nMain catch: '+d.catch;
+  return d.name+'\n'+d.price+' · '+CAT.periodAdj+' cost to keep recordings '+(d.chk?'check price':typeof d.keep3==='number'&&isFinite(d.keep3)?m3(d.keep3):'no plan')+'\nBest for: '+d.best+'\nMain catch: '+d.catch;
  }).join('\n\n');
 }
 function legacyCopy(text){

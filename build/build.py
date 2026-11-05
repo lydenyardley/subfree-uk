@@ -186,10 +186,13 @@ def with_links(text, by_id):
     name a product without the record holding markup for a specific id.
     `{p:ID}` and `{c:ID}` print its price and its no-plan 3-year cost, to the
     pound, so the answer near the top cannot drift from the table."""
-    text = ROW_FIG.sub(
-        lambda m: f"£{round(by_id[m.group(2)]['price' if m.group(1) == 'p' else 'nosub3']):,}",
-        text,
-    )
+    def figure(m):
+        row = by_id[m.group(2)]
+        # A "Check price" row has no price of its own to print, so no total either.
+        if row.get("price_check"):
+            raise ValueError(f"{m.group(0)} names a row with no shown price")
+        return f"£{round(row['price' if m.group(1) == 'p' else 'nosub3']):,}"
+    text = ROW_FIG.sub(figure, text)
     return ROW_LINK.sub(lambda m: vlink([m.group(1)], m.group(2)), text)
 
 
@@ -283,6 +286,18 @@ SAY_FIELDS = {
 }
 
 
+# A row whose only seller is Amazon shows no figure: not its price, and not a
+# total built on that price.
+CHECK = "Check price"
+
+
+def shown_money(r, key):
+    """The figure a reader sees for `key`, or "Check price" on a check row."""
+    if r[key] is None:
+        return None
+    return CHECK if r.get("price_check") else money(r[key])
+
+
 def data_map(ds, cat):
     """The row record the script reads, keyed by product id."""
     score_max = ds.SCORE_MAX
@@ -297,9 +312,9 @@ def data_map(ds, cat):
             "score": f"{r['score_total']}/{score_max}",
             "tone": cat["verdicts"][r["verdict"]][1] if r["verdict"] else "",
             "vtag": cat["verdicts"][r["verdict"]][0] if r["verdict"] else "",
-            "nosub3": money(r["nosub3"], None),
-            "sub3": money(r["sub3"], None) if r["sub3"] is not None else cat["labels"]["no_plan_cell"],
-            "keep3": r["keep3"], "keepNote": r["keep_note"], "region": r["plan_region"],
+            "nosub3": CHECK if r.get("price_check") else money(r["nosub3"], None),
+            "sub3": cat["labels"]["no_plan_cell"] if r["sub3"] is None else CHECK if r.get("price_check") else money(r["sub3"], None),
+            "keep3": None if r.get("price_check") else r["keep3"], "keepNote": r["keep_note"], "region": r["plan_region"],
             "best": r["best"], "catch": r["catch"],
             "power": " / ".join(ds.POWER_LABEL[p] for p in r["power"]),
             "storage": r["storage"], "live": r["live"], "alerts": r["alerts"],
@@ -307,6 +322,8 @@ def data_map(ds, cat):
             "plan": r["sub_text"], "ha": r["ha_text"], "wifi": r["wifi"],
             "img": bool(has_photo(r)),
         }
+        if r.get("price_check"):
+            d["chk"] = 1
         d["claims"] = {}
         for key, claim in claims_by_id[r["id"]].items():
             item = {f: v for f, v in claim.items() if f != "keys"}
@@ -417,7 +434,7 @@ def build(cat):
         psrc = S[r["price_src"]]
         # No figure is ever Amazon's price: the price comes from another UK
         # shop, and the Amazon link under it is only where to buy. A row with
-        # no other UK seller says "Check price"; its totals use a cited RRP.
+        # no other UK seller says "Check price", and so do its totals.
         shown = "Check price" if r.get("price_check") else pm
         card = f'Check the current price at {psrc[0]}' if r.get("price_check") else f'{pm} at {psrc[0]}'
         price = fig(ds, r, cl, "price", shown, card,
@@ -431,10 +448,11 @@ def build(cat):
         # the same ones the cell shows, so the card cannot drift from the figure.
         rec_lbl = REC_LABEL[r["rec"]]
         rec_fig = fig(ds, r, cl, "rec", f'<span class="rec-t">{rec_lbl}</span>', src_label(ds, cl, "rec", rec_lbl))
-        nosub_words = money(r["nosub3"], None)
-        nosub_fig = fig(ds, r, cl, "nosub", nosub_words, src_label(ds, cl, "nosub", nosub_words))
-        sub_words = money(r["sub3"], None) if r["sub3"] is not None else L["no_plan_cell"]
-        sub_fig = fig(ds, r, cl, "plan", sub_words if r["sub3"] is not None else f'<span class="noplan">{sub_words}</span>',
+        chk = bool(r.get("price_check"))
+        nosub_words = CHECK if chk else money(r["nosub3"], None)
+        nosub_fig = fig(ds, r, cl, "nosub", f'<span class="chk">{CHECK}</span>' if chk else nosub_words, src_label(ds, cl, "nosub", nosub_words))
+        sub_words = L["no_plan_cell"] if r["sub3"] is None else CHECK if chk else money(r["sub3"], None)
+        sub_fig = fig(ds, r, cl, "plan", f'<span class="chk">{CHECK}</span>' if chk and r["sub3"] is not None else sub_words if r["sub3"] is not None else f'<span class="noplan">{sub_words}</span>',
                       src_label(ds, cl, "plan", sub_words))
         hist_fig = fig(ds, r, cl, "history", e(r["history"]), src_label(ds, cl, "history", r["history"]))
         ha_fig = fig(ds, r, cl, "ha", e(r["ha_text"]), src_label(ds, cl, "ha", r["ha_text"]))
@@ -448,7 +466,7 @@ def build(cat):
         # the sort note says so. Where the plan is the cheapest way to record,
         # the cell says so too, or the bold number reads as the wrong figure.
         knote = f'<span class="note">{e(L["keep_sub_note"])}</span>' if r["keep_basis"] == "sub" else ""
-        rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}" data-keep="{r['keep_basis']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}" data-price="{r['price']}" data-keep3="{r['keep3']}" data-nosub3="{r['nosub3']}" data-sub3="{r['sub3'] if r['sub3'] is not None else r['nosub3']}" data-noplan="{'1' if r['sub'] is None else '0'}" data-score="{sc}" data-region="{r['plan_region']}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
+        rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}" data-keep="{r['keep_basis']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}"{' data-chk="1"' if chk else ''} data-price="{'' if chk else r['price']}" data-keep3="{'' if chk else r['keep3']}" data-nosub3="{'' if chk else r['nosub3']}" data-sub3="{'' if chk else r['sub3'] if r['sub3'] is not None else r['nosub3']}" data-noplan="{'1' if r['sub'] is None else '0'}" data-score="{sc}" data-region="{r['plan_region']}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
 <th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm",prefix)}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
@@ -691,18 +709,18 @@ def build(cat):
           cat["md_head"][1].format(checked=CHECKED, n=n) + "\n",
           cat["md_head"][2].format(score_max=score_max, period_short=cat["period_short"]),
           "|---|---|---|---|---|---|---|---|"]
-    for r in sorted(rows, key=lambda r: r["keep3"]):
+    for r in sorted(rows, key=lambda r: (bool(r.get("price_check")), r["keep3"])):
         md.append(
             f"| {md_cell(r['brand'])} {md_cell(r['model'])} | {md_cell(REC_LABEL[r['rec']])} | "
-            f"[{money(r['price'])}]({S[r['price_src']][1]}) | {r['score_total']} | "
-            f"{money(r['nosub3'])} | {money(r['sub3']) if r['sub3'] else '—'} | "
+            f"[{shown_money(r, 'price')}]({S[r['price_src']][1]}) | {r['score_total']} | "
+            f"{shown_money(r, 'nosub3')} | {shown_money(r, 'sub3') or '—'} | "
             f"{md_cell(r['best'])} | {md_cell(r['catch'])} |"
         )
     md.append("\n## Detail\n")
     M = L["md"]
     for r in rows:
         md += [f"### {r['brand']} {r['model']}", f"- **Best for:** {r['best']}", f"- **Main catch:** {r['catch']}",
-               f"- **Price:** {money(r['price'])} ({r['price_note']})",
+               f"- **Price:** {shown_money(r, 'price')} ({r['price_note']})",
                f"- **{L['nosub_col']}:** {r['maths_free']}", f"- **{L['sub_col']}:** {r['maths_sub']}",
                f"- **{M['storage']}:** {r['storage']}",
                f"- **{M['free']}:** " + M["free_line"].format(
@@ -746,12 +764,12 @@ def csv_text(ds, rows, cat):
             "brand": r["brand"], "model": r["model"],
             "rec": ds.REC_LABEL[r["rec"]],
             "power": "/".join(ds.POWER_LABEL[p] for p in r["power"]),
-            "price": f"{r['price']:.2f}", "price_note": r["price_note"],
+            "price": CHECK if r.get("price_check") else f"{r['price']:.2f}", "price_note": r["price_note"],
             "price_src": ds.S[r["price_src"]][1], "best": r["best"],
             "catch": r["catch"], "score_total": r["score_total"],
-            "nosub3": f"{r['nosub3']:.2f}",
-            "sub3": "" if r["sub3"] is None else f"{r['sub3']:.2f}",
-            "keep3": f"{r['keep3']:.2f}", "maths_free": r["maths_free"],
+            "nosub3": CHECK if r.get("price_check") else f"{r['nosub3']:.2f}",
+            "sub3": "" if r["sub3"] is None else CHECK if r.get("price_check") else f"{r['sub3']:.2f}",
+            "keep3": CHECK if r.get("price_check") else f"{r['keep3']:.2f}", "maths_free": r["maths_free"],
             "maths_sub": r["maths_sub"], "storage": r["storage"],
             "live": r["live"], "alerts": r["alerts"], "ai": r["ai"],
             "history": r["history"], "paywalled": r["paywalled"],

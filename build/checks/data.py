@@ -110,6 +110,12 @@ def category_problems(rows, pages, cat):
             "nosub3": f"{nosub3:.2f}",
             "sub3": "" if sub3 is None else f"{sub3:.2f}",
             "keep3": "" if keep3 is None else f"{keep3:.2f}",
+        }
+        # A row with no shop but Amazon prints no figure built on Amazon's price.
+        if row.get("price_check"):
+            for key in ("price", "nosub3", "keep3") + (("sub3",) if sub3 is not None else ()):
+                values[key] = "Check price"
+        values = {**values,
             "maths_free": row["maths_free"], "maths_sub": row["maths_sub"],
             "storage": row["storage"], "live": row["live"],
             "alerts": row["alerts"], "ai": row["ai"],
