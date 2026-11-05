@@ -1,9 +1,8 @@
 name: Prices
 
-# The one thing a scheduled job can do for a hand-checked dataset: say when it
-# is due, and hand over the links. It cannot read the vendors itself, and it
-# must not move `checked_iso` for a page no one opened, so it files the list and
-# stops there.
+# The scheduled job cannot read vendor prices, so it says when the data is due
+# and hands over the links. It can check whether each cited page still answers,
+# so it does that too and leaves the price reading to a person.
 on:
   schedule:
     # Monday morning, so the week starts with the work it has to do.
@@ -16,7 +15,7 @@ permissions:
 
 jobs:
   recheck:
-    name: List the prices to re-check
+    name: Check the price list and citations
     runs-on: ubuntu-latest
     steps:
       # Actions are pinned by commit, with the tag they were on in the comment,
@@ -47,3 +46,14 @@ jobs:
           else
             gh issue create --title "Weekly price check" --body-file refresh.md
           fi
+      # The sweep reads the category pages and follows every citation. It runs
+      # after the issue so a dead link cannot stop the due list from being filed.
+      # A bot wall is reported and passes; a dead page or server error fails.
+      - name: Sweep external citations
+        run: |
+          set +e
+          python build/links.py > links.md
+          code=$?
+          cat links.md
+          cat links.md >> "$GITHUB_STEP_SUMMARY"
+          exit $code

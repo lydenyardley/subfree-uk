@@ -175,7 +175,9 @@ days past its check; `.github/workflows/refresh.yml` runs it every Monday and
 files the list as an issue, adding to the one already open. It reads no vendor
 page and edits no data — a scheduled runner cannot see a price a page draws in
 the browser, and moving `checked_iso` for a page nobody opened would be a lie —
-so the issue is the trigger and the reading stays a person's job.
+so the issue is the trigger and the reading stays a person's job. The same
+job then runs `build/links.py` over every category page: blocked pages are
+listed and pass, while a dead page or server error fails the run.
 
 ## Change checks
 

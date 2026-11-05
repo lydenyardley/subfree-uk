@@ -1,11 +1,13 @@
-"""Sweep every external citation on the generated pages.
+"""Sweep every external citation on the generated category pages.
 
 Usage: python build/links.py
 
 A 404 or 410 is dead. A 401, 403, 407 or 429 is treated as bot blocking,
-because the page may still open in a browser. Unreachable requests are kept
-separate from both. The exit status is 1 for a dead page or a server error, so
-a scheduled run fails on a missing citation without failing on a bot wall.
+because the page may still open in a browser. A 2xx page whose title says
+something went wrong or page not found is dead too. Unreachable requests are
+kept separate from both. The exit status is 1 for a dead page or a server
+error, so a scheduled run fails on a missing citation without failing on a bot
+wall.
 """
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from html import unescape
@@ -31,6 +33,10 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-GB,en;q=0.9",
 }
+SOFT_ERROR = re.compile(
+    r"<title[^>]*>[^<]*(?:something went wrong|page not found)[^<]*</title>",
+    re.IGNORECASE,
+)
 
 
 def citations():
@@ -51,7 +57,8 @@ def fetch(url):
     request = urllib.request.Request(url, headers=HEADERS)
     try:
         with urllib.request.urlopen(request, timeout=12) as response:
-            return url, response.status, ""
+            body = response.read(16384).decode("utf-8", "replace")
+            return url, response.status, body
     except urllib.error.HTTPError as error:
         return url, error.code, ""
     except Exception as error:
@@ -70,9 +77,11 @@ def main():
         "dead": [], "blocked": [], "server": [],
         "unreachable": [], "other": [], "ok": [],
     }
-    for url, status, error in results:
+    for url, status, detail in results:
         if status is None:
-            groups["unreachable"].append((url, error))
+            groups["unreachable"].append((url, detail))
+        elif 200 <= status < 300 and SOFT_ERROR.search(detail):
+            groups["dead"].append((url, f"{status} soft 404"))
         elif 200 <= status < 300:
             groups["ok"].append((url, status))
         elif status in (404, 410):
