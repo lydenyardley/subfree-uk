@@ -23,10 +23,10 @@ they always are.
 
 | File | Budget, gzipped | Measured 5 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 23,102 |
+| `index.html` | 24,000 | 23,101 |
 | `assets/page.css` | 18,000 | 16,796 |
-| `assets/page.js` | 30,000 | 27,349 |
-| The three together, a first visit | 70,000 | 67,247 |
+| `assets/page.js` | 30,000 | 28,444 |
+| The three together, a first visit | 70,000 | 68,341 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -67,6 +67,11 @@ script and 70,000 for a first visit. The fourth row, Canon's tank, added 233
 bytes rather than a cartridge row's 400 because it has no plan arithmetic. The
 fifth, Canon's TS6550i, added 229, and the visitor counter added 84 to the
 script and 218 to the first visit.
+
+The newest camera and ring rows took the script from 27,349 to 28,444 and a
+first visit from 67,247 to 68,341. They stayed under the ceilings, so the
+budget did not move: 1,556 bytes of script headroom and 1,659 bytes on a first
+visit.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
 models added five doorbells and a camera row: about 700 gzipped bytes of table
