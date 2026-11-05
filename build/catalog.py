@@ -404,10 +404,10 @@ CSV_KEYS = (
 
 NOT_FOUND = {
     "title": "Page not found | SubFree UK",
-    "description": "That page does not exist. The UK comparisons are on the home page, the cameras page and the smart rings page.",
+    "description": "That page does not exist. The UK comparisons are on the home page, the cameras page, the smart rings page and the printers page.",
     "h1": "Page not found",
-    "say": "That link does not lead anywhere. The {what} are on the home page, the cameras page and the smart rings page.",
-    "what": "comparisons of UK video doorbells, security cameras and smart rings that work without a subscription",
+    "say": "That link does not lead anywhere. The {what} are on the home page, the cameras page, the smart rings page and the printers page.",
+    "what": "comparisons of UK video doorbells, security cameras, smart rings and printers that work without a subscription",
 }
 
 
@@ -899,7 +899,280 @@ RINGS = {
     "not_found": NOT_FOUND,
 }
 
-CATEGORIES = [DOORBELLS, CAMERAS, RINGS]
+PRINTER_METHOD = {
+    "no_plan": (
+        "<sup>a</sup> <b>{period}, retail ink</b> = the printer's price + "
+        "{months} months of original cartridges at 100 pages a month (50 mono, "
+        "50 colour), priced from the maker's own UK cartridge pages and ISO "
+        "yields. A tank printer is priced at its price alone, because the "
+        "bottles in the box cover the whole period. Starter cartridges are "
+        "left out of both routes, so a cartridge figure is an upper bound."
+    ),
+    "with_plan": (
+        "<sup>b</sup> <b>{period}, with an ink plan</b> = the printer's price "
+        "+ {months} × the cheapest UK monthly plan that covers 100 pages. A "
+        "printer with no plan to price says <i>No plan needed</i>, because its "
+        "bottles are the ink route. Every printer's sums are under "
+        "<i>Details</i>."
+    ),
+    "score": (
+        "<b>No-plan score (out of {score_max}):</b> prints on retail ink "
+        "without an account (2 = standard cartridges or bottles, 1 = original "
+        "ink only, 0 = a plan or account is required), print speed (1), "
+        "automatic double-sided printing (1), scan and copy (1), ink included "
+        "in the box (1), prints without an account (2 = no account at all, "
+        "1 = an app is optional, 0 = an account is required)."
+    ),
+    "terms": (
+        "<b>Plain terms.</b> An <i>ink plan</i> is a monthly payment that posts "
+        "cartridges or tops up a tank before you run out. A <i>tank</i> printer "
+        "has refillable reservoirs and comes with bottles instead of "
+        "cartridges. <i>Yield</i> is the number of pages a cartridge or bottle "
+        "prints to the ISO/IEC standard. <i>Duplex</i> means printing on both "
+        "sides of the sheet."
+    ),
+    "left_out": (
+        "Paper, electricity, delivery and future price rises are left out. "
+        "Anything not yet confirmed is listed under <i>Not yet verified</i> in "
+        "each printer's details."
+    ),
+    "photos": (
+        "Photos are the manufacturers' own, from their product pages: "
+        "{credits}.{missing}"
+    ),
+    "md": [
+        "Retail ink: printer price + {months} months of original cartridges at "
+        "100 pages a month (50 mono, 50 colour), from the maker's UK cartridge "
+        "prices and ISO yields. A tank is priced at its price alone, because "
+        "the bottles in the box cover the period.",
+        "With an ink plan: printer price + {months} × the cheapest UK monthly "
+        "plan that covers 100 pages. A printer with no plan to price says so.",
+        "Starter cartridges are left out of both routes, so a cartridge figure "
+        "is an upper bound. Paper, electricity, delivery and price rises are "
+        "left out.",
+    ],
+}
+
+PRINTER_MD_HEAD = (
+    "# UK printers that work without an ink subscription",
+    "Last checked {checked}. {n} printers. As an Amazon Associate I earn from qualifying purchases.",
+    "| Printer | Retail ink? | Price | Score /{score_max} | {period_short}, "
+    "retail ink | {period_short}, with plan | Best for | Main catch |",
+)
+
+PRINTER_CSV_HEAD = [
+    "Brand", "Model", "Retail ink without a plan?", "Ink system",
+    "UK price (£)", "Price note", "Price source", "Best for", "Main catch",
+    "No-plan score (/{score_max})", "3-yr cost, retail ink (£)",
+    "3-yr cost with ink plan, monthly (£)",
+    "Cheaper 3-yr cost (£)", "Maths: retail ink", "Maths: with plan",
+    "Ink in the box", "Print speed", "Double-sided", "Scan and copy",
+    "Ink without a plan", "With an ink plan", "Ink plan & UK price",
+    "Plan price region", "Account needed", "Connectivity", "Sources",
+    "Unverified / re-check", "Last checked",
+]
+
+PRINTER_LABELS = {
+    "rec_col": "Retail ink?",
+    "score_col": "No-plan score",
+    "nosub_col": "{period_adj} cost, retail ink",
+    "sub_col": "{period_adj} cost, with plan",
+    "nosub_how": "{period_adj} cost on retail ink",
+    "sub_how": "{period_adj} cost with an ink plan",
+    "detail": {
+        "power": "Ink system", "wifi": "Connectivity",
+        "storage": "Ink in the box", "live": "Print speed",
+        "alerts": "Double-sided", "ai": "Scan and copy",
+        "history": "Ink without a plan", "paywalled": "With an ink plan",
+        "plans": "Ink plans", "ha": "Account needed",
+        "nosub": "{period}, retail ink", "sub": "{period}, with plan",
+    },
+    "rec_note": {
+        "yes": "", "kit": "extra kit needed", "brief": "original ink only",
+        "no": "ink plan only",
+    },
+    "keep_sub_note": "cheaper for this printer: with an ink plan",
+    "keep_free": "retail ink is cheaper, nothing more to pay",
+    "maths_no_route": " (but no ink without a plan)",
+    "maths_brief": " (original ink only)",
+    "no_plan_cell": "No plan needed",
+    "no_plan_note": "No ink plan offered or needed",
+    "footer": "to show which printers run without an ink subscription",
+    "rec_filter_why": "none takes standard retail ink without an account",
+    "ha_filter_why": "none prints without an account",
+    "keep_label": "Cheaper way to print for {period}",
+    "md": {
+        "storage": "Ink in the box",
+        "free": "Included",
+        "free_line": "{live}; double-sided: {alerts}; scan and copy: {ai}",
+        "free_lower": False,
+        "history": "Ink without a plan",
+        "paywalled": "With an ink plan",
+        "plans": "Ink plans",
+        "ha": "Account needed",
+        "unverified": "Not yet verified",
+    },
+}
+
+PRINTER_SORT = [
+    ("keep3", "{period_adj} cost to print",
+     "Order: {period_adj} cost to print (the bold figure)."),
+    ("price", "Price, low to high", "Order: price, low to high."),
+    ("score", "No-plan score, high to low", "Order: no-plan score, high to low."),
+    ("recv", "Takes retail ink first", "Order: takes retail ink first."),
+    ("nosub3", "{period_adj} cost, retail ink",
+     "Order: {period_adj} cost on retail ink."),
+    ("sub3", "{period_adj} cost, with an ink plan",
+     "Order: {period_adj} cost with an ink plan."),
+    ("model", "Model, A to Z", "Order: model name, A to Z."),
+]
+
+PRINTERS = {
+    "slug": "printers",
+    "route": "printers/",
+    "alias": None,
+    "csv": "data/printers.csv",
+    "md": "data/printers.md",
+    "page": "printers/index.html",
+
+    "noun": "printer",
+    "nouns": "printers",
+    "nav": "Printers",
+    "checked_iso": "2026-11-05",
+
+    # The model each brand sells now, as of the date above. HP's Envy is the
+    # newest Envy all-in-one; Brother's J1310DW is the current small inkjet;
+    # Epson's ET-2951 replaced the discontinued ET-2850; Canon's G3590 is the
+    # current 3-in-1 MegaTank.
+    "current": {
+        "HP": "hp-envy-6530e",
+        "Brother": "brother-dcp-j1310dw",
+        "Epson": "epson-et-2951",
+        "Canon": "canon-pixma-g3590",
+    },
+
+    "title": "Printers that work without an ink subscription (UK)",
+    "description": "{n} UK printers compared: what the ink costs without a plan, what a plan adds, and which is cheaper over three years.",
+    "h1": "Printers that work without an ink subscription",
+    "dek": "{n} UK printers, checked against manufacturer pages and UK prices: ink costs, plans and {period} totals.",
+    "mast": "No subscriptions",
+    "mast_long": "Gadgets that work without a subscription",
+    "skip": "Skip to the printer table",
+    "table_name": "Printer comparison",
+    "table_caption": "{table_name}: {n} models, 8 columns",
+    "cmp_caption": "Side-by-side comparison of {count} {nouns}",
+    "count_line": "Tick up to {cap} {nouns} to compare.",
+    "empty_line": "Nothing matches those filters.",
+    "no_match": "No {nouns} match those filters",
+    "shown": "{shown} of {total} {nouns} shown",
+
+    "months": 36,
+    "period": "3 years",
+    "period_adj": "3-year",
+    "period_short": "3 yrs",
+    "cap": 3,
+    "no_plan_note": "No ink plan offered or needed",
+
+    "short": (
+        "{v:canon-pixma-g3590:Canon PIXMA G3590} is the best overall without an ink plan. It costs {p:canon-pixma-g3590} and its bottles cover three years.",
+        "{v:epson-et-2951:Epson EcoTank ET-2951} is the fastest tank at {p:epson-et-2951}, printing 15 mono pages a minute.",
+        "{v:brother-dcp-j1310dw:Brother DCP-J1310DW} is the cheapest cartridge printer on retail ink at {c:brother-dcp-j1310dw} over 3 years.",
+        "{v:hp-envy-6530e:HP Envy 6530e} needs an HP account, and retail ink takes it to {c:hp-envy-6530e}.",
+    ),
+    "short_tones": ("best", "pick", "pick", "avoid"),
+    "short_head": "The short answer",
+    "aside": (
+        ("best", "Best overall without an ink plan:", "{v:canon-pixma-g3590:Canon PIXMA G3590}",
+         " costs {p:canon-pixma-g3590}. Its four bottles cover 3,600 pages, double-sided printing is automatic, and nothing needs an account."),
+        ("batt", "Fastest tank:", "{v:epson-et-2951:Epson EcoTank ET-2951}",
+         " costs {p:epson-et-2951} and prints 15 mono and 8 colour pages a minute."),
+        ("batt", "Cheapest cartridge ink:", "{v:brother-dcp-j1310dw:Brother DCP-J1310DW}",
+         " costs {c:brother-dcp-j1310dw} over 3 years with EcoPro, and its cartridges print 500 pages each."),
+        ("avoid", "Dearest to run:", "{v:hp-envy-6530e:HP Envy 6530e}",
+         " costs {p:hp-envy-6530e}, but retail ink takes it to {c:hp-envy-6530e}, and HP+ requires an account."),
+    ),
+
+    "score_max": 8,
+    "score_parts": [
+        ("rec", "Takes retail ink", 2),
+        ("storage", "Ink in the box", 1),
+        ("live", "Print speed", 1),
+        ("alerts", "Double-sided", 1),
+        ("ai", "Scan and copy", 1),
+        ("ha", "No account needed", 2),
+    ],
+
+    "rec": [
+        ("yes", "Yes", 2),
+        ("brief", "Original ink only", 1),
+        ("no", "Plan only", 0),
+    ],
+    "required_keys": (
+        "power", "wifi", "live", "alerts", "ai", "history", "storage",
+        "paywalled",
+    ),
+
+    "facets": [
+        ("power", "Ink system"),
+        ("wifi", "Connectivity"),
+        ("storage", "Ink in the box"),
+        ("live", "Print speed"),
+        ("alerts", "Double-sided"),
+        ("ai", "Scan and copy"),
+        ("history", "Ink without a plan"),
+        ("paywalled", "With an ink plan"),
+        ("ha", "Account needed"),
+    ],
+    "powers": [
+        ("tank", "Refillable tanks"),
+        ("cart", "Cartridges"),
+    ],
+    "power_hint": "A tank refills from bottles; a cartridge printer takes sealed cartridges.",
+    "filters": [
+        ("f-rec", "Retail ink, no account"),
+        ("f-ha", "Prints without an account"),
+    ],
+
+    "verdicts": {
+        "best": ("Best overall", "best"),
+        "fast": ("Fastest tank", "batt"),
+        "retail": ("Cheapest cartridge ink", "batt"),
+        "avoid": ("Dearest to run", "avoid"),
+    },
+    "headline": "best",
+
+    "claims": CLAIM_WHAT,
+    "compare": [
+        ("Retail ink?", "rec"),
+        ("Price", "price"),
+        ("No-plan score", "score"),
+        ("{period_adj} cost, retail ink", "nosub3"),
+        ("{period_adj} cost, with plan", "sub3"),
+        ("Best for", "best"),
+        ("Main catch", "catch"),
+        ("Ink system", "power"),
+        ("Ink in the box", "storage"),
+        ("Print speed", "live"),
+        ("Double-sided", "alerts"),
+        ("Scan and copy", "ai"),
+        ("Ink without a plan", "history"),
+        ("With an ink plan", "paywalled"),
+        ("Ink plans", "plan"),
+        ("Account needed", "ha"),
+        ("Connectivity", "wifi"),
+    ],
+    "pin": ("rec", "price", "nosub3", "sub3"),
+
+    "sort": PRINTER_SORT,
+    "method": PRINTER_METHOD,
+    "plain_part": PLAIN_PART,
+    "labels": PRINTER_LABELS,
+    "csv_head": PRINTER_CSV_HEAD,
+    "md_head": PRINTER_MD_HEAD,
+    "not_found": NOT_FOUND,
+}
+
+CATEGORIES = [DOORBELLS, CAMERAS, RINGS, PRINTERS]
 BY_SLUG = {cat["slug"]: cat for cat in CATEGORIES}
 
 

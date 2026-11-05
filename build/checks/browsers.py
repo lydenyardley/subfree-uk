@@ -91,6 +91,11 @@ def firefox_check(playwright, url, row_count):
     try:
         context = browser.new_context(viewport={"width": 390, "height": 844})
         page = context.new_page()
+        # The visitor counter is a third-party request. The audit runs without
+        # outbound network, so stub it rather than report its DNS failure as a
+        # page error.
+        page.route("https://gc.zgo.at/**", lambda route: route.fulfill(status=204, body=""))
+        page.route("https://subfreeuk.goatcounter.com/**", lambda route: route.fulfill(status=204, body=""))
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.on(

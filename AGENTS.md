@@ -2,8 +2,8 @@
 
 This repo is generated pages plus their dataset. `build/rows.py` holds the
 data (`ROWS`, `S`) and every derived figure; `build/build.py` turns it into
-files. `index.html`, `cameras/index.html`, `rings/index.html`, the
-`doorbells.html` redirect, `404.html`, `assets/page.css`, `assets/page.js`,
+files. `index.html`, `cameras/index.html`, `rings/index.html`,
+`printers/index.html`, the `doorbells.html` redirect, `404.html`, `assets/page.css`, `assets/page.js`,
 the CSVs and Markdown in `data/`, plus the photos and `IMAGE_SOURCES.md`, are
 generated from `ROWS`.
 Run `python build/check.py` before committing.

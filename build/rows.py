@@ -173,6 +173,15 @@ S = {
  "amazfit_aura": ("Amazfit UK: Zepp Aura", "https://uk.amazfit.com/pages/zepp-aura"),
  "ha_zepp": ("Home Assistant: Zepp2Hass (community)", "https://community.home-assistant.io/t/zepp2hass-connect-your-amazfit-zepp-watch-to-home-assistant/973979"),
  "ha_index": ("Home Assistant integrations", "https://www.home-assistant.io/integrations/"),
+ # Printers: the maker's UK page carries the printer's price and its ink, so
+ # the printer page is the source for both where it publishes the cartridge.
+ "epson_et2951": ("Epson UK: EcoTank ET-2951", "https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035"),
+ "canon_g3590": ("Canon UK: PIXMA G3590", "https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/"),
+ "brother_j1310dw": ("Brother UK: DCP-J1310DW", "https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw"),
+ "brother_ecopro": ("Brother EcoPro UK", "https://ecopro.brother.co.uk/"),
+ "brother_lc521": ("Brother UK: LC521 ink cartridges", "https://store.brother.co.uk/supplies/inkjet/ink-cartridges-single-pack/lc/lc521bk"),
+ "hp_envy6530e": ("HP UK: Envy 6530e", "https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687"),
+ "hp_instantink": ("HP Instant Ink UK", "https://instantink.hpconnected.com/uk/en/l/"),
 }
 
 # Amazon Associates: a row whose price links to Amazon UK carries the tag, so
@@ -279,6 +288,84 @@ def offer_shown(offers):
 # rec: 'yes' records free out of the box / 'kit' needs extra hardware or very limited / 'no'
 # score parts: rec 0-2, live 0-1, alerts 0-1, ai 0-1, storage_in_box 0-1, ha 0-2  (max 8)
 ROWS = [
+# ---------- printers ----------
+# A tank's 3-year sum is its price alone: the bottles in the box outlast the
+# period at 100 pages a month. A cartridge printer's sum buys 36 months of
+# original cartridges, priced from the maker's own UK ink page and ISO yields.
+# Starter cartridges are ignored in both routes, so the retail figure is an
+# upper bound and the plan is often the cheaper route for a cartridge model.
+dict(cat="printers", id="epson-et-2951", brand="Epson", model="EcoTank ET-2951", rec="yes", power=["tank"], ha=2,
+ price=239.99, price_note="Epson UK (was £319.99)", price_src="epson_et2951",
+ extra=0, extra_note="Ink bottles in the box", free_records=True,
+ sub=None, sub_name="No Epson ink plan",
+ best="A busy household that wants the ink paid for up front",
+ catch="The dearest printer here, and the paper tray holds only 100 sheets.",
+ storage="Six bottles in the box: 6,600 black and 5,500 colour pages",
+ live="15 ppm mono, 8 ppm colour (ISO)", alerts="Automatic",
+ ai="Yes, flatbed scan and copy",
+ history="Yes, refill from bottles with no plan or account",
+ paywalled="Nothing. Epson ReadyPrint MAX is optional",
+ sub_text="None needed. Epson's optional ReadyPrint MAX plan does not change the ink in the box",
+ ha_text="No account needed; AirPrint and Mopria print without an app.",
+ wifi="Wi-Fi, Wi-Fi Direct and USB",
+ score=dict(rec=2,storage=1,live=1,alerts=1,ai=1,ha=2),
+ src=["epson_et2951"],
+ rec_src="epson_et2951", history_src="epson_et2951", ha_src="epson_et2951", plan_src="epson_et2951", unverified=""),
+# Canon's cheapest current MegaTank. The four bottles in the box are the ink
+# route, like Epson's, so the three-year sum is the printer's price alone.
+dict(cat="printers", id="canon-pixma-g3590", brand="Canon", model="PIXMA G3590", rec="yes", power=["tank"], ha=2,
+ price=189.99, price_note="Canon UK store sale (was £249.99)", price_src="canon_g3590",
+ extra=0, extra_note="Ink bottles in the box", free_records=True,
+ sub=None, sub_name="No Canon ink plan",
+ best="A cheaper tank that still covers three years of ink",
+ catch="Slower than the Epson at 11/6 ipm, with the same 100-sheet tray.",
+ storage="Four GI-51 bottles in the box: 6,000 black and 7,700 colour pages",
+ live="11 ipm mono, 6 ipm colour (ISO)", alerts="Automatic",
+ ai="Yes, flatbed scan and copy",
+ history="Yes, refill from GI-51 bottles with no plan or account",
+ paywalled="Nothing. Canon Auto-Ink Delivery is optional",
+ sub_text="None needed. Canon's optional Auto-Ink Delivery sends bottles when low",
+ ha_text="No account needed. The Canon PRINT app is optional.",
+ wifi="Wi-Fi and USB",
+ score=dict(rec=2,storage=1,live=1,alerts=1,ai=1,ha=2),
+ src=["canon_g3590"],
+ rec_src="canon_g3590", history_src="canon_g3590", ha_src="canon_g3590", plan_src="canon_g3590", unverified=""),
+dict(cat="printers", id="brother-dcp-j1310dw", brand="Brother", model="DCP-J1310DW", rec="yes", power=["cart"], ha=2,
+ price=132.23, price_note="Brother UK store", price_src="brother_j1310dw",
+ extra=277.46, extra_note="+ 36 months of LC521 cartridges", extra_src="brother_lc521", free_records=True,
+ sub=4.49, sub_name="Brother EcoPro 100",
+ best="The cheapest way to print 100 pages a month with a plan",
+ catch="The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years.",
+ storage="Starter cartridges only: about 200 black and 200 colour pages",
+ live="16 ppm mono, 9 ppm colour (ISO)", alerts="Automatic",
+ ai="Yes, flatbed scan and copy",
+ history="Yes, LC521 cartridges from any shop with no account",
+ paywalled="Nothing. Brother EcoPro is optional",
+ sub_text="EcoPro £4.49/month for 100 pages; 50 pages £2.99, 300 pages £9.99",
+ ha_text="No account needed; AirPrint and Mopria print without an app.",
+ wifi="Wi-Fi (2.4 and 5 GHz), Wi-Fi Direct and USB",
+ score=dict(rec=2,storage=0,live=1,alerts=1,ai=1,ha=2),
+ src=["brother_j1310dw","brother_ecopro","brother_lc521"],
+ rec_src="brother_j1310dw", history_src="brother_j1310dw", ha_src="brother_j1310dw", plan_src="brother_ecopro",
+ nosub_say="36 months of LC521 cartridges at 100 pages a month, 50 mono and 50 colour.", unverified=""),
+dict(cat="printers", id="hp-envy-6530e", brand="HP", model="Envy 6530e", rec="brief", power=["cart"], ha=0,
+ price=71.80, price_note="HP UK (was £106)", price_src="hp_envy6530e",
+ extra=547.35, extra_note="+ 15 HP 308 black/tri-colour packs", extra_src="hp_envy6530e", free_records=True,
+ sub=6.49, sub_name="HP Instant Ink 100 pages",
+ best="A light household that will take the ink plan",
+ catch="Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink.",
+ storage="Setup cartridges only: about 120 black and 75 colour pages",
+ live="10 ppm mono, 7 ppm colour (ISO)", alerts="Automatic",
+ ai="Yes, flatbed scan, copy and a 35-sheet ADF",
+ history="Yes, HP 308 cartridges, but the printer is set to original HP ink",
+ paywalled="Nothing. Instant Ink is optional",
+ sub_text="Instant Ink £6.49/month for 100 pages; 50 pages £4.49, 300 pages £13.49",
+ ha_text="An HP account is required. HP+ activation at setup ties the printer to HP's service.",
+ wifi="Wi-Fi (2.4 and 5 GHz), Wi-Fi Direct and USB",
+ score=dict(rec=1,storage=0,live=1,alerts=1,ai=1,ha=0),
+ src=["hp_envy6530e","hp_instantink"],
+ rec_src="hp_envy6530e", history_src="hp_envy6530e", ha_src="hp_envy6530e", plan_src="hp_instantink",
+ nosub_say="36 months of HP 308 black/tri-colour packs at 100 pages a month, 50 mono and 50 colour.", unverified=""),
 dict(cat="doorbells", id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power=["battery","wired"], ha=0,
  price=79.99, price_note="Ring UK, in stock", price_src="ring_prod", buy="amz_ring",
  extra=0, extra_note="", free_records=False,
@@ -997,6 +1084,8 @@ SPONSORED = frozenset(
 # Authored beside the rows and attached to them below, so a row carries its own
 # verdict and sentences by the time anything reads it.
 VERDICT = {
+    "canon-pixma-g3590": "best", "epson-et-2951": "fast",
+    "brother-dcp-j1310dw": "retail", "hp-envy-6530e": "avoid",
     "reo-poe": "best", "reo-wifi": "wired", "reo-batt": "batt",
     "tapo-d235": "easy", "ring": "avoid", "ring-4kpro": "avoid",
     "ring-wpro": "avoid", "ring-elite": "avoid",
@@ -1012,6 +1101,14 @@ VERDICT = {
     "oura-5": "avoid", "oura-4": "avoid",
 }
 PLAIN = {
+    "epson-et-2951": ("Plugs into the mains.",
+                      "The bottles in the box are the ink supply for the period, and refills come from Epson bottles."),
+    "canon-pixma-g3590": ("Plugs into the mains.",
+                          "The four bottles in the box are the ink supply for the period, and refills come from Canon GI-51 bottles."),
+    "brother-dcp-j1310dw": ("Plugs into the mains.",
+                            "Starter cartridges only. LC521 cartridges from any shop keep it printing without a plan."),
+    "hp-envy-6530e": ("Plugs into the mains.",
+                      "Setup cartridges only. HP 308 packs are the retail supply, and the printer is set to original HP ink."),
     "ring": ("Runs on the battery, or you can wire it to your existing chime.",
              "None. The doorbell has no storage of its own and no hub to hold the footage."),
     "nest": ("Runs on the battery, or you can wire it to your existing chime.",

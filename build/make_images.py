@@ -59,6 +59,13 @@ IMGS={
  "rc-3":("https://ringconn.com/cdn/shop/files/1a_9e4056a6-6b65-41d1-804e-03aaa2818425.webp?v=1780302453&width=600","https://ringconn.com/products/ringconn-gen-3",None,True),
  "samsung-ring":("https://images.samsung.com/is/image/samsung/p6pim/uk/2407/gallery/uk-galaxy-ring-q500-sm-q500nzkaeub-542183975?$720_576_JPG$","https://www.samsung.com/uk/rings/galaxy-ring/galaxy-ring-titanium-black-size-10-sm-q500nzkaeub/",None,True),
  "amazfit-helio":("https://uk.amazfit.com/cdn/shop/files/Helioring_1024x1024.jpg?v=1716446501","https://uk.amazfit.com/products/amazfit-helio-ring",None,True),
+ # HP's hero carries a "3 months Instant Ink free" banner across the paper tray,
+ # so the crop ends above it. Epson's hero shows the bottles and its own
+ # "3 years of ink included" sheet, which is the product as sold.
+ "hp-envy-6530e":("https://www.hp.com/gb-en/shop/media/catalog/product/1/_/1_cus_7.jpg?store=gb-en&image-type=image&auto=avif&quality=100&format=pjpg&type=image-product&width=960&fit=bounds","https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687",(0,0,1,0.74),True),
+ "brother-dcp-j1310dw":("https://bie-p-001-delivery.sitecorecontenthub.cloud/api/public/content/98871d9064814cafa79e5ab3787bc5e4?v=066db67b","https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw",None,True),
+ "epson-et-2951":("https://i8.amplience.net/i/epsonemear/a23212-productpicture-hires-en-int-ecotank_et2950_01_main_2000x2000px","https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035",None,True),
+ "canon-pixma-g3590":("https://i1.adis.ws/i/canon/6706C008_PIXMA-G3590_02?w=1200","https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/",None,True),
 }
 PLACEHOLDER={
  "hik":"Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image.",

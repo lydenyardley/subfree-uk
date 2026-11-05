@@ -140,6 +140,11 @@ def main():
                     permissions=["clipboard-read", "clipboard-write"],
                 )
                 page = context.new_page()
+                # The visitor counter is a third-party request. The audit runs
+                # without outbound network, so stub it rather than report its
+                # DNS failure as a page error.
+                page.route("https://gc.zgo.at/**", lambda route: route.fulfill(status=204, body=""))
+                page.route("https://subfreeuk.goatcounter.com/**", lambda route: route.fulfill(status=204, body=""))
                 page.add_init_script("try { localStorage.setItem('theme', 'dark') } catch (e) {}")
                 page.on("pageerror", lambda error: ctx.console_errors.append(str(error)))
                 page.on(

@@ -276,6 +276,11 @@ def page_behaviour(ctx):
     problems = []
     for cat in CATEGORIES[1:]:
         page = ctx.browser.new_page(viewport={"width": 1280, "height": 900})
+        # The visitor counter is a third-party request. The audit runs without
+        # outbound network, so stub it rather than report its DNS failure as a
+        # page error.
+        page.route("https://gc.zgo.at/**", lambda route: route.fulfill(status=204, body=""))
+        page.route("https://subfreeuk.goatcounter.com/**", lambda route: route.fulfill(status=204, body=""))
         errors, refused = [], []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.on(

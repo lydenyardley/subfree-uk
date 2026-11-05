@@ -30,13 +30,13 @@ WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verifi
 TRANSFER_BUDGET = {
     "index.html": 24_000,
     "assets/page.css": 18_000,
-    "assets/page.js": 26_000,
+    "assets/page.js": 30_000,
 }
 # The total moved with the newest models: five doorbells and a camera are about
 # 3.3KB gzipped of real table copy, and Ring's two wired 4K doorbells are two
 # more rows, so the ceiling follows the rows rather than the copy being cut to
 # fit a number set when the table was smaller.
-TRANSFER_TOTAL = 65_500
+TRANSFER_TOTAL = 70_000
 
 
 def load_rows():
@@ -182,9 +182,12 @@ def category_problems(rows, pages, cat):
     with open(os.path.join(ROOT, cat["md"]), encoding="utf-8") as handle:
         markdown = handle.read()
     # A category whose rows buy a card or a hub has to price it in the method.
-    # A ring buys neither, so its note is not made to print a figure its sums
-    # never use.
-    buys_sundries = any(row.get("extra_src") or row.get("kit_src") for row in table)
+    # A ring buys neither, and a printer's extra is ink rather than a sundry, so
+    # neither note is made to print a figure its sums never use.
+    buys_sundries = any(
+        row.get("kit_src") or row.get("extra_src") in ("sandisk_card", "sandisk_stick")
+        for row in table
+    )
     for name, text in ((cat["page"], index), (cat["md"], markdown)):
         if buys_sundries:
             for sundry, figure in (("microSD card", rows.CARD), ("USB stick", rows.STICK)):
