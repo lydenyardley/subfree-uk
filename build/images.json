@@ -114,6 +114,11 @@
   "page": "https://reolink.com/gb/product/altas-pt-ultra/",
   "cropped": false
  },
+ "reo-arguspt": {
+  "src": "https://home-cdn.reolink.us/wp-content/uploads/2025/03/Argus-PT-Ultra-WiFi-6-White-Solar-Panel-White.png",
+  "page": "https://reolink.com/gb/product/argus-pt-ultra/",
+  "cropped": false
+ },
  "blink-mini4k": {
   "src": "https://assets.aboutamazon.com/5a/57/eb905b304e7b9c625be73fa78310/blinkmini4k-inline-amazonnews-ck101925.jpg",
   "page": "https://www.aboutamazon.com/news/devices/blink-4k-long-range-security-cameras",
@@ -177,6 +182,11 @@
  "ring-outpro": {
   "src": "https://en-uk.ring.com/cdn/shop/files/Ring_GROUPER_White-Plugin_1500x1500_01.jpg?v=1757078401",
   "page": "https://en-uk.ring.com/products/stick-up-cam-pro-plug-in",
+  "cropped": false
+ },
+ "ring-outplus": {
+  "src": "https://en-uk.ring.com/cdn/shop/files/Ring_OCP-White-Plug_in_1500x1500_01.jpg?v=1756448906",
+  "page": "https://en-uk.ring.com/products/outdoor-cam-plus-plugin",
   "cropped": false
  },
  "oura-4": {

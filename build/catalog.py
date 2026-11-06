@@ -660,28 +660,16 @@ CAMERAS = {
     # The model each brand sold last, still on sale, so a reader can see what
     # the older one saves. A brand with no such row says why.
     "previous": {
-        "Reolink": (
-            None,
-            "no older Reolink camera row yet; Reolink's UK store page is where "
-            "the model the Altas replaced is listed",
-        ),
+        "Reolink": "reo-arguspt",
         "TP-Link Tapo": "tapo-c660",
         "eufy": (
             None,
-            "no older eufy camera row yet; eufy's UK store page is where the "
-            "model the SoloCam S340 replaced is listed",
+            "no older eufy camera row yet; eufy's UK SoloCam page no longer "
+            "lists the S230 or the S220, the models the S340 replaced",
         ),
         "Aqara": "aqara-g5pro",
-        "Ring": (
-            None,
-            "no older Ring camera row yet; Ring's UK store page is where the "
-            "model the Outdoor Camera 4K Pro replaced is listed",
-        ),
-        "Blink": (
-            None,
-            "no older Blink camera row yet; Blink has no UK store of its own, so "
-            "the Amazon listing's family menu is the page to read",
-        ),
+        "Ring": "ring-outplus",
+        "Blink": "blink-out4",
     },
 
     "title": "Security cameras that work without a subscription (UK)",
@@ -711,7 +699,7 @@ CAMERAS = {
     "short": (
         '{v:reo-rlc820a:Reolink RLC-820A} is the best overall without fees.',
         '{v:reo-argus4:Reolink Argus 4 Pro} is the best wire-free one.',
-        '{v:ring-outpro:Ring} records nothing without a plan, and {v:blink-mini4k:Blink} needs extra kit.',
+        '{v:ring-outplus:Ring} records nothing without a plan, and {v:blink-mini4k:Blink} needs extra kit.',
     ),
     "short_tones": ("best", "batt", "avoid"),
     "short_head": "The short answer",
@@ -723,7 +711,7 @@ CAMERAS = {
         ("batt", "Best wire-free pick:", "{v:reo-argus4:Reolink Argus 4 Pro}",
          ", which covers 180° from one battery camera and still records to a card "
          "without a plan."),
-        ("avoid", "Avoid if you won't pay monthly:", "{v:ring-outpro:Ring}",
+        ("avoid", "Avoid if you won't pay monthly:", "{v:ring-outplus:Ring}",
          " records nothing without a plan, and {v:blink-mini4k:Blink} needs a Sync "
          "Module 2 and a USB stick before it saves a clip."),
     ),

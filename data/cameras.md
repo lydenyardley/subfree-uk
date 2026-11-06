@@ -1,6 +1,6 @@
 # UK security cameras without a subscription
 
-Last checked 5 November 2026. 17 cameras. As an Amazon Associate I earn from qualifying purchases.
+Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qualifying purchases.
 
 | Camera | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
@@ -10,6 +10,7 @@ Last checked 5 November 2026. 17 cameras. As an Amazon Associate I earn from qua
 | Reolink RLC-820A | Yes | [£79.99](https://store.reolink.com/gb/) | 7 | £106.98 | — | A wired install on a budget: 4K for £80, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
 | Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
 | TP-Link Tapo C660 KIT | Yes | [£109.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £136.98 | £217.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
+| Reolink Argus PT Ultra | Yes | [£118.99](https://store.reolink.com/gb/) | 7 | £145.98 | — | A garden corner on a budget: 4K pan and tilt for £119, with nothing held back | The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year. |
 | Aqara Camera Hub G3 | Yes | [£119.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £146.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
 | Aqara Camera Hub G350 Select | Yes | [£125.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/) | 6 | £152.98 | — | A room with a lot to cover: 4K wide plus a 2.5K zoom lens on a 360° mount | Indoor only, and the card is extra. |
 | Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £156.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
@@ -18,6 +19,7 @@ Last checked 5 November 2026. 17 cameras. As an Amazon Associate I earn from qua
 | eufy SoloCam S340 | Yes | [£179.00](https://www.anker.com/uk/products/t81703w1) | 7 | £179.00 | — | A garden corner with sun: 360° pan and 8 GB on board | 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on. |
 | Reolink Altas PT Ultra | Yes | [£152.99](https://reolink.com/gb/product/altas-pt-ultra/) | 7 | £179.98 | — | A gate or yard watched all day: 4K pan-tilt with 96 hours of continuous recording | The card is extra, and continuous recording empties the battery in about four days without sun. |
 | TP-Link Tapo C675D KIT | Yes | [£189.99](https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit) | 5 | £216.98 | £297.63 | Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom | It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra. |
+| Ring Outdoor Camera Plus (plug-in) | No | [£89.99](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | £89.99 | £269.63 | Ring's live view and alerts for £90, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
 | Ring Outdoor Camera 4K Pro (plug-in) | No | [£179.99](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) | 2 | £179.99 | £359.63 | People already paying for Ring and Alexa | Saves no video at all without the £4.99-a-month plan. |
 | Blink Mini 4K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0GWSJV4H5?tag=subfreeuk-21) | 2 | Check price | Check price | Blink's sharpest picture, for a socket near a window or door | Records nothing until you add a Sync Module 2 and a USB stick, outdoor use needs a separate adapter, and live view stops at 5 minutes. |
 | Blink Outdoor 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/blink-outdoor-camera-2k-/dp/B0F964Q9Y8?tag=subfreeuk-21) | 2 | Check price | Check price | A 2K picture from Amazon's cameras, if you will add the module anyway | Records nothing until you add a Sync Module 2 and a USB stick, and Blink's two-year battery figure is at 1080p. |
@@ -79,6 +81,20 @@ Last checked 5 November 2026. 17 cameras. As an Amazon Associate I earn from qua
 - **Plans:** None needed. Reolink records to a microSD card or Home Hub; Reolink Cloud is optional
 - **Home Assistant:** Official, fully local integration. Battery cameras wake on a PIR event, so some entities update on a schedule.
 - **Sources:** [Reolink UK: Altas PT Ultra](https://reolink.com/gb/product/altas-pt-ultra/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+
+### Reolink Argus PT Ultra
+- **Best for:** A garden corner on a budget: 4K pan and tilt for £119, with nothing held back
+- **Main catch:** The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year.
+- **Price:** £118.99 (Reolink UK store, 1 camera with a Solar Panel (was £139.99))
+- **3-year cost, no plan:** £118.99 + £26.99 (SanDisk 64 GB microSD card) = £145.98
+- **3-year cost, with plan:** No plan needed: the free route keeps the recording
+- **Storage:** microSD (up to 512 GB) or a Reolink Home Hub; card not included
+- **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
+- **History without plan:** Yes, motion-triggered clips on a card or Home Hub
+- **Paywalled:** Nothing. Reolink Cloud is optional
+- **Plans:** None needed. Reolink records to a microSD card or Home Hub; Reolink Cloud is optional
+- **Home Assistant:** Official, fully local integration. Battery cameras wake on a PIR event, so some entities update on a schedule.
+- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: Argus PT Ultra](https://reolink.com/gb/product/argus-pt-ultra/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### TP-Link Tapo C660 KIT
 - **Best for:** A sunny wall with no socket: 4K, solar and a card slot
@@ -221,6 +237,20 @@ Last checked 5 November 2026. 17 cameras. As an Amazon Associate I earn from qua
 - **Plans:** Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99, Pro £15.99
 - **Home Assistant:** Official integration, but it goes through Ring's cloud. No local-only option.
 - **Sources:** [Ring UK: Outdoor Camera 4K Pro (plug-in)](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
+
+### Ring Outdoor Camera Plus (plug-in)
+- **Best for:** Ring's live view and alerts for £90, if you never want the footage
+- **Main catch:** Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K.
+- **Price:** £89.99 (Ring UK)
+- **3-year cost, no plan:** £89.99 (but no recordings)
+- **3-year cost, with plan:** £89.99 + 36 × £4.99 (Ring Solo) = £269.63
+- **Storage:** None. Recording is cloud-only.
+- **Free:** live view yes; alerts yes; smart detection: Paid (person, package and vehicle alerts on Ring's plans)
+- **History without plan:** None
+- **Paywalled:** All recording and playback (up to 180 days) and smart alerts
+- **Plans:** Ring Solo £4.99/month or £49.99/year (1 device). Multi £7.99, Pro £15.99
+- **Home Assistant:** Official integration, but it goes through Ring's cloud. No local-only option.
+- **Sources:** [Ring UK: Outdoor Camera Plus (plug-in)](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
 
 ### Blink Outdoor 4
 - **Best for:** The cheapest way into Amazon's cameras, if you catch a deal

@@ -40,6 +40,7 @@ IMGS={
  "aqara-g5pro":("https://eu.aqara.com/cdn/shop/files/G5-white-wifi.webp?v=1748515993","https://eu.aqara.com/products/aqara-camera-hub-g5-pro",(0.41,0.03,0.88,0.88),True),
  "aqara-g350":("https://www.aqara-shop.co.uk/wp-content/uploads/2026/02/Aqara-G350-cam-1.jpg","https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/",None,True),
  "reo-altas":("https://home-cdn.reolink.us/wp-content/uploads/2024/09/Altas-PT-Ultra-sp.png","https://reolink.com/gb/product/altas-pt-ultra/",None,True),
+ "reo-arguspt":("https://home-cdn.reolink.us/wp-content/uploads/2025/03/Argus-PT-Ultra-WiFi-6-White-Solar-Panel-White.png","https://reolink.com/gb/product/argus-pt-ultra/",None,True),
  # The press image shows the white and black cameras; the crop keeps the black
  # one, and the page is Amazon's own newsroom, not a retailer listing.
  "blink-mini4k":("https://assets.aboutamazon.com/5a/57/eb905b304e7b9c625be73fa78310/blinkmini4k-inline-amazonnews-ck101925.jpg","https://www.aboutamazon.com/news/devices/blink-4k-long-range-security-cameras",(0.50,0.25,0.73,0.98),True),
@@ -55,6 +56,7 @@ IMGS={
  "aqara-e1":("https://eu.aqara.com/cdn/shop/files/aqara-Camera_E1.webp?v=1774333578","https://eu.aqara.com/products/aqara-2k-indoor-security-camera-e1",None,True),
  "aqara-g100":("https://eu.aqara.com/cdn/shop/files/aqara-camera-g100-1.webp?v=1773400773","https://eu.aqara.com/products/aqara-camera-g100",(0,0,0.50,1),True),
  "ring-outpro":("https://en-uk.ring.com/cdn/shop/files/Ring_GROUPER_White-Plugin_1500x1500_01.jpg?v=1757078401","https://en-uk.ring.com/products/stick-up-cam-pro-plug-in",None,True),
+ "ring-outplus":("https://en-uk.ring.com/cdn/shop/files/Ring_OCP-White-Plug_in_1500x1500_01.jpg?v=1756448906","https://en-uk.ring.com/products/outdoor-cam-plus-plugin",None,True),
  # The Oura render sits on a studio gradient with the finish swatches below
  # it, so it is cropped rather than trimmed against white.
  "oura-4":("https://ourahealth.imgix.net/blue-sky/pop/gen4/finishes-carousel-slide-silver.png?ixlib=js-3.8.0&auto=format&fit=crop&fm=png&ar=2%3A1&crop=focalpoint&fp-x=0.5&fp-y=0.51&fp-z=1.15&q=70&w=1920&s=2e1d3272a6ead1f907787a0fde071870","https://ouraring.com/store/rings/oura-ring-4",(0.30,0.10,0.66,0.82),False),
