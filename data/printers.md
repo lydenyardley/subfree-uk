@@ -1,13 +1,15 @@
 # UK printers that work without an ink subscription
 
-Last checked 5 November 2026. 5 printers. As an Amazon Associate I earn from qualifying purchases.
+Last checked 5 November 2026. 7 printers. As an Amazon Associate I earn from qualifying purchases.
 
 | Printer | Retail ink? | Price | Score /8 | 3 yrs, retail ink | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Canon PIXMA G3590 | Yes | [£189.99](https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/) | 8 | £189.99 | — | A cheaper tank that still covers three years of ink | Slower than the Epson at 11/6 ipm, with the same 100-sheet tray. |
+| Brother DCP-J1200W | Yes | [£40.00](https://www.ryman.co.uk/brother-dcp-j1200w-3-in-1-wireless-inkjet-printer-1) | 6 | £220.00 | £201.64 | The cheapest way into a 3-in-1, while the clearance lasts | The £40 is a clearance on a printer Brother no longer prices, and retail LC424 ink costs £180 over three years. |
 | Canon PIXMA TS6550i | Yes | [£49.99](https://www.canon.co.uk/store/pixma-print-plan-printers/) | 7 | £415.93 | £211.63 | A cheap printer with the cheapest plan route | The £49.99 is a sale price, and the starter cartridges hold about 180 pages each. |
+| Canon PIXMA G3570 | Yes | [£229.99](https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/) | 7 | £229.99 | — | A heavy household that can live without automatic duplex | Older than the G3590, and two-sided printing is manual rather than automatic. |
 | Epson EcoTank ET-2951 | Yes | [£239.99](https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035) | 8 | £239.99 | — | A busy household that wants the ink paid for up front | The dearest printer here, and the paper tray holds only 100 sheets. |
-| Brother DCP-J1310DW | Yes | [£132.23](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) | 7 | £409.69 | £293.87 | The cheapest way to print 100 pages a month with a plan | The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years. |
+| Brother DCP-J1310DW | Yes | [£132.23](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) | 7 | £409.69 | £293.87 | A current Brother whose cartridges print 500 pages each | The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years. |
 | HP Envy 6530e | Original ink only | [£71.80](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) | 4 | £619.15 | £305.44 | A light household that will take the ink plan | Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink. |
 
 ## Detail
@@ -40,6 +42,20 @@ Last checked 5 November 2026. 5 printers. As an Amazon Associate I earn from qua
 - **Account needed:** No account needed. The Canon PRINT app is optional.
 - **Sources:** [Canon UK: PIXMA G3590](https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/)
 
+### Canon PIXMA G3570
+- **Best for:** A heavy household that can live without automatic duplex
+- **Main catch:** Older than the G3590, and two-sided printing is manual rather than automatic.
+- **Price:** £229.99 (Canon UK store (was £264.98))
+- **3-year cost, retail ink:** £229.99
+- **3-year cost, with plan:** No ink plan offered or needed
+- **Ink in the box:** Four GI-51 bottles in the box: 6,000 black and 7,700 colour pages
+- **Included:** 11 ipm mono, 6 ipm colour (ISO); double-sided: Manual; scan and copy: Yes, flatbed scan and copy
+- **Ink without a plan:** Yes, refill from GI-51 bottles with no plan or account
+- **With an ink plan:** Nothing. Canon Auto-Ink Delivery is optional
+- **Ink plans:** None needed. Canon's optional Auto-Ink Delivery sends bottles when low
+- **Account needed:** No account needed. The Canon PRINT app is optional.
+- **Sources:** [Canon UK: PIXMA G3570](https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/) · [Canon UK: PIXMA G3570 specifications](https://www.canon.co.uk/printers/pixma-g3570-series/specifications/)
+
 ### Canon PIXMA TS6550i
 - **Best for:** A cheap printer with the cheapest plan route
 - **Main catch:** The £49.99 is a sale price, and the starter cartridges hold about 180 pages each.
@@ -55,7 +71,7 @@ Last checked 5 November 2026. 5 printers. As an Amazon Associate I earn from qua
 - **Sources:** [Canon UK: PIXMA TS6550i](https://www.canon.co.uk/store/canon-pixma-ts6550i-wireless-colour-3-in-1-inkjet-photo-printer/7179C008/) · [Canon UK: PIXMA Print Plan printers](https://www.canon.co.uk/store/pixma-print-plan-printers/) · [Canon UK: PG-595XL + CL-586XL value pack](https://www.canon.co.uk/store/canon-pg-595xl-cl-586xl-high-yield-ink-cartridges-photo-paper-value-pack/7170C004/) · [Canon UK: PIXMA Print Plan](https://www.canon.co.uk/printer-ink-subscription/pixma-print-plan)
 
 ### Brother DCP-J1310DW
-- **Best for:** The cheapest way to print 100 pages a month with a plan
+- **Best for:** A current Brother whose cartridges print 500 pages each
 - **Main catch:** The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years.
 - **Price:** £132.23 (Brother UK store)
 - **3-year cost, retail ink:** £132.23 + £277.46 (36 months of LC521 cartridges) = £409.69
@@ -67,6 +83,20 @@ Last checked 5 November 2026. 5 printers. As an Amazon Associate I earn from qua
 - **Ink plans:** EcoPro £4.49/month for 100 pages; 50 pages £2.99, 300 pages £9.99
 - **Account needed:** No account needed; AirPrint and Mopria print without an app.
 - **Sources:** [Brother UK: DCP-J1310DW](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) · [Brother EcoPro UK](https://ecopro.brother.co.uk/) · [Brother UK: LC521 ink cartridges](https://store.brother.co.uk/supplies/inkjet/ink-cartridges-single-pack/lc/lc521bk)
+
+### Brother DCP-J1200W
+- **Best for:** The cheapest way into a 3-in-1, while the clearance lasts
+- **Main catch:** The £40 is a clearance on a printer Brother no longer prices, and retail LC424 ink costs £180 over three years.
+- **Price:** £40.00 (Ryman clearance (was £69.99); Brother no longer prices it)
+- **3-year cost, retail ink:** £40.00 + £180.00 (2.4 LC424 multipacks (750 pages each)) = £220.00
+- **3-year cost, with plan:** £40.00 + 36 × £4.49 (Brother EcoPro 100) = £201.64
+- **Ink in the box:** In-box inks: about 720 black and 480 colour pages
+- **Included:** 16 ipm mono, 9 ipm colour (ISO); double-sided: Manual; scan and copy: Yes, flatbed scan and copy
+- **Ink without a plan:** Yes, LC424 cartridges from any shop with no account
+- **With an ink plan:** Nothing. Brother EcoPro is optional
+- **Ink plans:** EcoPro £4.49/month for 100 pages; 50 pages £2.99, 300 pages £9.99
+- **Account needed:** No account needed; AirPrint and Mopria print without an app.
+- **Sources:** [Ryman: DCP-J1200W clearance](https://www.ryman.co.uk/brother-dcp-j1200w-3-in-1-wireless-inkjet-printer-1) · [Brother UK: DCP-J1200W](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1200w) · [Brother UK: LC424 ink for the DCP-J1200W](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1200w) · [Brother EcoPro UK](https://ecopro.brother.co.uk/)
 
 ### HP Envy 6530e
 - **Best for:** A light household that will take the ink plan

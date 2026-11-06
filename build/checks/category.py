@@ -13,6 +13,7 @@ from html import escape as html_escape
 
 from catalog import CATEGORIES
 from .context import ROOT
+from .data import BLOCKER_CUES
 from .registry import Check, Skip
 
 # What `build.build(cat)` reads. A record missing one of these is a category
@@ -25,6 +26,7 @@ REQUIRED = (
     "cap", "score_max", "score_parts", "rec", "required_keys", "facets",
     "powers", "power_hint", "filters", "verdicts", "headline", "claims",
     "compare", "pin", "sort", "method", "csv_head", "md_head", "not_found",
+    "previous",
 )
 
 
@@ -100,6 +102,19 @@ def record_problems(pages):
         # A paid link is disclosed on the page that carries it, and the old
         # no-affiliate promise cannot survive in a stale template.
         text = re.sub(r"\s+", " ", html)
+        # The filter group is named by the record's own power facet. The
+        # printers page shipped headed "Power", the doorbells' word, over three
+        # groups of ink choices, because the template held the word for every
+        # category rather than reading it from the record.
+        legend = dict(cat["facets"]).get("power")
+        if not legend:
+            problems.append(f"{slug}: no power facet names its filter group")
+        elif html_escape(legend) not in re.findall(
+            r"<fieldset><legend>([^<]+)</legend>", html
+        ):
+            problems.append(
+                f"{slug}: the filter group is not headed its own power facet {legend!r}"
+            )
         if "No affiliate links" in text:
             problems.append(f"{slug}: the page still claims there are no affiliate links")
         if "Some links are paid links" not in text:
@@ -150,6 +165,47 @@ def record_problems(pages):
                         f"{slug}: {brand}'s current model {named!r} belongs to "
                         f"{found[0]['brand']}"
                     )
+        # A brand's older model is usually the cheaper way in, so it is asked
+        # for as deliberately as the newest one. The printers page carried four
+        # brands and no last-generation row at all, because only `current` was
+        # ever asked, and the saving a reader would notice was never priced.
+        previous = cat.get("previous") or {}
+        unasked = sorted({row["brand"] for row in rows} - set(previous))
+        if unasked:
+            problems.append(
+                f"{slug}: no last-generation model named for {', '.join(unasked)}"
+            )
+        for brand, named in previous.items():
+            if isinstance(named, tuple):
+                _, why = named
+                reason = str(why or "").strip()
+                if not reason:
+                    problems.append(
+                        f"{slug}: {brand} is marked as having no last-generation "
+                        "row without saying why"
+                    )
+                elif not any(cue in reason.lower() for cue in BLOCKER_CUES):
+                    problems.append(
+                        f"{slug}: {brand}'s reason {reason!r} names no page or "
+                        "listing to read"
+                    )
+                continue
+            found = [row for row in rows if row["id"] == named]
+            if not found:
+                problems.append(
+                    f"{slug}: {brand}'s last-generation model {named!r} is not a row"
+                )
+                continue
+            if found[0]["brand"] != brand:
+                problems.append(
+                    f"{slug}: {brand}'s last-generation model {named!r} belongs "
+                    f"to {found[0]['brand']}"
+                )
+            if (cat.get("current") or {}).get(brand) == named:
+                problems.append(
+                    f"{slug}: {brand}'s last-generation model {named!r} is also "
+                    "its current one"
+                )
         # An editorial jump goes to a row that is on the page. The rings page
         # shipped two links keyed to a name that was not a row id, so a reader
         # clicking "RingConn Gen 3" in the lead landed nowhere at all.
@@ -253,6 +309,16 @@ def records(ctx):
             ctx.note(
                 f"{cat['slug']}: its brands' current models have not been audited; "
                 "add a `current` map at the next price check"
+            )
+        waiting = [
+            brand
+            for brand, named in (cat.get("previous") or {}).items()
+            if isinstance(named, tuple)
+        ]
+        if waiting:
+            ctx.note(
+                f"{cat['slug']}: no last-generation row yet for "
+                f"{', '.join(sorted(waiting))}"
             )
     return problems
 

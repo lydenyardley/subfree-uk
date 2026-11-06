@@ -234,6 +234,11 @@
   "page": "https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw",
   "cropped": false
  },
+ "brother-dcp-j1200w": {
+  "src": "https://bie-p-001-delivery.sitecorecontenthub.cloud/api/public/content/cb802603181d4e91ba36aa693c7d811e?v=36a52d24",
+  "page": "https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1200w",
+  "cropped": false
+ },
  "epson-et-2951": {
   "src": "https://i8.amplience.net/i/epsonemear/a23212-productpicture-hires-en-int-ecotank_et2950_01_main_2000x2000px",
   "page": "https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035",
@@ -242,6 +247,11 @@
  "canon-pixma-g3590": {
   "src": "https://i1.adis.ws/i/canon/6706C008_PIXMA-G3590_02?w=1200",
   "page": "https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/",
+  "cropped": false
+ },
+ "canon-pixma-g3570": {
+  "src": "https://i1.adis.ws/i/canon/5805C008_PIXMA-G3570-BK_02?w=1200",
+  "page": "https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/",
   "cropped": false
  },
  "canon-pixma-ts6550i": {

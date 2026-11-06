@@ -414,6 +414,19 @@ def build(cat):
         if power_bands
         else [(key, label, (key,)) for key, label in cat["powers"]]
     )
+    # The filter group is named by the record's own power facet, so a page that
+    # decides on ink cannot head its choices with the doorbells' word.
+    power_legend = dict(cat["facets"])["power"]
+
+    # A brand's previous model sits beside its current one, because the older
+    # model is usually the cheaper way in and the two model names do not tell a
+    # reader which is which. The record names the row; the page says the saving.
+    previous_of = {
+        named: brand
+        for brand, named in (cat.get("previous") or {}).items()
+        if isinstance(named, str)
+    }
+    by_id = {r["id"]: r for r in rows}
 
     rows_html = []
     for i, r in enumerate(rows):
@@ -425,6 +438,16 @@ def build(cat):
         tone = cat["verdicts"][r["verdict"]][1] if r["verdict"] else ""
         vattr = f' data-v="{tone}"' if tone else ""
         vtag = f'<span class="vtag v-{tone}">{cat["verdicts"][r["verdict"]][0]}</span>' if r["verdict"] else ""
+        lg = ""
+        if r["id"] in previous_of:
+            now = (cat.get("current") or {}).get(previous_of[r["id"]])
+            now = by_id.get(now) if isinstance(now, str) else None
+            saving = ""
+            if now and not now.get("price_check") and not r.get("price_check"):
+                diff = now["price"] - r["price"]
+                if diff > 0:
+                    saving = f", {money(diff, None)} less than the {e(now['model'])}"
+            lg = f'<span class="lg">Last generation{saving}</span>'
         unv = f'<p class="unverified"><b>Not yet verified:</b> {e(r["unverified"])}</p>' if r["unverified"] else ""
         pnote = '. ' + e(r["power_note"]) if r.get("power_note") else ""
         cl = claims_by_id[r["id"]]
@@ -471,7 +494,7 @@ def build(cat):
         rows_html.append(f'''<tbody class="item" id="m-{r['id']}" data-id="{r['id']}" data-keep="{r['keep_basis']}"{vattr} data-rec="{r['rec']}" data-recv="{REC_RANK[r['rec']]}" data-ha="{r['ha']}" data-power="{pw}"{' data-chk="1"' if chk else ''} data-price="{'' if chk else r['price']}" data-keep3="{'' if chk else r['keep3']}" data-nosub3="{'' if chk else r['nosub3']}" data-sub3="{'' if chk else r['sub3'] if r['sub3'] is not None else r['nosub3']}" data-noplan="{'1' if r['sub'] is None else '0'}" data-score="{sc}" data-region="{r['plan_region']}" data-model="{e((r['brand']+' '+r['model']).lower())}" data-idx="{i}">
 <tr class="main">
 <td class="c-cmp"><label class="cmp-w"><input type="checkbox" class="cmp" value="{r['id']}" aria-label="Compare {e(r['brand'])} {e(r['model'])}"><span class="cmp-cap" aria-hidden="true">Compare</span></label></td>
-<th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm",prefix)}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
+<th scope="row" class="c-model"><div class="mcell">{zoom(r,"sm",prefix)}<div><span class="brand">{e(r['brand'])}</span> <span class="mname">{e(r['model'])}</span>{vtag}{lg}<span class="best">Best for: {e(r['best'])}</span></div></div></th>
 <td class="c-rec" data-label="{e(L['rec_col'])}"><span class="rec rec-{r['rec']}">{rec_fig}{fn(ds, [r['rec_src']])}</span></td>
 <td class="c-price num" data-label="Price">{price}</td>
 <td class="c-score" data-label="{e(L['score_col'])}"><span class="score"><b>{sc}</b>/{score_max}</span><span class="bar" aria-hidden="true"><i style="transform:scaleX({sc/score_max:.3f})"></i></span></td>
@@ -619,7 +642,7 @@ def build(cat):
 <fieldset><legend>Show only</legend><div class="opts">
 {chr(10).join(f'<label><input type="checkbox" id="{id_}"> {e(label)}</label>' for id_, label in cat["filters"])}
 </div></fieldset>
-<fieldset><legend>Power</legend><div class="opts">
+<fieldset><legend>{e(power_legend)}</legend><div class="opts">
 {chr(10).join(f'<label><input type="checkbox" class="f-pw" value="{e(value)}"> {e(label)}</label>' for value, label, _ in power_opts)}
 </div><p class="hint">{e(cat["power_hint"])}</p></fieldset>
 <fieldset class="range"><legend>Price</legend>

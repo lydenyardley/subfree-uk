@@ -448,6 +448,55 @@ DOORBELLS = {
         ),
     },
 
+    # The model each brand sold last, still on sale, so a reader can see what
+    # the older one saves. A brand with no such row says why: an older doorbell
+    # is the cheapest way into most of these brands, and nothing asked for it.
+    "previous": {
+        "Ring": (
+            None,
+            "no older Ring doorbell row yet; Ring's UK store collection page is "
+            "where the model the 4K Pro replaced is listed",
+        ),
+        "Google Nest": (
+            None,
+            "no older Nest doorbell row yet; Nest's UK store page is where the "
+            "model the battery doorbell replaced is listed",
+        ),
+        "eufy": (
+            None,
+            "no older eufy doorbell row yet; eufy's UK store lists its doorbells "
+            "by series, and the S4's predecessor is not on the page",
+        ),
+        "Reolink": (
+            None,
+            "no older Reolink doorbell row yet; Reolink's UK store page is where "
+            "the model its current doorbell replaced is listed",
+        ),
+        "TP-Link Tapo": "tapo-d235",
+        "Arlo": (
+            None,
+            "no older Arlo doorbell row yet; Arlo's UK store page is where the "
+            "model the Essential 2K replaced is listed",
+        ),
+        "Aqara": "aqara-g4",
+        "Blink": (
+            None,
+            "no older Blink doorbell row yet; Blink has no UK store of its own, so "
+            "the Amazon listing's family menu is the page to read",
+        ),
+        "EZVIZ": (
+            None,
+            "no older EZVIZ doorbell row yet; EZVIZ's UK store page is where the "
+            "model the EP3x Pro replaced is listed",
+        ),
+        "Hikvision": (
+            None,
+            "both Wi-Fi doorbells are end of life, and Hikvision's UK catalogue "
+            "page now lists wired video-intercom door stations, so there is no "
+            "earlier model to carry",
+        ),
+    },
+
     "title": "Video doorbells that work without a subscription (UK)",
     "description": "{n} UK video doorbells compared: what is free, what is paywalled, and what each costs over three years.",
     "h1": "Video doorbells that work without a subscription",
@@ -608,6 +657,33 @@ CAMERAS = {
         "Blink": "blink-mini4k",
     },
 
+    # The model each brand sold last, still on sale, so a reader can see what
+    # the older one saves. A brand with no such row says why.
+    "previous": {
+        "Reolink": (
+            None,
+            "no older Reolink camera row yet; Reolink's UK store page is where "
+            "the model the Altas replaced is listed",
+        ),
+        "TP-Link Tapo": "tapo-c660",
+        "eufy": (
+            None,
+            "no older eufy camera row yet; eufy's UK store page is where the "
+            "model the SoloCam S340 replaced is listed",
+        ),
+        "Aqara": "aqara-g5pro",
+        "Ring": (
+            None,
+            "no older Ring camera row yet; Ring's UK store page is where the "
+            "model the Outdoor Camera 4K Pro replaced is listed",
+        ),
+        "Blink": (
+            None,
+            "no older Blink camera row yet; Blink has no UK store of its own, so "
+            "the Amazon listing's family menu is the page to read",
+        ),
+    },
+
     "title": "Security cameras that work without a subscription (UK)",
     "description": "{n} UK security cameras compared: what is free, what is paywalled, and what each costs over three years.",
     "h1": "Security cameras that work without a subscription",
@@ -763,6 +839,24 @@ RINGS = {
         "Ultrahuman": "ultra-pro",
         "Samsung": "samsung-ring",
         "Amazfit": "amazfit-helio",
+    },
+
+    # The model each brand sold last, still on sale, so a reader can see what
+    # the older ring saves. A ring brand with one model says so.
+    "previous": {
+        "Oura": "oura-4",
+        "RingConn": "rc-2",
+        "Ultrahuman": "ultra-air",
+        "Samsung": (
+            None,
+            "the Galaxy Ring is Samsung's first smart ring, and Samsung's UK "
+            "page lists no earlier model to carry",
+        ),
+        "Amazfit": (
+            None,
+            "the Helio Ring is Amazfit's only smart ring, and Amazfit's UK page "
+            "lists no earlier model to carry",
+        ),
     },
 
     "title": "Smart rings that work without a subscription (UK)",
@@ -1058,6 +1152,27 @@ PRINTERS = {
         "Canon": "canon-pixma-g3590",
     },
 
+    # The model each brand sold last, so a reader can see what the older
+    # printer saves. A brand whose older model is still priced names its row; a
+    # brand with none to price yet carries a pair naming the page to read.
+    "previous": {
+        "HP": (
+            None,
+            "HP's UK store page lists the Envy 6520e at £97.90, but HP renders "
+            "its gallery and its 308 ink price in the browser, so neither the "
+            "product photo nor the pack price could be read from a page that "
+            "can be cited, and the row waits for both",
+        ),
+        "Brother": "brother-dcp-j1200w",
+        "Epson": (
+            None,
+            "the ET-2850 the ET-2951 replaced is discontinued and no longer "
+            "listed on Epson's UK page, so there is no last-generation printer "
+            "to price",
+        ),
+        "Canon": "canon-pixma-g3570",
+    },
+
     "title": "Printers that work without an ink subscription (UK)",
     "description": "{n} UK printers compared: what the ink costs without a plan, what a plan adds, and which is cheaper over three years.",
     "h1": "Printers that work without an ink subscription",
@@ -1084,7 +1199,7 @@ PRINTERS = {
         "{v:canon-pixma-g3590:Canon PIXMA G3590} is the best overall without an ink plan. It costs {p:canon-pixma-g3590} and its bottles cover three years.",
         "{v:canon-pixma-ts6550i:Canon PIXMA TS6550i} costs {p:canon-pixma-ts6550i}, and its £4.49 plan brings three years to {k:canon-pixma-ts6550i}.",
         "{v:epson-et-2951:Epson EcoTank ET-2951} is the fastest tank at {p:epson-et-2951}, printing 15 mono pages a minute.",
-        "{v:brother-dcp-j1310dw:Brother DCP-J1310DW} is the cheapest cartridge printer on retail ink at {c:brother-dcp-j1310dw} over 3 years.",
+        "{v:brother-dcp-j1200w:Brother DCP-J1200W} is the cheapest cartridge printer on retail ink at {c:brother-dcp-j1200w} over 3 years, while the clearance lasts.",
         "{v:hp-envy-6530e:HP Envy 6530e} needs an HP account, and retail ink takes it to {c:hp-envy-6530e}.",
     ),
     "short_tones": ("best", "pick", "pick", "pick", "avoid"),
@@ -1092,12 +1207,12 @@ PRINTERS = {
     "aside": (
         ("best", "Best overall without an ink plan:", "{v:canon-pixma-g3590:Canon PIXMA G3590}",
          " costs {p:canon-pixma-g3590}. Its four bottles cover 3,600 pages, double-sided printing is automatic, and nothing needs an account."),
-        ("batt", "Cheapest with an ink plan:", "{v:canon-pixma-ts6550i:Canon PIXMA TS6550i}",
+        ("batt", "Cheapest plan on a current model:", "{v:canon-pixma-ts6550i:Canon PIXMA TS6550i}",
          " costs {p:canon-pixma-ts6550i}, and £4.49 a month covers 100 pages; three years come to {k:canon-pixma-ts6550i}."),
         ("batt", "Fastest tank:", "{v:epson-et-2951:Epson EcoTank ET-2951}",
          " costs {p:epson-et-2951} and prints 15 mono and 8 colour pages a minute."),
-        ("batt", "Cheapest cartridge ink:", "{v:brother-dcp-j1310dw:Brother DCP-J1310DW}",
-         " costs {c:brother-dcp-j1310dw} over 3 years with EcoPro, and its cartridges print 500 pages each."),
+        ("batt", "Cheapest cartridge ink:", "{v:brother-dcp-j1200w:Brother DCP-J1200W}",
+         " costs {c:brother-dcp-j1200w} over 3 years on retail LC424 ink, and Ryman's £40 is a clearance price."),
         ("avoid", "Dearest to run:", "{v:hp-envy-6530e:HP Envy 6530e}",
          " costs {p:hp-envy-6530e}, but retail ink takes it to {c:hp-envy-6530e}, and HP+ requires an account."),
     ),

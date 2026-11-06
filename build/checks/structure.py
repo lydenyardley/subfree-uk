@@ -2,6 +2,7 @@
 import hashlib
 import os
 import re
+from html import escape as html_escape
 
 from catalog import CATEGORIES
 from .behaviour import contain_check
@@ -721,11 +722,76 @@ def method_columns_check(page):
         problems.append("every paragraph of the working starts in the first column")
     return problems
 
+def lastgen_badges(pages):
+    """Every last-generation row says so, and says what the older model saves.
+
+    The older model is usually the cheaper way in, and two model names do not
+    tell a reader which is which. The badge is the only place the page says it,
+    so a row that loses it, or a saving the two prices do not support, fails
+    here rather than reading as an ordinary row.
+    """
+    problems = []
+    for cat in CATEGORIES:
+        html = pages.get(cat["page"], "")
+        rows = {row["id"]: row for row in cat.get("rows") or []}
+        current = cat.get("current") or {}
+        for brand, named in (cat.get("previous") or {}).items():
+            if not isinstance(named, str):
+                continue
+            block = re.search(
+                rf'<tbody class="item" id="m-{re.escape(named)}".*?</tbody>',
+                html, re.S,
+            )
+            if not block:
+                problems.append(
+                    f"{named}: has no row on the page to carry its last-generation badge"
+                )
+                continue
+            found = re.findall(r'<span class="lg">([^<]*)</span>', block.group(0))
+            if len(found) != 1:
+                problems.append(
+                    f"{named}: carries {len(found)} last-generation badges, expected 1"
+                )
+                continue
+            text = found[0]
+            now = current.get(brand)
+            now = rows.get(now) if isinstance(now, str) else None
+            cheaper = bool(
+                now
+                and not now.get("price_check")
+                and not rows[named].get("price_check")
+                and now["price"] > rows[named]["price"]
+            )
+            claims = " less than the " in text
+            if not text.startswith("Last generation"):
+                problems.append(f"{named}: the badge reads {text!r}")
+            if claims and not cheaper:
+                problems.append(
+                    f"{named}: the badge claims a saving the two prices do not "
+                    f"support: {text!r}"
+                )
+            if cheaper and not claims:
+                problems.append(
+                    f"{named}: the badge does not name the saving against its "
+                    "current model"
+                )
+            if cheaper and html_escape(now["model"]) not in text:
+                problems.append(
+                    f"{named}: the saving does not name the current model "
+                    f"{now['model']!r}"
+                )
+    return problems
+
 CHECKS = [
     Check(
         "emitted sources", "static", 4,
         "the page loads the committed CSS and script at its own content hash",
         lambda ctx: emitted_sources(ctx.pages),
+    ),
+    Check(
+        "last generation badges", "static", 200,
+        "every brand's previous model says so, and a saving it claims is the two prices' difference",
+        lambda ctx: lastgen_badges(ctx.pages),
     ),
     Check(
         "generated alias", "static", 5,

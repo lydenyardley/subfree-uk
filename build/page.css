@@ -181,6 +181,7 @@ span.ph{display:flex;align-items:center;justify-content:center;background:var(--
 span.ph-lg{font-size:12px}
 .brand{font-weight:700} .mname{font-weight:400}
 .best{display:block;font-size:13px;color:var(--ink2);margin-top:0.5rem;line-height:1.35}
+.lg{display:block;margin-top:.35rem;font:600 12px/1.3 var(--sans);color:var(--ink2)}
 .c-catch{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-start;justify-content:space-between;font-size:14px}
 /* At 901px this cell's text box is 70px, narrower than "£7.99/month" at 74px,
    and a wider fallback font pushes an unbreakable word across the chevron. */

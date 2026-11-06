@@ -130,6 +130,17 @@ instead, the last model and the reason, so the gap is recorded rather than
 hidden: Hikvision's two Wi-Fi doorbells are both end of life and its UK
 catalogue now sells wired intercom door stations.
 
+The older model matters as much as the newest, because it is usually the
+cheaper way in. Every brand names the row it sold last in a `previous` map: the
+model the current one replaced that the vendor still sells, which is Oura's
+Ring 4 beside the Ring 5 and Tapo's C660 KIT beside the C675D KIT. The page
+labels that row, and where the older model is the cheaper of the two it says by
+how much. A brand with no older model to carry, or whose row has not been added
+yet, carries a pair with the reason, and `category records` names every brand
+still waiting for its row. That gap is a to-do with a page to read, not a
+settled fact: the next price check adds the row, priced and photographed like
+any other.
+
 A launch is a new row, not a rewrite of `current`. Walking a brand's own store
 collection page, rather than the one product page already in the table, is what
 finds it: the 4K models, the S4 and the D260 were all missing while an older
