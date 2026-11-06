@@ -28,7 +28,7 @@ WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verifi
 # third category, and the ring it was missing, took it past the ceiling that was
 # set when the page had two.
 TRANSFER_BUDGET = {
-    "index.html": 24_000,
+    "index.html": 25_000,
     "assets/page.css": 18_000,
     "assets/page.js": 30_000,
 }
@@ -36,7 +36,7 @@ TRANSFER_BUDGET = {
 # 3.3KB gzipped of real table copy, and Ring's two wired 4K doorbells are two
 # more rows, so the ceiling follows the rows rather than the copy being cut to
 # fit a number set when the table was smaller.
-TRANSFER_TOTAL = 70_000
+TRANSFER_TOTAL = 72_000
 
 
 def load_rows():

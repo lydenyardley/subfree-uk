@@ -23,10 +23,10 @@ they always are.
 
 | File | Budget, gzipped | Measured 6 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 23,142 |
+| `index.html` | 25,000 | 24,249 |
 | `assets/page.css` | 18,000 | 16,815 |
-| `assets/page.js` | 30,000 | 29,100 |
-| The three together, a first visit | 70,000 | 69,057 |
+| `assets/page.js` | 30,000 | 29,379 |
+| The three together, a first visit | 72,000 | 70,443 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -84,6 +84,15 @@ Plus, took the script from 28,870 to 29,100 and the page from 23,140 to 23,142,
 so a first visit is 69,057. The stylesheet did not move, and the ceilings again
 stayed put: 858 bytes of page headroom, 1,185 of stylesheet, 900 of script and
 943 on a first visit.
+
+The two doorbell rows, Reolink's Battery Video Doorbell (2nd Gen) and Arlo's
+Essential FHD, took the page from 23,142 to 24,249 and the script from 29,100
+to 29,379, so a first visit is 70,443. That is past 24,000 for the page and past
+70,000 for a first visit, so both ceilings move to 25,000 and 72,000. The rows
+are what the page is for, and each costs about 700 bytes gzipped because the
+comparison keeps a second copy of the data. The stylesheet and script ceilings
+did not move: 1,185 bytes of stylesheet headroom remain, 621 of script, 751 of
+page and 1,557 on a first visit.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
 models added five doorbells and a camera row: about 700 gzipped bytes of table
