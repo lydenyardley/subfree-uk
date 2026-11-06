@@ -73,6 +73,10 @@ IMGS={
  # so the crop ends above it. Epson's hero shows the bottles and its own
  # "3 years of ink included" sheet, which is the product as sold.
  "hp-envy-6530e":("https://www.hp.com/gb-en/shop/media/catalog/product/1/_/1_cus_7.jpg?store=gb-en&image-type=image&auto=avif&quality=100&format=pjpg&type=image-product&width=960&fit=bounds","https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687",(0,0,1,0.74),True),
+ # HP's UK product page for the 6520e is broken, and its UK listing never
+ # paints the card's photo, so the render comes from HP's own Swiss store page
+ # for the same printer, which serves the official product image.
+ "hp-envy-6520e":("https://www.hp.com/ch-en/shop/media/catalog/product/h/p/hp-envy-6520e_ch_en_cus.jpg?store=ch-en&image-type=image&auto=avif&quality=100&format=pjpg&type=image-product&width=960&fit=bounds","https://www.hp.com/ch-en/shop/products/printers/hp-envy-6520e-all-in-one-printer-714n9b-629",(0,0.16,1,0.575),True),
  "brother-dcp-j1310dw":("https://bie-p-001-delivery.sitecorecontenthub.cloud/api/public/content/98871d9064814cafa79e5ab3787bc5e4?v=066db67b","https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw",None,True),
  "brother-dcp-j1200w":("https://bie-p-001-delivery.sitecorecontenthub.cloud/api/public/content/cb802603181d4e91ba36aa693c7d811e?v=36a52d24","https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1200w",None,True),
  "epson-et-2951":("https://i8.amplience.net/i/epsonemear/a23212-productpicture-hires-en-int-ecotank_et2950_01_main_2000x2000px","https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035",None,True),

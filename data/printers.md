@@ -1,6 +1,6 @@
 # UK printers that work without an ink subscription
 
-Last checked 5 November 2026. 7 printers. As an Amazon Associate I earn from qualifying purchases.
+Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qualifying purchases.
 
 | Printer | Retail ink? | Price | Score /8 | 3 yrs, retail ink | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
@@ -11,6 +11,7 @@ Last checked 5 November 2026. 7 printers. As an Amazon Associate I earn from qua
 | Epson EcoTank ET-2951 | Yes | [£239.99](https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035) | 8 | £239.99 | — | A busy household that wants the ink paid for up front | The dearest printer here, and the paper tray holds only 100 sheets. |
 | Brother DCP-J1310DW | Yes | [£132.23](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) | 7 | £409.69 | £293.87 | A current Brother whose cartridges print 500 pages each | The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years. |
 | HP Envy 6530e | Original ink only | [£71.80](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) | 4 | £619.15 | £305.44 | A light household that will take the ink plan | Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink. |
+| HP Envy 6520e | Original ink only | [£97.90](https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy) | 4 | £645.25 | £331.54 | A household that wants automatic duplex and will take the plan | Costs £26 more than the 6530e at HP's prices, and retail 308 ink is the dearest route here. |
 
 ## Detail
 
@@ -111,6 +112,20 @@ Last checked 5 November 2026. 7 printers. As an Amazon Associate I earn from qua
 - **Ink plans:** Instant Ink £6.49/month for 100 pages; 50 pages £4.49, 300 pages £13.49
 - **Account needed:** An HP account is required. HP+ activation at setup ties the printer to HP's service.
 - **Sources:** [HP UK: Envy 6530e](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) · [HP Instant Ink UK](https://instantink.hpconnected.com/uk/en/l/)
+
+### HP Envy 6520e
+- **Best for:** A household that wants automatic duplex and will take the plan
+- **Main catch:** Costs £26 more than the 6530e at HP's prices, and retail 308 ink is the dearest route here.
+- **Price:** £97.90 (HP UK (was £106))
+- **3-year cost, retail ink:** £97.90 + £547.35 (15 HP 308 black/tri-colour packs) = £645.25
+- **3-year cost, with plan:** £97.90 + 36 × £6.49 (HP Instant Ink 100 pages) = £331.54
+- **Ink in the box:** Setup cartridges only: about 120 black and 75 colour pages
+- **Included:** 10 ppm mono, 7 ppm colour (ISO); double-sided: Automatic; scan and copy: Yes, flatbed scan and copy
+- **Ink without a plan:** Yes, HP 308 cartridges, but the printer is set to original HP ink
+- **With an ink plan:** Nothing. Instant Ink is optional
+- **Ink plans:** Instant Ink £6.49/month for 100 pages; 50 pages £4.49, 300 pages £13.49
+- **Account needed:** An HP account is required. HP+ activation at setup ties the printer to HP's service.
+- **Sources:** [HP UK store: Envy printers](https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy) · [HP UK: HP+ terms and 308 ink](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) · [HP Instant Ink UK](https://instantink.hpconnected.com/uk/en/l/)
 
 ## How the 3-year costs are worked out
 - Retail ink: printer price + 36 months of original cartridges at 100 pages a month (50 mono, 50 colour), from the maker's UK cartridge prices and ISO yields. A tank is priced at its price alone, because the bottles in the box cover the period.

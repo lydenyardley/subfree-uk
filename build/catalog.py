@@ -1156,13 +1156,7 @@ PRINTERS = {
     # printer saves. A brand whose older model is still priced names its row; a
     # brand with none to price yet carries a pair naming the page to read.
     "previous": {
-        "HP": (
-            None,
-            "HP's UK store page lists the Envy 6520e at £97.90, but HP renders "
-            "its gallery and its 308 ink price in the browser, so neither the "
-            "product photo nor the pack price could be read from a page that "
-            "can be cited, and the row waits for both",
-        ),
+        "HP": "hp-envy-6520e",
         "Brother": "brother-dcp-j1200w",
         "Epson": (
             None,
@@ -1213,8 +1207,8 @@ PRINTERS = {
          " costs {p:epson-et-2951} and prints 15 mono and 8 colour pages a minute."),
         ("batt", "Cheapest cartridge ink:", "{v:brother-dcp-j1200w:Brother DCP-J1200W}",
          " costs {c:brother-dcp-j1200w} over 3 years on retail LC424 ink, and Ryman's £40 is a clearance price."),
-        ("avoid", "Dearest to run:", "{v:hp-envy-6530e:HP Envy 6530e}",
-         " costs {p:hp-envy-6530e}, but retail ink takes it to {c:hp-envy-6530e}, and HP+ requires an account."),
+        ("avoid", "Dearest to run:", "{v:hp-envy-6520e:HP Envy 6520e}",
+         " costs {p:hp-envy-6520e}, and retail ink takes it to {c:hp-envy-6520e}; HP+ requires an account."),
     ),
 
     "score_max": 8,

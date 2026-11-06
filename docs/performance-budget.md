@@ -25,8 +25,8 @@ they always are.
 |---|---|---|
 | `index.html` | 24,000 | 23,141 |
 | `assets/page.css` | 18,000 | 16,815 |
-| `assets/page.js` | 30,000 | 28,751 |
-| The three together, a first visit | 70,000 | 68,707 |
+| `assets/page.js` | 30,000 | 28,870 |
+| The three together, a first visit | 70,000 | 68,826 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -73,10 +73,10 @@ first visit from 67,247 to 68,341. They stayed under the ceilings, so the
 budget did not move: 1,556 bytes of script headroom and 1,659 bytes on a first
 visit.
 
-The last-generation badge and the two older printer rows took the page from
+The last-generation badge and the three older printer rows took the page from
 23,101 to 23,141, the stylesheet from 16,796 to 16,815 and the script from
-28,444 to 28,751, so a first visit is 68,707. The ceilings did not move: 859
-bytes of page headroom, 1,185 of stylesheet, 1,249 of script and 1,293 on a
+28,444 to 28,870, so a first visit is 68,826. The ceilings did not move: 859
+bytes of page headroom, 1,185 of stylesheet, 1,130 of script and 1,174 on a
 first visit.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
