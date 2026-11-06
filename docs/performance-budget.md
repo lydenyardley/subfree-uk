@@ -23,10 +23,10 @@ they always are.
 
 | File | Budget, gzipped | Measured 6 November 2026 |
 |---|---|---|
-| `index.html` | 24,000 | 23,141 |
+| `index.html` | 24,000 | 23,142 |
 | `assets/page.css` | 18,000 | 16,815 |
-| `assets/page.js` | 30,000 | 28,870 |
-| The three together, a first visit | 70,000 | 68,826 |
+| `assets/page.js` | 30,000 | 29,100 |
+| The three together, a first visit | 70,000 | 69,057 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -78,6 +78,12 @@ The last-generation badge and the three older printer rows took the page from
 28,444 to 28,870, so a first visit is 68,826. The ceilings did not move: 859
 bytes of page headroom, 1,185 of stylesheet, 1,130 of script and 1,174 on a
 first visit.
+
+The two older camera rows, Reolink's Argus PT Ultra and Ring's Outdoor Camera
+Plus, took the script from 28,870 to 29,100 and the page from 23,140 to 23,142,
+so a first visit is 69,057. The stylesheet did not move, and the ceilings again
+stayed put: 858 bytes of page headroom, 1,185 of stylesheet, 900 of script and
+943 on a first visit.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
 models added five doorbells and a camera row: about 700 gzipped bytes of table
