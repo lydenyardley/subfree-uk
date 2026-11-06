@@ -74,6 +74,16 @@
   "page": "https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell",
   "cropped": false
  },
+ "arlo-fhd": {
+  "src": "https://www.arlo.com/content/dam/arlo/2024-content/products/essential-doorbell-fhd/uk/si-compressed/arlo-hd-wireless-video-doorbell-white.png/jcr:content/renditions/web-default.webp",
+  "page": "https://www.arlo.com/en_gb/doorbells/arlo-fhd-wireless-video-doorbell",
+  "cropped": false
+ },
+ "reo-batt2": {
+  "src": "https://home-cdn.reolink.us/wp-content/uploads/2026/07/07072047b8da51b303ff3426.jpg.webp",
+  "page": "https://reolink.com/gb/product/reolink-video-doorbell-2nd-gen/",
+  "cropped": true
+ },
  "aqara-g4": {
   "src": "https://eu.aqara.com/cdn/shop/files/Aqara-Smart-Video-Doorbell-G4.webp?v=1729063964",
   "page": "https://eu.aqara.com/products/aqara-video-doorbell-g4",

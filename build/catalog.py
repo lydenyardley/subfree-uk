@@ -435,7 +435,7 @@ DOORBELLS = {
         "Ring": "ring-4kpro",
         "Google Nest": "nest",
         "eufy": "eufy-s4",
-        "Reolink": "reo-wifi",
+        "Reolink": "reo-batt2",
         "TP-Link Tapo": "tapo-d260",
         "Arlo": "arlo",
         "Aqara": "aqara-g410",
@@ -452,43 +452,24 @@ DOORBELLS = {
     # the older one saves. A brand with no such row says why: an older doorbell
     # is the cheapest way into most of these brands, and nothing asked for it.
     "previous": {
-        "Ring": (
-            None,
-            "no older Ring doorbell row yet; Ring's UK store collection page is "
-            "where the model the 4K Pro replaced is listed",
-        ),
+        "Ring": "ring",
         "Google Nest": (
             None,
-            "no older Nest doorbell row yet; Nest's UK store page is where the "
-            "model the battery doorbell replaced is listed",
+            "no older Nest doorbell row yet; Google's UK store page lists only "
+            "the battery doorbell, and the wired Nest Hello it replaced is no "
+            "longer sold",
         ),
-        "eufy": (
-            None,
-            "no older eufy doorbell row yet; eufy's UK store lists its doorbells "
-            "by series, and the S4's predecessor is not on the page",
-        ),
-        "Reolink": (
-            None,
-            "no older Reolink doorbell row yet; Reolink's UK store page is where "
-            "the model its current doorbell replaced is listed",
-        ),
+        "eufy": "eufy-e340",
+        "Reolink": "reo-batt",
         "TP-Link Tapo": "tapo-d235",
-        "Arlo": (
-            None,
-            "no older Arlo doorbell row yet; Arlo's UK store page is where the "
-            "model the Essential 2K replaced is listed",
-        ),
+        "Arlo": "arlo-fhd",
         "Aqara": "aqara-g4",
         "Blink": (
             None,
-            "no older Blink doorbell row yet; Blink has no UK store of its own, so "
-            "the Amazon listing's family menu is the page to read",
+            "no older Blink doorbell row yet; the comparison table on Blink's "
+            "Amazon listing shows the original Video Doorbell as not available",
         ),
-        "EZVIZ": (
-            None,
-            "no older EZVIZ doorbell row yet; EZVIZ's UK store page is where the "
-            "model the EP3x Pro replaced is listed",
-        ),
+        "EZVIZ": "ezviz-db2",
         "Hikvision": (
             None,
             "both Wi-Fi doorbells are end of life, and Hikvision's UK catalogue "

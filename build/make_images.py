@@ -26,6 +26,10 @@ IMGS={
  "tapo-d260":("https://uk.store.tapo.com/cdn/shop/files/D260-4k.jpg?v=1787566661&width=2048","https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell",(0.26,0.10,0.72,0.98),True),
  "tapo-td21":("https://uk.store.tapo.com/cdn/shop/files/0002290-RedesigntheDoorbellMainImage21.png?v=1776441614&width=2048","https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21",(0.1,0,0.47,1),True),
  "arlo":("https://www.arlo.com/content/dam/arlo/2024-content/products/essential-wd-2k/en/si-compressed/arlo-2k-wireless-video-doorbell-white.png","https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell",None,True),
+ "arlo-fhd":("https://www.arlo.com/content/dam/arlo/2024-content/products/essential-doorbell-fhd/uk/si-compressed/arlo-hd-wireless-video-doorbell-white.png/jcr:content/renditions/web-default.webp","https://www.arlo.com/en_gb/doorbells/arlo-fhd-wireless-video-doorbell",None,True),
+ # The only clean shot of the 2nd Gen is a wide lifestyle photo, so the crop
+ # closes in on the doorbell itself.
+ "reo-batt2":("https://home-cdn.reolink.us/wp-content/uploads/2026/07/07072047b8da51b303ff3426.jpg.webp","https://reolink.com/gb/product/reolink-video-doorbell-2nd-gen/",(0.34,0.22,0.66,0.80),True),
  "aqara-g4":("https://eu.aqara.com/cdn/shop/files/Aqara-Smart-Video-Doorbell-G4.webp?v=1729063964","https://eu.aqara.com/products/aqara-video-doorbell-g4",(0,0,0.46,1),True),
  # The UK shop's own hero is a photo of the retail boxes, so the doorbell is
  # taken from Aqara's product page instead, cropped past the chime beside it.
