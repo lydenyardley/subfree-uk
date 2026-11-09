@@ -21,12 +21,12 @@ they always are.
 
 ## The byte budget
 
-| File | Budget, gzipped | Measured 6 November 2026 |
+| File | Budget, gzipped | Measured 9 November 2026 |
 |---|---|---|
-| `index.html` | 25,000 | 24,249 |
+| `index.html` | 25,000 | 24,279 |
 | `assets/page.css` | 18,000 | 16,815 |
-| `assets/page.js` | 30,000 | 29,379 |
-| The three together, a first visit | 72,000 | 70,443 |
+| `assets/page.js` | 36,000 | 33,732 |
+| The three together, a first visit | 80,000 | 74,826 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
@@ -93,6 +93,8 @@ are what the page is for, and each costs about 700 bytes gzipped because the
 comparison keeps a second copy of the data. The stylesheet and script ceilings
 did not move: 1,185 bytes of stylesheet headroom remain, 621 of script, 751 of
 page and 1,557 on a first visit.
+
+The fifth and sixth categories moved both ceilings again, on 9 November 2026. Seven pet trackers and six baby monitors took the script from 29,379 to 33,732 and a first visit from 70,443 to 74,826, past ceilings with 621 and 1,557 bytes left. The script carries every row of every category, so the growth is the dataset rather than a change to the script: 4,353 bytes for 13 rows, or 335 a row. Nothing was trimmed. The ceilings follow the rows at 36,000 and 80,000, which leaves 2,268 bytes of script headroom and 5,174 on a first visit. The page moved 30 bytes and the stylesheet did not move.
 
 The first-visit total moved from 61,000 to 64,500 the same way. The newest
 models added five doorbells and a camera row: about 700 gzipped bytes of table

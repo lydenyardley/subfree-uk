@@ -1,6 +1,6 @@
 # Product image sources
 
-Every photo is the manufacturer's own product image, downloaded once, cropped to the product where the original showed extra items (phone, chime, award badge), flattened onto white and saved as WebP (`-sm` 120×160 for table rows, `-lg` 360×480 for details). Nothing is hotlinked.
+Every photo is a product image published by the brand or by the shop selling it, downloaded once, cropped to the product where the original showed extra items (phone, chime, award badge), flattened onto white and saved as WebP (`-sm` 120×160 for table rows, `-lg` 360×480 for details). Nothing is hotlinked.
 
 | File | Original image | Found on |
 |---|---|---|
@@ -61,5 +61,18 @@ Every photo is the manufacturer's own product image, downloaded once, cropped to
 | `img/canon-pixma-g3590-sm.webp`, `img/canon-pixma-g3590-lg.webp` | https://i1.adis.ws/i/canon/6706C008_PIXMA-G3590_02?w=1200 | https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/ |
 | `img/canon-pixma-g3570-sm.webp`, `img/canon-pixma-g3570-lg.webp` | https://i1.adis.ws/i/canon/5805C008_PIXMA-G3570-BK_02?w=1200 | https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/ |
 | `img/canon-pixma-ts6550i-sm.webp`, `img/canon-pixma-ts6550i-lg.webp` | https://i1.adis.ws/i/canon/7179C008_PIXMA-TS6550i_000?w=1200 | https://www.canon.co.uk/store/canon-pixma-ts6550i-wireless-colour-3-in-1-inkjet-photo-printer/7179C008/ |
+| `img/pitpat-gps-sm.webp`, `img/pitpat-gps-lg.webp` | https://shop.pitpat.com/wp-content/uploads/2026/08/BLACK-GPS_WEB-IMAGES_1_750px.webp | https://www.pitpat.com/gps-tracker |
+| `img/pawva-x01-plus-sm.webp`, `img/pawva-x01-plus-lg.webp` | https://static.wixstatic.com/media/9a0c24_4e60c1f1eb764723913b067e4e8a67de~mv2.png/v1/fit/w_500,h_500,q_90/file.png | https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound |
+| `img/tractive-dog-6-sm.webp`, `img/tractive-dog-6-lg.webp` | https://assets.tractive.com/assets/image/shop-frontend/product/trdog6bk/tractive-dog-6-black.png | https://tractive.com/en/pd/gps-tracker-dog?shopCountry=GB |
+| `img/tractive-cat-6-mini-sm.webp`, `img/tractive-cat-6-mini-lg.webp` | https://assets.tractive.com/assets/image/shop-frontend/og-images/product-detail-page/tractive-gps-cat-6-mini-packaging.png | https://tractive.com/en/pd/gps-tracker-cat?shopCountry=GB |
+| `img/weenect-xt-sm.webp`, `img/weenect-xt-lg.webp` | https://d128mjo55rz53e.cloudfront.net/media/images/products/2026/01/thumbnail-xl-oscar-weenect-xt-sanscouleur.png | https://www.weenect.com/uk/en/gps-dog-tracker/weenect-xt |
+| `img/pawfit-3-sm.webp`, `img/pawfit-3-lg.webp` | https://pawfitshop.s3.eu-west-2.amazonaws.com/product/Product_image/pawfit-3-1.png | https://www.pawfit.com/en-gb/product/pawfit-3.html |
+| `img/apple-airtag-2-sm.webp`, `img/apple-airtag-2-lg.webp` | https://www.apple.com/v/airtag/g/images/meta/og__ck3n0k1jl6j6.png?202602020356 | https://www.apple.com/uk/airtag |
+| `img/vtech-vm4263-sm.webp`, `img/vtech-vm4263-lg.webp` | https://www.mamasandpapas.com/cdn/shop/files/vtech-vtech-vm4263-3-5-video-monitor-1217679918_1200x1200.jpg?v=1769013278 | https://www.mamasandpapas.com/products/vtech-vm4263-3-5inch-monitor-679102700 |
+| `img/philips-scd881-sm.webp`, `img/philips-scd881-lg.webp` | https://media.currys.biz/i/currysprod/10289086?$l-large$&fmt=auto | https://www.currys.co.uk/products/philips-avent-avent-scd88105-video-baby-monitor-coral-cream-10289086.html |
+| `img/philips-scd951-sm.webp`, `img/philips-scd951-lg.webp` | https://images.philips.com/is/image/philipsconsumer/68049a0d17d6416ca92ab32f0079bb61?$png$&wid=1200&hei=630 | https://www.philips.co.uk/c-p/SCD951_26/connected-connected-baby-monitor |
+| `img/eufy-c10-sm.webp`, `img/eufy-c10-lg.webp` | https://cdn.shopify.com/s/files/1/0746/3999/9151/files/20251209-121347.png?v=1788149829 | https://www.eufy.com/uk/products/e6310221 |
+| `img/nanit-pro-sm.webp`, `img/nanit-pro-lg.webp` | https://cdn.shopify.com/s/files/1/0723/7294/5169/files/01-MONITOR-WALL_STAND_MC-PDP-WallMount_HERO.png?v=1791371687 | https://nanituk.co.uk/products/nanit-pro-camera |
+| `img/owlet-dream-sock-sm.webp`, `img/owlet-dream-sock-lg.webp` | https://cdn.shopify.com/s/files/1/0050/6508/0945/files/DreamSock-Mint_01.png?v=1757427278 | https://owletbabycare.co.uk/products/dream-sock-pulse-oximeter-pediatric |
 | — (hik) | None: neutral placeholder used | Hikvision's own product page for the DS-KB6003-WIP has been removed (discontinued); only a text datasheet remains, so no reliable official image. |
 | — (blink-out4) | None: neutral placeholder used | Blink's own devices page no longer lists the Outdoor 4, so the only official image left is the Amazon UK listing, which does not license a self-hosted copy. |

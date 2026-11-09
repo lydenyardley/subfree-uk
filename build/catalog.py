@@ -404,10 +404,10 @@ CSV_KEYS = (
 
 NOT_FOUND = {
     "title": "Page not found | SubFree UK",
-    "description": "That page does not exist. The UK comparisons are on the home page, the cameras page, the smart rings page and the printers page.",
+    "description": "That page does not exist. The UK comparisons are on the home page, the cameras page, the smart rings page, the printers page, the pet tracker page and the baby monitor page.",
     "h1": "Page not found",
-    "say": "That link does not lead anywhere. The {what} are on the home page, the cameras page, the smart rings page and the printers page.",
-    "what": "comparisons of UK video doorbells, security cameras, smart rings and printers that work without a subscription",
+    "say": "That link does not lead anywhere. The {what} are on the home page, the cameras page, the smart rings page, the printers page, the pet tracker page and the baby monitor page.",
+    "what": "comparisons of UK video doorbells, security cameras, smart rings, printers, pet trackers and baby monitors that work without a subscription",
 }
 
 
@@ -1261,7 +1261,633 @@ PRINTERS = {
     "not_found": NOT_FOUND,
 }
 
-CATEGORIES = [DOORBELLS, CAMERAS, RINGS, PRINTERS]
+PET_METHOD = {
+    "no_plan": (
+        "<sup>a</sup> <b>{period}, no plan</b> = the tracker's price, plus any "
+        "collar or holder it needs. A tracker whose core function needs a plan "
+        "is still shown at its price alone, and the cell says it does not track "
+        "without one."
+    ),
+    "with_plan": (
+        "<sup>b</sup> <b>{period}, with plan</b> = price + {months} × the "
+        "cheapest UK monthly plan that keeps the tracker working. Paying yearly "
+        "is cheaper: Tractive's Basic year is £84, Pawfit's £71.88, and "
+        "Weenect's yearly rate is £6.67 a month. A tracker with no plan says "
+        "<i>No plan</i>. Every tracker's sums are under <i>Details</i>."
+    ),
+    "score": (
+        "<b>Free-feature score (out of {score_max}):</b> no subscription "
+        "(2 = tracking works with none, 1 = a Bluetooth tag rather than GPS, "
+        "0 = a plan is required), true GPS (1), live updates at a usable "
+        "interval (1), location history free (1), safe-zone alerts free (1), "
+        "cat fit (2 = made for cats, 1 = works on a cat with care, 0 = dogs "
+        "only)."
+    ),
+    "terms": (
+        "<b>Plain terms.</b> A <i>GPS tracker</i> works out its position from "
+        "satellites and sends it over a mobile network, so it needs a SIM and "
+        "signal. A <i>Bluetooth tag</i> has no GPS and no SIM: it is only found "
+        "when a nearby phone on the Find My network hears it. A <i>safe zone</i> "
+        "is a boundary you draw in the app, which alerts you when the pet leaves "
+        "it. <i>Live tracking</i> is the fast update mode; the normal interval "
+        "saves battery. UK 3G is switched off and 2G will go by 2033, so a "
+        "2G fallback is weaker than it sounds (<a href=\"https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/3g-switch-off\">Ofcom</a>)."
+    ),
+    "left_out": (
+        "A collar, a phone's data when roaming, batteries, charging and future "
+        "price rises are left out. Anything not yet confirmed is listed under "
+        "<i>Not yet verified</i> in each tracker's details."
+    ),
+    "photos": (
+        "Photos are the manufacturers' own, from their product pages: "
+        "{credits}.{missing}"
+    ),
+    "md": [
+        "Without a plan: the tracker's price, plus any collar or holder it "
+        "needs. A tracker whose core function needs a plan is shown at its "
+        "price alone, and the table says it does not track without one.",
+        "With a plan: price + {months} × the cheapest UK monthly plan that keeps "
+        "it working. Paying yearly is cheaper: Tractive's Basic year is £84, "
+        "Pawfit's £71.88 and Weenect's yearly rate is £6.67 a month.",
+        "A collar, roaming data, batteries, charging and price rises are left "
+        "out.",
+    ],
+}
+
+PET_MD_HEAD = (
+    "# UK GPS pet trackers that work without a subscription",
+    "Last checked {checked}. {n} trackers. As an Amazon Associate I earn from qualifying purchases.",
+    "| Tracker | Subscription? | Price | Score /{score_max} | {period_short}, "
+    "no plan | {period_short}, with plan | Best for | Main catch |",
+)
+
+PET_CSV_HEAD = [
+    "Brand", "Model", "Subscription needed?", "How it finds your pet",
+    "UK price (£)", "Price note", "Price source", "Best for", "Main catch",
+    "Free-feature score (/{score_max})", "3-yr cost without a plan (£)",
+    "3-yr cost with a plan, monthly (£)", "Cheapest 3-yr cost to track (£)",
+    "Maths: no plan", "Maths: with plan", "Battery", "Live updates",
+    "Safe zones", "Location history", "Without a plan", "Behind the plan",
+    "Plan & UK price", "Plan price region", "Cat fit", "Works with", "Sources",
+    "Unverified / re-check", "Last checked",
+]
+
+PET_LABELS = {
+    "rec_col": "Subscription?",
+    "score_col": "Free features",
+    "nosub_col": "{period_adj} cost, no plan",
+    "sub_col": "{period_adj} cost, with plan",
+    "nosub_how": "{period_adj} cost without a plan",
+    "sub_how": "{period_adj} cost with a plan",
+    "detail": {
+        "power": "How it finds your pet", "wifi": "Works with",
+        "storage": "Battery", "live": "Live updates", "alerts": "Safe zones",
+        "ai": "Location history", "history": "Without a plan",
+        "paywalled": "Behind the plan", "plans": "Plans", "ha": "Cat fit",
+        "nosub": "{period}, no plan", "sub": "{period}, with plan",
+    },
+    "rec_note": {
+        "yes": "", "tag": "Bluetooth only", "no": "plan required",
+    },
+    "keep_sub_note": "cheapest for this tracker: with a plan",
+    "keep_free": "tracks without a plan, nothing more to pay",
+    "maths_no_route": " (but it does not track without a plan)",
+    "maths_brief": " (Bluetooth only)",
+    "no_plan_cell": "No plan",
+    "no_plan_note": "No subscription offered or needed",
+    "footer": "to show which ones track without a subscription",
+    "rec_filter_why": "none works without a subscription",
+    "ha_filter_why": "none is suitable for a cat",
+    "keep_label": "Cheapest way to track for {period}",
+    "md": {
+        "storage": "Battery",
+        "free": "Free",
+        "free_line": "live updates: {live}; safe zones: {alerts}; "
+                     "history: {ai}",
+        "free_lower": False,
+        "history": "Without a plan",
+        "paywalled": "Behind the plan",
+        "plans": "Plans",
+        "ha": "Cat fit",
+        "unverified": "Not yet verified",
+    },
+}
+
+PET_SORT = [
+    ("keep3", "{period_adj} cost to track",
+     "Order: {period_adj} cost to track (the bold figure)."),
+    ("price", "Price, low to high", "Order: price, low to high."),
+    ("score", "Free-feature score, high to low", "Order: free-feature score, high to low."),
+    ("recv", "No subscription first", "Order: no subscription first."),
+    ("nosub3", "{period_adj} cost, no plan",
+     "Order: {period_adj} cost with no plan."),
+    ("sub3", "{period_adj} cost, with plan",
+     "Order: {period_adj} cost with a plan (the bold figure)."),
+    ("model", "Model, A to Z", "Order: model name, A to Z."),
+]
+
+PET_TRACKERS = {
+    "slug": "pet-trackers",
+    "route": "pet-trackers/",
+    "alias": None,
+    "csv": "data/pet-trackers.csv",
+    "md": "data/pet-trackers.md",
+    "page": "pet-trackers/index.html",
+
+    "noun": "pet tracker",
+    "nouns": "pet trackers",
+    "nav": "Pet trackers",
+    "checked_iso": "2026-11-09",
+
+    "current": {
+        "PitPat": "pitpat-gps",
+        "PAWVA": "pawva-x01-plus",
+        "Tractive": "tractive-dog-6",
+        "Weenect": "weenect-xt",
+        "Pawfit": "pawfit-3",
+        "Apple": "apple-airtag-2",
+    },
+
+    "previous": {
+        "PitPat": (
+            None,
+            "PitPat's UK GPS tracker page lists one tracker, and no earlier "
+            "PitPat model was priced at this check",
+        ),
+        "PAWVA": (
+            None,
+            "PAWVA's product page sells the X01+ and the X02 as current "
+            "models for different buyers, not as generations, so there is no "
+            "earlier PAWVA tracker to price",
+        ),
+        "Tractive": (
+            None,
+            "Tractive's UK page sells the DOG 6 and the CAT 6 Mini side by "
+            "side for different animals, and the earlier DOG 5 is no longer "
+            "listed, so there is no last-generation row to price",
+        ),
+        "Weenect": (
+            None,
+            "Weenect's UK dog tracker page is where this row was read, and an "
+            "earlier Weenect model has not been priced at this check",
+        ),
+        "Pawfit": (
+            None,
+            "Pawfit's UK page sells the Pawfit 3 and the Pawfit Lite for cats "
+            "as current models, not generations, so no earlier Pawfit 3-"
+            "generation tracker was priced",
+        ),
+        "Apple": (
+            None,
+            "Apple's UK AirTag page lists only the second-generation AirTag; "
+            "the first generation is no longer sold, so there is no earlier "
+            "model to price",
+        ),
+    },
+
+    "title": "GPS pet trackers that work without a subscription (UK)",
+    "description": "{n} UK GPS pet trackers compared: what the data costs, what a plan adds, and the 3-year total.",
+    "h1": "GPS pet trackers that work without a subscription",
+    "dek": "{n} UK pet trackers, checked against maker pages and UK prices: data terms, plans and {period} costs.",
+    "mast": "No subscriptions",
+    "mast_long": "Gadgets that work without a subscription",
+    "skip": "Skip to the pet tracker table",
+    "table_name": "Pet tracker comparison",
+    "table_caption": "{table_name}: {n} models, 8 columns",
+    "cmp_caption": "Side-by-side comparison of {count} {nouns}",
+    "count_line": "Tick up to {cap} {nouns} to compare.",
+    "empty_line": "Nothing matches those filters.",
+    "no_match": "No {nouns} match those filters",
+    "shown": "{shown} of {total} {nouns} shown",
+
+    "months": 36,
+    "period": "3 years",
+    "period_adj": "3-year",
+    "period_short": "3 yrs",
+    "cap": 3,
+    "no_plan_note": "No subscription offered or needed",
+
+    "short": (
+        '{v:pitpat-gps:PitPat} is the best without a subscription, at {p:pitpat-gps}.',
+        '{v:pawva-x01-plus:PAWVA X01+} is the cheapest GPS tracker, at {p:pawva-x01-plus}.',
+        '{v:apple-airtag-2:AirTag} is the cheap cat option if your cat stays near phones.',
+        '{v:tractive-dog-6:Tractive} and the other GPS trackers need a plan; yearly is cheaper than monthly.',
+    ),
+    "short_tones": ("best", "batt", "batt", "avoid"),
+    "short_head": "The short answer",
+    "aside": (
+        ("best", "Best without a subscription:", "{v:pitpat-gps:PitPat}",
+         ", {p:pitpat-gps}. Its data is included for the life of the tracker, "
+         "and live updates arrive about every 10 seconds."),
+        ("batt", "Cheapest GPS:", "{v:pawva-x01-plus:PAWVA X01+}",
+         ", {p:pawva-x01-plus}, with a five-year prepaid SIM. The ten-year "
+         "claim belongs to PAWVA's X02."),
+        ("batt", "Best for cats:", "{v:tractive-cat-6-mini:Tractive CAT 6 Mini}",
+         " if you will pay, or an {v:apple-airtag-2:AirTag}, {p:apple-airtag-2}, "
+         "if your cat stays near other people's phones."),
+        ("avoid", "Avoid if you won't pay monthly:", "{v:tractive-dog-6:Tractive DOG 6}",
+         " does nothing without a plan, and monthly billing is the dearest way "
+         "to keep it running."),
+    ),
+
+    "score_max": 8,
+    "score_parts": [
+        ("rec", "No subscription", 2),
+        ("gps", "True GPS", 1),
+        ("live", "Live updates free", 1),
+        ("history", "Location history free", 1),
+        ("area", "Safe zones free", 1),
+        ("ha", "Cat fit", 2),
+    ],
+
+    "rec": [
+        ("yes", "No subscription", 2),
+        ("tag", "No subscription, Bluetooth only", 1),
+        ("no", "Subscription required", 0),
+    ],
+    "required_keys": (
+        "power", "wifi", "live", "alerts", "ai", "history", "storage",
+        "paywalled",
+    ),
+
+    "facets": [
+        ("power", "How it finds your pet"),
+        ("wifi", "Works with"),
+        ("storage", "Battery"),
+        ("live", "Live updates"),
+        ("alerts", "Safe zones"),
+        ("ai", "Location history"),
+        ("history", "Without a plan"),
+        ("paywalled", "Behind the plan"),
+        ("ha", "Cat fit"),
+    ],
+    "powers": [
+        ("included", "GPS, data included"),
+        ("fixed", "GPS, data for a fixed term"),
+        ("plan", "GPS, plan required"),
+        ("tag", "Bluetooth, no GPS"),
+    ],
+    "power_hint": "A GPS tracker needs a mobile signal; a Bluetooth tag needs a nearby phone.",
+    "filters": [
+        ("f-rec", "Works without a subscription"),
+        ("f-ha", "Suits cats"),
+    ],
+
+    "verdicts": {
+        "best": ("Best overall", "best"),
+        "value": ("Cheapest GPS", "batt"),
+        "cat": ("Best for cats", "batt"),
+        "live": ("Fastest live updates", "batt"),
+        "budget": ("Cheapest plan", "batt"),
+        "tag": ("Best Bluetooth tag", "batt"),
+        "avoid": ("Avoid without a plan", "avoid"),
+    },
+    "headline": "best",
+
+    "claims": {
+        "rec": "Works without a subscription",
+        "price": "The price",
+        "nosub": "The {period_adj} cost with no plan",
+        "plan": "The {period_adj} cost with a plan",
+        "history": "The location history without a plan",
+        "ha": "The cat fit",
+    },
+    "compare": [
+        ("Subscription?", "rec"),
+        ("Price", "price"),
+        ("Free features", "score"),
+        ("{period_adj} cost, no plan", "nosub3"),
+        ("{period_adj} cost, with plan", "sub3"),
+        ("Best for", "best"),
+        ("Main catch", "catch"),
+        ("How it finds your pet", "power"),
+        ("Battery", "storage"),
+        ("Live updates", "live"),
+        ("Safe zones", "alerts"),
+        ("Location history", "ai"),
+        ("Without a plan", "history"),
+        ("Behind the plan", "paywalled"),
+        ("Plans", "plan"),
+        ("Cat fit", "ha"),
+        ("Works with", "wifi"),
+    ],
+    "pin": ("rec", "price", "nosub3", "sub3"),
+
+    "sort": PET_SORT,
+    "method": PET_METHOD,
+    "plain_part": PLAIN_PART,
+    "labels": PET_LABELS,
+    "csv_head": PET_CSV_HEAD,
+    "md_head": PET_MD_HEAD,
+    "not_found": NOT_FOUND,
+}
+
+BABY_METHOD = {
+    "no_plan": (
+        "<sup>a</sup> <b>{period}, no plan</b> = the monitor's price, because "
+        "the free tier covers live viewing and alerts on every row here. What "
+        "it keeps differs: a local monitor sends nothing to the maker, while a "
+        "smart monitor needs its app and servers for live view."
+    ),
+    "with_plan": (
+        "<sup>b</sup> <b>{period}, with the plan</b> = price + {months} × the "
+        "cheapest UK monthly plan that adds the paywalled extras. Nanit "
+        "Memories is £10 a month, or £120 a year. A monitor with no plan to "
+        "price says <i>No plan</i>. Owlet360's UK price is shown only inside "
+        "its app, so it has no figure here."
+    ),
+    "score": (
+        "<b>Free-feature score (out of {score_max}):</b> no subscription "
+        "(2 = every core feature free, 1 = a free tier with paid extras), "
+        "works with Wi-Fi off (1), video (1), free sound or motion alerts (1), "
+        "records locally without a plan (1), no account needed (2 = nothing "
+        "leaves the house, 1 = the app is optional, 0 = an account and "
+        "internet connection are required)."
+    ),
+    "terms": (
+        "<b>Plain terms.</b> A <i>local radio</i> monitor sends video straight "
+        "to a parent unit, with no router and no account. A <i>hybrid</i> keeps "
+        "that parent unit and adds an app over Wi-Fi for viewing away from "
+        "home. A <i>Wi-Fi</i> monitor has no parent unit: the camera, the "
+        "maker's servers and the app are the whole chain. <i>DECT</i> is the "
+        "separate radio band used by audio monitors and cordless phones. No "
+        "monitor prevents SIDS: the <a href=\"https://www.lullabytrust.org.uk/baby-safety/baby-product-information/baby-monitors/\">Lullaby Trust</a> says a monitor never replaces supervision. For any internet-connected camera, the <a href=\"https://www.ncsc.gov.uk/guidance/smart-security-cameras-using-them-safely-in-your-home\">NCSC</a> says change the default password, keep it updated and turn off remote viewing if you do not need it."
+    ),
+    "left_out": (
+        "Electricity, a phone or tablet, microSD cards and future price rises "
+        "are left out. Anything not yet confirmed is listed under <i>Not yet "
+        "verified</i> in each monitor's details."
+    ),
+    "photos": (
+        "Photos come from the brand's or the shop's product page: "
+        "{credits}.{missing}"
+    ),
+    "md": [
+        "Without a plan: the monitor's price, because the free tier covers live "
+        "viewing and alerts on every row. A local monitor sends nothing to the "
+        "maker; a smart monitor needs its app and servers for live view.",
+        "With the plan: price + {months} × the cheapest UK monthly plan that "
+        "adds the paywalled extras (Nanit Memories at £10). A monitor with no "
+        "plan to price says so; Owlet360 is priced only in its app.",
+        "Electricity, a phone or tablet, microSD cards and price rises are left "
+        "out.",
+    ],
+}
+
+BABY_MD_HEAD = (
+    "# UK baby monitors that work without a subscription",
+    "Last checked {checked}. {n} monitors. As an Amazon Associate I earn from qualifying purchases.",
+    "| Monitor | Subscription? | Price | Score /{score_max} | {period_short}, "
+    "no plan | {period_short}, with plan | Best for | Main catch |",
+)
+
+BABY_CSV_HEAD = [
+    "Brand", "Model", "Subscription needed?", "Connection",
+    "UK price (£)", "Price note", "Price source", "Best for", "Main catch",
+    "Free-feature score (/{score_max})", "3-yr cost without a plan (£)",
+    "3-yr cost with a plan, monthly (£)", "Cheaper 3-yr cost (£)",
+    "Maths: no plan", "Maths: with plan", "Where video goes", "Video",
+    "Alerts", "Movement sensing", "Without a plan",
+    "Behind the subscription", "Subscription & UK price", "Plan price region",
+    "Account", "With Wi-Fi off", "Sources", "Unverified / re-check", "Last checked",
+]
+
+BABY_LABELS = {
+    "rec_col": "Subscription?",
+    "score_col": "Free features",
+    "nosub_col": "{period_adj} cost, no plan",
+    "sub_col": "{period_adj} cost, with plan",
+    "nosub_how": "{period_adj} cost without a plan",
+    "sub_how": "{period_adj} cost with the plan",
+    "detail": {
+        "power": "Connection", "wifi": "With Wi-Fi off",
+        "storage": "Where video goes", "live": "Video", "alerts": "Alerts",
+        "ai": "Movement sensing", "history": "Without a plan",
+        "paywalled": "Behind the subscription", "plans": "Subscriptions",
+        "ha": "Account", "nosub": "{period}, no plan",
+        "sub": "{period}, with plan",
+    },
+    "rec_note": {
+        "yes": "", "part": "free tier only", "no": "plan required",
+    },
+    "keep_sub_note": "cheapest for this monitor: with a plan",
+    "keep_free": "works without a plan, nothing more to pay",
+    "maths_no_route": " (but it does not work without a plan)",
+    "maths_brief": " (free tier only)",
+    "no_plan_cell": "No plan",
+    "no_plan_note": "No subscription offered or needed",
+    "footer": "to show which ones work without a subscription",
+    "rec_filter_why": "none works without a subscription",
+    "ha_filter_why": "none works without an account",
+    "keep_label": "Cheapest way to monitor for {period}",
+    "md": {
+        "storage": "Where video goes",
+        "free": "Free",
+        "free_line": "{live}; alerts: {alerts}; movement sensing: {ai}",
+        "free_lower": False,
+        "history": "Without a plan",
+        "paywalled": "Behind the subscription",
+        "plans": "Subscriptions",
+        "ha": "Account",
+        "unverified": "Not yet verified",
+    },
+}
+
+BABY_SORT = [
+    ("keep3", "{period_adj} cost to monitor",
+     "Order: {period_adj} cost to monitor (the bold figure)."),
+    ("price", "Price, low to high", "Order: price, low to high."),
+    ("score", "Free-feature score, high to low", "Order: free-feature score, high to low."),
+    ("recv", "No subscription first", "Order: no subscription first."),
+    ("nosub3", "{period_adj} cost, no plan",
+     "Order: {period_adj} cost with no plan."),
+    ("sub3", "{period_adj} cost, with plan",
+     "Order: {period_adj} cost with a plan."),
+    ("model", "Model, A to Z", "Order: model name, A to Z."),
+]
+
+BABY_MONITORS = {
+    "slug": "baby-monitors",
+    "route": "baby-monitors/",
+    "alias": None,
+    "csv": "data/baby-monitors.csv",
+    "md": "data/baby-monitors.md",
+    "page": "baby-monitors/index.html",
+
+    "noun": "baby monitor",
+    "nouns": "baby monitors",
+    "nav": "Baby monitors",
+    "checked_iso": "2026-11-09",
+
+    "current": {
+        "VTech": "vtech-vm4263",
+        "Philips": "philips-scd951",
+        "eufy": "eufy-c10",
+        "Nanit": "nanit-pro",
+        "Owlet": "owlet-dream-sock",
+    },
+
+    "previous": {
+        "VTech": (
+            None,
+            "VTech's UK page for the VM4263 is the only VTech monitor this "
+            "table has read, so an earlier model has not been priced",
+        ),
+        "Philips": "philips-scd881",
+        "eufy": (
+            None,
+            "eufy's UK page lists the C10 as its current baby monitor, and no "
+            "earlier eufy baby monitor was priced at this check",
+        ),
+        "Nanit": (
+            None,
+            "Nanit's UK page lists the Pro as its current monitor, and no "
+            "earlier Nanit model was priced at this check",
+        ),
+        "Owlet": (
+            None,
+            "Owlet's UK page sells the Dream Sock as its current sock; the "
+            "older Smart Sock is not listed there, so no earlier sock was "
+            "priced",
+        ),
+    },
+
+    "title": "Baby monitors that work without a subscription (UK)",
+    "description": "{n} UK baby monitors compared: what is free, what a plan adds, and which ones keep working with the Wi-Fi off.",
+    "h1": "Baby monitors that work without a subscription",
+    "dek": "{n} UK baby monitors, checked against maker pages and UK prices: free features, paywalls and {period} costs.",
+    "mast": "No subscriptions",
+    "mast_long": "Gadgets that work without a subscription",
+    "skip": "Skip to the baby monitor table",
+    "table_name": "Baby monitor comparison",
+    "table_caption": "{table_name}: {n} models, 8 columns",
+    "cmp_caption": "Side-by-side comparison of {count} {nouns}",
+    "count_line": "Tick up to {cap} {nouns} to compare.",
+    "empty_line": "Nothing matches those filters.",
+    "no_match": "No {nouns} match those filters",
+    "shown": "{shown} of {total} {nouns} shown",
+
+    "months": 36,
+    "period": "3 years",
+    "period_adj": "3-year",
+    "period_short": "3 yrs",
+    "cap": 3,
+    "no_plan_note": "No subscription offered or needed",
+
+    "short": (
+        '{v:eufy-c10:eufy C10} is the best overall, at {p:eufy-c10}.',
+        '{v:vtech-vm4263:VTech VM4263} is the cheapest local-only monitor, at {p:vtech-vm4263}.',
+        '{v:philips-scd951:Philips SCD951} is the best hybrid, at {p:philips-scd951}.',
+        '{v:nanit-pro:Nanit} and {v:owlet-dream-sock:Owlet} work without a plan; their history and trends cost extra.',
+    ),
+    "short_tones": ("best", "batt", "batt", "avoid"),
+    "short_head": "The short answer",
+    "aside": (
+        ("best", "Best overall without a subscription:", "{v:eufy-c10:eufy C10}",
+         ", {p:eufy-c10}. A local parent unit, a 2K camera and a card slot, "
+         "with no plan."),
+        ("batt", "Cheapest local-only:", "{v:vtech-vm4263:VTech VM4263}",
+         ", {p:vtech-vm4263}. Nothing leaves the house, and there is no app "
+         "to set up."),
+        ("batt", "Best hybrid:", "{v:philips-scd951:Philips SCD951}",
+         ", {p:philips-scd951}. The parent unit works with the Wi-Fi off, and "
+         "the app is there when you are out."),
+        ("avoid", "Smart monitors are not free forever:", "{v:nanit-pro:Nanit}",
+         " keeps live view but charges for history and sleep trends, and "
+         "Owlet360's price is only shown in the app."),
+    ),
+
+    "score_max": 8,
+    "score_parts": [
+        ("rec", "No subscription", 2),
+        ("local", "Works with Wi-Fi off", 1),
+        ("video", "Video", 1),
+        ("alerts", "Alerts free", 1),
+        ("record", "Records locally", 1),
+        ("ha", "No account needed", 2),
+    ],
+
+    "rec": [
+        ("yes", "No subscription", 2),
+        ("part", "Free tier, extras cost extra", 1),
+        ("no", "Subscription required", 0),
+    ],
+    "required_keys": (
+        "power", "wifi", "live", "alerts", "ai", "history", "storage",
+        "paywalled",
+    ),
+
+    "facets": [
+        ("power", "Connection"),
+        ("wifi", "With Wi-Fi off"),
+        ("storage", "Where video goes"),
+        ("live", "Video"),
+        ("alerts", "Alerts"),
+        ("ai", "Movement sensing"),
+        ("history", "Without a plan"),
+        ("paywalled", "Behind the subscription"),
+        ("ha", "Account"),
+    ],
+    "powers": [
+        ("radio", "Local radio only"),
+        ("hybrid", "Hybrid: parent unit and app"),
+        ("wifi", "Wi-Fi and app only"),
+    ],
+    "power_hint": "A local radio monitor sends nothing outside the house; a Wi-Fi monitor needs its maker's servers.",
+    "filters": [
+        ("f-rec", "Works without a subscription"),
+        ("f-ha", "Works without an account"),
+    ],
+
+    "verdicts": {
+        "best": ("Best overall", "best"),
+        "budget": ("Best budget", "batt"),
+        "local": ("Best local-only", "batt"),
+        "hybrid": ("Best hybrid", "batt"),
+        "health": ("Best for health readings", "batt"),
+        "avoid": ("Avoid without a subscription", "avoid"),
+    },
+    "headline": "best",
+
+    "claims": {
+        "rec": "Works without a subscription",
+        "price": "The price",
+        "nosub": "The {period_adj} cost with no plan",
+        "plan": "The {period_adj} cost with the plan",
+        "history": "What stays free without a plan",
+        "ha": "The account",
+    },
+    "compare": [
+        ("Subscription?", "rec"),
+        ("Price", "price"),
+        ("Free features", "score"),
+        ("{period_adj} cost, no plan", "nosub3"),
+        ("{period_adj} cost, with plan", "sub3"),
+        ("Best for", "best"),
+        ("Main catch", "catch"),
+        ("Connection", "power"),
+        ("Where video goes", "storage"),
+        ("Video", "live"),
+        ("Alerts", "alerts"),
+        ("Movement sensing", "ai"),
+        ("Without a plan", "history"),
+        ("Behind the subscription", "paywalled"),
+        ("Subscriptions", "plan"),
+        ("Account", "ha"),
+        ("With Wi-Fi off", "wifi"),
+    ],
+    "pin": ("rec", "price", "nosub3", "sub3"),
+
+    "sort": BABY_SORT,
+    "method": BABY_METHOD,
+    "plain_part": PLAIN_PART,
+    "labels": BABY_LABELS,
+    "csv_head": BABY_CSV_HEAD,
+    "md_head": BABY_MD_HEAD,
+    "not_found": NOT_FOUND,
+}
+
+CATEGORIES = [DOORBELLS, CAMERAS, RINGS, PRINTERS, PET_TRACKERS, BABY_MONITORS]
 BY_SLUG = {cat["slug"]: cat for cat in CATEGORIES}
 
 

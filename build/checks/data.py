@@ -30,13 +30,13 @@ WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verifi
 TRANSFER_BUDGET = {
     "index.html": 25_000,
     "assets/page.css": 18_000,
-    "assets/page.js": 30_000,
+    "assets/page.js": 36_000,
 }
 # The total moved with the newest models: five doorbells and a camera are about
 # 3.3KB gzipped of real table copy, and Ring's two wired 4K doorbells are two
 # more rows, so the ceiling follows the rows rather than the copy being cut to
 # fit a number set when the table was smaller.
-TRANSFER_TOTAL = 72_000
+TRANSFER_TOTAL = 80_000
 
 
 def load_rows():
