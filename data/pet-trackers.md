@@ -5,7 +5,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 | Tracker | Subscription? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Apple AirTag (2nd generation) | No subscription, Bluetooth only | [£29.00](https://www.apple.com/uk/shop/buy-airtag/airtag/1-pack) | 3 | £29.00 | — | A cat that stays close to other people's phones | Not a GPS tracker: it only reports when a nearby Find My device hears it, needs an iPhone, and has no history or safe zones. |
-| PAWVA X01+ | No subscription | [£77.99](https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound) | 5 | £77.99 | — | The cheapest way to get GPS tracking with no monthly fee | A five-year data term rather than the ten years PAWVA's X02 claims, and it publishes no live-mode interval. |
+| PAWVA X01+ | No subscription | [£77.99](https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound) | 6 | £77.99 | — | The cheapest way to get GPS tracking with no monthly fee | PAWVA's pages disagree on the SIM term: five years in its bundle FAQ, ten on the X01+ page. |
 | PitPat Dog GPS Tracker | No subscription | [£149.00](https://www.pitpat.com/gps-tracker) | 6 | £149.00 | — | A dog owner who wants tracking and saved walks without any monthly fee | The dearest tracker here, it has no geofencing, and the optional LIFE plan adds Video Vet and loss replacement. |
 | Pawfit Pawfit 3 | Subscription required | [£54.99](https://www.amazon.co.uk/Pawfit-Activity-Included-Embedded-Waterproof/dp/B082F7J7LW?tag=subfreeuk-21) | 3 | £54.99 | £414.63 | A cheaper plan for a dog or a larger cat | A plan is required, Basic keeps only 24 hours of history, and the 5-second updates are FIND mode only. |
 | Weenect XT | Subscription required | [£44.99](https://www.weenect.com/uk/en/gps-dog-tracker/weenect-xt) | 2 | £44.99 | £512.99 | The fastest live updates and the longest plan history | A plan is required, the charger is not included, and at 54 g it is the heaviest tracker here. |
@@ -30,18 +30,17 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 
 ### PAWVA X01+
 - **Best for:** The cheapest way to get GPS tracking with no monthly fee
-- **Main catch:** A five-year data term rather than the ten years PAWVA's X02 claims, and it publishes no live-mode interval.
+- **Main catch:** PAWVA's pages disagree on the SIM term: five years in its bundle FAQ, ten on the X01+ page.
 - **Price:** £77.99 (PAWVA UK)
 - **3-year cost, no plan:** £77.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Battery:** Up to 5 days with 10-minute Smart Interval updates
-- **Free:** live updates: Live-mode interval not published; Smart Interval updates every 10 minutes; safe zones: Geofencing and escape alerts included; history: Historical tracks and playback, with no retention period published
-- **Without a plan:** Location and history with no plan, for the five-year SIM term
+- **Free:** live updates: Every 30 seconds or less in Precision mode; every 10 minutes in battery saver; safe zones: Geofencing and escape alerts included; history: Historical tracks and playback, with no retention period published
+- **Without a plan:** Location and history with no plan, for the included SIM term
 - **Behind the plan:** Nothing for tracking; the length of the data term is the promise to watch
-- **Plans:** None needed. The X01+ ships with a prepaid five-year SIM; PAWVA's X02 page advertises 10 years
-- **Cat fit:** Sold for dogs. PAWVA does not state a weight or cat suitability on the X01+ page.
-- **Not yet verified:** PAWVA publishes no live-mode interval, weight or cat suitability on the X01+ product page.
-- **Sources:** [PAWVA X01+](https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound) · [PAWVA UK](https://www.pawva.co.uk/) · [Ofcom: 3G switch-off](https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/3g-switch-off)
+- **Plans:** None needed. The X01+ page advertises 10-year connectivity; PAWVA's bundle FAQ says the X01+ has a five-year prepaid SIM
+- **Cat fit:** Sold for dogs. PAWVA gives no X01+ weight or cat claim; the 82 g figure on its bundle page is for the X01.
+- **Sources:** [PAWVA X01+](https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound) · [PAWVA X05](https://www.pawva.co.uk/product-page/pawva-x05-gps-dog-tracker) · [PAWVA PackTracker bundle](https://www.pawva.co.uk/product-page/packtracker-gps-system) · [PAWVA UK](https://www.pawva.co.uk/) · [Ofcom: 3G switch-off](https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/3g-switch-off)
 
 ### Tractive DOG 6
 - **Best for:** The fastest live updates, if you will pay for a plan
@@ -81,10 +80,9 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 - **Free:** live updates: Every second in live mode; every 30 seconds to 60 minutes otherwise; safe zones: Safety zones and escape alerts, included with the subscription; history: 30 days of history, included with every plan
 - **Without a plan:** Nothing without a plan. Every plan keeps 30 days of history
 - **Behind the plan:** Tracking itself. The plan includes live tracking and 30 days of history
-- **Plans:** £13/month, £6.67/month billed yearly, £4.59/month for two years or £3.67/month for five. Annual totals are not shown
+- **Plans:** £13/month, or £80 a year (£6.67/month), £110 for two years (£4.59/month) or £220 for five (£3.67/month)
 - **Cat fit:** Sold for dogs of any size; Weenect's XT page does not state cat suitability. 54 g and 82 × 35 × 22 mm.
-- **Not yet verified:** Weenect publishes yearly plans as a monthly equivalent only; the subscriptions page shows no annual total.
-- **Sources:** [Weenect UK: XT](https://www.weenect.com/uk/en/gps-dog-tracker/weenect-xt) · [Weenect UK: subscriptions](https://www.weenect.com/uk/en/subscriptions) · [Weenect: network coverage](https://www.weenect.com/uk/en/network-coverage)
+- **Sources:** [Weenect UK: XT](https://www.weenect.com/uk/en/gps-dog-tracker/weenect-xt) · [Weenect UK: subscriptions](https://www.weenect.com/uk/en/subscriptions) · [Weenect: subscription prices](https://help.weenect.com/hc/en-gb/articles/207813809-How-Much-Does-a-Subscription-to-the-Weenect-Service-Cost) · [Weenect: network coverage](https://www.weenect.com/uk/en/network-coverage)
 
 ### Pawfit Pawfit 3
 - **Best for:** A cheaper plan for a dog or a larger cat

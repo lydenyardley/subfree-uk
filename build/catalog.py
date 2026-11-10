@@ -1480,8 +1480,8 @@ PET_TRACKERS = {
          ", {p:pitpat-gps}. Its data is included for the life of the tracker, "
          "and live updates arrive about every 10 seconds."),
         ("batt", "Cheapest GPS:", "{v:pawva-x01-plus:PAWVA X01+}",
-         ", {p:pawva-x01-plus}, with a five-year prepaid SIM. The ten-year "
-         "claim belongs to PAWVA's X02."),
+         ", {p:pawva-x01-plus}, with no monthly fee. PAWVA's pages "
+         "disagree on the SIM term, five years or ten."),
         ("batt", "Best for cats:", "{v:tractive-cat-6-mini:Tractive CAT 6 Mini}",
          " if you will pay, or an {v:apple-airtag-2:AirTag}, {p:apple-airtag-2}, "
          "if your cat stays near other people's phones."),
