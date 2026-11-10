@@ -4,11 +4,11 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 
 | Smart ring | Subscription? | Price | Score /8 | 3 yrs, no subscription | 3 yrs, with membership | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
-| Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra. |
+| Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, and Aura's advanced sleep coaching is a paid extra. |
 | Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 | No subscription | [£259.00](https://www.argos.co.uk/product/7614640) | 6 | £259.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
 | Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165068) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
-| Ultrahuman Ring PRO | No subscription | [£429.00](https://www.ultrahuman.com/gb/ring-pro/buy) | 6 | £429.00 | — | The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data | AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is unconfirmed. |
+| Ultrahuman Ring PRO | No subscription | [£429.00](https://www.ultrahuman.com/gb/ring-pro/buy) | 6 | £429.00 | — | The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data | AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is undocumented. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 | Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8566340) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
 | RingConn Gen 2 Air | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | Check price | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
@@ -56,12 +56,11 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 - **Behind the membership:** Nothing needed. No subscription. Ultrahuman Max adds replacements and plug-ins but is not required
 - **Membership:** No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra
 - **Home Assistant:** A community HACS integration reads the ring through Ultrahuman's cloud API. It is not local, and it needs your account.
-- **Not yet verified:** Ultrahuman's UK page does not publish minimum iOS or Android versions; check the app store listing.
-- **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) · [Argos: Ultrahuman Ring AIR](https://www.argos.co.uk/product/4165068) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
+- **Sources:** [Amazon UK: Ultrahuman Ring AIR](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) · [Argos: Ultrahuman Ring AIR](https://www.argos.co.uk/product/4165068) · [Ultrahuman Ring AIR](https://www.ultrahuman.com/ring/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Ultrahuman: Ring AIR FAQ](https://www.ultrahuman.com/global/ring/faq) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
 
 ### Ultrahuman Ring PRO
 - **Best for:** The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data
-- **Main catch:** AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is unconfirmed.
+- **Main catch:** AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is undocumented.
 - **Price:** £429.00 (Ultrahuman UK, Bionic Gold with sizing kit)
 - **3-year cost, no subscription:** £429.00
 - **3-year cost, with membership:** No membership offered or needed
@@ -71,7 +70,6 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 - **Behind the membership:** Nothing needed for the core data. AFib Detection is a £49/year PowerPlug; Cycle & Ovulation Pro is £29.99/year
 - **Membership:** No subscription. The ring's data is free in the app. Ultrahuman Max is an optional extra
 - **Home Assistant:** No official integration. The community Ultrahuman HACS integration documents Ring AIR, and Ultrahuman does not confirm it works with the PRO.
-- **Not yet verified:** Ultrahuman's UK page does not confirm Home Assistant support for the Ring PRO; the community integration documents Ring AIR.
 - **Sources:** [Ultrahuman UK: Ring PRO](https://www.ultrahuman.com/gb/ring-pro/buy) · [Ultrahuman Ring PRO](https://www.ultrahuman.com/gb/ring-pro/) · [Ultrahuman: Ring AIR vs Ring PRO (no subscription)](https://www.ultrahuman.com/blog/ultrahuman-ring-pro-vs-ring-air/) · [Home Assistant: Ultrahuman (community)](https://github.com/anant-j/Ultrahuman)
 
 ### RingConn Gen 2
@@ -132,7 +130,7 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 
 ### Amazfit Helio Ring
 - **Best for:** The cheapest smart ring, with no subscription for the basics
-- **Main catch:** Only three sizes, no published battery figure, and Aura's advanced sleep coaching is a paid extra.
+- **Main catch:** Only three sizes, and Aura's advanced sleep coaching is a paid extra.
 - **Price:** £149.90 (Amazfit UK sale price, RRP £269)
 - **3-year cost, no subscription:** £149.90
 - **3-year cost, with membership:** No membership offered or needed
@@ -140,9 +138,8 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 - **Free:** live heart rate: Yes, in Zepp.; wellness alerts: Yes, through Zepp notifications.; sleep and recovery insights: Free: sleep stages, resting heart rate, HRV, SpO2, temperature, stress and readiness.
 - **Data without a plan:** Yes, in Zepp.
 - **Behind the membership:** Nothing for the core data. Zepp Aura's advanced sleep reports and unlimited AI assistant are optional paid extras
-- **Membership:** No subscription for the ring's data. Zepp Aura is an optional paid extra, priced in dollars on Amazfit's UK page
+- **Membership:** No subscription for the ring's data. Zepp Aura is free for Helio Ring users on a trial, with premium plans priced in dollars on Amazfit's UK page
 - **Home Assistant:** No official integration. A community Zepp bridge exists for watches, but it is not confirmed for this ring.
-- **Not yet verified:** Amazfit's UK page does not publish a battery-life figure; four days comes from retailer spec sheets, not the manufacturer. Zepp Aura's UK price is not published either.
 - **Sources:** [Amazfit UK: Helio Ring](https://uk.amazfit.com/products/amazfit-helio-ring) · [Amazfit UK: Zepp Aura](https://uk.amazfit.com/pages/zepp-aura) · [Home Assistant: Zepp2Hass (community)](https://community.home-assistant.io/t/zepp2hass-connect-your-amazfit-zepp-watch-to-home-assistant/973979)
 
 ## How the 3-year costs are worked out

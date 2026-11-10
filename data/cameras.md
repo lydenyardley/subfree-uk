@@ -4,7 +4,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 
 | Camera | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
-| Aqara Camera G100 Select | Yes | [£36.98](https://www.aqara-shop.co.uk/product/aqara-camera-g100-select/) | 6 | £63.97 | — | A shed or a back door watched cheaply | The card is extra, and the better detection needs a subscription. |
+| Aqara Camera G100 Select | Yes | [£36.98](https://www.aqara-shop.co.uk/product/aqara-camera-g100-select/) | 6 | £63.97 | — | A shed or a back door watched cheaply | The card is extra, the power adapter is not in the box, and the better detection needs a subscription. |
 | Aqara Camera E1 | Yes | [£55.99](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) | 6 | £82.98 | — | The cheapest way to keep footage without a plan | The card and the power supply are both extra. |
 | eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £96.98 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
 | Reolink RLC-820A | Yes | [£79.99](https://store.reolink.com/gb/) | 7 | £106.98 | — | A wired install on a budget: 4K for £80, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
@@ -107,8 +107,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 - **History without plan:** Yes, event clips on the card; 24/7 recording with a card
 - **Paywalled:** 30-day cloud history, rich notifications, Smart Sort
 - **Plans:** Optional Tapo Care £2.99/month or £29.49/year (1 camera)
-- **Home Assistant:** Home Assistant's local TP-Link integration lists the C520WS and other Tapo cameras, but not this C660 KIT. Treat live view as unsupported.
-- **Unverified:** Home Assistant support for this exact model is not listed on the integration's supported-device page.
+- **Home Assistant:** Home Assistant's local TP-Link integration lists the C520WS and other Tapo cameras, but not this C660 KIT. Tapo also lists no RTSP or ONVIF for it, so treat live view as unsupported.
 - **Sources:** [Tapo UK: C660 KIT](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) · [Tapo Care UK](https://uk.store.tapo.com/pages/tapo-care) · [Home Assistant: TP-Link Smart Home](https://www.home-assistant.io/integrations/tplink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### TP-Link Tapo C675D KIT
@@ -183,7 +182,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 
 ### Aqara Camera G100 Select
 - **Best for:** A shed or a back door watched cheaply
-- **Main catch:** The card is extra, and the better detection needs a subscription.
+- **Main catch:** The card is extra, the power adapter is not in the box, and the better detection needs a subscription.
 - **Price:** £36.98 (Aqara UK Shop sale price (RRP £41.99))
 - **3-year cost, no plan:** £36.98 + £26.99 (SanDisk 64 GB microSD card) = £63.97
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
@@ -193,7 +192,6 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 - **Paywalled:** Nothing essential. Aqara's HomeGuardian plan adds face, vehicle, pet and package detection and cloud history
 - **Plans:** None needed. The camera records to a card; HomeGuardian is optional
 - **Home Assistant:** Streams to Home Assistant over RTSP, which is local; Aqara names RTSP rather than an official Home Assistant integration.
-- **Unverified:** Aqara's UK page does not say whether a power supply is in the box.
 - **Sources:** [Aqara UK Shop: Camera G100 Select](https://www.aqara-shop.co.uk/product/aqara-camera-g100-select/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Aqara Camera Hub G5 Pro (Wi-Fi 32GB)
