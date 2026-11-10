@@ -1778,7 +1778,7 @@ BABY_MONITORS = {
         '{v:eufy-c10:eufy C10} is the best overall, at {p:eufy-c10}.',
         '{v:vtech-vm4263:VTech VM4263} is the cheapest local-only monitor, at {p:vtech-vm4263}.',
         '{v:philips-scd951:Philips SCD951} is the best hybrid, at {p:philips-scd951}.',
-        '{v:nanit-pro:Nanit} and {v:owlet-dream-sock:Owlet} work without a plan; their history and trends cost extra.',
+        '{v:nanit-pro:Nanit} charges for history and sleep trends; {v:owlet-dream-sock:Owlet} sells no plan in the UK.',
     ),
     "short_tones": ("best", "batt", "batt", "avoid"),
     "short_head": "The short answer",
@@ -1792,9 +1792,9 @@ BABY_MONITORS = {
         ("batt", "Best hybrid:", "{v:philips-scd951:Philips SCD951}",
          ", {p:philips-scd951}. The parent unit works with the Wi-Fi off, and "
          "the app is there when you are out."),
-        ("avoid", "Smart monitors are not free forever:", "{v:nanit-pro:Nanit}",
+        ("avoid", "Smart monitor plans:", "{v:nanit-pro:Nanit}",
          " keeps live view but charges for history and sleep trends, and "
-         "Owlet360's price is only shown in the app."),
+         "Owlet sells no plan in the UK."),
     ),
 
     "score_max": 8,
