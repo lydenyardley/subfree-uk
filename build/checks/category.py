@@ -177,7 +177,11 @@ def record_problems(pages):
             )
         for brand, named in previous.items():
             if isinstance(named, tuple):
-                if len(named) not in (2, 3) or (len(named) == 3 and named[2] is not True):
+                if (
+                    len(named) not in (2, 3)
+                    or named[0] is not None
+                    or (len(named) == 3 and named[2] is not True)
+                ):
                     problems.append(
                         f"{slug}: {brand}'s pair must be (None, reason) or "
                         "(None, reason, True)"
