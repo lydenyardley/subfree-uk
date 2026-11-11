@@ -99,6 +99,11 @@
   "page": "https://blinkforhome.com/products",
   "cropped": true
  },
+ "blink-gen2": {
+  "src": "https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/db7e76f9-1ea2-41fa-943b-f34b34c01724/doorbell2.jpg?format=1500w",
+  "page": "https://blinkforhome.com/products",
+  "cropped": false
+ },
  "blink-out2k": {
   "src": "https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/2300b960-b1fa-493f-a919-7aeffe5c547e/2K%2B+Blink+Outdoor+2K%2B.png",
   "page": "https://blinkforhome.com/products",

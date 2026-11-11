@@ -467,13 +467,7 @@ DOORBELLS = {
         "TP-Link Tapo": "tapo-d235",
         "Arlo": "arlo-fhd",
         "Aqara": "aqara-g4",
-        "Blink": (
-            None,
-            "Blink's support page says the 1st Gen is no longer available, and "
-            "the 2nd Gen it replaced is sold out on Amazon UK, so there is no "
-            "older buyable doorbell to price",
-            True,
-        ),
+        "Blink": "blink-gen2",
         "EZVIZ": "ezviz-db2",
         "Hikvision": (
             None,

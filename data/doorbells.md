@@ -1,6 +1,6 @@
 # UK video doorbells without a subscription
 
-Last checked 2 November 2026. 23 doorbells. As an Amazon Associate I earn from qualifying purchases.
+Last checked 2 November 2026. 24 doorbells. As an Amazon Associate I earn from qualifying purchases.
 
 | Doorbell | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
@@ -27,6 +27,7 @@ Last checked 2 November 2026. 23 doorbells. As an Amazon Associate I earn from q
 | Google Nest Doorbell (battery) | Only briefly (3 hrs) | [£179.99](https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB) | 4 | £179.99 | £467.99 | Google Home households who want polished smart alerts | Only 3 hours of free history. Anything longer is £8 a month. |
 | Ring Wired Video Doorbell 4K Elite | No | [£449.99](https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen) | 2 | £449.99 | £629.63 | Gated entries and new builds that can run an Ethernet cable to the door | Saves no video at all unless you pay £4.99 a month, and it needs PoE+ from a switch or injector. |
 | Blink Battery Doorbell 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) | 2 | Check price | Check price | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
+| Blink Video Doorbell (2nd Gen) | Only with extra kit | [Check price](https://coolcuration.com/blink-video-doorbell-review) | 2 | Check price | Check price | The older 1440p Blink, if you find one in stock | Saves nothing without a £40 Sync Module 2 and a USB stick, and Amazon UK's new stock has sold out. |
 
 ## Detail
 
@@ -309,6 +310,20 @@ Last checked 2 November 2026. 23 doorbells. As an Amazon Associate I earn from q
 - **Plans:** Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month
 - **Home Assistant:** Official integration, but it goes through Blink's cloud.
 - **Sources:** [Amazon UK: Blink 2K+](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) · [Sync Module 2 RRP £39.99 (camelcamelcamel history; no non-Amazon UK seller)](https://uk.camelcamelcamel.com/product/B08BJ9ZCZC) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
+
+### Blink Video Doorbell (2nd Gen)
+- **Best for:** The older 1440p Blink, if you find one in stock
+- **Main catch:** Saves nothing without a £40 Sync Module 2 and a USB stick, and Amazon UK's new stock has sold out.
+- **Price:** Check price (Amazon UK new stock sold out; last new price from a UK review)
+- **3-year cost, no plan:** Check price + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick)
+- **3-year cost, with plan:** Check price + 36 × £2.50 (Blink Basic)
+- **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted
+- **Free:** live view capped at 5 minutes; alerts yes; smart detection: Paid (person and vehicle detection)
+- **History without plan:** None without a Sync Module 2
+- **Paywalled:** Cloud clips, person/vehicle detection, 90-minute live view, AI descriptions
+- **Plans:** Blink Basic £2.50/month (£24.99/year); Plus £8/month; Basic AI £5.49/month
+- **Home Assistant:** Official integration, but it goes through Blink's cloud.
+- **Sources:** [Cool Curation: Blink Video Doorbell review](https://coolcuration.com/blink-video-doorbell-review) · [Blink support: Video Doorbell (2nd Gen) FAQ](https://support.blinkforhome.com/en_GB/video-doorbell-gen-2-faq/faq-video-doorbell-gen-2) · [Sync Module 2 RRP £39.99 (camelcamelcamel history; no non-Amazon UK seller)](https://uk.camelcamelcamel.com/product/B08BJ9ZCZC) · [Blink UK plans](https://blinkforhome.com/plans-uk) · [Blink Sync Module 2 FAQ](https://support.blinkforhome.com/en_GB/faq-sm2/faq-sync-module-2) · [Home Assistant: Blink](https://www.home-assistant.io/integrations/blink/) · [Argos: SanDisk Cruzer Blade 64 GB](https://www.argos.co.uk/product/3395891)
 
 ### EZVIZ EP3x Pro
 - **Best for:** Two cameras on a budget, with storage built in

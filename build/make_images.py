@@ -35,6 +35,7 @@ IMGS={
  # taken from Aqara's product page instead, cropped past the chime beside it.
  "aqara-g410":("https://eu.aqara.com/cdn/shop/files/Aqara_Smart_Video_Doorbell_G410_1.webp?v=1751957883","https://eu.aqara.com/products/aqara-doorbell-camera-hub-g410",(0,0,0.50,1),True),
  "blink":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/feb6535d-c34d-48dd-a015-648dd5786bac/Blink_Battery_Doorbell_2K.png?format=1000w","https://blinkforhome.com/products",(0.30,0.02,0.72,0.98),False),
+ "blink-gen2":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/db7e76f9-1ea2-41fa-943b-f34b34c01724/doorbell2.jpg?format=1500w","https://blinkforhome.com/products",None,False),
  # The 2K+ render is the one card on Blink's own devices page, so it is the
  # official picture of the model Blink sells now; the Outdoor 4 has no card left.
  "blink-out2k":("https://images.squarespace-cdn.com/content/v1/5e21c06a08d2fc435f20e6c5/2300b960-b1fa-493f-a919-7aeffe5c547e/2K%2B+Blink+Outdoor+2K%2B.png","https://blinkforhome.com/products",None,True),
