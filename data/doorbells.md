@@ -9,7 +9,7 @@ Last checked 2 November 2026. 24 doorbells. As an Amazon Associate I earn from q
 | EZVIZ EP3x Pro | Yes | [£99.99](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) | 6 | £99.99 | £279.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
 | eufy Video Doorbell C31 | Yes | [£89.99](https://www.eufy.com/uk/products/t8223311) | 6 | £116.98 | £233.63 | A cheap eufy with 24/7 recording, if you can hardwire it | 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately. |
 | TP-Link Tapo D235 | Yes | [£89.99](https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235) | 5 | £116.98 | £197.63 | An easy battery doorbell that can be hardwired for 24/7 recording | The microSD card is extra, and Home Assistant has no route to the live video. |
-| Reolink Video Doorbell (Battery) | Yes | [£119.99](https://www.machinemart.co.uk/p/reolink-2k-wifi-ai-battery-video-doorbell--64g) | 7 | £119.99 | £270.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a Home Hub. |
+| Reolink Video Doorbell (Battery) | Yes | [£119.99](https://www.argos.co.uk/product/7623301) | 7 | £119.99 | £270.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a Home Hub. |
 | eufy Video Doorbell E340 | Yes | [£121.99](https://www.eufy.com/uk/products/T8214311) | 7 | £121.99 | £265.63 | Busy doorsteps with lots of parcels: a second camera looks straight down | Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022. |
 | Reolink Video Doorbell PoE | Yes | [£99.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £126.98 | — | The most reliable, fully local setup, if you can run an Ethernet cable | Needs an Ethernet cable to the door and a PoE switch or injector. |
 | Reolink Video Doorbell WiFi | Yes | [£109.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £136.98 | £274.87 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
@@ -174,7 +174,7 @@ Last checked 2 November 2026. 24 doorbells. As an Amazon Associate I earn from q
 ### Reolink Video Doorbell (Battery)
 - **Best for:** Battery install with 5 GHz Wi-Fi and no fees
 - **Main catch:** Footage sits on a card in the doorbell itself unless you add a Home Hub.
-- **Price:** £119.99 (Machine Mart, includes 64 GB card)
+- **Price:** £119.99 (Argos, includes 64 GB card and chime)
 - **3-year cost, no plan:** £119.99
 - **3-year cost, with plan:** £119.99 + 36 × £4.17 (Reolink Cloud Standard (up to 5 cameras)) = £270.11
 - **Storage:** microSD in the doorbell, or a Home Hub indoors (up to 1 TB)
@@ -183,7 +183,7 @@ Last checked 2 November 2026. 24 doorbells. As an Amazon Associate I earn from q
 - **Paywalled:** Nothing
 - **Plans:** Optional Reolink Cloud. UK £4.17/month, or £2.87/month billed yearly (£34.44/year) for up to 5 cameras
 - **Home Assistant:** Official integration through a Reolink Home Hub or NVR, which streams the battery doorbell locally.
-- **Sources:** [Machine Mart: Reolink Battery](https://www.machinemart.co.uk/p/reolink-2k-wifi-ai-battery-video-doorbell--64g) · [Reolink UK battery doorbells](https://store.reolink.com/gb/wireless-doorbell-camera/) · [Reolink UK Home Hub](https://store.reolink.com/gb/home-hub-series/) · [Reolink Cloud UK plans](https://cloud.reolink.com/cloud-plan) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/)
+- **Sources:** [Argos: Reolink 2K Battery Doorbell + chime + 64 GB](https://www.argos.co.uk/product/7623301) · [Reolink UK battery doorbells](https://store.reolink.com/gb/wireless-doorbell-camera/) · [Reolink UK Home Hub](https://store.reolink.com/gb/home-hub-series/) · [Reolink Cloud UK plans](https://cloud.reolink.com/cloud-plan) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/)
 
 ### Reolink Battery Video Doorbell (2nd Gen)
 - **Best for:** A battery doorbell with a head-to-toe 2K view and no fees
