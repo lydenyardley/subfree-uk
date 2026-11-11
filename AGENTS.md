@@ -137,10 +137,11 @@ model the current one replaced that the vendor still sells, which is Oura's
 Ring 4 beside the Ring 5 and Tapo's C660 KIT beside the C675D KIT. The page
 labels that row, and where the older model is the cheaper of the two it says by
 how much. A brand with no older model to carry, or whose row has not been added
-yet, carries a pair with the reason, and `category records` names every brand
-still waiting for its row. That gap is a to-do with a page to read, not a
-settled fact: the next price check adds the row, priced and photographed like
-any other.
+yet, carries a pair with the reason. A pair whose absence has been verified
+ends with `True`, and `category records` treats it as settled. A bare pair is
+a to-do, and the audit names every brand still waiting for its row. The next
+price check either adds the row, priced and photographed like any other, or
+marks the absence settled.
 
 A launch is a new row, not a rewrite of `current`. Walking a brand's own store
 collection page, rather than the one product page already in the table, is what

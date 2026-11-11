@@ -451,13 +451,16 @@ DOORBELLS = {
     # The model each brand sold last, still on sale, so a reader can see what
     # the older one saves. A brand with no such row says why: an older doorbell
     # is the cheapest way into most of these brands, and nothing asked for it.
+    # A pair's third element, True, marks a verified absence, so the audit
+    # treats the brand as settled instead of a row still owed.
     "previous": {
         "Ring": "ring",
         "Google Nest": (
             None,
-            "no older Nest doorbell row yet; Google's UK store page lists only "
-            "the battery doorbell, and the wired Nest Hello it replaced is no "
-            "longer sold",
+            "Google's UK compare page lists a wired Nest Doorbell beside the "
+            "battery one, but only the battery model has a buy link, and the "
+            "wired Nest Hello it replaced is no longer sold",
+            True,
         ),
         "eufy": "eufy-e340",
         "Reolink": "reo-batt",
@@ -466,8 +469,10 @@ DOORBELLS = {
         "Aqara": "aqara-g4",
         "Blink": (
             None,
-            "no older Blink doorbell row yet; the comparison table on Blink's "
-            "Amazon listing shows the original Video Doorbell as not available",
+            "Blink's support page says the 1st Gen is no longer available, and "
+            "the 2nd Gen it replaced is sold out on Amazon UK, so there is no "
+            "older buyable doorbell to price",
+            True,
         ),
         "EZVIZ": "ezviz-db2",
         "Hikvision": (
@@ -475,6 +480,7 @@ DOORBELLS = {
             "both Wi-Fi doorbells are end of life, and Hikvision's UK catalogue "
             "page now lists wired video-intercom door stations, so there is no "
             "earlier model to carry",
+            True,
         ),
     },
 
@@ -645,8 +651,9 @@ CAMERAS = {
         "TP-Link Tapo": "tapo-c660",
         "eufy": (
             None,
-            "no older eufy camera row yet; eufy's UK SoloCam page no longer "
-            "lists the S230 or the S220, the models the S340 replaced",
+            "eufy's UK SoloCam page lists the S340 and E42, and the S220 and "
+            "S230 it replaced are sold out",
+            True,
         ),
         "Aqara": "aqara-g5pro",
         "Ring": "ring-outplus",
@@ -820,11 +827,13 @@ RINGS = {
             None,
             "the Galaxy Ring is Samsung's first smart ring, and Samsung's UK "
             "page lists no earlier model to carry",
+            True,
         ),
         "Amazfit": (
             None,
             "the Helio Ring is Amazfit's only smart ring, and Amazfit's UK page "
             "lists no earlier model to carry",
+            True,
         ),
     },
 
@@ -1132,6 +1141,7 @@ PRINTERS = {
             "the ET-2850 the ET-2951 replaced is discontinued and no longer "
             "listed on Epson's UK page, so there is no last-generation printer "
             "to price",
+            True,
         ),
         "Canon": "canon-pixma-g3570",
     },
@@ -1419,12 +1429,14 @@ PET_TRACKERS = {
             "PAWVA's product page sells the X01+ and the X02 as current "
             "models for different buyers, not as generations, so there is no "
             "earlier PAWVA tracker to price",
+            True,
         ),
         "Tractive": (
             None,
             "Tractive's UK page sells the DOG 6 and the CAT 6 Mini side by "
             "side for different animals, and the earlier DOG 5 is no longer "
             "listed, so there is no last-generation row to price",
+            True,
         ),
         "Weenect": (
             None,
@@ -1434,14 +1446,16 @@ PET_TRACKERS = {
         "Pawfit": (
             None,
             "Pawfit's UK page sells the Pawfit 3 and the Pawfit Lite for cats "
-            "as current models, not generations, so no earlier Pawfit 3-"
-            "generation tracker was priced",
+            "as current models, not generations, so there is no earlier "
+            "Pawfit tracker to price",
+            True,
         ),
         "Apple": (
             None,
             "Apple's UK AirTag page lists only the second-generation AirTag; "
             "the first generation is no longer sold, so there is no earlier "
             "model to price",
+            True,
         ),
     },
 
@@ -1747,8 +1761,9 @@ BABY_MONITORS = {
         "Owlet": (
             None,
             "Owlet's UK page sells the Dream Sock as its current sock; the "
-            "older Smart Sock is not listed there, so no earlier sock was "
-            "priced",
+            "older Smart Sock is not listed there, so there is no earlier "
+            "sock to price",
+            True,
         ),
     },
 

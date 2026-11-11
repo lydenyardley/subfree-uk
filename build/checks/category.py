@@ -177,7 +177,13 @@ def record_problems(pages):
             )
         for brand, named in previous.items():
             if isinstance(named, tuple):
-                _, why = named
+                if len(named) not in (2, 3) or (len(named) == 3 and named[2] is not True):
+                    problems.append(
+                        f"{slug}: {brand}'s pair must be (None, reason) or "
+                        "(None, reason, True)"
+                    )
+                    continue
+                _, why = named[:2]
                 reason = str(why or "").strip()
                 if not reason:
                     problems.append(
@@ -310,10 +316,12 @@ def records(ctx):
                 f"{cat['slug']}: its brands' current models have not been audited; "
                 "add a `current` map at the next price check"
             )
+        # A bare pair is still waiting for a row. A pair with a third element,
+        # True, is a verified absence and is left out of the note.
         waiting = [
             brand
             for brand, named in (cat.get("previous") or {}).items()
-            if isinstance(named, tuple)
+            if isinstance(named, tuple) and len(named) == 2
         ]
         if waiting:
             ctx.note(
