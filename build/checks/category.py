@@ -138,7 +138,10 @@ def record_problems(pages):
         # A lineup is checked, not assumed. Every brand in a table names the
         # model it is selling now, and that model is one of the brand's rows: the
         # rings page shipped a generation behind, with Ring 5 already on sale,
-        # because nothing ever asked the question per brand.
+        # because nothing ever asked the question per brand. The parse boundary
+        # has already named a malformed entry by brand; these are the editorial
+        # questions the record still asks over the typed maps.
+        problems.extend(cat.get("lineup_problems", ()))
         current = cat.get("current")
         if current is not None:
             unasked = sorted({row["brand"] for row in rows} - set(current))

@@ -5,6 +5,7 @@ import re
 from html import escape as html_escape
 
 from catalog import CATEGORIES
+from model import Current
 from .behaviour import contain_check
 from .compare import COMPARE_ROWS
 from .context import ROOT, WIDTHS, open_compare
@@ -734,10 +735,11 @@ def lastgen_badges(pages):
     for cat in CATEGORIES:
         html = pages.get(cat["page"], "")
         rows = {row["id"]: row for row in cat.get("rows") or []}
-        current = cat.get("current") or {}
-        for brand, named in (cat.get("previous") or {}).items():
-            if not isinstance(named, str):
+        lineup = cat["lineup"]
+        for brand, entry in lineup["previous"].items():
+            if not isinstance(entry, Current):
                 continue
+            named = entry.row_id
             block = re.search(
                 rf'<tbody class="item" id="m-{re.escape(named)}".*?</tbody>',
                 html, re.S,
@@ -754,8 +756,8 @@ def lastgen_badges(pages):
                 )
                 continue
             text = found[0]
-            now = current.get(brand)
-            now = rows.get(now) if isinstance(now, str) else None
+            now_entry = lineup["current"].get(brand)
+            now = rows.get(now_entry.row_id) if isinstance(now_entry, Current) else None
             cheaper = bool(
                 now
                 and not now.get("price_check")
@@ -782,6 +784,26 @@ def lastgen_badges(pages):
                 )
     return problems
 
+def grid_track_problems():
+    """The desktop table's eight tracks are named once, not copied per breakpoint."""
+    path = os.path.join(ROOT, "build", "page.css")
+    with open(path, encoding="utf-8") as handle:
+        css = handle.read()
+    problems = []
+    template = "grid-template-columns:var(--trk-pick) var(--trk-model)"
+    count = css.count(template)
+    if count != 1:
+        problems.append(f"the desktop grid template appears {count} times, expected 1")
+    for name in (
+        "pick", "model", "rec", "price", "score", "nosub", "sub", "catch",
+    ):
+        if f"--trk-{name}:" not in css:
+            problems.append(f"the grid has no --trk-{name} track")
+    if "grid-template-columns:47px 27%" in css or "grid-template-columns:47px minmax" in css:
+        problems.append("a desktop grid template still repeats the track widths")
+    return problems
+
+
 CHECKS = [
     Check(
         "emitted sources", "static", 4,
@@ -797,6 +819,11 @@ CHECKS = [
         "generated alias", "static", 5,
         "every old category filename is a small redirect to its canonical page",
         lambda ctx: alias_problems(ctx.pages),
+    ),
+    Check(
+        "grid tracks", "static", 98,
+        "the desktop table's eight tracks are named once and read by one template",
+        lambda ctx: grid_track_problems(),
     ),
     Check(
         "not found", "static", 52,

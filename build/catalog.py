@@ -21,6 +21,8 @@ A record holds:
 unknown facet or an invalid value fails by name rather than printing nothing.
 """
 
+from typing import Any
+
 # The words a figure's source card prints as its title. A figure with no claim
 # key behind it cannot carry its own source, so a new figure starts here.
 CLAIM_WHAT = {
@@ -1896,7 +1898,9 @@ BABY_MONITORS = {
     "not_found": NOT_FOUND,
 }
 
-CATEGORIES = [DOORBELLS, CAMERAS, RINGS, PRINTERS, PET_TRACKERS, BABY_MONITORS]
+CATEGORIES: list[dict[str, Any]] = [
+    DOORBELLS, CAMERAS, RINGS, PRINTERS, PET_TRACKERS, BABY_MONITORS,
+]
 BY_SLUG = {cat["slug"]: cat for cat in CATEGORIES}
 
 

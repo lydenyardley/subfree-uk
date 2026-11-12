@@ -13,9 +13,11 @@ fails by name instead of printing nothing.
 
 from datetime import date
 from math import ceil
+from typing import Any
 from urllib.parse import quote, urlparse
 
 from catalog import CATEGORIES, DOORBELLS as CAT, labels
+from model import Row, Source, parse_lineup
 
 # Each category carries the day its own prices and plans were checked, because
 # a second category lands on a different day from the first. ISO, so the age
@@ -361,7 +363,7 @@ def offer_shown(offers):
 
 # rec: 'yes' records free out of the box / 'kit' needs extra hardware or very limited / 'no'
 # score parts: rec 0-2, live 0-1, alerts 0-1, ai 0-1, storage_in_box 0-1, ha 0-2  (max 8)
-ROWS = [
+RAW_ROWS: list[dict[str, Any]] = [
 # ---------- printers ----------
 # A tank's 3-year sum is its price alone: the bottles in the box outlast the
 # period at 100 pages a month. A cartridge printer's sum buys 36 months of
@@ -1635,7 +1637,7 @@ dict(cat="baby-monitors", id="owlet-dream-sock", brand="Owlet", model="Dream Soc
 # A row's Amazon price and buy links carry the tag, so a new Amazon row is
 # tagged without anyone remembering to. An Amazon page cited for a sundry
 # stays a plain citation.
-for _r in ROWS:
+for _r in RAW_ROWS:
     _keys = [o["src"] for o in _r.get("offers", ())] + [_r.get("price_src"), _r.get("buy")]
     for _key in _keys:
         if _key:
@@ -1652,6 +1654,10 @@ SPONSORED = frozenset(
     url for _, url in S.values()
     if url.startswith(AWIN_CLICK) or ("tag=" in url and "amazon.co.uk" in url)
 )
+
+# The register is read-only from here: every source is its parsed record, not a
+# tuple that a later loop can put back into the shared dict.
+S = {key: Source(*value) for key, value in S.items()}
 
 # ---------- each row's verdict and its plain words ----------
 # Authored beside the rows and attached to them below, so a row carries its own
@@ -1865,9 +1871,11 @@ def row_problems(cat=None):
     than printed blank.
     """
     cat = cat or CAT
-    rows = cat.get("rows")
+    if "row_problems" in cat:
+        return cat["row_problems"]
+    rows = cat.get("raw_rows")
     if rows is None:
-        rows = [r for r in ROWS if r.get("cat") == cat["slug"]]
+        rows = [r for r in RAW_ROWS if r.get("cat") == cat["slug"]]
     sources = S
     rec_label = {key: label for key, label, _ in cat["rec"]}
     power_label = dict(cat["powers"])
@@ -2021,8 +2029,8 @@ def money(x, decimals=2):
 
 def _derive(cat):
     """One category's rows, vocabulary, source numbering and slider ends."""
-    rows = [r for r in ROWS if r.get("cat") == cat["slug"]]
-    cat["rows"] = rows
+    rows = [r for r in RAW_ROWS if r.get("cat") == cat["slug"]]
+    cat["raw_rows"] = rows
     cat["sources"] = S
     cat["labels"] = labels(cat)
     cat["rec_label"] = {key: label for key, label, _ in cat["rec"]}
@@ -2113,10 +2121,20 @@ def _derive(cat):
             if key not in cat["order"]:
                 cat["order"].append(key)
     cat["fn"] = {key: i + 1 for i, key in enumerate(cat["order"])}
+    # The authored dicts stop here. Every reader after this line sees frozen
+    # records, and the raw list stays only for the guard that names a misspelt
+    # key before the page is written.
+    cat["rows"] = [Row.from_raw(r) for r in rows]
+    cat["row_problems"] = row_problems(cat)
+    cat["lineup"], cat["lineup_problems"] = parse_lineup(
+        cat, {r.id: r for r in cat["rows"]}
+    )
 
 
 for _category in CATEGORIES:
     _derive(_category)
+
+ROWS = [r for cat in CATEGORIES for r in cat["rows"]]
 
 
 class Dataset:

@@ -599,9 +599,9 @@ ol.fns a{display:inline-flex;align-items:center;min-height:24px;overflow-wrap:an
    header: the cell painted its own box inside it and the next column's rule
    sat 2px away. Track and cell are the same 47px now. */
 @media (min-width:821px){
- .main-t{display:block}
+ .main-t{display:block;--trk-pick:47px;--trk-model:27%;--trk-rec:minmax(90px,7.4%);--trk-price:minmax(84px,6.7%);--trk-score:minmax(96px,8.2%);--trk-nosub:10%;--trk-sub:10%;--trk-catch:1fr}
  .main-t thead,.main-t tbody{display:block}
- .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:47px 27% minmax(90px,7.4%) minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ .main-t thead tr,.main-t tr.main{display:grid;grid-template-columns:var(--trk-pick) var(--trk-model) var(--trk-rec) var(--trk-price) var(--trk-score) var(--trk-nosub) var(--trk-sub) var(--trk-catch)}
  /* The 44px rail is the phone's; here the cell fills its 47px track, or the
     header's own rule stops 3px short of the column beside it. */
  .main-t thead th.c-cmp{width:auto}
@@ -663,7 +663,7 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    rows: one row grows at 1150 and the page is 76px taller at 1101, so the band
    starts where the page's other desktop breakpoint already is. */
 @media (min-width:1200px) and (max-width:1279px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:47px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 10% 10% 1fr}
+ .main-t{--trk-rec:118px}
 }
 /* From 1280px the two cost columns are wide enough for their words. At 12px
    "3-year cost," is about 100px, and with the footnote marker beside it that
@@ -678,10 +678,10 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    "Only with extra kit" takes two lines, here and at a fallback 15% wider,
    where 110px split it again. The catch gives up 26px at 1280 and 14px at
    1440, and the page is 17px and 11px shorter for it. */
- .main-t thead tr,.main-t tr.main{grid-template-columns:47px 27% 118px minmax(84px,6.7%) minmax(96px,8.2%) 152px 152px 1fr}
+ .main-t{--trk-rec:118px;--trk-nosub:152px;--trk-sub:152px}
 }
 @media (min-width:821px) and (max-width:1100px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:47px 27% 90px 84px 96px 92px 92px 1fr}
+ .main-t{--trk-rec:90px;--trk-price:84px;--trk-score:96px;--trk-nosub:92px;--trk-sub:92px}
  .main-t tbody.item{contain-intrinsic-size:auto 140px}
 }
 /* Eight tracks cannot hold the catch below 901px: the fixed figures and the
@@ -695,7 +695,7 @@ tbody.item:has(input.cmp:checked){content-visibility:visible}
    shorter than this band at 940, so the band stops where the clip does. The
    901 depends on no font: the tracks are fixed. */
 @media screen and (min-width:821px) and (max-width:900px){
- .main-t thead tr,.main-t tr.main{grid-template-columns:47px minmax(0,1fr) 90px 84px 96px 92px 92px}
+ .main-t{--trk-model:minmax(0,1fr);--trk-catch:0}
  .main-t thead th:last-child{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%)}
  .main-t tr.main>*{border-bottom:0}
  .main-t tbody.item{border-bottom:1px solid var(--rule2)}

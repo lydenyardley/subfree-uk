@@ -22,6 +22,7 @@ GITHUB = "https://github.com/lydenyardley/subfree-uk"
 EMAIL = "lydenyardley+subfreeuk@posteo.net"
 
 from catalog import CATEGORIES, CSV_KEYS, words
+from model import Current
 from rows import (
     CARD, DATASETS, ROWS, S, SPONSORED, STICK, authored_problems, money,
     row_problems,
@@ -361,26 +362,25 @@ def category_js(ds, cat):
 SHARED = None
 
 
-def shared_assets():
-    """The one stylesheet and script every page loads.
+def page_data(ds, cat):
+    """The one category a page needs, in the block its script reads."""
+    return {
+        "slug": cat["slug"],
+        "rows": data_map(ds, cat),
+        "cat": category_js(ds, cat),
+    }
 
-    The script carries all categories, keyed by slug, because it lives at one
-    address shared by every route; each page names its category on `<body>`
-    and the script reads its own record. Building it once keeps the content
-    hash the same on every page, so a nested route and the root cannot point at
-    different scripts.
+
+def shared_assets():
+    """The shared stylesheet and the logic-only script every page loads.
+
+    The rows and category words live in a per-page JSON block. The script is
+    the same bytes on every route, so one content hash serves every page and a
+    reader caches it once; only the page's own data changes with the route.
     """
     global SHARED
     if SHARED is None:
-        data, cats = {}, {}
-        for c in CATEGORIES:
-            ds = DATASETS[c["slug"]]
-            written = words(c)
-            data[c["slug"]] = data_map(ds, written)
-            cats[c["slug"]] = category_js(ds, written)
-        js = (open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
-              .replace("/*@@DATA@@*/{}", json.dumps(data, ensure_ascii=False))
-              .replace("/*@@CAT@@*/{}", json.dumps(cats, ensure_ascii=False)))
+        js = open(os.path.join(HERE, "page.js"), encoding="utf-8").read()
         SHARED = js, page_css()
     return SHARED
 
@@ -421,10 +421,11 @@ def build(cat):
     # A brand's previous model sits beside its current one, because the older
     # model is usually the cheaper way in and the two model names do not tell a
     # reader which is which. The record names the row; the page says the saving.
+    lineup = cat["lineup"]
     previous_of = {
-        named: brand
-        for brand, named in (cat.get("previous") or {}).items()
-        if isinstance(named, str)
+        entry.row_id: brand
+        for brand, entry in lineup["previous"].items()
+        if isinstance(entry, Current)
     }
     by_id = {r["id"]: r for r in rows}
 
@@ -440,8 +441,8 @@ def build(cat):
         vtag = f'<span class="vtag v-{tone}">{cat["verdicts"][r["verdict"]][0]}</span>' if r["verdict"] else ""
         lg = ""
         if r["id"] in previous_of:
-            now = (cat.get("current") or {}).get(previous_of[r["id"]])
-            now = by_id.get(now) if isinstance(now, str) else None
+            now_entry = lineup["current"].get(previous_of[r["id"]])
+            now = by_id.get(now_entry.row_id) if isinstance(now_entry, Current) else None
             saving = ""
             if now and not now.get("price_check") and not r.get("price_check"):
                 diff = now["price"] - r["price"]
@@ -525,6 +526,9 @@ def build(cat):
 </tbody>''')
 
     page_js, page_css_text = shared_assets()
+    page_json = json.dumps(
+        page_data(ds, cat), ensure_ascii=False, separators=(",", ":")
+    ).replace("</", "<\\/")
     css_url = f"{prefix}{CSS_FILE}?v={content_version(page_css_text)}"
     js_url = f"{prefix}{JS_FILE}?v={content_version(page_js)}"
 
@@ -716,6 +720,7 @@ def build(cat):
 <p class="card-note"></p>
 <p class="card-date">Prices and plans checked {CHECKED}.</p>
 </dialog>
+<script type="application/json" id="rows">{page_json}</script>
 <script src="{js_url}"></script>
 <script data-goatcounter="https://subfreeuk.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body></html>'''
@@ -841,6 +846,7 @@ def write():
             problems.append(f"{cat['slug']}: the category has no rows attached")
             continue
         problems.extend(row_problems(cat))
+        problems.extend(cat.get("lineup_problems", ()))
         if len(cat["csv_head"]) != len(CSV_KEYS):
             problems.append(
                 f"{cat['slug']}: the CSV has {len(cat['csv_head'])} columns, "

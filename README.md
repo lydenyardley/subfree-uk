@@ -27,12 +27,15 @@ img/                         product photos (WebP), generated
 IMAGE_SOURCES.md             where every photo came from, generated
 .nojekyll                    serve files as-is
 build/
-  rows.py                    every category's data (ROWS), its sources (S) and every derived figure
+  rows.py                    every category's authored rows (RAW_ROWS), its sources (S) and every derived figure
+  model.py                   the frozen records the build reads: Row, Figures, Source, Offer and the lineup entries
   catalog.py                 the category records: route, nouns, copy, facets, vocabularies, claims, comparison shape
   build.py                   the page assembly: one page per category, the alias, 404.html, the shared assets and the data files
   checks/                    the audit's families (structure, behaviour, compare, accessibility, performance, browsers, data, category)
   page.css, page.js          the page's stylesheet and script, emitted as hashed assets
   check.py                   rebuild, data recomputation, structure, accessibility and link audit (Playwright, axe-core)
+  lineup_feed.py             the Monday report of Ring and Tapo products the lineup does not name
+  lineup_ignore.json         products a person has dismissed from that report, with the reason beside each
   check_commits.py           commit message format check (run by CI on pull requests)
   make_images.py             downloads, crops and converts the official product photos
   images.json                image source URLs (written by make_images.py, read by build.py)
@@ -49,7 +52,7 @@ research/                    Reddit threads and draft replies for the demand tes
 
 ## Rebuilding
 
-Needs Python 3.10+ (built with 3.13). `build.py` uses only the standard library; images need Pillow; screenshots and the audit need Playwright, and the audit also needs `axe-playwright-python`.
+Needs Python 3.10+ (built with 3.13). `build.py` uses only the standard library; images need Pillow; screenshots and the audit need Playwright, the audit also needs `axe-playwright-python`, and the `types` check needs `mypy`.
 
 ```bash
 git clone https://github.com/lydenyardley/subfree-uk.git
@@ -62,11 +65,12 @@ python -m playwright install chromium firefox   # needed for screenshots and the
 python build/build.py            # rewrites each category's page, the alias, 404.html, assets/page.* and the CSVs/Markdown
 python build/make_images.py      # only if photos changed: rewrites img/, build/images.json, IMAGE_SOURCES.md
 python build/shots2.py           # optional: screenshots at 1280/1000/900/820/390 + 1280 dark into screenshots/
+python build/check.py --fast     # the browser-free static checks, about a second
 python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
 python build/links.py            # sweeps every external citation; dead or server errors exit 1
 ```
 
-`check.py` is the one command to trust before shipping. It rebuilds the site and fails if the generator changes a committed file, recomputes every derived figure from `ROWS` and compares it with the CSV, and checks that every open fact names its blocker. It then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the price range slider, the theme toggle's state, the filter and selection announcements, the empty-state nearest match and the filter that emptied it, the no-JavaScript fallback, the phone first screen and header association, the two 3-year figures lining up in every card, the photo lightbox, the 404 page, the printed columns, the bold figure that follows the sort, the linked prices, the source card that opens from every figure with the page, the sentence, the sum and the date behind it, the details panel (six pairs a column, the score across the foot, the sources under the photo, and the one-column list below 1101px), the compare table caption and its 3-year cost row, the three compare photos' shared top edge, the differences-only view, the focusable comparison scroller, the three compare columns' reorder handles and the arrangement they make (drag, arrow keys, a 44px target on the rule, and figures that do not move), the shortlist copy and its ?cmp= share link, the jump announcement, the tray-to-comparison transition and its focus handover, the hairline rule that follows the table's own scroll, the theme motion, the score-bar animation, the record and plan labels, the phone label column, the host-grouped source list the printed sheet and the scriptless reader get, the closing line, the performance budget at 4x CPU throttle, horizontal overflow at every breakpoint, and each page beyond the root rendering its own rows, sorting, comparing, opening a source card and loading every asset without a console error. Firefox then repeats the structural, layout and axe pass, so a Chromium-only fallback cannot hide a regression. It fails on axe's WCAG 2.2 A and AA violations; the other best-practice rules axe finds are reported as notes at the end of the run, so they stay visible without turning a design decision into a red build. The `region` rule is the exception: every element must sit inside a landmark, so an element outside one fails the run. Add `--external` to request each outbound link over the network, `--list` to print the check names, and `--only "<name>"` to run one of them.
+`check.py` is the one command to trust before shipping. `--fast` runs the 22 browser-free checks, which is what the pre-commit hook calls. A full run rebuilds the site and fails if the generator changes a committed file, recomputes every derived figure from `ROWS` and compares it with the CSV, type-checks `build/` with mypy, and checks that every open fact names its blocker. It then serves the repo on a loopback port, opens the page in Chromium, runs axe-core against WCAG 2.2 A and AA in both themes at 1280px, 820px and 390px, and checks internal anchors, image files, duplicate ids, labels, target sizes, the 11px type floor, the price range slider, the theme toggle's state, the filter and selection announcements, the empty-state nearest match and the filter that emptied it, the no-JavaScript fallback, the phone first screen and header association, the two 3-year figures lining up in every card, the photo lightbox, the 404 page, the printed columns, the bold figure that follows the sort, the linked prices, the source card that opens from every figure with the page, the sentence, the sum and the date behind it, the details panel (six pairs a column, the score across the foot, the sources under the photo, and the one-column list below 1101px), the compare table caption and its 3-year cost row, the three compare photos' shared top edge, the differences-only view, the focusable comparison scroller, the three compare columns' reorder handles and the arrangement they make (drag, arrow keys, a 44px target on the rule, and figures that do not move), the shortlist copy and its ?cmp= share link, the jump announcement, the tray-to-comparison transition and its focus handover, the hairline rule that follows the table's own scroll, the theme motion, the score-bar animation, the record and plan labels, the phone label column, the host-grouped source list the printed sheet and the scriptless reader get, the closing line, the performance budget at 4x CPU throttle, horizontal overflow at every breakpoint, and each page beyond the root rendering its own rows, sorting, comparing, opening a source card and loading every asset without a console error. Firefox then repeats the structural, layout and axe pass, so a Chromium-only fallback cannot hide a regression. It fails on axe's WCAG 2.2 A and AA violations; the other best-practice rules axe finds are reported as notes at the end of the run, so they stay visible without turning a design decision into a red build. The `region` rule is the exception: every element must sit inside a landmark, so an element outside one fails the run. Add `--external` to request each outbound link over the network, `--list` to print the check names, and `--only "<name>"` to run one of them.
 
 Spotted a mistake or a paywall change? [Open an issue](https://github.com/lydenyardley/subfree-uk/issues/new).
 
@@ -74,10 +78,10 @@ Scripts work from any directory. To use an installed Chrome instead of Playwrigh
 
 ## Pull requests
 
-`.github/workflows/commits.yml` runs `build/check_commits.py` over every commit in a pull request and over every commit a push to `main` brings, because every commit here lands on `main` directly, so a message that breaks the format in [CONTRIBUTING.md](CONTRIBUTING.md) fails the check. `.githooks/commit-msg` runs the same rules before the commit exists; enable it once per clone with `git config core.hooksPath .githooks`. `.github/workflows/audit.yml` runs `build/check.py` on every pull request and every push to `main`, so a page that fails the audit cannot ship unnoticed. Run the same commands locally before opening one:
+`.github/workflows/commits.yml` runs `build/check_commits.py` over every commit in a pull request and over every commit a push to `main` brings, because every commit here lands on `main` directly, so a message that breaks the format in [CONTRIBUTING.md](CONTRIBUTING.md) fails the check. `.githooks/commit-msg` runs the same rules before the commit exists, and `.githooks/pre-commit` runs `build/check.py --fast` so a stale generated file is caught in the same place. Enable both once per clone with `git config core.hooksPath .githooks`. `.github/workflows/audit.yml` runs `build/check.py` on every pull request and every push to `main`, so a page that fails the audit cannot ship unnoticed. Run the same commands locally before opening one:
 
 ```bash
 python build/check_commits.py origin/main..HEAD
 ```
 
-To change data: edit `ROWS` / `S` in `build/rows.py`, run `python build/build.py`, check the page locally, then commit and push `main`. Pages redeploys in about a minute.
+To change data: edit `RAW_ROWS` / `S` in `build/rows.py`, run `python build/build.py`, check the page locally, then commit and push `main`. Pages redeploys in about a minute.

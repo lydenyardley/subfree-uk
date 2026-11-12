@@ -1,0 +1,8 @@
+#!/bin/sh
+# Refuse a commit whose generated files are stale or whose data checks fail.
+# Enable once per clone with: git config core.hooksPath .githooks
+set -e
+
+py=python3
+command -v "$py" >/dev/null 2>&1 || py=python
+exec "$py" build/check.py --fast

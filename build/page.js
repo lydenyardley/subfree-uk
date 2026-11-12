@@ -1,5 +1,5 @@
 (function(){
-var DATA=/*@@DATA@@*/{},CATS=/*@@CAT@@*/{},SLUG=document.body.dataset.cat,D=DATA[SLUG],CAT=CATS[SLUG],CHECKED=CAT.checked,CLAIM_WHAT=CAT.claims;
+var PAGE=JSON.parse(document.getElementById('rows').textContent),D=PAGE.rows,CAT=PAGE.cat,CHECKED=CAT.checked,CLAIM_WHAT=CAT.claims;
 var $=function(s,c){return (c||document).querySelector(s)},$$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
 // The category's sentences carry placeholders, not a second script.
 function cat(s,values){return String(s).replace(/\{(\w+)\}/g,function(m,k){var v=values&&values[k];if(v===undefined)v=CAT[k];return v===undefined?m:v})}

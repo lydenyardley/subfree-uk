@@ -1744,7 +1744,10 @@ def desktop_rows_check(page, row_count):
         where = f"{width}px{fallback}"
         found = []
         band = width <= 900
-        tracks = 7 if band else 8
+        # One template has eight tracks at every desktop width. Below 901px the
+        # catch's track is zero-width and the catch spans the row on a second
+        # line; the header hides its eighth cell with the same clip.
+        tracks = 8
         if got["display"] != "grid" or got["tracks"] != tracks:
             found.append(
                 f"at {where} a row is {got['display']!r} with {got['tracks']} tracks, "
@@ -1760,8 +1763,9 @@ def desktop_rows_check(page, row_count):
             found.append(f"at {where} {len(got['rows'])} of {row_count} rows are showing")
             return found
         heads = [th for th in got["head"] if th["width"] > 2]
-        if len(heads) != tracks:
-            found.append(f"at {where} {len(heads)} header cells are showing, expected {tracks}")
+        visible = 7 if band else 8
+        if len(heads) != visible:
+            found.append(f"at {where} {len(heads)} header cells are showing, expected {visible}")
         if heads:
             skew = max(
                 abs(left - head["left"])

@@ -24,7 +24,8 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
         with:
           python-version: "3.13"
-      # The list needs the dataset and nothing else: no browser, no network.
+      # The due list needs the dataset; the feed report needs the two public
+      # product feeds. Neither needs a browser.
       - name: Write the list
         id: due
         run: |
@@ -32,6 +33,12 @@ jobs:
           python build/refresh.py > refresh.md
           echo "due=$?" >> "$GITHUB_OUTPUT"
           cat refresh.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Check the brand feeds
+        run: |
+          set +e
+          python build/lineup_feed.py > feed.md
+          cat feed.md >> refresh.md
+          cat feed.md >> "$GITHUB_STEP_SUMMARY"
       # One open issue is the standing reminder; each week adds to it rather than
       # opening a second. Closing it is how the work is declared done.
       - name: File it, or add to the open one

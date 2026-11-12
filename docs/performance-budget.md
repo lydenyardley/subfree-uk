@@ -21,90 +21,42 @@ they always are.
 
 ## The byte budget
 
-| File | Budget, gzipped | Measured 9 November 2026 |
+| File | Budget, gzipped | Measured 12 November 2026 |
 |---|---|---|
-| `index.html` | 25,000 | 24,279 |
-| `assets/page.css` | 18,000 | 16,815 |
-| `assets/page.js` | 36,000 | 33,732 |
-| The three together, a first visit | 80,000 | 74,826 |
+| `index.html` | 33,000 | 30,240 |
+| `cameras/index.html` | 33,000 | 22,367 |
+| `rings/index.html` | 33,000 | 15,535 |
+| `printers/index.html` | 33,000 | 13,375 |
+| `pet-trackers/index.html` | 33,000 | 14,861 |
+| `baby-monitors/index.html` | 33,000 | 12,823 |
+| `assets/page.css` | 18,000 | 16,899 |
+| `assets/page.js` | 18,000 | 15,513 |
+| A first visit to `index.html` | 70,000 | 62,652 |
 
 These are the bytes a reader downloads before the page can answer them, so they
 are the one performance number that can be held exactly: same input, same
 output, no machine in between. `build/check.py`'s `transfer budget` check
-rebuilds, gzips the three files at level 9 and fails above any ceiling.
+rebuilds, gzips every page and both shared files at level 9, and fails above any
+ceiling.
 
-The script's ceiling moved by a thousand bytes with the third category, and that
-is a decision rather than a fix. Every row of every category ships in the
-script, so a row costs about 150 gzipped bytes: the smart ring table plus the
-Ring 5 it was missing took the script from 23,900 to 24,047, past a ceiling set
-when the page had two categories. Trimming copy to fit would have been the
-alternative, and the copy is the product.
+The script is shared logic only. Each page embeds its own category's rows in
+`<script type="application/json" id="rows">`, which the browser never runs, and
+`assets/page.js` reads that block. Before the change the script carried every
+category: 33,971 gzipped, and the doorbell page's first visit was 75,245. The
+script is now 15,513, the doorbell page is 62,652, and the other pages are
+between 45,235 and 54,779. A row added to `rings` moves the rings page, not the
+doorbell page; `page data` fails if a page carries another category's rows.
 
-It moved again with the launch rows. The newest-model pass added five doorbells
-and a camera, and Ring's two wired 4K doorbells are two more, which took the
-script by 4 bytes over its own ceiling and the first visit by 2. Cutting a
-sentence of a product's copy to fit a round number is the wrong trade, so the
-ceiling follows the rows: 26,000 for the script and 65,500 for the first visit.
-The headroom is still thin. The rail behind a moving column, its measurement of
-the hole it has to fill and the comments that say why cost 336 bytes — the script
-from 25,303 to 25,571 and the stylesheet from 16,838 to 16,906 — so a first visit
-has 63 bytes left and the next script change is a trim rather than a sentence
-that fits.
+The page budget is 33,000 and a first visit is 70,000. The largest page is the
+doorbell page at 30,240, which leaves 2,760 bytes of page headroom, 1,101 in the
+stylesheet, 2,487 in the script and 7,348 on a first visit. The ceilings are
+measured, not guessed. Raising one is a design decision, not a fix, and the
+copy is still the product.
 
-What it cost when the header rule became one painter: two short comments rather
-than four long ones. The bars and the transparent borders are a few bytes; the
-prose that explains why they are bars is what grew, so it was cut back to the
-fact — a collapsed border and a box round to different device rows — and the
-first visit now sits at 65,447 with 53 bytes left.
-
-The fourth category moved both ceilings again, on 5 November 2026. Five
-printers and their category record took the script from 25,693 to 27,433 and a
-first visit from 65,447 to 67,331, past ceilings that had 53 bytes of headroom.
-The script carries every row of every category, and a cartridge row of printer
-copy is longer than a doorbell's because it carries its ink arithmetic and plan
-sentence. Nothing was trimmed: the ceiling follows the rows, at 30,000 for the
-script and 70,000 for a first visit. The fourth row, Canon's tank, added 233
-bytes rather than a cartridge row's 400 because it has no plan arithmetic. The
-fifth, Canon's TS6550i, added 229, and the visitor counter added 84 to the
-script and 218 to the first visit.
-
-The newest camera and ring rows took the script from 27,349 to 28,444 and a
-first visit from 67,247 to 68,341. They stayed under the ceilings, so the
-budget did not move: 1,556 bytes of script headroom and 1,659 bytes on a first
-visit.
-
-The last-generation badge and the three older printer rows took the page from
-23,101 to 23,141, the stylesheet from 16,796 to 16,815 and the script from
-28,444 to 28,870, so a first visit is 68,826. The ceilings did not move: 859
-bytes of page headroom, 1,185 of stylesheet, 1,130 of script and 1,174 on a
-first visit.
-
-The two older camera rows, Reolink's Argus PT Ultra and Ring's Outdoor Camera
-Plus, took the script from 28,870 to 29,100 and the page from 23,140 to 23,142,
-so a first visit is 69,057. The stylesheet did not move, and the ceilings again
-stayed put: 858 bytes of page headroom, 1,185 of stylesheet, 900 of script and
-943 on a first visit.
-
-The two doorbell rows, Reolink's Battery Video Doorbell (2nd Gen) and Arlo's
-Essential FHD, took the page from 23,142 to 24,249 and the script from 29,100
-to 29,379, so a first visit is 70,443. That is past 24,000 for the page and past
-70,000 for a first visit, so both ceilings move to 25,000 and 72,000. The rows
-are what the page is for, and each costs about 700 bytes gzipped because the
-comparison keeps a second copy of the data. The stylesheet and script ceilings
-did not move: 1,185 bytes of stylesheet headroom remain, 621 of script, 751 of
-page and 1,557 on a first visit.
-
-The fifth and sixth categories moved both ceilings again, on 9 November 2026. Seven pet trackers and six baby monitors took the script from 29,379 to 33,732 and a first visit from 70,443 to 74,826, past ceilings with 621 and 1,557 bytes left. The script carries every row of every category, so the growth is the dataset rather than a change to the script: 4,353 bytes for 13 rows, or 335 a row. Nothing was trimmed. The ceilings follow the rows at 36,000 and 80,000, which leaves 2,268 bytes of script headroom and 5,174 on a first visit. The page moved 30 bytes and the stylesheet did not move.
-
-The first-visit total moved from 61,000 to 64,500 the same way. The newest
-models added five doorbells and a camera row: about 700 gzipped bytes of table
-markup each, which is the comparison, the details panel and its plain sentences
-for one product. The page went from 59,795 to 63,098, so the ceiling follows the
-row count. Nothing was cut to fit, and the next rows will need the same
-decision rather than a shorter catch line.
-The comparison's rows are in the script rather than in a JSON block on purpose:
-the same bytes on the wire, one more parse, and one more copy to fall out of
-step with `ROWS`. If the budget does bind, that is the first trade to revisit.
+The comparison reads the same per-page data block as the table. It is one copy
+of the rows rather than a second copy in the script, so a row costs its own
+page and nothing else. The script's remaining 15,513 bytes are the filters,
+sort, comparison, source card, lightbox and their tests' hooks.
 
 ## How to measure
 

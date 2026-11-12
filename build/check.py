@@ -32,6 +32,7 @@ layout and axe pass there, because Chromium alone cannot prove a fallback.
     python build/check.py
     python build/check.py --only "derived figures,labels"
     python build/check.py --list
+    python build/check.py --fast       # browser-free static checks
     python build/check.py --external   # also request every outbound URL
     python build/check.py --headed
 
@@ -72,6 +73,10 @@ def main():
     parser.add_argument("--external", action="store_true", help="also request every outbound URL")
     parser.add_argument("--headed", action="store_true", help="show the browser window")
     parser.add_argument(
+        "--fast", action="store_true",
+        help="run the browser-free static checks, as the pre-commit hook does",
+    )
+    parser.add_argument(
         "--only",
         metavar="NAME",
         help="run only checks whose name contains NAME (comma-separated)",
@@ -85,19 +90,20 @@ def main():
             print(check.name)
         return 0
 
-    missing = [
-        package
-        for package in ("playwright", "axe_playwright_python")
-        if importlib.util.find_spec(package) is None
-    ]
-    if missing:
-        print("Missing audit dependencies. Run: pip install -r build/requirements.txt")
-        return 2
-
-    from playwright.sync_api import sync_playwright
+    if not args.fast:
+        missing = [
+            package
+            for package in ("playwright", "axe_playwright_python")
+            if importlib.util.find_spec(package) is None
+        ]
+        if missing:
+            print("Missing audit dependencies. Run: pip install -r build/requirements.txt")
+            return 2
 
     audit = Audit(args.only)
     print("SubFree UK audit")
+    if args.fast:
+        print("  note  fast: browser-free static checks")
     if audit.only:
         print(f"  note  only checks matching {', '.join(audit.only)!r}")
 
@@ -123,7 +129,11 @@ def main():
     note_pending(ctx)
 
     wanted = {check.phase for check in checks if audit.wants(check.name)}
+    if args.fast:
+        wanted = {"static"}
     if wanted - {"static"}:
+        from playwright.sync_api import sync_playwright
+
         httpd = serve()
         ctx.url = f"http://127.0.0.1:{httpd.server_address[1]}/index.html"
         try:

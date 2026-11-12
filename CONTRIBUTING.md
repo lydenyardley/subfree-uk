@@ -39,8 +39,10 @@ hook below and again on the push.
 
 ## Data
 
-`ROWS` in `build/rows.py` is the dataset, beside its sources and the figures
-derived from them. The sourcing rules, including how to close a "Not yet
+`RAW_ROWS` in `build/rows.py` is the authored dataset, beside its sources and
+the figures derived from them. `build/model.py` parses it once into the frozen
+records the page and checks read; author in `RAW_ROWS`, not in the parsed
+`ROWS`. The sourcing rules, including how to close a "Not yet
 verified" note, are in [AGENTS.md](AGENTS.md).
 
 ## Generated files
@@ -56,23 +58,26 @@ so an old cached page can still load them.
 
 ## Before committing
 
-- Run `python build/check.py`. It rebuilds the site, fails if a generated file
-  is stale, recomputes every figure in the CSV from `ROWS`, and then runs the
-  accessibility, anchor, image, target-size, type-floor, phone-layout, compare
-  and differences-only, shareable-shortlist, jump-announcement, the
+- The pre-commit hook runs `python build/check.py --fast`, the 22 browser-free
+  checks, and refuses a commit when the generator has changed a committed file.
+  Enable it once per clone with the hook command below. Run the full
+  `python build/check.py` before pushing. It recomputes every figure in the CSV
+  from `ROWS`, type-checks `build/` with mypy, and then runs the accessibility,
+  anchor, image, target-size, type-floor, phone-layout, compare and
+  differences-only, shareable-shortlist, jump-announcement, the
   tray-to-comparison transition, the table's scroll rule, motion, score-bar,
   label, source-card, source-list, closing-line, performance-budget,
   no-JavaScript and overflow audit at every breakpoint, plus the structural
-  half in Firefox.
-  Fix anything it reports. `--only "<name>"` runs one named check and `--list`
-  prints their names.
+  half in Firefox. Fix anything it reports. `--only "<name>"` runs one named
+  check and `--list` prints their names.
 - Check the page at desktop and phone widths, and keep the numbers in
   [docs/performance-budget.md](docs/performance-budget.md) honest if you touch
   sorting, filtering or the compare table.
 - Review the diff and fix what that review finds before committing.
 - Keep commits small and logical, one concern each.
-- Enable the message hook once per clone. It runs the same rules as the push,
-  so a bad subject fails while it is still one edit away:
+- Enable the hooks once per clone. The message hook runs the same rules as the
+  push, so a bad subject fails while it is still one edit away; the pre-commit
+  hook runs the fast gate:
 
   ```bash
   git config core.hooksPath .githooks

@@ -7,9 +7,11 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 
 from catalog import CATEGORIES, CSV_KEYS
+from model import Current
 from .context import ROOT
 from .registry import Check, Skip
 
@@ -21,22 +23,17 @@ BLOCKER_CUES = (
 
 WEAK_UNVERIFIED = {"not confirmed", "unknown", "tbc", "pending", "not yet verified"}
 
-# What the three files a first visit reads may weigh, gzipped. The budget is in
-# docs/performance-budget.md; each line has headroom over today's figure, and a
-# change that doubles the page cannot pass by being a little over. The script
-# carries every row of every category, so its figure follows the row count: the
-# third category, and the ring it was missing, took it past the ceiling that was
-# set when the page had two.
+# What a first visit reads may weigh, gzipped. The script is shared logic only,
+# and each page carries its own rows in the JSON block, so the page's own data
+# is the variable. The budgets are in docs/performance-budget.md; each has
+# headroom over today's figure, and a change that doubles a page cannot pass by
+# being a little over.
 TRANSFER_BUDGET = {
-    "index.html": 25_000,
     "assets/page.css": 18_000,
-    "assets/page.js": 36_000,
+    "assets/page.js": 18_000,
 }
-# The total moved with the newest models: five doorbells and a camera are about
-# 3.3KB gzipped of real table copy, and Ring's two wired 4K doorbells are two
-# more rows, so the ceiling follows the rows rather than the copy being cut to
-# fit a number set when the table was smaller.
-TRANSFER_TOTAL = 80_000
+PAGE_BUDGET = 33_000
+TRANSFER_TOTAL = 70_000
 
 
 def load_rows():
@@ -249,6 +246,46 @@ def slider_problems(rows, pages):
     return problems
 
 
+def page_data_problems(pages):
+    """A page ships its own rows, once, in the block its script reads."""
+    problems = []
+    for cat in CATEGORIES:
+        page = pages[cat["page"]]
+        match = re.search(
+            r'<script type="application/json" id="rows">(.*?)</script>', page, re.S
+        )
+        if not match:
+            problems.append(f"{cat['page']}: no per-page rows block")
+            continue
+        try:
+            block = json.loads(match.group(1))
+        except ValueError as error:
+            problems.append(f"{cat['page']}: rows block is not JSON ({error})")
+            continue
+        if block.get("slug") != cat["slug"]:
+            problems.append(
+                f"{cat['page']}: rows block names {block.get('slug')!r}, not {cat['slug']!r}"
+            )
+        rows = block.get("rows")
+        if not isinstance(rows, dict):
+            problems.append(f"{cat['page']}: rows block has no row map")
+            continue
+        want = {row["id"] for row in cat["rows"]}
+        extra = sorted(set(rows) - want)
+        missing = sorted(want - set(rows))
+        if extra:
+            problems.append(
+                f"{cat['page']}: rows block carries rows from another category: {', '.join(extra)}"
+            )
+        if missing:
+            problems.append(
+                f"{cat['page']}: rows block is missing {', '.join(missing)}"
+            )
+        if not isinstance(block.get("cat"), dict):
+            problems.append(f"{cat['page']}: rows block has no category words")
+    return problems
+
+
 def policy_problems(pages):
     """The page's policy is the one the markup obeys.
 
@@ -314,22 +351,33 @@ def escaping_problems(pages):
 
 
 def transfer_problems():
-    """What the three files a first visit reads weigh over the wire."""
+    """What each page's own first visit weighs over the wire."""
     problems = []
-    total = 0
+    shared = 0
     for name, budget in TRANSFER_BUDGET.items():
         raw = open(os.path.join(ROOT, name), "rb").read()
         size = len(gzip.compress(raw, 9))
-        total += size
+        shared += size
         if size > budget:
             problems.append(
                 f"{name} is {size:,} bytes gzipped, over its {budget:,}-byte budget"
             )
+    pages = {}
+    for cat in CATEGORIES:
+        raw = open(os.path.join(ROOT, cat["page"]), "rb").read()
+        size = len(gzip.compress(raw, 9))
+        pages[cat["page"]] = size
+        if size > PAGE_BUDGET:
+            problems.append(
+                f"{cat['page']} is {size:,} bytes gzipped, over its {PAGE_BUDGET:,}-byte budget"
+            )
+    biggest = max(pages, key=pages.get) if pages else "none"
+    total = shared + (pages[biggest] if pages else 0)
     if total > TRANSFER_TOTAL:
         problems.append(
-            f"a first visit is {total:,} bytes gzipped, over the {TRANSFER_TOTAL:,}-byte budget"
+            f"{biggest} first visit is {total:,} bytes gzipped, over the {TRANSFER_TOTAL:,}-byte budget"
         )
-    return problems, total
+    return problems, pages, shared
 
 
 def freshness_problems():
@@ -464,9 +512,10 @@ def lineup_photo_problems(meta):
     """
     problems = []
     for cat in CATEGORIES:
-        for brand, named in (cat.get("current") or {}).items():
-            if isinstance(named, tuple):
+        for brand, entry in (cat.get("lineup") or {}).get("current", {}).items():
+            if not isinstance(entry, Current):
                 continue
+            named = entry.row_id
             photo = meta.get(named) or {}
             if not photo or photo.get("placeholder"):
                 problems.append(
@@ -485,8 +534,11 @@ def lineup_photo(ctx):
 
 
 def transfer(ctx):
-    problems, total = transfer_problems()
-    ctx.note(f"a first visit is {total:,} bytes gzipped across the page, its CSS and its script")
+    problems, pages, shared = transfer_problems()
+    ctx.note(
+        "first visits, page data + shared CSS/JS: "
+        + ", ".join(f"{name} {size + shared:,}" for name, size in pages.items())
+    )
     return problems
 
 
@@ -509,6 +561,42 @@ def note_pending(ctx):
         for row in pending:
             why = row["Unverified / re-check"].replace("\u00a3", "GBP ")
             ctx.note(f"{row['Brand']} {row['Model']}: {why}")
+
+
+def type_problems():
+    """The build's Python modules under the project's mypy baseline."""
+    result = subprocess.run(
+        [sys.executable, "-m", "mypy", "build", "--ignore-missing-imports", "--no-error-summary"],
+        cwd=ROOT, capture_output=True, text=True, timeout=120,
+    )
+    if result.returncode == 0:
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()] or [
+        result.stderr.strip() or "mypy failed without a message"
+    ]
+
+
+def row_model_problems():
+    """The parse boundary names a bad row and a bad lineup by field and brand."""
+    from model import Row, parse_lineup
+
+    problems = []
+    raw = (CATEGORIES[0].get("raw_rows") or [{}])[0]
+    raw.pop("price", None)
+    try:
+        Row.from_raw(raw)
+    except KeyError as error:
+        if "price" not in str(error):
+            problems.append(f"a row missing price failed on {error}, not price")
+    else:
+        problems.append("a row missing price parsed without an error")
+
+    _, lineup_problems = parse_lineup(
+        {"slug": "fixture", "current": {"Brand": None}, "previous": {}}, {}
+    )
+    if not any("Brand" in problem for problem in lineup_problems):
+        problems.append("a malformed current lineup did not name its brand")
+    return problems
 
 
 CHECKS = [
@@ -557,12 +645,27 @@ CHECKS = [
     ),
     Check(
         "transfer budget", "static", 9,
-        "the page, its CSS and its script stay inside their gzipped byte budgets",
+        "each page, its CSS and its script stay inside their gzipped byte budgets",
         transfer,
+    ),
+    Check(
+        "page data", "static", 27,
+        "every page ships only its own rows, in the JSON block its script reads",
+        lambda ctx: page_data_problems(ctx.pages),
     ),
     Check(
         "content policy", "static", 6,
         "the page's Content-Security-Policy hashes its own inline scripts and leaves no inline handler",
         lambda ctx: policy_problems(ctx.pages),
+    ),
+    Check(
+        "types", "static", 99,
+        "every build module type-checks under the project's mypy baseline",
+        lambda ctx: type_problems(),
+    ),
+    Check(
+        "row model", "static", 100,
+        "a malformed row and a malformed lineup fail by field and by brand",
+        lambda ctx: row_model_problems(),
     ),
 ]
