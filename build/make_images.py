@@ -11,6 +11,9 @@ UA={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 C
 IMGS={
  "ring":("https://en-uk.ring.com/cdn/shop/files/1_Slate_Sunray_Front_ad46b95a-0b98-4a7e-8f06-0304b31312eb.jpg?v=1779257638","https://en-uk.ring.com/products/battery-doorbell-2nd-gen",None,True),
  "ring-4kpro":("https://en-uk.ring.com/cdn/shop/files/Bigfoot_Deep_Silver_device_1500x1500_36477aae-8427-473d-bb3c-eefee22faf5e.png?v=1774944640","https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen",None,True),
+ "ring-2kplus":("https://cdn.shopify.com/s/files/1/2418/9735/files/Moonlight_Silver_device_1500x1500_dcd3964c-b040-4626-a013-b1484f9a1e9e.png?v=1774944697","https://en-uk.ring.com/products/battery-doorbell-plus-2nd-gen",None,True),
+ "ring-w2k":("https://cdn.shopify.com/s/files/1/2418/9735/files/Tahoe_Hardwired_device_1500x1500_27993928-eeb5-46bd-a735-ffcef2b174cd.png?v=1774944821","https://en-uk.ring.com/products/wired-doorbell-2nd-gen",None,True),
+ "ring-w2kplus":("https://cdn.shopify.com/s/files/1/2418/9735/files/Ring_Phantom_1500x1500_01.jpg?v=1756825836","https://en-uk.ring.com/products/wired-video-doorbell-plus",None,True),
  "ring-wpro":("https://cdn.shopify.com/s/files/1/2418/9735/files/Ring_Starlit-WIRED_1500x1500_01.jpg?v=1756798210","https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen",None,True),
  "ring-elite":("https://cdn.shopify.com/s/files/1/2418/9735/files/Cinco_Deep_Silver_device_1500x1500_5ddceb48-b655-46d5-a7bf-db9a16a8b8d4.png?v=1774944937","https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen",None,True),
  "nest":("https://lh3.googleusercontent.com/7as7cJnLssK4ejvx-4zNQCRmNoupXijD6fkO4orVEB54bB0SRfQn75qzZNnT4Ud4gqOabRfO-8J0YIBRKkMG9yvK5QWKz2FwRQ=rw-rj-sc0xffffffff","https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB",None,True),
@@ -23,6 +26,7 @@ IMGS={
  # Both Tapo heroes are 2000px squares with a badge and a phone in them, so
  # the crop keeps the doorbell and cuts the marketing around it.
  "tapo-d235":("https://uk.store.tapo.com/cdn/shop/files/D235-award.jpg?v=1772017345&width=2048","https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235",(0.36,0.03,0.62,0.97),True),
+ "tapo-d235l":("https://cdn.shopify.com/s/files/1/0530/9110/6967/files/Tapo_D235L_UN_2.0_Overview_01_large_20260911092826p.jpg?v=1790171327","https://uk.store.tapo.com/products/tapo-d235l-tapo-video-doorbell-camera",None,True),
  "tapo-d260":("https://uk.store.tapo.com/cdn/shop/files/D260-4k.jpg?v=1787566661&width=2048","https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell",(0.26,0.10,0.72,0.98),True),
  "tapo-td21":("https://uk.store.tapo.com/cdn/shop/files/0002290-RedesigntheDoorbellMainImage21.png?v=1776441614&width=2048","https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21",(0.1,0,0.47,1),True),
  "arlo":("https://www.arlo.com/content/dam/arlo/2024-content/products/essential-wd-2k/en/si-compressed/arlo-2k-wireless-video-doorbell-white.png","https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell",None,True),

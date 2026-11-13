@@ -9,6 +9,21 @@
   "page": "https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen",
   "cropped": false
  },
+ "ring-2kplus": {
+  "src": "https://cdn.shopify.com/s/files/1/2418/9735/files/Moonlight_Silver_device_1500x1500_dcd3964c-b040-4626-a013-b1484f9a1e9e.png?v=1774944697",
+  "page": "https://en-uk.ring.com/products/battery-doorbell-plus-2nd-gen",
+  "cropped": false
+ },
+ "ring-w2k": {
+  "src": "https://cdn.shopify.com/s/files/1/2418/9735/files/Tahoe_Hardwired_device_1500x1500_27993928-eeb5-46bd-a735-ffcef2b174cd.png?v=1774944821",
+  "page": "https://en-uk.ring.com/products/wired-doorbell-2nd-gen",
+  "cropped": false
+ },
+ "ring-w2kplus": {
+  "src": "https://cdn.shopify.com/s/files/1/2418/9735/files/Ring_Phantom_1500x1500_01.jpg?v=1756825836",
+  "page": "https://en-uk.ring.com/products/wired-video-doorbell-plus",
+  "cropped": false
+ },
  "ring-wpro": {
   "src": "https://cdn.shopify.com/s/files/1/2418/9735/files/Ring_Starlit-WIRED_1500x1500_01.jpg?v=1756798210",
   "page": "https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen",
@@ -58,6 +73,11 @@
   "src": "https://uk.store.tapo.com/cdn/shop/files/D235-award.jpg?v=1772017345&width=2048",
   "page": "https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235",
   "cropped": true
+ },
+ "tapo-d235l": {
+  "src": "https://cdn.shopify.com/s/files/1/0530/9110/6967/files/Tapo_D235L_UN_2.0_Overview_01_large_20260911092826p.jpg?v=1790171327",
+  "page": "https://uk.store.tapo.com/products/tapo-d235l-tapo-video-doorbell-camera",
+  "cropped": false
  },
  "tapo-d260": {
   "src": "https://uk.store.tapo.com/cdn/shop/files/D260-4k.jpg?v=1787566661&width=2048",
