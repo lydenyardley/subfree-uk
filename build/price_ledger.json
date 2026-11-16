@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-16T17:32:48+00:00",
+  "updated": "2026-11-16T17:50:23+00:00",
   "rows": {
     "amazfit-helio": {
       "price": {
@@ -177,7 +177,7 @@
       "price": {
         "base": 115.63,
         "checked": "2026-11-16",
-        "price": 116.79
+        "price": 99.99
       }
     },
     "hp-envy-6530e": {
