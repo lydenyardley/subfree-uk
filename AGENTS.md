@@ -93,12 +93,14 @@ price, or, where the row has no plan, the page that says none is needed.
   computed in `build/rows.py`, and `build/check.py` recomputes them from
   `price`, `extra` and `sub`; a corrected input moves the ranking.
 - A row sold by more than one shop carries `offers` instead of a price, and
-  each offer is a shop, the page behind its price, the price, the
-  configuration that price is for and a `pay` rank. `offer_winner()` shows the
-  cheapest, unless another offer is within `OFFER_WINDOW` (£5) of it and pays
-  more; ties go to the cheaper offer and then to the shop's name. The winner
-  sets `price`, `price_src` and `price_note`, so a row with offers must not
-  author any of the three. `pay` is a rank and not a rate, and it is per shop
+    each offer is a shop, the page behind its price, the price,
+  the configuration that price is for and a `pay` rank. `offer_winner()` shows
+  the cheapest in-stock offer whose ledger read is within `OFFER_STALE_DAYS`,
+  unless another offer is within `OFFER_WINDOW` (£5) of it and pays more; ties
+  go to the cheaper offer and then to the shop's name. An out-of-stock or
+  stale offer cannot win, and a row with no eligible offer says "Check price".
+  The winner sets `price`, `price_src` and `price_note`, so a row with offers
+  must not author any of the three. `pay` is a rank and not a rate, and it is per shop
   rather than per row, so a new shop is one entry. Adding a shop whose price
   you have not opened is worse than leaving the row with one offer.
 - A paid link is a fact about the source, not about its address. `rows.py`
@@ -174,9 +176,12 @@ server error fails the run.
 
 `build/price_watch.py --apply` is the local writer. It reads every source with
 Chromium and the Firefox fallback, re-reads every changed page, and writes only
-an unchanged second reading to `build/price_ledger.json`. An out-of-stock
-product read stays out; an out-of-stock offer is recorded with `in_stock: false`
-so the page can skip its old price. Unconfirmed changes stay out.
+an unchanged second reading to `build/price_ledger.json`. Stock comes from
+JSON-LD when the page publishes it, and from the per-host scoped rules in
+`STOCK_BY_HOST` for Amazon, Argos and Currys. The second read must match both
+the price and the stock state. An out-of-stock product read stays out; an
+out-of-stock offer is recorded with `in_stock: false` so the page can skip its
+old price. Unconfirmed changes stay out.
 `build/price_refresh.py` runs that probe,
 rebuilds, runs the full audit, then commits and pushes only from a clean tree.
 `build/install_price_task.ps1` registers it as a weekly Windows task.

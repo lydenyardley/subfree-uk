@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-16T17:50:23+00:00",
+  "updated": "2026-11-16T18:54:18+00:00",
   "rows": {
     "amazfit-helio": {
       "price": {
@@ -202,7 +202,8 @@
       "offers": {
         "amz_oura4": {
           "base": 244.0,
-          "checked": "2026-11-16"
+          "checked": "2026-11-16",
+          "in_stock": true
         },
         "argos_oura4": {
           "base": 244.0,
@@ -268,7 +269,8 @@
       "offers": {
         "amz_rc2": {
           "base": 259.0,
-          "checked": "2026-11-16"
+          "checked": "2026-11-16",
+          "in_stock": true
         },
         "argos_rc2": {
           "base": 259.0,
@@ -388,7 +390,8 @@
         "amz_samsung": {
           "base": 399.0,
           "checked": "2026-11-16",
-          "price": 159.63
+          "price": 159.63,
+          "in_stock": true
         },
         "currys_samsung": {
           "base": 150.97,
@@ -445,7 +448,8 @@
         "amz_ultra": {
           "base": 329.0,
           "checked": "2026-11-16",
-          "price": 199.0
+          "price": 199.0,
+          "in_stock": true
         },
         "argos_ultra": {
           "base": 329.0,

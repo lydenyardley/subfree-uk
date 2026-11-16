@@ -111,6 +111,7 @@ class ApplyTests(unittest.TestCase):
         problems = apply_to_rows(ledger, [row], {"argos_oura4": ("Argos", "https://a")})
         self.assertEqual(problems, [])
         self.assertIs(row["offers"][0]["in_stock"], False)
+        self.assertEqual(row["offers"][0]["checked_iso"], "2026-11-16")
 
     def test_an_unknown_stock_reading_keeps_the_old_one(self) -> None:
         row = offer_row()

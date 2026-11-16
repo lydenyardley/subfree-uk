@@ -11,7 +11,7 @@ it over the shipped files, so an unknown key or a source that does not resolve
 fails by name instead of printing nothing.
 """
 
-from datetime import date
+from datetime import date, timedelta
 from math import ceil
 from typing import Any
 from urllib.parse import quote, urlparse
@@ -327,11 +327,13 @@ AWIN_MERCHANTS = {k: m for k, m in AWIN_LINKS.items() if awin_live(m)}
 # ---------- where to buy ----------
 # A ring is sold by several UK shops and its price moves with size and finish,
 # so a row lists the offers that were checked rather than one price. The page
-# shows one of them: the cheapest, unless another offer is within
-# OFFER_WINDOW of it and pays us more. `pay` is a rank and not a rate, because
-# only Amazon publishes a fixed percentage, and the shop's own configuration
-# travels in `note` so two prices are never compared across a size or finish.
+# shows one of them: the cheapest in-stock offer whose last read is fresh,
+# unless another offer is within OFFER_WINDOW of it and pays us more. `pay` is
+# a rank and not a rate, because only Amazon publishes a fixed percentage, and
+# the shop's own configuration travels in `note` so two prices are never
+# compared across a size or finish.
 OFFER_WINDOW = 5.0
+OFFER_STALE_DAYS = 30
 PAY_RETAIL = 1   # a UK shop we have no programme with: it pays us nothing
 PAY_AMAZON = 2   # Amazon UK Associates: a small rate on the whole price
 PAY_BRAND = 3    # a brand programme that pays more again (Ultrahuman 7-15%)
@@ -342,26 +344,45 @@ def in_stock_offers(offers):
     return [o for o in offers if o.get("in_stock") is not False]
 
 
-def offer_winner(offers):
-    """The offer a reader sees: cheapest in stock, then the best payer.
+def offer_is_stale(offer, today=None):
+    """An offer whose last successful read is older than the offer limit."""
+    checked = offer.get("checked_iso")
+    if not checked:
+        return False
+    try:
+        day = date.fromisoformat(str(checked))
+    except ValueError:
+        return True
+    return (today or date.today()) - day > timedelta(days=OFFER_STALE_DAYS)
 
-    An offer the page marks out of stock cannot win, however cheap it is. If
-    every offer is out, the cheapest comes back only so the caller can name
-    it; the row prints "Check price" rather than an old figure.
+
+def fresh_offers(offers, today=None):
+    """The offers that have been read recently enough to show a price."""
+    return [o for o in offers if not offer_is_stale(o, today)]
+
+
+def offer_winner(offers, today=None):
+    """The offer a reader sees: cheapest fresh, in-stock offer, then best payer.
+
+    An offer the page marks out of stock cannot win, however cheap it is. An
+    offer nobody has read within OFFER_STALE_DAYS cannot win either. If no
+    offer is fresh and in stock, the cheapest comes back only so the caller
+    can name it; the row prints "Check price" rather than an old figure.
 
     Only an offer within OFFER_WINDOW of the cheapest can win, so the shop that
     pays us better can never add more than that to the price. A tie falls to
     the cheaper offer and then to the shop's name, so the winner is a function
     of the data rather than of the order the list is written in.
     """
-    available = in_stock_offers(offers)
-    considered = available or list(offers)
+    fresh = fresh_offers(offers, today)
+    available = in_stock_offers(fresh)
+    considered = available or fresh or list(offers)
     cheapest = min(o["price"] for o in considered)
     near = [o for o in considered if o["price"] <= cheapest + OFFER_WINDOW + 1e-9]
     return min(near, key=lambda o: (-o["pay"], o["price"], o["shop"]))
 
 
-def offer_shown(offers):
+def offer_shown(offers, today=None):
     """The offer whose price the reader sees.
 
     The winner, unless the winner is Amazon: Amazon's rules bar showing its
@@ -369,10 +390,10 @@ def offer_shown(offers):
     the link stays Amazon's. With no such shop the winner comes back and the
     row says "Check price".
     """
-    won = offer_winner(offers)
+    won = offer_winner(offers, today)
     if won["pay"] != PAY_AMAZON:
         return won
-    twins = [o for o in in_stock_offers(offers)
+    twins = [o for o in in_stock_offers(fresh_offers(offers, today))
              if o is not won and o["pay"] != PAY_AMAZON
              and abs(o["price"] - won["price"]) < 1e-9]
     return min(twins, key=lambda o: o["shop"]) if twins else won
@@ -2171,9 +2192,10 @@ def _derive(cat):
             offers and {"price", "price_src", "price_note"} & set(r)
         )
         if offers:
+            fresh = fresh_offers(offers)
             won, shown = offer_winner(offers), offer_shown(offers)
-            if not in_stock_offers(offers):
-                # No shop can sell it, so no old figure is allowed to stand in.
+            if not fresh or not in_stock_offers(fresh):
+                # No fresh shop can sell it, so no old figure is allowed to stand in.
                 r["price_check"] = True
             if won["pay"] == PAY_AMAZON:
                 # Amazon may win the link but never the figure: the price shown

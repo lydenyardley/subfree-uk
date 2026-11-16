@@ -141,6 +141,71 @@ CSS_BY_HOST: dict[str, tuple[str, ...]] = {
     "owletbabycare.co.uk": (".product__price", ".price"),
 }
 
+
+@dataclass(frozen=True)
+class StockRule:
+    """The scoped page evidence that says whether a product can be bought."""
+
+    containers: tuple[str, ...] = ()
+    positive: tuple[str, ...] = ()
+    negative: tuple[str, ...] = ()
+    actions: tuple[str, ...] = ()
+
+
+# The shops that put stock only in rendered markup. Each rule reads a product
+# area, never the page body: a recommendation saying "Out of stock" must not
+# mark the product itself unavailable.
+STOCK_BY_HOST: dict[str, StockRule] = {
+    "www.amazon.co.uk": StockRule(
+        containers=("#availability", "#outOfStock", "#availability_feature_div"),
+        positive=("in stock", "available to order"),
+        negative=(
+            "currently unavailable",
+            "out of stock",
+            "temporarily out of stock",
+            "sold out",
+        ),
+        actions=("#add-to-cart-button", "#buy-now-button"),
+    ),
+    "www.argos.co.uk": StockRule(
+        containers=(
+            "[data-testid='availability-message']",
+            "[data-testid*='availability']",
+            "[data-testid*='stock']",
+        ),
+        positive=(
+            "in stock",
+            "available for delivery",
+            "available for collection",
+            "available to order",
+        ),
+        negative=("out of stock", "sold out", "not available", "currently unavailable"),
+        actions=(
+            "button[data-testid*='add-to-trolley']",
+            "button[data-testid*='add-to-basket']",
+        ),
+    ),
+    "www.currys.co.uk": StockRule(
+        containers=(
+            "[data-testid*='stock']",
+            "[data-testid*='availability']",
+            ".stock-status",
+            ".availability",
+        ),
+        positive=(
+            "in stock",
+            "available for delivery",
+            "available for collection",
+            "available to order",
+        ),
+        negative=("out of stock", "sold out", "not available", "currently unavailable"),
+        actions=(
+            "button[data-testid*='addToCart']",
+            "button[data-testid*='add-to-cart']",
+        ),
+    ),
+}
+
 MONEY = re.compile(
     r"(?<![\d.])(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)(?![\d.])"
 )
@@ -179,6 +244,7 @@ class Adapter:
 
     match: str = ""
     css: tuple[str, ...] = DEFAULT_CSS
+    stock: StockRule | None = None
 
 
 @dataclass(frozen=True)
@@ -291,6 +357,41 @@ def first_price(values: Iterable[str]) -> tuple[float, str] | None:
         parsed = parse_money(value)
         if parsed is not None:
             return parsed
+    return None
+
+
+def stock_state(texts: Sequence[str], rule: StockRule) -> bool | None:
+    """Read one scoped stock area. A negative phrase wins over a positive one."""
+    text = normalise("\n".join(texts))
+    if not text:
+        return None
+    if any(normalise(phrase) in text for phrase in rule.negative):
+        return False
+    if any(normalise(phrase) in text for phrase in rule.positive):
+        return True
+    return None
+
+
+async def read_stock(page: Any, rule: StockRule | None) -> bool | None:
+    """Stock from scoped product markup, with a visible buy button as a fallback."""
+    if rule is None:
+        return None
+    texts: list[str] = []
+    for selector in rule.containers:
+        locator = page.locator(selector)
+        for index in range(min(await locator.count(), 5)):
+            item = locator.nth(index)
+            if await item.is_visible():
+                texts.append(await item.inner_text())
+    state = stock_state(texts, rule)
+    if state is not None:
+        return state
+    for selector in rule.actions:
+        locator = page.locator(selector)
+        if await locator.count() == 1:
+            button = locator.first
+            if await button.is_visible() and await button.is_enabled():
+                return True
     return None
 
 
@@ -429,6 +530,7 @@ def adapter_for(want: Want) -> Adapter:
     return Adapter(
         match=ROW_MATCH.get(want.source, {}).get(want.row_id, ""),
         css=CSS_BY_HOST.get(host, DEFAULT_CSS),
+        stock=STOCK_BY_HOST.get(host),
     )
 
 
@@ -681,6 +783,9 @@ async def probe_site(
                             )
                         )
                     else:
+                        available = availability_state(product.availability)
+                        if available is None:
+                            available = await read_stock(page, adapter.stock)
                         observations.append(
                             Observation(
                                 want=want,
@@ -688,7 +793,7 @@ async def probe_site(
                                 observed=product.price,
                                 method="JSON-LD",
                                 detail=product.availability,
-                                available=availability_state(product.availability),
+                                available=available,
                             )
                         )
                     continue
@@ -766,6 +871,7 @@ async def probe_site(
                         status=READ,
                         observed=number,
                         method="CSS",
+                        available=await read_stock(page, adapter.stock),
                     )
                 )
             return observations
@@ -818,6 +924,18 @@ def observation_key(item: Observation) -> tuple[str, str, str]:
     return (item.want.row_id, item.want.source, item.want.kind)
 
 
+def same_reading(first: Observation, again: Observation) -> bool:
+    """A second read confirms the first only when price and stock both match."""
+    return (
+        first.status == READ
+        and first.observed is not None
+        and again.status == READ
+        and again.observed is not None
+        and abs(again.observed - first.observed) < 0.005
+        and again.available == first.available
+    )
+
+
 async def confirm_changes(
     playwright: Any,
     changed: Sequence[Observation],
@@ -832,9 +950,7 @@ async def confirm_changes(
     """
     if not changed:
         return set()
-    primary = {
-        observation_key(item): (item.observed, item.available) for item in changed
-    }
+    primary = {observation_key(item): item for item in changed}
     confirmed: set[tuple[str, str, str]] = set()
     semaphore = asyncio.Semaphore(max(1, min(args.concurrency, 8)))
 
@@ -853,15 +969,7 @@ async def confirm_changes(
             for again in (item for group in results for item in group):
                 key = observation_key(again)
                 first = primary.get(key)
-                if first is None or again.status != READ or again.observed is None:
-                    continue
-                price, available = first
-                if price is None:
-                    continue
-                if (
-                    abs(again.observed - price) < 0.005
-                    and again.available == available
-                ):
+                if first is not None and same_reading(first, again):
                     confirmed.add(key)
         finally:
             await browser.close()

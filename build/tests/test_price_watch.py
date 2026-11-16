@@ -42,7 +42,9 @@ from price_watch import (
     read_css,
     read_jsonld,
     read_listing_cards,
+    read_stock,
     report,
+    same_reading,
     stock_label,
     wants,
 )
@@ -198,6 +200,73 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
                 "#tp_price_block_total_price_ww .a-offscreen",
             ),
         )
+
+    async def test_amazon_stock_is_read_from_the_availability_area(self) -> None:
+        page = await self.open_fixture("stock-amazon.html")
+        try:
+            rule = adapter_for(make_want(url="https://www.amazon.co.uk/dp/X")).stock
+            assert rule is not None
+            self.assertIs(await read_stock(page, rule), True)
+        finally:
+            await page.close()
+
+    async def test_argos_stock_negative_message_beats_the_button(self) -> None:
+        page = await self.open_fixture("stock-argos.html")
+        try:
+            rule = adapter_for(make_want(url="https://www.argos.co.uk/product/1")).stock
+            assert rule is not None
+            self.assertIs(await read_stock(page, rule), False)
+        finally:
+            await page.close()
+
+    async def test_currys_stock_is_read_from_the_status_area(self) -> None:
+        page = await self.open_fixture("stock-currys.html")
+        try:
+            rule = adapter_for(
+                make_want(url="https://www.currys.co.uk/products/x.html")
+            ).stock
+            assert rule is not None
+            self.assertIs(await read_stock(page, rule), True)
+        finally:
+            await page.close()
+
+    async def test_stock_ignores_a_related_products_out_of_stock_text(self) -> None:
+        page = await self.open_fixture("stock-ambiguous.html")
+        try:
+            rule = adapter_for(
+                make_want(url="https://www.currys.co.uk/products/x.html")
+            ).stock
+            assert rule is not None
+            self.assertIsNone(await read_stock(page, rule))
+        finally:
+            await page.close()
+
+    async def test_conflicting_stock_signals_read_as_out_of_stock(self) -> None:
+        page = await self.open_fixture("stock-conflict.html")
+        try:
+            rule = adapter_for(make_want(url="https://www.amazon.co.uk/dp/X")).stock
+            assert rule is not None
+            self.assertIs(await read_stock(page, rule), False)
+        finally:
+            await page.close()
+
+    def test_a_second_read_must_match_price_and_stock(self) -> None:
+        first = Observation(
+            want=make_want(kind="offer", shop="Argos"),
+            status=READ, observed=239.99, available=False,
+        )
+        same = Observation(
+            want=first.want, status=READ, observed=239.99, available=False
+        )
+        price_moved = Observation(
+            want=first.want, status=READ, observed=249.99, available=False
+        )
+        stock_moved = Observation(
+            want=first.want, status=READ, observed=239.99, available=True
+        )
+        self.assertTrue(same_reading(first, same))
+        self.assertFalse(same_reading(first, price_moved))
+        self.assertFalse(same_reading(first, stock_moved))
 
     async def test_listing_cards_read_the_named_product(self) -> None:
         page = await self.open_fixture("listing.html")

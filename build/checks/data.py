@@ -426,6 +426,8 @@ def offer_rule_problems(module):
     if not hasattr(module, "offer_winner"):
         return ["rows.py has no offer_winner, so no offer can be chosen"]
     C, R, A, B = 100.0, module.PAY_RETAIL, module.PAY_AMAZON, module.PAY_BRAND
+    today = date.today().isoformat()
+    old = "2000-01-01"
 
     def offer(shop, price, pay, **extra):
         return dict(
@@ -450,6 +452,11 @@ def offer_rule_problems(module):
          "an out-of-stock offer won on price"),
         ([offer("Gone", C - 5, R, in_stock=False)], C - 5,
          "a row with every offer out of stock did not fall back to its cheapest"),
+        ([offer("Old", C - 5, R, checked_iso=old),
+          offer("Live", C, R, checked_iso=today)], C,
+         "a stale offer won on price"),
+        ([offer("Old", C - 5, R, checked_iso=old)], C - 5,
+         "a row whose only offer is stale did not fall back"),
     ]
     problems = []
     for offers, want, why in cases:
@@ -466,6 +473,17 @@ def offer_rule_problems(module):
         problems.append("an out-of-stock twin hid the Amazon offer")
     if module.in_stock_offers([offer("Gone", C, R, in_stock=False)]):
         problems.append("an out-of-stock offer is still treated as available")
+    stale = offer("Old", C, R, checked_iso=old)
+    if not module.offer_is_stale(stale):
+        problems.append("an old offer is not treated as stale")
+    if module.fresh_offers([stale]):
+        problems.append("a stale offer is still treated as fresh")
+    stale_twin = module.offer_shown([
+        offer("Amazon", C, A, checked_iso=today),
+        offer("Old", C, B, checked_iso=old),
+    ])
+    if stale_twin["shop"] != "Amazon":
+        problems.append("a stale twin hid the Amazon offer")
     return problems
 
 
@@ -636,7 +654,7 @@ CHECKS = [
     ),
     Check(
         "offer rule", "static", 21,
-        "the cheapest offer wins, and a better payer only inside the £5 window",
+        "the cheapest fresh in-stock offer wins; a stale or out-of-stock offer cannot",
         offer_rule,
     ),
     Check(

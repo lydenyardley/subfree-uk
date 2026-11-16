@@ -323,6 +323,7 @@ def apply_to_rows(
                     offer["price"] = observed.price
                 if observed.in_stock is not None:
                     offer["in_stock"] = observed.in_stock
+                offer["checked_iso"] = observed.checked
             continue
         if entry.offers:
             problems.append(f"price ledger: {row_id} has offers, but the row does not")
