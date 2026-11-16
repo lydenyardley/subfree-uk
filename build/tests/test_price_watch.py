@@ -38,6 +38,7 @@ from price_watch import (
     needs_fallback,
     parse_args,
     parse_money,
+    products_from_jsonld,
     read_css,
     read_jsonld,
     read_listing_cards,
@@ -146,6 +147,30 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(availability_state("https://schema.org/OutOfStock"))
         self.assertTrue(availability_state("https://schema.org/InStock"))
         self.assertIsNone(availability_state(""))
+
+    def test_product_availability_is_a_fallback(self) -> None:
+        products = products_from_jsonld([
+            '{"@type":"Product","name":"X",'
+            '"availability":"https://schema.org/OutOfStock",'
+            '"offers":{"price":"10.00","priceCurrency":"GBP"}}'
+        ])
+        self.assertEqual(products[0].availability, "https://schema.org/OutOfStock")
+
+    def test_stock_changes_belong_to_offers(self) -> None:
+        offer = Observation(
+            want=make_want(kind="offer", shop="Argos"),
+            status=READ, observed=239.99, available=True,
+        )
+        self.assertTrue(offer.changed)
+        price = Observation(
+            want=make_want(), status=READ, observed=239.99, available=True
+        )
+        self.assertFalse(price.changed)
+        unknown = Observation(
+            want=make_want(kind="offer", shop="Argos", in_stock=False),
+            status=READ, observed=239.99, available=None,
+        )
+        self.assertFalse(unknown.changed)
 
     def test_every_recorded_figure_has_an_adapter(self) -> None:
         for want in wants():

@@ -128,21 +128,29 @@ class Ledger:
         for reading in readings:
             entry = rows.get(reading.row_id, RowEntry())
             observed = None if abs(reading.price - reading.base) < 0.005 else reading.price
-            price = PriceEntry(
-                base=reading.base,
-                price=observed,
-                checked=checked,
-                in_stock=reading.in_stock,
-            )
             if reading.kind == "offer":
                 offers = dict(entry.offers or {})
                 before = offers.get(reading.source)
+                stock = reading.in_stock
+                if stock is None and before is not None:
+                    stock = before.in_stock
+                price = PriceEntry(
+                    base=reading.base,
+                    price=observed,
+                    checked=checked,
+                    in_stock=stock,
+                )
                 offers[reading.source] = price
                 rows[reading.row_id] = RowEntry(
                     price=entry.price, offers=offers or None
                 )
             else:
                 before = entry.price
+                price = PriceEntry(
+                    base=reading.base,
+                    price=observed,
+                    checked=checked,
+                )
                 rows[reading.row_id] = RowEntry(price=price, offers=entry.offers)
             if before != price:
                 written += 1
@@ -313,9 +321,7 @@ def apply_to_rows(
                     continue
                 if observed.price is not None:
                     offer["price"] = observed.price
-                if observed.in_stock is None:
-                    offer.pop("in_stock", None)
-                else:
+                if observed.in_stock is not None:
                     offer["in_stock"] = observed.in_stock
             continue
         if entry.offers:

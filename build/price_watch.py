@@ -229,8 +229,9 @@ class Observation:
             return False
         price_moved = abs(self.observed - self.want.expected) >= 0.005
         stock_moved = (
-            self.available != self.want.in_stock
-            and (self.available is not None or self.want.in_stock is not None)
+            self.want.kind == "offer"
+            and self.available is not None
+            and self.available != self.want.in_stock
         )
         return price_moved or stock_moved
 
@@ -378,7 +379,8 @@ def products_from_jsonld(raw_blobs: Iterable[str]) -> list[Product]:
                     name=name,
                     price=parsed.price,
                     currency=parsed.currency,
-                    availability=parsed.availability,
+                    availability=parsed.availability
+                    or str(node.get("availability") or ""),
                 )
                 signature = (normalise(product.name), product.price, product.currency)
                 if signature not in seen:
@@ -1133,7 +1135,7 @@ async def run(args: argparse.Namespace) -> int:
                     source=item.want.source,
                     base=item.want.base,
                     price=item.observed,
-                    in_stock=item.available,
+                    in_stock=item.available if item.want.kind == "offer" else None,
                 )
             )
         updated, written = rows.PRICE_LEDGER.record(

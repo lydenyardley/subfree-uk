@@ -112,7 +112,7 @@ class ApplyTests(unittest.TestCase):
         self.assertEqual(problems, [])
         self.assertIs(row["offers"][0]["in_stock"], False)
 
-    def test_an_unknown_stock_reading_clears_the_old_one(self) -> None:
+    def test_an_unknown_stock_reading_keeps_the_old_one(self) -> None:
         row = offer_row()
         row["offers"][0]["in_stock"] = False
         ledger = Ledger(
@@ -122,7 +122,7 @@ class ApplyTests(unittest.TestCase):
             updated="",
         )
         apply_to_rows(ledger, [row], {"argos_oura4": ("Argos", "https://a")})
-        self.assertNotIn("in_stock", row["offers"][0])
+        self.assertIs(row["offers"][0]["in_stock"], False)
 
     def test_a_price_entry_on_an_offer_row_is_refused(self) -> None:
         ledger = Ledger(
@@ -166,6 +166,30 @@ class RecordTests(unittest.TestCase):
         again, written = first.record([reading], "2026-11-16")
         self.assertEqual(written, 0)
         self.assertEqual(again.rows, first.rows)
+
+    def test_an_unknown_stock_read_keeps_the_known_state(self) -> None:
+        first, _ = Ledger(rows={}, updated="").record(
+            [Reading("oura-ring-4", "offer", "argos_oura4", 329.0, 319.0,
+                     in_stock=False)],
+            "2026-11-16",
+        )
+        again, written = first.record(
+            [Reading("oura-ring-4", "offer", "argos_oura4", 329.0, 319.0)],
+            "2026-11-17",
+        )
+        entry = (again.rows["oura-ring-4"].offers or {})["argos_oura4"]
+        self.assertIs(entry.in_stock, False)
+        self.assertEqual(entry.checked, "2026-11-17")
+        self.assertEqual(written, 1)
+
+    def test_a_price_read_carries_no_stock(self) -> None:
+        ledger, _ = Ledger(rows={}, updated="").record(
+            [Reading("epson-et-2951", "price", "epson_et2951", 319.99, 299.99,
+                     in_stock=True)],
+            "2026-11-16",
+        )
+        assert ledger.rows["epson-et-2951"].price is not None
+        self.assertIsNone(ledger.rows["epson-et-2951"].price.in_stock)
 
     def test_an_offer_keeps_its_siblings(self) -> None:
         first, _ = Ledger(rows={}, updated="").record(
