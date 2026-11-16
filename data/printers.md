@@ -8,9 +8,9 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 | Brother DCP-J1200W | Yes | [£40.00](https://www.ryman.co.uk/brother-dcp-j1200w-3-in-1-wireless-inkjet-printer-1) | 6 | £220.00 | £201.64 | The cheapest way into a 3-in-1, while the clearance lasts | The £40 is a clearance on a printer Brother no longer prices, and retail LC424 ink costs £180 over three years. |
 | Canon PIXMA TS6550i | Yes | [£49.99](https://www.canon.co.uk/store/pixma-print-plan-printers/) | 7 | £415.93 | £211.63 | A cheap printer with the cheapest plan route | The £49.99 is a sale price, and the starter cartridges hold about 180 pages each. |
 | Canon PIXMA G3570 | Yes | [£229.99](https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/) | 7 | £229.99 | — | A heavy household that can live without automatic duplex | Older than the G3590, and two-sided printing is manual rather than automatic. |
-| Epson EcoTank ET-2951 | Yes | [£239.99](https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035) | 8 | £239.99 | — | A busy household that wants the ink paid for up front | The dearest printer here, and the paper tray holds only 100 sheets. |
 | Brother DCP-J1310DW | Yes | [£132.23](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) | 7 | £409.69 | £293.87 | A current Brother whose cartridges print 500 pages each | The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years. |
-| HP Envy 6530e | Original ink only | [£71.80](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) | 4 | £619.15 | £305.44 | A light household that will take the ink plan | Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink. |
+| Epson EcoTank ET-2951 | Yes | [£319.99](https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035) | 8 | £319.99 | — | A busy household that wants the ink paid for up front | The dearest printer here, and the paper tray holds only 100 sheets. |
+| HP Envy 6530e | Original ink only | [£89.99](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) | 4 | £637.34 | £323.63 | A light household that will take the ink plan | Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink. |
 | HP Envy 6520e | Original ink only | [£97.90](https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy) | 4 | £645.25 | £331.54 | A household that wants automatic duplex and will take the plan | Costs £26 more than the 6530e at HP's prices, and retail 308 ink is the dearest route here. |
 
 ## Detail
@@ -18,8 +18,8 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 ### Epson EcoTank ET-2951
 - **Best for:** A busy household that wants the ink paid for up front
 - **Main catch:** The dearest printer here, and the paper tray holds only 100 sheets.
-- **Price:** £239.99 (Epson UK (was £319.99))
-- **3-year cost, retail ink:** £239.99
+- **Price:** £319.99 (Epson UK, checked 16 November 2026)
+- **3-year cost, retail ink:** £319.99
 - **3-year cost, with plan:** No ink plan offered or needed
 - **Ink in the box:** Six bottles in the box: 6,600 black and 5,500 colour pages
 - **Included:** 15 ppm mono, 8 ppm colour (ISO); double-sided: Automatic; scan and copy: Yes, flatbed scan and copy
@@ -102,9 +102,9 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 ### HP Envy 6530e
 - **Best for:** A light household that will take the ink plan
 - **Main catch:** Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink.
-- **Price:** £71.80 (HP UK (was £106))
-- **3-year cost, retail ink:** £71.80 + £547.35 (15 HP 308 black/tri-colour packs) = £619.15
-- **3-year cost, with plan:** £71.80 + 36 × £6.49 (HP Instant Ink 100 pages) = £305.44
+- **Price:** £89.99 (HP UK (was £106), checked 16 November 2026)
+- **3-year cost, retail ink:** £89.99 + £547.35 (15 HP 308 black/tri-colour packs) = £637.34
+- **3-year cost, with plan:** £89.99 + 36 × £6.49 (HP Instant Ink 100 pages) = £323.63
 - **Ink in the box:** Setup cartridges only: about 120 black and 75 colour pages
 - **Included:** 10 ppm mono, 7 ppm colour (ISO); double-sided: Automatic; scan and copy: Yes, flatbed scan, copy and a 35-sheet ADF
 - **Ink without a plan:** Yes, HP 308 cartridges, but the printer is set to original HP ink

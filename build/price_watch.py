@@ -14,6 +14,7 @@ the next run compares the live page with what the page now publishes.
     python build/price_watch.py --category printers
     python build/price_watch.py --source epson_et2951
     python build/price_watch.py --concurrency 2
+    xvfb-run -a python build/price_watch.py --headed
 
 Exit status is 0 when a report was produced, even when prices changed or pages
 were unreadable. A browser that cannot start, or a crash while assembling the
@@ -59,6 +60,14 @@ LISTING_SOURCES = {
     "canon_ts6550i_price",
 }
 
+# Product cards on pages whose offers are not in JSON-LD. The card text holds
+# the product name and the current and crossed-out prices in that order.
+LISTING_CSS: dict[str, tuple[str, ...]] = {
+    "reo_gb_home": (".product-card",),
+    "reo_store": ("[class*='product-details']",),
+    "hp_envy6520e": ("[class*='productTile']",),
+}
+
 # Product names used only where one page holds several products. A single
 # product page needs no name match. These are the shortest strings that pick the
 # right product out of the page's JSON-LD.
@@ -67,11 +76,11 @@ ROW_MATCH: dict[str, dict[str, str]] = {
         "reo-rlc820a": "RLC-820A",
         "reo-argus4": "Argus 4 Pro",
         "reo-e1out": "E1 Outdoor Pro",
-        "reo-arguspt": "Argus PT Ultra",
+        "reo-arguspt": "Argus PT Ultra 4K Color Night Vision",
     },
     "reo_store": {
-        "reo-wifi": "WiFi",
-        "reo-poe": "PoE",
+        "reo-wifi": "Reolink Video Doorbell WiFi",
+        "reo-poe": "Reolink Video Doorbell PoE",
     },
     "hp_envy6520e": {"hp-envy-6520e": "6520e"},
     "canon_ts6550i_price": {"canon-pixma-ts6550i": "TS6550i"},
@@ -130,6 +139,9 @@ CSS_BY_HOST: dict[str, tuple[str, ...]] = {
 MONEY = re.compile(
     r"(?<![\d.])(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)(?![\d.])"
 )
+CARD_PRICE = re.compile(
+    r"£\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)"
+)
 CURRENCY = {
     "£": "GBP",
     "GBP": "GBP",
@@ -139,7 +151,9 @@ CURRENCY = {
     "USD": "USD",
 }
 SOFT_ERROR = re.compile(
-    r"page not found|something went wrong|access denied|just a moment|captcha",
+    r"page not found|something went wrong|access denied|just a moment|captcha|"
+    r"enter the characters you see below|not a robot|verify you are human|"
+    r"unusual traffic|automated access",
     re.IGNORECASE,
 )
 PRODUCT_TYPES = {
@@ -460,6 +474,46 @@ async def read_css(page: Any, selectors: Sequence[str]) -> list[str]:
     )
 
 
+async def read_listing_cards(page: Any, selectors: Sequence[str]) -> list[str]:
+    """The visible text of each product card, for listing pages without JSON-LD."""
+    return await page.evaluate(
+        """(selectors) => {
+            const values = [];
+            const seen = new Set();
+            for (const selector of selectors) {
+                for (const element of document.querySelectorAll(selector)) {
+                    const value = (element.innerText || element.textContent || "").trim();
+                    if (value && !seen.has(value)) {
+                        seen.add(value);
+                        values.push(value);
+                    }
+                }
+            }
+            return values;
+        }""",
+        list(selectors),
+    )
+
+
+def card_price(value: str) -> float | None:
+    """The first sterling price on one product card."""
+    found = CARD_PRICE.search(value.replace("\xa0", " "))
+    if found is None:
+        return None
+    try:
+        return round(float(found.group(1).replace(",", "")), 2)
+    except ValueError:
+        return None
+
+
+def card_matches(want: Want, adapter: Adapter, card: str) -> bool:
+    """Whether a listing card names the recorded product."""
+    match = adapter.match or want.model
+    terms = [normalise(part) for part in match.split("|") if part.strip()]
+    haystack = normalise(card)
+    return any(term and term in haystack for term in terms)
+
+
 async def probe_site(
     browser: Any,
     source: str,
@@ -490,7 +544,7 @@ async def probe_site(
             response = await page.goto(
                 site_wants[0].url, wait_until="domcontentloaded", timeout=timeout_ms
             )
-            await page.wait_for_timeout(1500)
+            await page.wait_for_timeout(3000)
             status = response.status if response is not None else 0
             title = await page.title()
             body = await page.locator("body").inner_text(timeout=5000)
@@ -514,6 +568,11 @@ async def probe_site(
                 return failed(BLOCKED, "a bot wall or soft error is in the page text")
 
             products = await read_jsonld(page)
+            listing_cards: list[str] = []
+            if source in LISTING_SOURCES:
+                listing_cards = await read_listing_cards(
+                    page, LISTING_CSS.get(source, ())
+                )
             observations: list[Observation] = []
             allow_single = (
                 len(site_wants) == 1 and source not in LISTING_SOURCES
@@ -544,12 +603,37 @@ async def probe_site(
                     continue
 
                 if not allow_single:
+                    hits = [
+                        card
+                        for card in listing_cards
+                        if card_matches(want, adapter, card)
+                    ]
+                    if len(hits) == 1:
+                        number = card_price(hits[0])
+                        if number is not None:
+                            observations.append(
+                                Observation(
+                                    want=want,
+                                    status=READ,
+                                    observed=number,
+                                    method="listing card",
+                                )
+                            )
+                            continue
+                    if len(hits) > 1:
+                        detail = f"{len(hits)} listing cards match {adapter.match!r}"
+                        kind = AMBIGUOUS
+                    elif hits:
+                        detail = "listing card has no sterling price"
+                        kind = UNREADABLE
+                    elif listing_cards:
+                        detail = "no matching listing card"
+                        kind = UNREADABLE
+                    else:
+                        detail = why if products else "no JSON-LD; listing page needs a product match"
+                        kind = AMBIGUOUS if products else UNREADABLE
                     observations.append(
-                        Observation(
-                            want=want,
-                            status=AMBIGUOUS if products else UNREADABLE,
-                            detail=why if products else "no JSON-LD; listing page needs a product match",
-                        )
+                        Observation(want=want, status=kind, detail=detail)
                     )
                     continue
 
@@ -712,6 +796,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     )
     parser.add_argument("--concurrency", type=int, default=3, help="pages to read at once")
     parser.add_argument(
+        "--headed",
+        action="store_true",
+        help="run Chromium with a window; under xvfb this passes some 403 bot walls",
+    )
+    parser.add_argument(
         "--timeout",
         type=int,
         default=45_000,
@@ -745,7 +834,7 @@ async def run(args: argparse.Namespace) -> int:
     semaphore = asyncio.Semaphore(max(1, min(args.concurrency, 8)))
     started = datetime.now(timezone.utc)
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True)
+        browser = await playwright.chromium.launch(headless=not args.headed)
         try:
             results = await asyncio.gather(
                 *(

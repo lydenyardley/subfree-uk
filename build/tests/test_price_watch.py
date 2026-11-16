@@ -27,11 +27,14 @@ from price_watch import (
     Product,
     Want,
     adapter_for,
+    card_matches,
+    card_price,
     choose_product,
     first_price,
     parse_money,
     read_css,
     read_jsonld,
+    read_listing_cards,
     report,
     wants,
 )
@@ -154,6 +157,52 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             adapter_for(want).css,
             ("#corePrice_feature_div .a-price .a-offscreen", ".a-price .a-offscreen"),
+        )
+
+    async def test_listing_cards_read_the_named_product(self) -> None:
+        page = await self.open_fixture("listing.html")
+        try:
+            cards = await read_listing_cards(page, (".product-card",))
+        finally:
+            await page.close()
+        self.assertEqual(len(cards), 3)
+        rlc = make_want(
+            row_id="reo-rlc820a", source="reo_gb_home", model="RLC-820A"
+        )
+        self.assertEqual(
+            [
+                card
+                for card in cards
+                if card_matches(rlc, Adapter(match="RLC-820A"), card)
+            ],
+            [cards[0]],
+        )
+        self.assertEqual(card_price(cards[0]), 63.99)
+        wifi = make_want(
+            row_id="reo-wifi", source="reo_store", model="Video Doorbell WiFi"
+        )
+        self.assertEqual(
+            [
+                card
+                for card in cards
+                if card_matches(
+                    wifi, Adapter(match="Reolink Video Doorbell WiFi"), card
+                )
+            ],
+            [cards[1]],
+        )
+        self.assertEqual(card_price(cards[1]), 82.49)
+
+    def test_listing_card_needs_the_exact_model(self) -> None:
+        hp = make_want(
+            row_id="hp-envy-6520e", source="hp_envy6520e", model="Envy 6520e"
+        )
+        self.assertFalse(
+            card_matches(
+                hp,
+                Adapter(match="6520e"),
+                "HP Envy 6520 All-in-One Wireless Colour Printer £115.00",
+            )
         )
 
     def test_a_listing_product_still_needs_its_name(self) -> None:

@@ -56,7 +56,9 @@ jobs:
         id: prices
         run: |
           set +e
-          python build/price_watch.py > price-watch.md
+          # Headed Chromium under xvfb passes retailer 403 walls that reject
+          # the automated Chromium build.
+          xvfb-run -a python build/price_watch.py --headed > price-watch.md
           code=$?
           cat price-watch.md
           cat price-watch.md >> refresh.md

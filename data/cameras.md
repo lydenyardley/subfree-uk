@@ -12,15 +12,15 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 | TP-Link Tapo C660 KIT | Yes | [£109.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £136.98 | £217.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
 | Reolink Argus PT Ultra | Yes | [£118.99](https://store.reolink.com/gb/) | 7 | £145.98 | — | A garden corner on a budget: 4K pan and tilt for £119, with nothing held back | The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year. |
 | Aqara Camera Hub G3 | Yes | [£119.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £146.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
-| Aqara Camera Hub G350 Select | Yes | [£125.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/) | 6 | £152.98 | — | A room with a lot to cover: 4K wide plus a 2.5K zoom lens on a 360° mount | Indoor only, and the card is extra. |
 | Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £156.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
+| Reolink Altas PT Ultra | Yes | [£139.99](https://reolink.com/gb/product/altas-pt-ultra/) | 7 | £166.98 | — | A gate or yard watched all day: 4K pan-tilt with 96 hours of continuous recording | The card is extra, and continuous recording empties the battery in about four days without sun. |
+| Aqara Camera Hub G350 Select | Yes | [£139.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/) | 6 | £166.98 | — | A room with a lot to cover: 4K wide plus a 2.5K zoom lens on a 360° mount | Indoor only, and the card is extra. |
 | Aqara Camera Hub G5 Pro (Wi-Fi 32GB) | Yes | [£169.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g5-pro-wi-fi-32gb/) | 7 | £169.99 | — | A local hub camera: 2.6K, 32 GB on board, and Zigbee, Thread and Matter built in | Only 2.6K, and the 32 GB cannot be expanded without a NAS. |
 | Reolink Argus 4 Pro | Yes | [£144.49](https://store.reolink.com/gb/) | 7 | £171.48 | — | A wide, dark driveway: 180° from one camera, with no fees | The card is extra, and the 180° panorama runs at 15fps rather than 25fps. |
 | eufy SoloCam S340 | Yes | [£179.00](https://www.anker.com/uk/products/t81703w1) | 7 | £179.00 | — | A garden corner with sun: 360° pan and 8 GB on board | 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on. |
-| Reolink Altas PT Ultra | Yes | [£152.99](https://reolink.com/gb/product/altas-pt-ultra/) | 7 | £179.98 | — | A gate or yard watched all day: 4K pan-tilt with 96 hours of continuous recording | The card is extra, and continuous recording empties the battery in about four days without sun. |
-| TP-Link Tapo C675D KIT | Yes | [£189.99](https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit) | 5 | £216.98 | £297.63 | Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom | It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra. |
-| Ring Outdoor Camera Plus (plug-in) | No | [£89.99](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | £89.99 | £269.63 | Ring's live view and alerts for £90, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
-| Ring Outdoor Camera 4K Pro (plug-in) | No | [£179.99](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) | 2 | £179.99 | £359.63 | People already paying for Ring and Alexa | Saves no video at all without the £4.99-a-month plan. |
+| TP-Link Tapo C675D KIT | Yes | [£176.79](https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit) | 5 | £203.78 | £284.43 | Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom | It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra. |
+| Ring Outdoor Camera Plus (plug-in) | No | [£39.99](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | £39.99 | £219.63 | Ring's live view and alerts for £40, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
+| Ring Outdoor Camera 4K Pro (plug-in) | No | [£119.99](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) | 2 | £119.99 | £299.63 | People already paying for Ring and Alexa | Saves no video at all without the £4.99-a-month plan. |
 | Blink Mini 4K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0GWSJV4H5?tag=subfreeuk-21) | 2 | Check price | Check price | Blink's sharpest picture, for a socket near a window or door | Records nothing until you add a Sync Module 2 and a USB stick, outdoor use needs a separate adapter, and live view stops at 5 minutes. |
 | Blink Outdoor 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/blink-outdoor-camera-2k-/dp/B0F964Q9Y8?tag=subfreeuk-21) | 2 | Check price | Check price | A 2K picture from Amazon's cameras, if you will add the module anyway | Records nothing until you add a Sync Module 2 and a USB stick, and Blink's two-year battery figure is at 1080p. |
 
@@ -71,8 +71,8 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Reolink Altas PT Ultra
 - **Best for:** A gate or yard watched all day: 4K pan-tilt with 96 hours of continuous recording
 - **Main catch:** The card is extra, and continuous recording empties the battery in about four days without sun.
-- **Price:** £152.99 (Reolink UK store, 1 camera with a Solar Panel 2)
-- **3-year cost, no plan:** £152.99 + £26.99 (SanDisk 64 GB microSD card) = £179.98
+- **Price:** £139.99 (Reolink UK store, 1 camera with a Solar Panel 2, checked 16 November 2026)
+- **3-year cost, no plan:** £139.99 + £26.99 (SanDisk 64 GB microSD card) = £166.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB) or a Reolink Home Hub; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -113,9 +113,9 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### TP-Link Tapo C675D KIT
 - **Best for:** Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom
 - **Main catch:** It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra.
-- **Price:** £189.99 (Tapo UK sale price (RRP £239.99))
-- **3-year cost, no plan:** £189.99 + £26.99 (SanDisk 64 GB microSD card) = £216.98
-- **3-year cost, with plan:** £189.99 + 36 × £2.99 (Tapo Care) = £297.63
+- **Price:** £176.79 (Tapo UK sale price (RRP £239.99), checked 16 November 2026)
+- **3-year cost, no plan:** £176.79 + £26.99 (SanDisk 64 GB microSD card) = £203.78
+- **3-year cost, with plan:** £176.79 + 36 × £2.99 (Tapo Care) = £284.43
 - **Storage:** microSD (up to 512 GB) on the camera; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, pet and vehicle detection on the device
 - **History without plan:** Yes, event clips on the card; 24/7 capture with a card
@@ -211,8 +211,8 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Aqara Camera Hub G350 Select
 - **Best for:** A room with a lot to cover: 4K wide plus a 2.5K zoom lens on a 360° mount
 - **Main catch:** Indoor only, and the card is extra.
-- **Price:** £125.99 (Aqara UK Shop sale price, on back-order (RRP £139.99))
-- **3-year cost, no plan:** £125.99 + £26.99 (SanDisk 64 GB microSD card) = £152.98
+- **Price:** £139.99 (Aqara UK Shop, in stock, checked 16 November 2026)
+- **3-year cost, no plan:** £139.99 + £26.99 (SanDisk 64 GB microSD card) = £166.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB); card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: on-device person, pet, face and sound detection
@@ -225,9 +225,9 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Ring Outdoor Camera 4K Pro (plug-in)
 - **Best for:** People already paying for Ring and Alexa
 - **Main catch:** Saves no video at all without the £4.99-a-month plan.
-- **Price:** £179.99 (Ring UK)
-- **3-year cost, no plan:** £179.99 (but no recordings)
-- **3-year cost, with plan:** £179.99 + 36 × £4.99 (Ring Solo) = £359.63
+- **Price:** £119.99 (Ring UK, in stock, checked 16 November 2026)
+- **3-year cost, no plan:** £119.99 (but no recordings)
+- **3-year cost, with plan:** £119.99 + 36 × £4.99 (Ring Solo) = £299.63
 - **Storage:** None. Recording is cloud-only.
 - **Free:** live view yes; alerts yes; smart detection: Paid (person, package and vehicle alerts on Ring's plans)
 - **History without plan:** None
@@ -237,11 +237,11 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 - **Sources:** [Ring UK: Outdoor Camera 4K Pro (plug-in)](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) · [Ring UK plans](https://en-uk.ring.com/pages/plans/) · [Home Assistant: Ring](https://www.home-assistant.io/integrations/ring/)
 
 ### Ring Outdoor Camera Plus (plug-in)
-- **Best for:** Ring's live view and alerts for £90, if you never want the footage
+- **Best for:** Ring's live view and alerts for £40, if you never want the footage
 - **Main catch:** Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K.
-- **Price:** £89.99 (Ring UK)
-- **3-year cost, no plan:** £89.99 (but no recordings)
-- **3-year cost, with plan:** £89.99 + 36 × £4.99 (Ring Solo) = £269.63
+- **Price:** £39.99 (Ring UK, sold out at the check, 16 November 2026)
+- **3-year cost, no plan:** £39.99 (but no recordings)
+- **3-year cost, with plan:** £39.99 + 36 × £4.99 (Ring Solo) = £219.63
 - **Storage:** None. Recording is cloud-only.
 - **Free:** live view yes; alerts yes; smart detection: Paid (person, package and vehicle alerts on Ring's plans)
 - **History without plan:** None
