@@ -3,10 +3,12 @@
 
 The weekly workflow runs this on Monday. It opens each source in Chromium,
 reads the product's JSON-LD offer first, then falls back to the source's CSS
-selectors. Pages Chromium cannot read are retried in Firefox, because some
-retailers block Chromium's browser fingerprint. A changed price, a bot wall,
-a dead page and a page whose price cannot be identified are all reported;
-none is written back to `rows.py`.
+selectors. On local runs, pages Chromium cannot read are retried in Firefox,
+because some retailers block Chromium's browser fingerprint. The weekly
+workflow opts out of that retry because the runner's network is blocked before
+the browser matters. Google's consent interstitial is rejected before the
+product is read. A changed price, a bot wall, a dead page and a page whose
+price cannot be identified are all reported; none is written back to `rows.py`.
 
 The comparison is against the recorded figure, not against a scraped figure
 from last week. That keeps the report meaningful after a human edits the data:
@@ -59,8 +61,6 @@ FALLBACK_STATUSES = {BLOCKED, UNREADABLE, AMBIGUOUS, ERROR}
 LISTING_SOURCES = {
     "reo_gb_home",
     "reo_store",
-    "hp_envy6520e",
-    "canon_ts6550i_price",
 }
 
 # Product cards on pages whose offers are not in JSON-LD. The card text holds
@@ -68,7 +68,6 @@ LISTING_SOURCES = {
 LISTING_CSS: dict[str, tuple[str, ...]] = {
     "reo_gb_home": (".product-card",),
     "reo_store": ("[class*='product-details']",),
-    "hp_envy6520e": ("[class*='productTile']",),
 }
 
 # Product names used only where one page holds several products. A single
@@ -84,8 +83,6 @@ ROW_MATCH: dict[str, dict[str, str]] = {
         "reo-wifi": "Reolink Video Doorbell WiFi",
         "reo-poe": "Reolink Video Doorbell PoE",
     },
-    "hp_envy6520e": {"hp-envy-6520e": "6520e"},
-    "canon_ts6550i_price": {"canon-pixma-ts6550i": "TS6550i"},
     "weenect_xt": {"weenect-xt": "GPS dog tracker"},
 }
 
@@ -101,7 +98,7 @@ DEFAULT_CSS: tuple[str, ...] = (
 
 CSS_BY_HOST: dict[str, tuple[str, ...]] = {
     "en-uk.ring.com": (".product__price", ".price", "[data-product-price]"),
-    "store.google.com": ("[data-testid='price']", ".price"),
+    "store.google.com": ("[data-test='price']", "[data-testid='price']", ".price"),
     "www.eufy.com": ("[data-product-price]", ".price"),
     "www.anker.com": ("[data-product-price]", ".price"),
     "store.reolink.com": (".product-price", ".price"),
@@ -126,7 +123,7 @@ CSS_BY_HOST: dict[str, tuple[str, ...]] = {
     "store.brother.co.uk": (".product-price", ".price"),
     "www.ryman.co.uk": ("[itemprop='price']", ".price"),
     "www.hp.com": ("[data-testid='product-price']", ".price"),
-    "www.pitpat.com": (".product-price", ".price"),
+    "www.pitpat.com": ("ins .woocommerce-Price-amount", ".shop-product-price"),
     "www.pawva.co.uk": (".product-price", ".price"),
     "tractive.com": (".product-price", ".price"),
     "www.weenect.com": (".product-price", ".price"),
@@ -516,6 +513,20 @@ def card_matches(want: Want, adapter: Adapter, card: str) -> bool:
     return any(term and term in haystack for term in terms)
 
 
+async def dismiss_google_consent(
+    page: Any, url: str, timeout_ms: int
+) -> Any | None:
+    """Reject Google's consent page and reload the product behind it."""
+    if "consent.google.com" not in page.url:
+        return None
+    button = page.get_by_role("button", name="Reject all")
+    if not await button.count():
+        return None
+    await button.first.click(timeout=timeout_ms)
+    await page.wait_for_load_state("domcontentloaded", timeout=timeout_ms)
+    return await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+
+
 async def probe_site(
     browser: Any,
     source: str,
@@ -547,6 +558,10 @@ async def probe_site(
             await page.route("**/*", block_assets)
             response = await page.goto(
                 site_wants[0].url, wait_until="domcontentloaded", timeout=timeout_ms
+            )
+            response = (
+                await dismiss_google_consent(page, site_wants[0].url, timeout_ms)
+                or response
             )
             await page.wait_for_timeout(3000)
             status = response.status if response is not None else 0
@@ -834,6 +849,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         default=45_000,
         help="page timeout in milliseconds",
     )
+    parser.add_argument(
+        "--no-fallback",
+        action="store_true",
+        help="skip the local Firefox retry for blocked pages",
+    )
     return parser.parse_args(argv)
 
 
@@ -876,11 +896,13 @@ async def run(args: argparse.Namespace) -> int:
         by_source = {
             source: result for (source, _), result in zip(groups, primary)
         }
-        retry = [
-            (source, site_wants)
-            for (source, site_wants), result in zip(groups, primary)
-            if needs_fallback(result)
-        ]
+        retry: list[tuple[str, list[Want]]] = []
+        if not args.no_fallback:
+            retry = [
+                (source, site_wants)
+                for (source, site_wants), result in zip(groups, primary)
+                if needs_fallback(result)
+            ]
         if retry:
             browser = await playwright.firefox.launch(headless=not args.headed)
             try:

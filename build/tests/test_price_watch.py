@@ -34,6 +34,7 @@ from price_watch import (
     first_price,
     mark_fallback,
     needs_fallback,
+    parse_args,
     parse_money,
     read_css,
     read_jsonld,
@@ -207,6 +208,10 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(fallback_is_better([read], [read]))
         self.assertEqual(mark_fallback([read])[0].method, "JSON-LD (Firefox)")
         self.assertEqual(mark_fallback([blocked])[0].method, "")
+
+    def test_the_fallback_is_opt_out_for_the_runner(self) -> None:
+        self.assertFalse(parse_args([]).no_fallback)
+        self.assertTrue(parse_args(["--no-fallback"]).no_fallback)
 
     def test_listing_card_needs_the_exact_model(self) -> None:
         hp = make_want(
