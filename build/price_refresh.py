@@ -128,6 +128,12 @@ def main(argv: list[str] | None = None) -> int:
     changed = git_output("status", "--porcelain")
     if not changed:
         say("No price or generated file changed; nothing to commit.")
+        ahead = git_output("rev-list", "--count", "@{u}..HEAD")
+        if not args.no_push and ahead != "0":
+            if not checked(["git", "push"]):
+                say("A local commit is waiting; the push failed and needs attention.")
+                return 9
+            say(f"Pushed {ahead} pending commit(s).")
         return 0
 
     say("Changed files:")
