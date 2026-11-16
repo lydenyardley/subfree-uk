@@ -135,8 +135,10 @@ A ring is sold by several UK shops and its price moves with size and finish, so
 a ring row lists `offers`: a shop, the page behind its price, the price, the
 configuration that price is for, and a `pay` rank. `offer_winner()` shows the
 cheapest, unless another offer is within **£5** of it and pays more; a tie goes
-to the cheaper offer and then to the shop's name. The winner sets the price, the
-link on it and the note beside it, so the three cannot disagree.
+to the cheaper offer and then to the shop's name. An offer with no ledger read
+is as old as the row's check date, so a shop nobody has opened cannot win
+indefinitely. The winner sets the price, the link on it and the note beside it,
+so the three cannot disagree.
 
 `pay` is a rank rather than a rate because only Amazon publishes a fixed
 percentage: 2 for Amazon UK Associates, 1 for a UK shop with no programme we are

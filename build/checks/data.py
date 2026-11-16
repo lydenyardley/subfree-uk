@@ -142,7 +142,9 @@ def category_problems(rows, pages, cat):
         # hand-edited price or an offers list that moved without a rebuild is
         # caught against the rule the method note prints.
         if row.get("offers"):
-            won = rows.offer_shown(row["offers"])
+            won = rows.offer_shown(
+                row["offers"], row_checked=cat["checked_iso"]
+            )
             if (row["price"], row["price_src"]) != (won["price"], won["src"]):
                 problems.append(
                     f"{row['id']}: the shown price is not the offer the rule picks"
@@ -484,6 +486,15 @@ def offer_rule_problems(module):
     ])
     if stale_twin["shop"] != "Amazon":
         problems.append("a stale twin hid the Amazon offer")
+    unread = offer("Unread", C - 5, R)
+    got = module.offer_winner(
+        [unread, offer("Live", C, R, checked_iso=today)], row_checked=old
+    )["price"]
+    if got != C:
+        problems.append("an unread offer won on an old row check date")
+    got = module.offer_winner([unread], row_checked=today)["price"]
+    if got != C - 5:
+        problems.append("an unread offer lost on a fresh row check date")
     return problems
 
 

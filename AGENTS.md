@@ -97,8 +97,10 @@ price, or, where the row has no plan, the page that says none is needed.
   the configuration that price is for and a `pay` rank. `offer_winner()` shows
   the cheapest in-stock offer whose ledger read is within `OFFER_STALE_DAYS`,
   unless another offer is within `OFFER_WINDOW` (£5) of it and pays more; ties
-  go to the cheaper offer and then to the shop's name. An out-of-stock or
-  stale offer cannot win, and a row with no eligible offer says "Check price".
+  go to the cheaper offer and then to the shop's name. An offer with no ledger
+  read uses the row's check date, so an unread offer cannot win indefinitely.
+  An out-of-stock or stale offer cannot win, and a row with no eligible offer
+  says "Check price".
   The winner sets `price`, `price_src` and `price_note`, so a row with offers
   must not author any of the three. `pay` is a rank and not a rate, and it is per shop
   rather than per row, so a new shop is one entry. Adding a shop whose price
