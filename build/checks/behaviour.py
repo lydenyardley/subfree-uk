@@ -366,7 +366,7 @@ def labels_check(page, rec_label="Only briefly (3 hrs)"):
         problems.append(f"the PoE note is {state['hintSize']}, expected 12px")
     return problems
 
-def card_check(page, dataset, checked):
+def card_check(page, dataset):
     """Every figure opens its own source card, and the card carries the record.
 
     The card is where the page's evidence lives now: the figure a reader doubts
@@ -501,7 +501,6 @@ def card_check(page, dataset, checked):
                     say: line('.card-say'),
                     arc: line('.card-arc'),
                     note: line('.card-note'),
-                    date: line('.card-date'),
                     srcs: Array.from(card.querySelectorAll('.card-srcs a'))
                         .map((l) => [l.textContent.trim(), l.getAttribute('href')])
                 };
@@ -548,8 +547,6 @@ def card_check(page, dataset, checked):
         want = [[dataset.S[k][0], dataset.S[k][1]] for k in keys]
         if state["srcs"] != want:
             problems.append(f"the {id_} {claim} card lists {state['srcs']}, expected {want}")
-        if state["date"] != f"Prices and plans checked {checked}.":
-            problems.append(f"the {id_} {claim} card is dated {state['date']!r}")
         # The card's note is the euro warning and nothing else. A plan bought in
         # the UK must not carry it, and a no-plan sum has none to carry: the
         # sundry it buys is cited in that card's own source list now, so the
@@ -598,6 +595,7 @@ def card_check(page, dataset, checked):
                     out.push({
                         missing: false, id: item.dataset.id, claim, open: card.open,
                         say: card.querySelector('.card-say').textContent.trim(),
+                        date: card.querySelector('.card-date').textContent.trim(),
                         srcs: Array.from(card.querySelectorAll('.card-srcs a'))
                             .map((l) => l.getAttribute('href'))
                     });
@@ -628,6 +626,11 @@ def card_check(page, dataset, checked):
             problems.append(
                 f"the {state['id']} {state['claim']} card lists {state['srcs']}, expected {want}"
             )
+        if state["date"] != f"Prices and plans checked {row['checked']}.":
+            problems.append(
+                f"the {state['id']} {state['claim']} card is dated {state['date']!r}, "
+                f"expected {row['checked']!r}"
+            )
 
     # The comparison repeats the table's figures, so it has to repeat their
     # cards: the anchor there is copied from the row's own, and this is what
@@ -639,13 +642,16 @@ def card_check(page, dataset, checked):
             a.click();
             const t = document.querySelector('#m-' + a.dataset.id + ' a.src[data-claim="' + a.dataset.claim + '"]');
             const card = document.getElementById('card');
-            const srcs = Array.from(card.querySelectorAll('.card-srcs a')).map((l) => l.getAttribute('href'));
+            const links = Array.from(card.querySelectorAll('.card-srcs a'));
             const state = {
                 missing: false, open: card.open, id: a.dataset.id, claim: a.dataset.claim,
                 title: card.querySelector('#card-h').textContent.trim(),
+                date: card.querySelector('.card-date').textContent.trim(),
                 same: !!t && t.getAttribute('href') === a.getAttribute('href')
                     && t.getAttribute('aria-label') === a.getAttribute('aria-label'),
-                srcs,
+                srcs: links.map((l) => l.getAttribute('href')),
+                targets: links.map((l) => l.getAttribute('target')),
+                rels: links.map((l) => l.getAttribute('rel') || ''),
                 spoke: a.getAttribute('aria-haspopup')
             };
             card.close();
@@ -661,11 +667,21 @@ def card_check(page, dataset, checked):
             problems.append(
                 f"the comparison's {panel['id']} {panel['claim']} card does not match the table's"
             )
-        name = next((f"{r['brand']} {r['model']}" for r in dataset.ROWS if r["id"] == panel["id"]), "")
+        panel_row = next((r for r in dataset.ROWS if r["id"] == panel["id"]), None)
+        name = f"{panel_row['brand']} {panel_row['model']}" if panel_row else ""
         if not name or not panel["title"].startswith(name):
             problems.append(f"the comparison card is titled {panel['title']!r}, for {panel['id']}")
+        if panel_row and panel["date"] != f"Prices and plans checked {panel_row['checked']}.":
+            problems.append(
+                f"the comparison's {panel['id']} card is dated {panel['date']!r}, "
+                f"expected {panel_row['checked']!r}"
+            )
         if not panel["srcs"]:
             problems.append("the comparison's card has no source in it")
+        if any(target != "_blank" for target in panel["targets"]):
+            problems.append("a source-card link stays in this tab")
+        if any("noopener" not in rel for rel in panel["rels"]):
+            problems.append("a source-card link has no noopener")
         if panel["spoke"] != "dialog":
             problems.append("a figure does not say it opens a dialog")
 
@@ -1376,6 +1392,9 @@ def price_link_check(page):
              if "nofollow" not in p["rel"] or "noopener" not in p["rel"]]
     if loose:
         problems.append(f"price links without nofollow noopener: {loose[:3]}")
+    same_tab = [p["id"] for p in state["prices"] if p["target"] != "_blank"]
+    if same_tab:
+        problems.append(f"price links that stay in this tab: {same_tab[:3]}")
     numeric = [name for name in state["sourceNames"] if len(name) < 4 or name.isdigit()]
     if numeric:
         problems.append(f"the details name their sources by number: {numeric[:3]}")
@@ -2376,8 +2395,8 @@ CHECKS = [
     ),
     Check(
         "source card", "compare", 89,
-        "every figure opens its own source card, carrying the page, the row's own sentence for that figure, the sum and the day it was checked, its heading on the close button's line, and the comparison's figures open the table's own card",
-        lambda ctx: card_check(ctx.page, ctx.dataset, ctx.checked),
+        "every figure opens its own source card, carrying the page, the row's own sentence for that figure, the sum and the row's own check day, its heading on the close button's line, and the comparison's figures open the table's own card",
+        lambda ctx: card_check(ctx.page, ctx.dataset),
     ),
     Check(
         "source list", "compare", 72,

@@ -68,6 +68,7 @@ RowKey = Literal[
     "plan_say", "buy", "buy_label", "price_check", "offers", "verdict",
     "plain", "figures", "offer_conflict", "score_total", "nosub3", "sub3",
     "keep3", "maths_free", "maths_sub", "keep_basis", "keep_note", "offer_at",
+    "checked",
 ]
 
 
@@ -109,6 +110,7 @@ class Row:
     power_note: str
     cards: int
     plan_region: str
+    checked: str
     extra_src: str | None
     kit_src: str | None
     kit_label: str | None
@@ -196,6 +198,7 @@ class Row:
             power_note=str(raw.get("power_note", "")),
             cards=int(raw.get("cards", 1)),
             plan_region=str(raw.get("plan_region", "UK")),
+            checked=str(raw["checked"]),
             extra_src=raw.get("extra_src"),
             kit_src=raw.get("kit_src"),
             kit_label=raw.get("kit_label"),

@@ -390,9 +390,27 @@ def image_files(data):
     ]
     return ["missing image files: " + ", ".join(sorted(set(missing)))] if missing else []
 
-def secure_links(data):
-    plain = [link for link in data["externals"] if link.startswith("http://")]
-    return ["external links over plain http: " + ", ".join(plain[:5])] if plain else []
+def secure_links(pages):
+    """Every link to another site is https, opens a new tab, and keeps noopener."""
+    plain, untargeted, loose = set(), set(), set()
+    for html in pages.values():
+        for match in re.finditer(r'<a\b[^>]*\bhref="(https?://[^"]*)"[^>]*>', html):
+            href, tag = match.group(1), match.group(0)
+            if href.startswith("http://"):
+                plain.add(href)
+            if 'target="_blank"' not in tag:
+                untargeted.add(href)
+            rel = re.search(r'\brel="([^"]*)"', tag)
+            if not rel or "noopener" not in rel.group(1).split():
+                loose.add(href)
+    problems = []
+    if plain:
+        problems.append("external links over plain http: " + ", ".join(sorted(plain)[:5]))
+    if untargeted:
+        problems.append("external links without a new tab: " + ", ".join(sorted(untargeted)[:5]))
+    if loose:
+        problems.append("external links without noopener: " + ", ".join(sorted(loose)[:5]))
+    return problems
 
 def overflow_problems(widths):
     overflow = [f"{width}px" for width, result in widths if result["over"] > 0]
@@ -916,8 +934,9 @@ CHECKS = [
         lambda ctx: share_meta(ctx.snapshot),
     ),
     Check(
-        "secure links", "compare", 62, "every external link uses https",
-        lambda ctx: secure_links(ctx.snapshot),
+        "secure links", "compare", 62,
+        "every external link uses https, opens a new tab, and carries noopener",
+        lambda ctx: secure_links(ctx.pages),
     ),
     Check(
         "image files", "compare", 71, "every local image file exists",

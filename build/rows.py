@@ -542,7 +542,7 @@ dict(cat="doorbells", id="ring", brand="Ring", model="Battery Video Doorbell 2K"
  rec_src="ring_plans", history_src="ring_plans", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
 dict(cat="doorbells", id="ring-2kplus", brand="Ring", model="Battery Video Doorbell 2K Plus", rec="no", power=["battery","wired"], ha=0,
  power_note="Runs on Ring's removable Quick Release battery; it can also be hardwired to an existing chime.",
- price=149.99, price_note="Ring UK, in stock, checked 12 November 2026", price_src="ring_2kplus",
+ price=149.99, price_note="Ring UK, in stock, checked 12 November 2026", price_src="ring_2kplus", checked_iso="2026-11-12",
  extra=0, extra_note="", free_records=False,
  sub=4.99, sub_name="Ring Solo",
  best="A Ring battery doorbell with a head-to-toe 2K view and a battery you can swap",
@@ -573,7 +573,7 @@ dict(cat="doorbells", id="ring-4kpro", brand="Ring", model="Battery Video Doorbe
  rec_src="ring_plans", history_src="ring_plans", ha_src="ha_ring", plan_src="ring_plans",
  unverified=""),
 dict(cat="doorbells", id="ring-w2k", brand="Ring", model="Wired Video Doorbell 2K", rec="no", power=["wired"], ha=0,
- price=59.99, price_note="Ring UK, sold out at the check, 12 November 2026", price_src="ring_w2k",
+ price=59.99, price_note="Ring UK, sold out at the check, 12 November 2026", price_src="ring_w2k", checked_iso="2026-11-12",
  extra=0, extra_note="", free_records=False,
  sub=4.99, sub_name="Ring Solo",
  best="The cheapest way into Ring if you already have doorbell wiring",
@@ -589,7 +589,7 @@ dict(cat="doorbells", id="ring-w2k", brand="Ring", model="Wired Video Doorbell 2
  rec_src="ring_plans", history_src="ring_plans", ha_src="ha_ring", plan_src="ring_plans", unverified=""),
 dict(cat="doorbells", id="ring-w2kplus", brand="Ring", model="Wired Video Doorbell 2K Plus", rec="no", power=["wired"], ha=0,
  power_note="Hardwired to existing doorbell wiring, or to the DIN rail transformer in the box; there is no battery version.",
- price=159.99, price_note="Ring UK, in stock, checked 12 November 2026", price_src="ring_w2kplus",
+ price=159.99, price_note="Ring UK, in stock, checked 12 November 2026", price_src="ring_w2kplus", checked_iso="2026-11-12",
  extra=0, extra_note="", free_records=False,
  sub=4.99, sub_name="Ring Solo",
  best="A wired Ring with radar motion and a head-to-toe 2K view",
@@ -774,7 +774,7 @@ dict(cat="doorbells", id="tapo-d235", brand="TP-Link Tapo", model="D235", rec="y
  rec_src="tapo_d235", history_src="tapo_d235", ha_src="ha_tplink", plan_src="tapo_care", unverified=""),
 dict(cat="doorbells", id="tapo-d235l", brand="TP-Link Tapo", model="D235L", rec="yes", power=["battery","wired"], ha=0,
  power_note="Up to 8 months on its 10,000mAh battery; hardwiring keeps it charged and enables 24/7 recording.",
- price=77.99, price_note="Tapo UK, sale £77.99 (RRP £109.99), checked 12 November 2026", price_src="tapo_d235l",
+ price=77.99, price_note="Tapo UK, sale £77.99 (RRP £109.99), checked 12 November 2026", price_src="tapo_d235l", checked_iso="2026-11-12",
  extra=CARD, extra_note="+ SanDisk 64 GB microSD card", extra_src="sandisk_card", free_records=True,
  sub=2.99, sub_name="Tapo Care",
  best="A cheaper 2K Tapo with a wider view and eight months of battery",
@@ -1928,13 +1928,13 @@ REQUIRED_ROW_KEYS = (
     "rec_src", "history_src", "ha_src", "plan_src",
 )
 OPTIONAL_ROW_KEYS = (
-    "power_note", "cards", "plan_price_region", "extra_src", "kit_src", "kit_label",
-    "kit_price", "nosub_say", "plan_say", "buy", "buy_label", "price_check",
-    "offers",
+    "power_note", "cards", "plan_price_region", "checked_iso", "extra_src",
+    "kit_src", "kit_label", "kit_price", "nosub_say", "plan_say", "buy",
+    "buy_label", "price_check", "offers",
 )
 DERIVED_ROW_KEYS = (
     "score_total", "nosub3", "sub3", "keep3", "maths_free", "maths_sub",
-    "plan_region", "keep_basis", "keep_note", "verdict", "plain",
+    "plan_region", "checked", "keep_basis", "keep_note", "verdict", "plain",
     "offer_at", "offer_conflict",
 )
 
@@ -2015,6 +2015,17 @@ def row_problems(cat=None):
             problems.append(f"{rid}: cards must be at least 1")
         if r.get("plan_price_region", "UK") not in ("UK", "EU"):
             problems.append(f"{rid}: plan_price_region must be UK or EU")
+        if "checked_iso" in r:
+            try:
+                checked_day = date.fromisoformat(str(r["checked_iso"]))
+            except ValueError:
+                problems.append(f"{rid}: checked_iso {r['checked_iso']!r} is not an ISO date")
+            else:
+                label = f"{checked_day.day} {checked_day:%B %Y}"
+                if checked_day > date.today():
+                    problems.append(f"{rid}: checked_iso {r['checked_iso']!r} is in the future")
+                if label not in r.get("price_note", ""):
+                    problems.append(f"{rid}: price_note does not name its check date {label}")
         # A row with no free route to a recording and no plan has nothing to
         # keep, so `keep3` has no figure to be. The build used to crash in
         # `min()` with no row named; it now fails here, in words.
@@ -2119,6 +2130,12 @@ def _derive(cat):
     for r in rows:
         r["cards"] = r.get("cards", 1)
         r["plan_region"] = r.get("plan_price_region", "UK")
+        checked_iso = str(r.get("checked_iso") or cat["checked_iso"])
+        try:
+            checked_day = date.fromisoformat(checked_iso)
+        except ValueError:
+            checked_day = cat["checked_date"]
+        r["checked"] = f"{checked_day.day} {checked_day:%B %Y}"
         # A row that lists its shops has no price of its own: the offers are the
         # price, so an authored one would be a second figure to keep in step
         # with the winner. The conflict is recorded while the authored key is

@@ -40,6 +40,32 @@ def rel(url):
     Amazon tag are both marked and a new network is one entry there.
     """
     return "sponsored nofollow noopener" if url in SPONSORED else "nofollow noopener noreferrer"
+
+
+def external_targets(markup):
+    """Every anchor to another site opens a new tab and cannot reach back.
+
+    The transform is central and runs over the generated page, so a source link,
+    an editorial citation and a footer link all follow the same rule. A link
+    that already names a target is left alone, and the existing paid-link rel is
+    kept while noopener is added where it is missing.
+    """
+    def add(match):
+        tag = match.group(0)
+        if "target=" in tag:
+            return tag
+        rel_match = re.search(r'\brel="([^"]*)"', tag)
+        if rel_match:
+            words = rel_match.group(1).split()
+            if "noopener" not in words:
+                words.append("noopener")
+            tag = tag[:rel_match.start(1)] + " ".join(words) + tag[rel_match.end(1):]
+        else:
+            tag = tag[:-1] + ' rel="noopener noreferrer">'
+        return tag[:-1] + ' target="_blank">'
+
+    return re.sub(r'<a\b[^>]*\bhref="https?://[^"]*"[^>]*>', add, markup)
+
 EU_NOTE = "EU price, not a UK quote"
 
 
@@ -325,6 +351,8 @@ def data_map(ds, cat):
             "plan": r["sub_text"], "ha": r["ha_text"], "wifi": r["wifi"],
             "img": bool(has_photo(r)),
         }
+        if r["checked"] != ds.CHECKED:
+            d["checked"] = r["checked"]
         if r.get("price_check"):
             d["chk"] = 1
         d["claims"] = {}
@@ -767,6 +795,8 @@ def build(cat):
         for line in cat["method"]["md"]
     ]
 
+    page = external_targets(page)
+    alias = external_targets(alias)
     files = {
         cat["page"]: page,
         cat["csv"]: csv_text(ds, rows, cat),
@@ -818,7 +848,7 @@ def not_found(cats):
     the links in it are root-relative and work at any depth."""
     copy = cats[0]["not_found"]
     links = "".join(f'<a class="nf-btn" href="{SITE}{cat["route"]}">{e(cat["h1"])}</a>' for cat in cats)
-    return f'''<!doctype html>
+    return external_targets(f'''<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
@@ -836,7 +866,7 @@ def not_found(cats):
 </main>
 </div>
 <script data-goatcounter="https://subfreeuk.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
-</body></html>'''
+</body></html>''')
 
 
 def write():

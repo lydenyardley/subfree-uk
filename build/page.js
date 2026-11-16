@@ -198,7 +198,7 @@ function claimCell(id,claim,html){
  if(!claim)return html;
  var row=document.getElementById('m-'+id),t=row&&row.querySelector('a.src[data-claim="'+claim+'"]');
  if(!t)return html;
- var a=['href','data-fn','data-more','aria-label'].map(function(k){var v=t.getAttribute(k);return v?' '+k+'="'+esc(v)+'"':''}).join('');
+ var a=['href','target','data-fn','data-more','aria-label'].map(function(k){var v=t.getAttribute(k);return v?' '+k+'="'+esc(v)+'"':''}).join('');
  return '<a class="src"'+a+' data-claim="'+esc(claim)+'" data-id="'+esc(id)+'" rel="'+esc(t.getAttribute('rel')||'nofollow noopener noreferrer')+'" aria-haspopup="dialog">'+html+'</a>';
 }
 function sel(){return $$('input.cmp:checked').map(function(c){return c.value})}
@@ -736,13 +736,14 @@ function openCard(t){
  cardLine('.card-say',c.say||d[c.f]);
  cardLine('.card-arc',c.arc);
  cardLine('.card-note',c.note);
+ $('.card-date',card).textContent='Prices and plans checked '+(d.checked||CHECKED)+'.';
  var box=$('.card-srcs',card);
  box.textContent='';
  box.appendChild(document.createTextNode(list.length>1?'Sources: ':'Source: '));
  list.forEach(function(entry,i){
   if(i)box.appendChild(document.createTextNode(', '));
   var a=document.createElement('a');
-  a.href=entry.url;a.rel=entry.paid?'sponsored nofollow noopener':'nofollow noopener noreferrer';a.textContent=entry.name;
+  a.href=entry.url;a.target='_blank';a.rel=entry.paid?'sponsored nofollow noopener':'nofollow noopener noreferrer';a.textContent=entry.name;
   box.appendChild(a);
  });
  cardFrom=t;
