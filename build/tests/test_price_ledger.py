@@ -100,6 +100,30 @@ class ApplyTests(unittest.TestCase):
         self.assertEqual(row["offers"][0]["price"], 319.0)
         self.assertNotIn("checked_iso", row)
 
+    def test_an_offer_stock_reading_reaches_the_offer(self) -> None:
+        row = offer_row()
+        ledger = Ledger(
+            rows={"oura-ring-4": RowEntry(offers={"argos_oura4": PriceEntry(
+                329.0, 319.0, "2026-11-16", in_stock=False,
+            )})},
+            updated="",
+        )
+        problems = apply_to_rows(ledger, [row], {"argos_oura4": ("Argos", "https://a")})
+        self.assertEqual(problems, [])
+        self.assertIs(row["offers"][0]["in_stock"], False)
+
+    def test_an_unknown_stock_reading_clears_the_old_one(self) -> None:
+        row = offer_row()
+        row["offers"][0]["in_stock"] = False
+        ledger = Ledger(
+            rows={"oura-ring-4": RowEntry(offers={"argos_oura4": PriceEntry(
+                329.0, 319.0, "2026-11-16", in_stock=None,
+            )})},
+            updated="",
+        )
+        apply_to_rows(ledger, [row], {"argos_oura4": ("Argos", "https://a")})
+        self.assertNotIn("in_stock", row["offers"][0])
+
     def test_a_price_entry_on_an_offer_row_is_refused(self) -> None:
         ledger = Ledger(
             rows={"oura-ring-4": RowEntry(price=PriceEntry(329.0, 319.0, "2026-11-16"))},
@@ -158,7 +182,10 @@ class RecordTests(unittest.TestCase):
 class FileTests(unittest.TestCase):
     def test_a_written_ledger_reads_back(self) -> None:
         ledger = Ledger(
-            rows={"epson-et-2951": RowEntry(price=PriceEntry(319.99, 299.99, "2026-11-16"))},
+            rows={"epson-et-2951": RowEntry(price=PriceEntry(319.99, 299.99, "2026-11-16")),
+                  "oura-ring-4": RowEntry(offers={"argos_oura4": PriceEntry(
+                      329.0, 319.0, "2026-11-16", in_stock=False,
+                  )})},
             updated="",
         )
         with tempfile.TemporaryDirectory() as folder:
@@ -179,6 +206,18 @@ class FileTests(unittest.TestCase):
             loaded, problems = load(path)
         self.assertEqual(loaded.rows, {})
         self.assertIn("not an ISO date", problems[0])
+
+    def test_a_non_boolean_stock_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "price_ledger.json"
+            path.write_text(json.dumps({
+                "version": 1,
+                "rows": {"oura-ring-4": {"offers": {"argos_oura4": {
+                    "base": 329.0, "checked": "2026-11-16", "in_stock": "no",
+                }}}},
+            }), encoding="utf-8")
+            _, problems = load(path)
+        self.assertIn("in_stock", problems[0])
 
     def test_a_future_date_is_refused(self) -> None:
         with tempfile.TemporaryDirectory() as folder:

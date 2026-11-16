@@ -30,6 +30,7 @@ class Offer:
     price: float
     pay: int
     note: str = ""
+    in_stock: bool | None = None
 
     def __getitem__(self, key: str) -> Any:
         return getattr(self, key)
@@ -158,6 +159,7 @@ class Row:
                 price=float(offer["price"]),
                 pay=int(offer["pay"]),
                 note=str(offer.get("note", "")),
+                in_stock=offer.get("in_stock"),
             )
             for offer in raw.get("offers") or ()
         )

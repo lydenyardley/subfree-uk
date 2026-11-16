@@ -27,6 +27,7 @@ from price_watch import (
     Product,
     Want,
     adapter_for,
+    availability_state,
     card_matches,
     card_price,
     choose_product,
@@ -41,6 +42,7 @@ from price_watch import (
     read_jsonld,
     read_listing_cards,
     report,
+    stock_label,
     wants,
 )
 
@@ -139,6 +141,11 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(parse_money("£1,234.56"), (1234.56, "GBP"))
         self.assertEqual(parse_money("from 239.99"), (239.99, ""))
         self.assertIsNone(parse_money("Price on request"))
+
+    def test_availability_reads_schema_names(self) -> None:
+        self.assertFalse(availability_state("https://schema.org/OutOfStock"))
+        self.assertTrue(availability_state("https://schema.org/InStock"))
+        self.assertIsNone(availability_state(""))
 
     def test_every_recorded_figure_has_an_adapter(self) -> None:
         for want in wants():
@@ -284,6 +291,21 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("+£10.00", text)
         self.assertIn("HTTP 403", text)
         self.assertIn("Prices were not edited.", text)
+
+    def test_report_names_a_stock_change(self) -> None:
+        gone = Observation(
+            want=make_want(kind="offer", shop="Currys", in_stock=True),
+            status=READ,
+            observed=239.99,
+            method="JSON-LD",
+            available=False,
+        )
+        text = report(
+            [gone], datetime(2026, 11, 16, 8, 30, tzinfo=timezone.utc)
+        )
+        self.assertIn("out of stock", text)
+        self.assertIn("£0.00", text)
+        self.assertEqual(stock_label(gone), "out of stock")
 
 
 if __name__ == "__main__":

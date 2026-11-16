@@ -154,8 +154,9 @@ sale always has one.
 
 Each record's `checked_iso` in `build/catalog.py` is the one hand-typed date
 for that category's **plans and facts**. It is printed on the page, and the
-build refuses a date in the future. `build/check.py` warns after 30 days and
-fails after 60. Move it only after re-checking the data.
+build refuses a date in the future. `build/check.py` reports the age after 30
+days but does not fail on it, so a weekly run cannot be stopped by a date the
+price ledger does not move. Move it only after re-checking the data.
 
 A row's own `checked_iso` is different. `build/price_ledger.json` supplies it
 when a browser has read that row's price, and the row note gets the same date.
@@ -173,8 +174,10 @@ server error fails the run.
 
 `build/price_watch.py --apply` is the local writer. It reads every source with
 Chromium and the Firefox fallback, re-reads every changed page, and writes only
-an unchanged second reading to `build/price_ledger.json`. Out-of-stock reads
-and unconfirmed changes stay out. `build/price_refresh.py` runs that probe,
+an unchanged second reading to `build/price_ledger.json`. An out-of-stock
+product read stays out; an out-of-stock offer is recorded with `in_stock: false`
+so the page can skip its old price. Unconfirmed changes stay out.
+`build/price_refresh.py` runs that probe,
 rebuilds, runs the full audit, then commits and pushes only from a clean tree.
 `build/install_price_task.ps1` registers it as a weekly Windows task.
 

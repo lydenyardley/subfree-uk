@@ -391,13 +391,14 @@ def freshness_problems():
                 f"{cat['slug']}: checked_iso {cat['checked_iso']} is {-age} days in the future"
             )
         elif age > 60:
-            problems.append(
-                f"{cat['slug']}: the data was last checked {age} days ago (limit 60); "
-                "re-check it and move checked_iso"
+            notes.append(
+                f"{cat['slug']}: the plans and facts were last checked {age} days "
+                "ago; re-check them soon"
             )
         elif age > 30:
             notes.append(
-                f"{cat['slug']}: the data was last checked {age} days ago; re-check it soon"
+                f"{cat['slug']}: the plans and facts were last checked {age} days "
+                "ago; re-check them soon"
             )
     return problems, notes
 
@@ -426,8 +427,11 @@ def offer_rule_problems(module):
         return ["rows.py has no offer_winner, so no offer can be chosen"]
     C, R, A, B = 100.0, module.PAY_RETAIL, module.PAY_AMAZON, module.PAY_BRAND
 
-    def offer(shop, price, pay):
-        return dict(shop=shop, src=shop.lower(), price=price, pay=pay, note="one size")
+    def offer(shop, price, pay, **extra):
+        return dict(
+            shop=shop, src=shop.lower(), price=price, pay=pay,
+            note="one size", **extra,
+        )
 
     cases = [
         ([offer("Cheap", C, R), offer("Dear", C + 20, B)], C,
@@ -442,6 +446,10 @@ def offer_rule_problems(module):
          "a tie fell to something other than the name"),
         ([offer("Only", C + 40, B)], C + 40,
          "a row with one offer did not show it"),
+        ([offer("Gone", C - 5, R, in_stock=False), offer("Live", C, R)], C,
+         "an out-of-stock offer won on price"),
+        ([offer("Gone", C - 5, R, in_stock=False)], C - 5,
+         "a row with every offer out of stock did not fall back to its cheapest"),
     ]
     problems = []
     for offers, want, why in cases:
@@ -450,6 +458,14 @@ def offer_rule_problems(module):
             problems.append(f"{why}: picked £{got:,.2f} instead of £{want:,.2f}")
     if module.offer_winner([offer("Alpha", C, A), offer("Beta", C, A)])["shop"] != "Alpha":
         problems.append("a full tie is not settled by the shop's name")
+    twin = module.offer_shown([
+        offer("Amazon", C, A),
+        offer("Gone", C, B, in_stock=False),
+    ])
+    if twin["shop"] != "Amazon":
+        problems.append("an out-of-stock twin hid the Amazon offer")
+    if module.in_stock_offers([offer("Gone", C, R, in_stock=False)]):
+        problems.append("an out-of-stock offer is still treated as available")
     return problems
 
 
@@ -615,7 +631,7 @@ CHECKS = [
     ),
     Check(
         "data freshness", "static", 3,
-        "every category's prices are dated and inside their 60-day limit",
+        "every category's plans and facts carry a date that is not in the future; age is reported, not failed",
         freshness,
     ),
     Check(

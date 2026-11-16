@@ -5,11 +5,11 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 | Smart ring | Subscription? | Price | Score /8 | 3 yrs, no subscription | 3 yrs, with membership | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, and Aura's advanced sleep coaching is a paid extra. |
-| Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 | No subscription | [£259.00](https://www.argos.co.uk/product/7614640) | 6 | £259.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
 | Ultrahuman Ring PRO | No subscription | [£429.00](https://www.ultrahuman.com/gb/ring-pro/buy) | 6 | £429.00 | — | The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data | AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is undocumented. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 | Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8566340) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
+| Samsung Galaxy Ring | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DNTFZLDZ?tag=subfreeuk-21) | 6 | Check price | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 Air | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | Check price | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
 | Ultrahuman Ring AIR | No subscription | [Check price](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) | 6 | Check price | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
 | RingConn Gen 3 | No subscription | [Check price](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) | 6 | Check price | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
@@ -117,8 +117,8 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 ### Samsung Galaxy Ring
 - **Best for:** Samsung phone owners: no subscription and the deepest Samsung Health integration
 - **Main catch:** Android only, with no iPhone support, and no Home Assistant route.
-- **Price:** £150.97 (Currys, Titanium Gold, size 14; every other size is £399)
-- **3-year cost, no subscription:** £150.97
+- **Price:** Check price (Amazon UK, Titanium Black, size 7)
+- **3-year cost, no subscription:** Check price
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Samsung Health's cloud. The phone app holds the history.
 - **Free:** live heart rate: Yes, in Samsung Health.; wellness alerts: Yes, through Samsung Health notifications.; sleep and recovery insights: Free: sleep stages, heart rate, SpO2, skin temperature, stress, Energy Score and cycle tracking.
@@ -146,4 +146,4 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 - With no subscription: the ring's price, because no maker charges for the app itself. Oura's free tier keeps three daily scores; the other rings keep their full data.
 - With a membership: price + 36 × the cheapest monthly membership (Oura's £5.99). Paying yearly is cheaper.
 - A phone, electricity, sizing kits and price rises are left out.
-- Where to buy: the cheapest offer checked, or a second shop within £5 of it that pays us more (never more than £5 dearer).
+- Where to buy: the cheapest in-stock offer checked, or a second shop within £5 of it that pays us more (never more than £5 dearer). An out-of-stock offer cannot win; if every shop is out, the row says Check price.

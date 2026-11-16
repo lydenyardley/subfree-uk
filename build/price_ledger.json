@@ -1,11 +1,12 @@
 {
   "version": 1,
-  "updated": "2026-11-16T16:30:46+00:00",
+  "updated": "2026-11-16T17:32:48+00:00",
   "rows": {
     "amazfit-helio": {
       "price": {
         "base": 149.9,
-        "checked": "2026-11-16"
+        "checked": "2026-11-16",
+        "in_stock": true
       }
     },
     "apple-airtag-2": {
@@ -222,7 +223,8 @@
         },
         "oura_store5": {
           "base": 399.0,
-          "checked": "2026-11-16"
+          "checked": "2026-11-16",
+          "in_stock": true
         }
       }
     },
@@ -275,7 +277,8 @@
         },
         "currys_rc2": {
           "base": 259.0,
-          "checked": "2026-11-16"
+          "checked": "2026-11-16",
+          "in_stock": true
         }
       }
     },
@@ -387,6 +390,12 @@
           "base": 399.0,
           "checked": "2026-11-16",
           "price": 159.63
+        },
+        "currys_samsung": {
+          "base": 150.97,
+          "checked": "2026-11-16",
+          "price": 120.97,
+          "in_stock": false
         }
       }
     },
@@ -449,7 +458,8 @@
     "ultra-pro": {
       "price": {
         "base": 429.0,
-        "checked": "2026-11-16"
+        "checked": "2026-11-16",
+        "in_stock": true
       }
     },
     "vtech-vm4263": {

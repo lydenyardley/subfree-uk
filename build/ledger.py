@@ -59,11 +59,14 @@ class PriceEntry:
     base: float
     price: float | None
     checked: str
+    in_stock: bool | None = None
 
     def to_json(self) -> dict[str, Any]:
         out: dict[str, Any] = {"base": self.base, "checked": self.checked}
         if self.price is not None:
             out["price"] = self.price
+        if self.in_stock is not None:
+            out["in_stock"] = self.in_stock
         return out
 
 
@@ -102,6 +105,14 @@ class Ledger:
             return offer.base if offer else None
         return entry.price.base if entry.price else None
 
+    def stock_for(self, row_id: str, source: str) -> bool | None:
+        """The last stock reading for one offer, or None when it was not read."""
+        entry = self.rows.get(row_id)
+        if entry is None:
+            return None
+        offer = (entry.offers or {}).get(source)
+        return offer.in_stock if offer else None
+
     def record(
         self, readings: Iterable["Reading"], checked: str
     ) -> tuple["Ledger", int]:
@@ -121,6 +132,7 @@ class Ledger:
                 base=reading.base,
                 price=observed,
                 checked=checked,
+                in_stock=reading.in_stock,
             )
             if reading.kind == "offer":
                 offers = dict(entry.offers or {})
@@ -146,6 +158,7 @@ class Reading:
     source: str
     base: float
     price: float
+    in_stock: bool | None = None
 
 
 def day_text(value: str) -> str:
@@ -192,7 +205,12 @@ def _entry(raw: object, where: str) -> tuple[PriceEntry | None, list[str]]:
     observed = None if price is None else _number(price)
     if price is not None and observed is None:
         return None, [f"{where} price {price!r} is not positive"]
-    return PriceEntry(base=base, price=observed, checked=checked), []
+    in_stock = raw.get("in_stock")
+    if in_stock is not None and not isinstance(in_stock, bool):
+        return None, [f"{where} in_stock {in_stock!r} is not true or false"]
+    return PriceEntry(
+        base=base, price=observed, checked=checked, in_stock=in_stock
+    ), []
 
 
 def load(path: Path = LEDGER_PATH) -> tuple[Ledger, list[str]]:
@@ -295,6 +313,10 @@ def apply_to_rows(
                     continue
                 if observed.price is not None:
                     offer["price"] = observed.price
+                if observed.in_stock is None:
+                    offer.pop("in_stock", None)
+                else:
+                    offer["in_stock"] = observed.in_stock
             continue
         if entry.offers:
             problems.append(f"price ledger: {row_id} has offers, but the row does not")

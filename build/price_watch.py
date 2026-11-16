@@ -197,6 +197,7 @@ class Want:
     shop: str = ""
     configuration: str = ""
     base: float = 0.0
+    in_stock: bool | None = None
 
     @property
     def label(self) -> str:
@@ -220,14 +221,18 @@ class Observation:
     observed: float | None = None
     method: str = ""
     detail: str = ""
+    available: bool | None = None
 
     @property
     def changed(self) -> bool:
-        return (
-            self.status == READ
-            and self.observed is not None
-            and abs(self.observed - self.want.expected) >= 0.005
+        if self.status != READ or self.observed is None:
+            return False
+        price_moved = abs(self.observed - self.want.expected) >= 0.005
+        stock_moved = (
+            self.available != self.want.in_stock
+            and (self.available is not None or self.want.in_stock is not None)
         )
+        return price_moved or stock_moved
 
 
 def money(value: float) -> str:
@@ -239,8 +244,14 @@ def plural(count: int, one: str, many: str | None = None) -> str:
 
 
 def difference(value: float) -> str:
-    sign = "+" if value > 0 else "-"
+    sign = "+" if value > 0 else ("-" if value < 0 else "")
     return f"{sign}£{abs(value):,.2f}"
+
+
+def stock_label(item: "Observation") -> str:
+    if item.available is None:
+        return ""
+    return "in stock" if item.available else "out of stock"
 
 
 def parse_money(value: object) -> tuple[float, str] | None:
@@ -284,6 +295,24 @@ def first_price(values: Iterable[str]) -> tuple[float, str] | None:
 
 def normalise(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
+
+
+def availability_state(value: str) -> bool | None:
+    """Whether a JSON-LD availability names stock, or nothing if it does not."""
+    text = normalise(value)
+    if not text:
+        return None
+    if any(
+        word in text
+        for word in ("outofstock", "soldout", "discontinued", "backorder")
+    ):
+        return False
+    if any(
+        word in text
+        for word in ("instock", "limitedavailability", "onlineonly", "preorder")
+    ):
+        return True
+    return None
 
 
 def type_names(node: Mapping[str, Any]) -> set[str]:
@@ -462,6 +491,9 @@ def wants() -> list[Want]:
                         str(row["id"]), "offer", offer_source
                     )
                     or float(offer["price"]),
+                    in_stock=rows.PRICE_LEDGER.stock_for(
+                        str(row["id"]), offer_source
+                    ),
                 )
             )
     return out
@@ -654,6 +686,7 @@ async def probe_site(
                                 observed=product.price,
                                 method="JSON-LD",
                                 detail=product.availability,
+                                available=availability_state(product.availability),
                             )
                         )
                     continue
@@ -797,7 +830,9 @@ async def confirm_changes(
     """
     if not changed:
         return set()
-    primary = {observation_key(item): item.observed for item in changed}
+    primary = {
+        observation_key(item): (item.observed, item.available) for item in changed
+    }
     confirmed: set[tuple[str, str, str]] = set()
     semaphore = asyncio.Semaphore(max(1, min(args.concurrency, 8)))
 
@@ -816,11 +851,14 @@ async def confirm_changes(
             for again in (item for group in results for item in group):
                 key = observation_key(again)
                 first = primary.get(key)
+                if first is None or again.status != READ or again.observed is None:
+                    continue
+                price, available = first
+                if price is None:
+                    continue
                 if (
-                    first is not None
-                    and again.status == READ
-                    and again.observed is not None
-                    and abs(again.observed - first) < 0.005
+                    abs(again.observed - price) < 0.005
+                    and again.available == available
                 ):
                     confirmed.add(key)
         finally:
@@ -882,7 +920,7 @@ def report(
                 else ""
             )
             + (
-                f" {plural(stock_skipped, 'out-of-stock read')} kept the recorded figure."
+                f" {plural(stock_skipped, 'out-of-stock product read')} kept the recorded figure."
                 if stock_skipped
                 else ""
             )
@@ -907,8 +945,8 @@ def report(
     lines += ["", "### Changed", ""]
     if changed:
         lines += [
-            "| Category | Item | Recorded | Observed | Difference | Source | Read by |",
-            "| --- | --- | ---: | ---: | ---: | --- | --- |",
+            "| Category | Item | Recorded | Observed | Difference | Stock | Source | Read by |",
+            "| --- | --- | ---: | ---: | ---: | --- | --- | --- |",
         ]
         for item in changed:
             category = categories.get(item.want.category)
@@ -918,6 +956,7 @@ def report(
                 f"| {escape(noun)} | {escape(item.want.label)} | "
                 f"{money(item.want.expected)} | {money(item.observed)} | "
                 f"{difference(item.observed - item.want.expected)} | "
+                f"{stock_label(item)} | "
                 f"[{escape(item.want.source_name)}]({item.want.url}) | "
                 f"{item.method} |"
             )
@@ -1081,10 +1120,7 @@ async def run(args: argparse.Namespace) -> int:
         for item in observations:
             if item.status != READ or item.observed is None:
                 continue
-            if any(
-                word in item.detail.lower()
-                for word in ("outofstock", "out of stock", "soldout", "sold out")
-            ):
+            if item.available is False and item.want.kind != "offer":
                 stock_skipped += 1
                 continue
             if item.changed and observation_key(item) not in confirmed:
@@ -1097,6 +1133,7 @@ async def run(args: argparse.Namespace) -> int:
                     source=item.want.source,
                     base=item.want.base,
                     price=item.observed,
+                    in_stock=item.available,
                 )
             )
         updated, written = rows.PRICE_LEDGER.record(

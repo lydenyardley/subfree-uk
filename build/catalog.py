@@ -226,10 +226,12 @@ RING_METHOD = {
     "offers": (
         "<b>Where to buy.</b> Each ring is sold by more than one UK shop, and "
         "its price moves with size and finish, so every offer names the one it "
-        "is for. The price shown is the cheapest we found, unless a second shop "
-        "is within £5 of it and pays us more — then that shop is shown, and the "
-        "link on the price goes to it. A shop paying us never adds more than "
-        "£5 to the price of a ring."
+        "is for. An out-of-stock offer cannot win, however cheap it is. The "
+        "price shown is the cheapest in-stock offer we found, unless a second "
+        "shop is within £5 of it and pays us more — then that shop is shown, "
+        "and the link on the price goes to it. A shop paying us never adds more "
+        "than £5 to the price of a ring. If every shop is out of stock, the row "
+        "says Check price."
     ),
     "score": (
         "<b>Free-data score (out of {score_max}):</b> works without a "
@@ -265,8 +267,10 @@ RING_METHOD = {
         "With a membership: price + {months} × the cheapest monthly membership "
         "(Oura's £5.99). Paying yearly is cheaper.",
         "A phone, electricity, sizing kits and price rises are left out.",
-        "Where to buy: the cheapest offer checked, or a second shop within £5 "
-        "of it that pays us more (never more than £5 dearer).",
+        "Where to buy: the cheapest in-stock offer checked, or a second shop "
+        "within £5 of it that pays us more (never more than £5 dearer). An "
+        "out-of-stock offer cannot win; if every shop is out, the row says "
+        "Check price.",
     ],
 }
 

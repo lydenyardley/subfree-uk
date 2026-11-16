@@ -337,16 +337,27 @@ PAY_AMAZON = 2   # Amazon UK Associates: a small rate on the whole price
 PAY_BRAND = 3    # a brand programme that pays more again (Ultrahuman 7-15%)
 
 
+def in_stock_offers(offers):
+    """The offers not marked out of stock; empty when every offer is."""
+    return [o for o in offers if o.get("in_stock") is not False]
+
+
 def offer_winner(offers):
-    """The offer a reader sees: cheapest, then the one that pays us most.
+    """The offer a reader sees: cheapest in stock, then the best payer.
+
+    An offer the page marks out of stock cannot win, however cheap it is. If
+    every offer is out, the cheapest comes back only so the caller can name
+    it; the row prints "Check price" rather than an old figure.
 
     Only an offer within OFFER_WINDOW of the cheapest can win, so the shop that
     pays us better can never add more than that to the price. A tie falls to
     the cheaper offer and then to the shop's name, so the winner is a function
     of the data rather than of the order the list is written in.
     """
-    cheapest = min(o["price"] for o in offers)
-    near = [o for o in offers if o["price"] <= cheapest + OFFER_WINDOW + 1e-9]
+    available = in_stock_offers(offers)
+    considered = available or list(offers)
+    cheapest = min(o["price"] for o in considered)
+    near = [o for o in considered if o["price"] <= cheapest + OFFER_WINDOW + 1e-9]
     return min(near, key=lambda o: (-o["pay"], o["price"], o["shop"]))
 
 
@@ -361,7 +372,8 @@ def offer_shown(offers):
     won = offer_winner(offers)
     if won["pay"] != PAY_AMAZON:
         return won
-    twins = [o for o in offers if o is not won and o["pay"] != PAY_AMAZON
+    twins = [o for o in in_stock_offers(offers)
+             if o is not won and o["pay"] != PAY_AMAZON
              and abs(o["price"] - won["price"]) < 1e-9]
     return min(twins, key=lambda o: o["shop"]) if twins else won
 
@@ -2013,6 +2025,11 @@ def row_problems(cat=None):
                     problems.append(f"{rid}: the offer at {offer['shop']} has no price")
                 if not isinstance(offer["pay"], int) or isinstance(offer["pay"], bool):
                     problems.append(f"{rid}: the offer at {offer['shop']} has no pay rank")
+                if "in_stock" in offer and not isinstance(offer["in_stock"], bool):
+                    problems.append(
+                        f"{rid}: the offer at {offer['shop']} has in_stock "
+                        f"{offer['in_stock']!r}, not true or false"
+                    )
                 if not str(offer.get("note", "")).strip():
                     problems.append(
                         f"{rid}: the offer at {offer['shop']} names no configuration, "
@@ -2155,9 +2172,12 @@ def _derive(cat):
         )
         if offers:
             won, shown = offer_winner(offers), offer_shown(offers)
+            if not in_stock_offers(offers):
+                # No shop can sell it, so no old figure is allowed to stand in.
+                r["price_check"] = True
             if won["pay"] == PAY_AMAZON:
                 # Amazon may win the link but never the figure: the price shown
-                # is another UK shop's at the same price, or "Check price".
+                # is another in-stock UK shop's at the same price, or "Check price".
                 r["buy"] = won["src"]
                 if shown is won:
                     r["price_check"] = True
