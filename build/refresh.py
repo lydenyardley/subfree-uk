@@ -2,12 +2,14 @@
 """The weekly re-check list: every page a category's prices and plans rest on.
 
 GitHub runs this on a schedule (`.github/workflows/refresh.yml`) and files what
-it prints as an issue, which is the nudge to do the work. It reads no vendor
-page and writes no data: whether a page still shows a price is a person's job,
-because the vendors draw prices client-side, answer a script with a bot wall,
-and sell through shops that do the same. What this can do is say which
-categories are a week past their check and list the pages behind every figure,
-so the job arrives as links rather than as archaeology.
+it prints as an issue, which is the nudge to do the work. This file reads no
+vendor page and writes no data. The separate browser probe, `price_watch.py`,
+reads the recorded prices and reports changes; whether a displayed price is the
+right product, in stock and at the stated configuration remains a person's job,
+because the vendors draw prices client-side and answer a script with a bot
+wall. What this can do is say which categories are a week past their check and
+list the pages behind every figure, so the job arrives as links rather than as
+archaeology.
 
 Exit status is 1 when any category is a week or more past its checked date,
 which is the run that opens the issue.

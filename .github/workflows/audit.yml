@@ -31,5 +31,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r build/requirements.txt
           python -m playwright install --with-deps chromium firefox
+      - name: Run the price adapter fixtures
+        run: python -m unittest discover -s build/tests -v
       - name: Rebuild, then audit
         run: python build/check.py

@@ -34,6 +34,8 @@ build/
   checks/                    the audit's families (structure, behaviour, compare, accessibility, performance, browsers, data, category)
   page.css, page.js          the page's stylesheet and script, emitted as hashed assets
   check.py                   rebuild, data recomputation, structure, accessibility and link audit (Playwright, axe-core)
+  price_watch.py             the Monday browser probe of every recorded price and offer
+  tests/                     fixture tests for the price watch adapters
   lineup_feed.py             the Monday report of Ring and Tapo products the lineup does not name
   lineup_ignore.json         products a person has dismissed from that report, with the reason beside each
   check_commits.py           commit message format check (run by CI on pull requests)
@@ -52,7 +54,7 @@ research/                    Reddit threads and draft replies for the demand tes
 
 ## Rebuilding
 
-Needs Python 3.10+ (built with 3.13). `build.py` uses only the standard library; images need Pillow; screenshots and the audit need Playwright, the audit also needs `axe-playwright-python`, and the `types` check needs `mypy`.
+Needs Python 3.10+ (built with 3.13). `build.py` uses only the standard library; images need Pillow; screenshots, the audit and the price watch need Playwright, the audit also needs `axe-playwright-python`, and the `types` check needs `mypy`.
 
 ```bash
 git clone https://github.com/lydenyardley/subfree-uk.git
@@ -67,6 +69,8 @@ python build/make_images.py      # only if photos changed: rewrites img/, build/
 python build/shots2.py           # optional: screenshots at 1280/1000/900/820/390 + 1280 dark into screenshots/
 python build/check.py --fast     # the browser-free static checks, about a second
 python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
+python build/price_watch.py      # reads every recorded price and offer; reports, never edits
+python -m unittest discover -s build/tests -v   # price watch fixtures, no vendor network
 python build/links.py            # sweeps every external citation; dead or server errors exit 1
 ```
 
