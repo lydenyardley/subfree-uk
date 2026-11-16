@@ -182,6 +182,7 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
             [changed, blocked], datetime(2026, 11, 16, 8, 30, tzinfo=timezone.utc)
         )
         self.assertIn("<!-- price-watch changed=1 unreadable=1 -->", text)
+        self.assertIn("1 read, 1 changed", text)
         self.assertIn("### Changed", text)
         self.assertIn("£249.99", text)
         self.assertIn("+£10.00", text)

@@ -633,7 +633,7 @@ def report(observations: Sequence[Observation], checked_at: datetime) -> str:
         f"Checked {plural(len(observations), 'recorded price or offer', 'recorded prices and offers')} across "
         f"{plural(len(categories_checked), 'category', 'categories')} on "
         f"{checked_at.day} {checked_at:%B %Y} at {checked_at:%H:%M} UTC.",
-        f"{len(read)} were read, {len(changed)} changed, and "
+        f"{len(read)} read, {len(changed)} changed, and "
         f"{len(unreadable)} could not be read. Prices were not edited.",
         "",
         "### Coverage",
