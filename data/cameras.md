@@ -5,12 +5,12 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 | Camera | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | Aqara Camera G100 Select | Yes | [£36.98](https://www.aqara-shop.co.uk/product/aqara-camera-g100-select/) | 6 | £63.97 | — | A shed or a back door watched cheaply | The card is extra, the power adapter is not in the box, and the better detection needs a subscription. |
+| Blink Outdoor 4 | Only with extra kit | [£24.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) | 2 | £80.97 | £114.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
 | Aqara Camera E1 | Yes | [£55.99](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) | 6 | £82.98 | — | The cheapest way to keep footage without a plan | The card and the power supply are both extra. |
 | Reolink RLC-820A | Yes | [£63.99](https://store.reolink.com/gb/) | 7 | £90.98 | — | A wired install on a budget: 4K for £64, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
 | eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £96.98 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
 | Reolink E1 Outdoor Pro | Yes | [£90.99](https://store.reolink.com/gb/) | 7 | £117.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
 | Reolink Argus PT Ultra | Yes | [£97.99](https://store.reolink.com/gb/) | 7 | £124.98 | — | A garden corner on a budget: 4K pan and tilt for £98, with nothing held back | The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year. |
-| Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
 | TP-Link Tapo C660 KIT | Yes | [£109.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £136.98 | £217.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
 | Aqara Camera Hub G3 | Yes | [£119.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £146.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
 | Reolink Argus 4 Pro | Yes | [£135.99](https://reolink.com/gb/product/argus-4-pro/) | 7 | £162.98 | — | A wide, dark driveway: 180° from one camera, with no fees | The card is extra, and the 180° panorama runs at 15fps rather than 25fps. |
@@ -21,8 +21,8 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 | TP-Link Tapo C675D KIT | Yes | [£176.79](https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit) | 5 | £203.78 | £284.43 | Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom | It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra. |
 | Ring Outdoor Camera Plus (plug-in) | No | [£39.99](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | £39.99 | £219.63 | Ring's live view and alerts for £40, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
 | Ring Outdoor Camera 4K Pro (plug-in) | No | [£119.99](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) | 2 | £119.99 | £299.63 | People already paying for Ring and Alexa | Saves no video at all without the £4.99-a-month plan. |
-| Blink Mini 4K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0GWSJV4H5?tag=subfreeuk-21) | 2 | Check price | Check price | Blink's sharpest picture, for a socket near a window or door | Records nothing until you add a Sync Module 2 and a USB stick, outdoor use needs a separate adapter, and live view stops at 5 minutes. |
 | Blink Outdoor 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/blink-outdoor-camera-2k-/dp/B0F964Q9Y8?tag=subfreeuk-21) | 2 | Check price | Check price | A 2K picture from Amazon's cameras, if you will add the module anyway | Records nothing until you add a Sync Module 2 and a USB stick, and Blink's two-year battery figure is at 1080p. |
+| Blink Mini 4K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0GWSJV4H5?tag=subfreeuk-21) | 2 | Check price | Check price | Blink's sharpest picture, for a socket near a window or door | Records nothing until you add a Sync Module 2 and a USB stick, outdoor use needs a separate adapter, and live view stops at 5 minutes. |
 
 ## Detail
 
@@ -99,7 +99,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### TP-Link Tapo C660 KIT
 - **Best for:** A sunny wall with no socket: 4K, solar and a card slot
 - **Main catch:** Not on Home Assistant's supported Tapo camera list, and the card is extra.
-- **Price:** £109.99 (Tapo UK sale price (RRP £179.99))
+- **Price:** £109.99 (Tapo UK sale price (RRP £179.99), checked 16 November 2026)
 - **3-year cost, no plan:** £109.99 + £26.99 (SanDisk 64 GB microSD card) = £136.98
 - **3-year cost, with plan:** £109.99 + 36 × £2.99 (Tapo Care) = £217.63
 - **Storage:** microSD (up to 512 GB) on the camera; card not included
@@ -127,7 +127,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### eufy SoloCam S340
 - **Best for:** A garden corner with sun: 360° pan and 8 GB on board
 - **Main catch:** 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on.
-- **Price:** £179.00 (eufy UK list price; a £50 coupon was advertised)
+- **Price:** £179.00 (eufy UK list price; a £50 coupon was advertised, checked 16 November 2026)
 - **3-year cost, no plan:** £179.00
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** 8 GB built in, non-removable; a HomeBase S380 adds up to 16 TB
@@ -141,7 +141,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### eufy Indoor Cam E30
 - **Best for:** A room, a pet or a nanny cam: 4K and on-device AI
 - **Main catch:** The card is extra, and the camera only joins 2.4 GHz Wi-Fi.
-- **Price:** £69.99 (eufy UK list price; an £18 coupon was advertised)
+- **Price:** £69.99 (eufy UK list price; an £18 coupon was advertised, checked 16 November 2026)
 - **3-year cost, no plan:** £69.99 + £26.99 (SanDisk 64 GB microSD card) = £96.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (sold separately) or a HomeBase S380
@@ -155,7 +155,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Aqara Camera Hub G3
 - **Best for:** A hallway that also needs a Zigbee hub
 - **Main catch:** The card is extra, and HomeKit Secure Video records at 1080p.
-- **Price:** £119.99 (Aqara UK Shop)
+- **Price:** £119.99 (Aqara UK Shop, checked 16 November 2026)
 - **3-year cost, no plan:** £119.99 + £26.99 (SanDisk 64 GB microSD card) = £146.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 128 GB); HomeKit Secure Video needs iCloud+
@@ -169,7 +169,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Aqara Camera E1
 - **Best for:** The cheapest way to keep footage without a plan
 - **Main catch:** The card and the power supply are both extra.
-- **Price:** £55.99 (Aqara UK Shop sale price (RRP £69.98))
+- **Price:** £55.99 (Aqara UK Shop sale price (RRP £69.98), checked 16 November 2026)
 - **3-year cost, no plan:** £55.99 + £26.99 (SanDisk 64 GB microSD card) = £82.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), or SMB 3.0 NAS with a card inserted
@@ -183,7 +183,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Aqara Camera G100 Select
 - **Best for:** A shed or a back door watched cheaply
 - **Main catch:** The card is extra, the power adapter is not in the box, and the better detection needs a subscription.
-- **Price:** £36.98 (Aqara UK Shop sale price (RRP £41.99))
+- **Price:** £36.98 (Aqara UK Shop sale price (RRP £41.99), checked 16 November 2026)
 - **3-year cost, no plan:** £36.98 + £26.99 (SanDisk 64 GB microSD card) = £63.97
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), or an SMB NAS
@@ -197,7 +197,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Aqara Camera Hub G5 Pro (Wi-Fi 32GB)
 - **Best for:** A local hub camera: 2.6K, 32 GB on board, and Zigbee, Thread and Matter built in
 - **Main catch:** Only 2.6K, and the 32 GB cannot be expanded without a NAS.
-- **Price:** £169.99 (Aqara UK Shop sale price (RRP £199.99))
+- **Price:** £169.99 (Aqara UK Shop sale price (RRP £199.99), checked 16 November 2026)
 - **3-year cost, no plan:** £169.99
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** 32 GB built in; no card slot, and a NAS can hold more
@@ -253,9 +253,9 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Blink Outdoor 4
 - **Best for:** The cheapest way into Amazon's cameras, if you catch a deal
 - **Main catch:** Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes.
-- **Price:** £69.99 (Amazon UK, includes a Sync Module Core (which has no local storage))
-- **3-year cost, no plan:** £69.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £125.97
-- **3-year cost, with plan:** £69.99 + 36 × £2.50 (Blink Basic) = £159.99
+- **Price:** £24.99 (Amazon UK, includes a Sync Module Core (which has no local storage), checked 16 November 2026)
+- **3-year cost, no plan:** £24.99 + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick) = £80.97
+- **3-year cost, with plan:** £24.99 + 36 × £2.50 (Blink Basic) = £114.99
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); the camera has no storage
 - **Free:** live view capped at 5 minutes; alerts yes; smart detection: Paid (person and vehicle detection)
 - **History without plan:** None without a Sync Module 2
@@ -267,7 +267,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Blink Outdoor 2K+
 - **Best for:** A 2K picture from Amazon's cameras, if you will add the module anyway
 - **Main catch:** Records nothing until you add a Sync Module 2 and a USB stick, and Blink's two-year battery figure is at 1080p.
-- **Price:** Check price (Amazon UK, includes a Sync Module Core (which has no local storage))
+- **Price:** Check price (Amazon UK, includes a Sync Module Core (which has no local storage), checked 16 November 2026)
 - **3-year cost, no plan:** Check price + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick)
 - **3-year cost, with plan:** Check price + 36 × £2.50 (Blink Basic)
 - **Storage:** Through a Sync Module 2 and a USB stick (1–256 GB), both sold separately; neither the camera nor the Sync Module Core in the box holds a clip
@@ -281,7 +281,7 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Blink Mini 4K+
 - **Best for:** Blink's sharpest picture, for a socket near a window or door
 - **Main catch:** Records nothing until you add a Sync Module 2 and a USB stick, outdoor use needs a separate adapter, and live view stops at 5 minutes.
-- **Price:** Check price (Amazon UK, 1 camera)
+- **Price:** Check price (Amazon UK, 1 camera, checked 16 November 2026)
 - **3-year cost, no plan:** Check price + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick)
 - **3-year cost, with plan:** Check price + 36 × £2.50 (Blink Basic)
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); the camera has no storage

@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import quote, urlparse
 
 from catalog import CATEGORIES, DOORBELLS as CAT, labels
+from ledger import apply_to_rows, load as load_ledger
 from model import Row, Source, parse_lineup
 
 # Each category carries the day its own prices and plans were checked, because
@@ -507,6 +508,8 @@ dict(cat="printers", id="hp-envy-6530e", brand="HP", model="Envy 6530e", rec="br
  rec_src="hp_envy6530e", history_src="hp_envy6530e", ha_src="hp_envy6530e", plan_src="hp_instantink",        nosub_say="36 months of HP 308 black/tri-colour packs at 100 pages a month, 50 mono and 50 colour.", unverified=""),
 # HP's previous Envy, still sold through Amazon UK. It takes the same 308 packs
 # as the 6530e, so the three-year sum is the same ink at a dearer printer.
+# Amazon is the only live UK seller. Its price reads locally but not on the
+# hosted runner, so the weekly report keeps marking this row unreadable.
 dict(cat="printers", id="hp-envy-6520e", brand="HP", model="Envy 6520e", rec="brief", power=["cart"], ha=0,
  price=115.63, price_note="Amazon UK, in stock, checked 16 November 2026", price_src="amz_hp6520e", checked_iso="2026-11-16",
  extra=547.35, extra_note="+ 15 HP 308 black/tri-colour packs", extra_src="hp_308pack", free_records=True,
@@ -1727,6 +1730,12 @@ SPONSORED = frozenset(
 # tuple that a later loop can put back into the shared dict.
 S = {key: Source(*value) for key, value in S.items()}
 
+# The market record is applied after the register is final and before any
+# derived figure is computed. A ledger entry whose base no longer matches the
+# authored value is not applied; it is a problem the build prints by name.
+PRICE_LEDGER, PRICE_LEDGER_PROBLEMS = load_ledger()
+PRICE_LEDGER_PROBLEMS += apply_to_rows(PRICE_LEDGER, RAW_ROWS, S)
+
 # ---------- each row's verdict and its plain words ----------
 # Authored beside the rows and attached to them below, so a row carries its own
 # verdict and sentences by the time anything reads it.
@@ -2097,7 +2106,7 @@ def row_problems(cat=None):
 
 def authored_problems():
     """Every hand-authored verdict and plain sentence names a row that exists."""
-    problems = []
+    problems = list(PRICE_LEDGER_PROBLEMS)
     ids = {r["id"] for r in ROWS}
     for rid in VERDICT:
         if rid not in ids:

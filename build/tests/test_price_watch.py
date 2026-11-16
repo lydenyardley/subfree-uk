@@ -30,6 +30,7 @@ from price_watch import (
     card_matches,
     card_price,
     choose_product,
+    configuration_matches,
     fallback_is_better,
     first_price,
     mark_fallback,
@@ -160,7 +161,10 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         want = next(item for item in wants() if item.source == "amz_blink")
         self.assertEqual(
             adapter_for(want).css,
-            ("#corePrice_feature_div .a-price .a-offscreen", ".a-price .a-offscreen"),
+            (
+                "#corePrice_feature_div .a-price .a-offscreen",
+                "#tp_price_block_total_price_ww .a-offscreen",
+            ),
         )
 
     async def test_listing_cards_read_the_named_product(self) -> None:
@@ -212,6 +216,29 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
     def test_the_fallback_is_opt_out_for_the_runner(self) -> None:
         self.assertFalse(parse_args([]).no_fallback)
         self.assertTrue(parse_args(["--no-fallback"]).no_fallback)
+
+    def test_apply_is_opt_in(self) -> None:
+        self.assertFalse(parse_args([]).apply)
+        self.assertTrue(parse_args(["--apply"]).apply)
+
+    def test_a_css_page_has_to_name_the_offer_configuration(self) -> None:
+        samsung = make_want(
+            source="amz_samsung",
+            configuration="Titanium Black, size 7",
+        )
+        self.assertTrue(
+            configuration_matches(
+                samsung,
+                "Samsung Galaxy Ring, Size 7, Titanium Black, 2 Year Warranty",
+            )
+        )
+        self.assertFalse(
+            configuration_matches(
+                samsung,
+                "Samsung Galaxy Ring, Size 8, Titanium Black, 2 Year Warranty",
+            )
+        )
+        self.assertTrue(configuration_matches(make_want(configuration="as listed"), "anything"))
 
     def test_listing_card_needs_the_exact_model(self) -> None:
         hp = make_want(

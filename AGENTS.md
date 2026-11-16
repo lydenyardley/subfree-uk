@@ -1,9 +1,10 @@
 # Working notes for agents
 
 This repo is generated pages plus their dataset. `build/rows.py` holds the
-data (`RAW_ROWS`, `S`) and every derived figure; `build/model.py` parses it once
-into frozen `Row`, `Figures`, `Source` and lineup records; `build/build.py`
-turns those records into files. `index.html`, `cameras/index.html`,
+authored data (`RAW_ROWS`, `S`) and every derived figure; `build/price_ledger.json`
+holds the last browser-read price and check date for each row or offer;
+`build/model.py` parses the merged data once into frozen `Row`, `Figures`,
+`Source` and lineup records; `build/build.py` turns those records into files. `index.html`, `cameras/index.html`,
 `rings/index.html`, `printers/index.html`, `pet-trackers/index.html`,
 `baby-monitors/index.html`, the `doorbells.html` redirect, `404.html`,
 `assets/page.css`, `assets/page.js`, the CSVs and Markdown in `data/`, plus the
@@ -152,21 +153,30 @@ sale always has one.
 ## Dates
 
 Each record's `checked_iso` in `build/catalog.py` is the one hand-typed date
-for that category. It is the day its prices and plans were checked, it is
-printed on the page, and the build refuses a date in the future.
-`build/check.py` warns after 30 days and fails after 60. Move it only after
-re-checking the data.
+for that category's **plans and facts**. It is printed on the page, and the
+build refuses a date in the future. `build/check.py` warns after 30 days and
+fails after 60. Move it only after re-checking the data.
+
+A row's own `checked_iso` is different. `build/price_ledger.json` supplies it
+when a browser has read that row's price, and the row note gets the same date.
+The ledger entry carries the authored base, so an authored price that no longer
+matches fails the build instead of being silently overridden.
 
 `build/refresh.py` is the weekly nudge. It prints every page behind a row's
 price and plan, grouped by category, and exits non-zero once a category is seven
 days past its check; `.github/workflows/refresh.yml` runs it every Monday and
-files the list as an issue, adding to the one already open. It reads no vendor
-price and edits no data: a scheduled runner cannot see a price a page draws in
-the browser, and moving `checked_iso` for a page nobody opened would be a lie.
-The issue is the trigger and the reading stays a person's job. The same job
-adds the `lineup_feed.py` report, then runs `build/links.py` over every category
-page: blocked pages are listed and pass, while a dead page or server error
-fails the run.
+files the list as an issue, adding to the one already open. The hosted runner
+still reports only, because it cannot see a price a page draws in the browser.
+The same job adds the `lineup_feed.py` report, then runs `build/links.py` over
+every category page: blocked pages are listed and pass, while a dead page or
+server error fails the run.
+
+`build/price_watch.py --apply` is the local writer. It reads every source with
+Chromium and the Firefox fallback, re-reads every changed page, and writes only
+an unchanged second reading to `build/price_ledger.json`. Out-of-stock reads
+and unconfirmed changes stay out. `build/price_refresh.py` runs that probe,
+rebuilds, runs the full audit, then commits and pushes only from a clean tree.
+`build/install_price_task.ps1` registers it as a weekly Windows task.
 
 ## Change checks
 

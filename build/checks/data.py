@@ -71,7 +71,7 @@ def unverified_problems(rows):
 
 def data_problems(rows, pages):
     """Recompute every derived figure and compare it with the files that ship."""
-    problems = []
+    problems = list(getattr(rows, "PRICE_LEDGER_PROBLEMS", ()))
     for cat in CATEGORIES:
         problems += rows.row_problems(cat)
         problems += unverified_problems(cat["rows"])

@@ -19,7 +19,7 @@ which is the run that opens the issue.
 """
 import os
 import sys
-from datetime import date
+from datetime import date, datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,6 +28,7 @@ from catalog import CATEGORIES
 import rows
 
 WEEK = 7
+LEDGER_LIMIT = 8
 
 
 def pages(cat):
@@ -48,6 +49,19 @@ def pages(cat):
 def main():
     flat = "--list" in sys.argv[1:]
     late = []
+    if rows.PRICE_LEDGER.updated:
+        seen = datetime.fromisoformat(rows.PRICE_LEDGER.updated).date()
+        ledger_age = (date.today() - seen).days
+    else:
+        seen, ledger_age = None, LEDGER_LIMIT + 1
+    if ledger_age >= LEDGER_LIMIT:
+        late.append("price ledger")
+    if flat:
+        print(f"price ledger\t{seen or '-'}\t{ledger_age}d\tlast local refresh")
+    else:
+        where = f"last updated {seen.day} {seen:%B %Y}" if seen else "has never been written"
+        print(f"### Price ledger, {where}, {ledger_age} days ago\n")
+        print("Run `python build/price_refresh.py` on the local machine.\n")
     for cat in CATEGORIES:
         checked = date.fromisoformat(cat["checked_iso"])
         age = (date.today() - checked).days

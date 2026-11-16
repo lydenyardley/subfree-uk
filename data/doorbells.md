@@ -122,7 +122,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Ring Wired Video Doorbell 4K Elite
 - **Best for:** Gated entries and new builds that can run an Ethernet cable to the door
 - **Main catch:** Saves no video at all unless you pay £4.99 a month, and it needs PoE+ from a switch or injector.
-- **Price:** £449.99 (Ring UK)
+- **Price:** £449.99 (Ring UK, checked 16 November 2026)
 - **3-year cost, no plan:** £449.99 (but no recordings)
 - **3-year cost, with plan:** £449.99 + 36 × £4.99 (Ring Solo) = £629.63
 - **Storage:** None. No on-device or hub storage.
@@ -136,7 +136,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Google Nest Doorbell (battery)
 - **Best for:** Google Home households who want polished smart alerts
 - **Main catch:** Only 3 hours of free history. Anything longer is £8 a month.
-- **Price:** £179.99 (Google Store UK)
+- **Price:** £179.99 (Google Store UK, checked 16 November 2026)
 - **3-year cost, no plan:** £179.99 (3 hours of history only)
 - **3-year cost, with plan:** £179.99 + 36 × £8.00 (Google Home Premium Standard) = £467.99
 - **Storage:** None
@@ -164,7 +164,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### eufy Video Doorbell C31
 - **Best for:** A cheap eufy with 24/7 recording, if you can hardwire it
 - **Main catch:** 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately.
-- **Price:** £89.99 (eufy UK)
+- **Price:** £89.99 (eufy UK, checked 16 November 2026)
 - **3-year cost, no plan:** £89.99 + £26.99 (SanDisk 64 GB microSD card) = £116.98
 - **3-year cost, with plan:** £89.99 + 36 × £3.99 (eufy Cloud Backup Basic) = £233.63
 - **Storage:** microSD up to 128 GB (not included); optional HomeBase S380
@@ -178,7 +178,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### eufy Video Doorbell S4
 - **Best for:** A busy doorstep where a tall visitor and a low parcel must both fit
 - **Main catch:** The dearest doorbell here, it needs your existing wiring, and Home Assistant support is unofficial.
-- **Price:** £269.99 (Anker UK, with Chime 2)
+- **Price:** £269.99 (Anker UK, with Chime 2, checked 16 November 2026)
 - **3-year cost, no plan:** £269.99
 - **3-year cost, with plan:** £269.99 + 36 × £3.99 (eufy Cloud Backup Basic) = £413.63
 - **Storage:** 4 GB built into the doorbell; no card slot
@@ -206,7 +206,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Reolink Video Doorbell PoE
 - **Best for:** The most reliable, fully local setup, if you can run an Ethernet cable
 - **Main catch:** Needs an Ethernet cable to the door and a PoE switch or injector.
-- **Price:** £99.99 (Reolink UK store)
+- **Price:** £99.99 (Reolink UK store, checked 16 November 2026)
 - **3-year cost, no plan:** £99.99 + £26.99 (SanDisk 64 GB microSD card) = £126.98
 - **3-year cost, with plan:** No subscription offered or needed
 - **Storage:** microSD and/or NVR; RTSP/ONVIF
@@ -220,7 +220,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Reolink Video Doorbell (Battery)
 - **Best for:** Battery install with 5 GHz Wi-Fi and no fees
 - **Main catch:** Footage sits on a card in the doorbell itself unless you add a Home Hub.
-- **Price:** £119.99 (Argos, includes 64 GB card and chime)
+- **Price:** £119.99 (Argos, includes 64 GB card and chime, checked 16 November 2026)
 - **3-year cost, no plan:** £119.99
 - **3-year cost, with plan:** £119.99 + 36 × £4.17 (Reolink Cloud Standard (up to 5 cameras)) = £270.11
 - **Storage:** microSD in the doorbell, or a Home Hub indoors (up to 1 TB)
@@ -262,7 +262,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### TP-Link Tapo D235L
 - **Best for:** A cheaper 2K Tapo with a wider view and eight months of battery
 - **Main catch:** The microSD card is extra, and Home Assistant has no route to the live video.
-- **Price:** £77.99 (Tapo UK, sale £77.99 (RRP £109.99), checked 12 November 2026)
+- **Price:** £77.99 (Tapo UK, sale £77.99 (RRP £109.99), checked 16 November 2026)
 - **3-year cost, no plan:** £77.99 + £26.99 (SanDisk 64 GB microSD card) = £104.98
 - **3-year cost, with plan:** £77.99 + 36 × £2.99 (Tapo Care) = £185.63
 - **Storage:** microSD (up to 512 GB) in the doorbell itself
@@ -304,7 +304,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Arlo Essential Video Doorbell 2K (2nd gen)
 - **Best for:** People who already own Arlo cameras
 - **Main catch:** Recording needs a £7.99/month plan or a separate hub costing about £110.
-- **Price:** £69.99 (Arlo UK, half price (was £139.99))
+- **Price:** £69.99 (Arlo UK, half price (was £139.99), checked 16 November 2026)
 - **3-year cost, no plan:** £69.99 + £125.98 (Arlo SmartHub £109.99 + SanDisk 64 GB USB stick) = £195.97
 - **3-year cost, with plan:** £69.99 + 36 × £7.99 (Arlo Secure (1 camera)) = £357.63
 - **Storage:** Only through an Arlo SmartHub (VMB4540, USB) or a Base Station
@@ -318,7 +318,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Arlo Essential Wireless Video Doorbell FHD
 - **Best for:** The cheapest Arlo doorbell, if you already run Arlo kit
 - **Main catch:** Records nothing without a £7.99/month plan or a hub costing about £110, and it is only 1080p.
-- **Price:** £49.99 (Arlo UK, Black Friday price (was £89.99))
+- **Price:** £49.99 (Arlo UK, Black Friday price (was £89.99), checked 16 November 2026)
 - **3-year cost, no plan:** £49.99 + £125.98 (Arlo SmartHub £109.99 + SanDisk 64 GB USB stick) = £175.97
 - **3-year cost, with plan:** £49.99 + 36 × £7.99 (Arlo Secure (1 camera)) = £337.63
 - **Storage:** Only through an Arlo SmartHub (VMB4540, USB) or a Base Station
@@ -346,7 +346,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Aqara Doorbell Camera Hub G410 Select
 - **Best for:** Apple Home or Matter households that want a doorbell and a hub in one
 - **Main catch:** The chime hub holds the card, which is not included, and no power supply is in the box.
-- **Price:** £129.98 (Aqara UK Shop sale price (RRP £149.99))
+- **Price:** £129.98 (Aqara UK Shop sale price (RRP £149.99), checked 16 November 2026)
 - **3-year cost, no plan:** £129.98 + £26.99 (SanDisk 64 GB microSD card) = £156.97
 - **3-year cost, with plan:** No subscription offered or needed
 - **Storage:** microSD (up to 512 GB) in the indoor chime hub, NAS, or Aqara's encrypted cloud
@@ -360,7 +360,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Blink Battery Doorbell 2K+
 - **Best for:** The cheapest way into Amazon's ecosystem, if you catch a deal
 - **Main catch:** Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes.
-- **Price:** Check price (Amazon UK, without the Sync Module)
+- **Price:** Check price (Amazon UK, without the Sync Module, checked 16 November 2026)
 - **3-year cost, no plan:** Check price + £55.98 (Sync Module 2 £39.99 + SanDisk 64 GB USB stick)
 - **3-year cost, with plan:** Check price + 36 × £2.50 (Blink Basic)
 - **Storage:** Only through a Sync Module 2 + USB stick (1–256 GB); clips aren't encrypted
@@ -388,7 +388,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### EZVIZ EP3x Pro
 - **Best for:** Two cameras on a budget, with storage built in
 - **Main catch:** Expert Reviews found its motion detection unreliable and the app confusing.
-- **Price:** £99.99 (Chester Digital Supplies, UK retailer)
+- **Price:** £99.99 (Chester Digital Supplies, UK retailer, checked 16 November 2026)
 - **3-year cost, no plan:** £99.99
 - **3-year cost, with plan:** £99.99 + 36 × £4.99 (EZVIZ CloudPlay 7-day) = £279.63
 - **Storage:** 32 GB built in, no card needed
@@ -416,7 +416,7 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Hikvision DS-KB6003-WIP
 - **Best for:** Only worth it if an installer is fitting a Hikvision system anyway
 - **Main catch:** Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295.
-- **Price:** £295.00 (Only UK listing found (fitted install); the model is discontinued)
+- **Price:** £295.00 (Only UK listing found (fitted install); the model is discontinued, checked 16 November 2026)
 - **3-year cost, no plan:** £295.00 + £26.99 (SanDisk 64 GB microSD card) = £321.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Storage:** microSD up to 128 GB; RTSP to an NVR

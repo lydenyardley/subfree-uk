@@ -1,0 +1,468 @@
+{
+  "version": 1,
+  "updated": "2026-11-16T16:30:46+00:00",
+  "rows": {
+    "amazfit-helio": {
+      "price": {
+        "base": 149.9,
+        "checked": "2026-11-16"
+      }
+    },
+    "apple-airtag-2": {
+      "price": {
+        "base": 29.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "aqara-e1": {
+      "price": {
+        "base": 55.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "aqara-g100": {
+      "price": {
+        "base": 36.98,
+        "checked": "2026-11-16"
+      }
+    },
+    "aqara-g3": {
+      "price": {
+        "base": 119.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "aqara-g350": {
+      "price": {
+        "base": 139.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "aqara-g410": {
+      "price": {
+        "base": 129.98,
+        "checked": "2026-11-16"
+      }
+    },
+    "aqara-g5pro": {
+      "price": {
+        "base": 169.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "arlo": {
+      "price": {
+        "base": 69.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "arlo-fhd": {
+      "price": {
+        "base": 49.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "blink": {
+      "price": {
+        "base": 59.99,
+        "checked": "2026-11-16",
+        "price": 24.99
+      }
+    },
+    "blink-mini4k": {
+      "price": {
+        "base": 69.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "blink-out2k": {
+      "price": {
+        "base": 89.99,
+        "checked": "2026-11-16",
+        "price": 34.99
+      }
+    },
+    "blink-out4": {
+      "price": {
+        "base": 69.99,
+        "checked": "2026-11-16",
+        "price": 24.99
+      }
+    },
+    "brother-dcp-j1200w": {
+      "price": {
+        "base": 40.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "brother-dcp-j1310dw": {
+      "price": {
+        "base": 132.23,
+        "checked": "2026-11-16"
+      }
+    },
+    "canon-pixma-g3590": {
+      "price": {
+        "base": 249.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "canon-pixma-ts6550i": {
+      "price": {
+        "base": 89.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "epson-et-2951": {
+      "price": {
+        "base": 319.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "eufy-c10": {
+      "price": {
+        "base": 114.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "eufy-c31": {
+      "price": {
+        "base": 89.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "eufy-e30": {
+      "price": {
+        "base": 69.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "eufy-e340": {
+      "price": {
+        "base": 169.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "eufy-s340": {
+      "price": {
+        "base": 179.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "eufy-s4": {
+      "price": {
+        "base": 269.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ezviz-db2": {
+      "price": {
+        "base": 137.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ezviz-ep3x": {
+      "price": {
+        "base": 99.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "hik": {
+      "price": {
+        "base": 295.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "hp-envy-6520e": {
+      "price": {
+        "base": 115.63,
+        "checked": "2026-11-16",
+        "price": 116.79
+      }
+    },
+    "hp-envy-6530e": {
+      "price": {
+        "base": 89.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "nanit-pro": {
+      "price": {
+        "base": 299.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "nest": {
+      "price": {
+        "base": 179.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "oura-4": {
+      "offers": {
+        "amz_oura4": {
+          "base": 244.0,
+          "checked": "2026-11-16"
+        },
+        "argos_oura4": {
+          "base": 244.0,
+          "checked": "2026-11-16"
+        }
+      }
+    },
+    "oura-5": {
+      "offers": {
+        "argos_oura5": {
+          "base": 399.0,
+          "checked": "2026-11-16"
+        },
+        "currys_oura5": {
+          "base": 399.0,
+          "checked": "2026-11-16"
+        },
+        "oura_store5": {
+          "base": 399.0,
+          "checked": "2026-11-16"
+        }
+      }
+    },
+    "owlet-dream-sock": {
+      "price": {
+        "base": 299.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "pawfit-3": {
+      "price": {
+        "base": 54.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "pawva-x01-plus": {
+      "price": {
+        "base": 77.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "philips-scd881": {
+      "price": {
+        "base": 109.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "philips-scd951": {
+      "price": {
+        "base": 157.99,
+        "checked": "2026-11-16",
+        "price": 213.99
+      }
+    },
+    "pitpat-gps": {
+      "price": {
+        "base": 99.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "rc-2": {
+      "offers": {
+        "amz_rc2": {
+          "base": 259.0,
+          "checked": "2026-11-16"
+        },
+        "argos_rc2": {
+          "base": 259.0,
+          "checked": "2026-11-16"
+        },
+        "currys_rc2": {
+          "base": 259.0,
+          "checked": "2026-11-16"
+        }
+      }
+    },
+    "rc-2-air": {
+      "price": {
+        "base": 179.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "rc-3": {
+      "price": {
+        "base": 309.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-altas": {
+      "price": {
+        "base": 139.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-argus4": {
+      "price": {
+        "base": 135.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-arguspt": {
+      "price": {
+        "base": 97.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-batt": {
+      "price": {
+        "base": 119.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-batt2": {
+      "price": {
+        "base": 139.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-e1out": {
+      "price": {
+        "base": 90.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-poe": {
+      "price": {
+        "base": 99.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-rlc820a": {
+      "price": {
+        "base": 63.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "reo-wifi": {
+      "price": {
+        "base": 82.49,
+        "checked": "2026-11-16"
+      }
+    },
+    "ring": {
+      "price": {
+        "base": 39.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ring-2kplus": {
+      "price": {
+        "base": 69.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ring-elite": {
+      "price": {
+        "base": 449.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ring-outpro": {
+      "price": {
+        "base": 119.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ring-w2kplus": {
+      "price": {
+        "base": 79.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "ring-wpro": {
+      "price": {
+        "base": 129.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "samsung-ring": {
+      "offers": {
+        "amz_samsung": {
+          "base": 399.0,
+          "checked": "2026-11-16",
+          "price": 159.63
+        }
+      }
+    },
+    "tapo-c660": {
+      "price": {
+        "base": 109.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "tapo-c675d": {
+      "price": {
+        "base": 176.79,
+        "checked": "2026-11-16"
+      }
+    },
+    "tapo-d235": {
+      "price": {
+        "base": 83.19,
+        "checked": "2026-11-16"
+      }
+    },
+    "tapo-d235l": {
+      "price": {
+        "base": 77.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "tapo-td21": {
+      "price": {
+        "base": 44.19,
+        "checked": "2026-11-16"
+      }
+    },
+    "tractive-cat-6-mini": {
+      "price": {
+        "base": 59.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "tractive-dog-6": {
+      "price": {
+        "base": 59.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "ultra-air": {
+      "offers": {
+        "amz_ultra": {
+          "base": 329.0,
+          "checked": "2026-11-16",
+          "price": 199.0
+        },
+        "argos_ultra": {
+          "base": 329.0,
+          "checked": "2026-11-16",
+          "price": 197.0
+        }
+      }
+    },
+    "ultra-pro": {
+      "price": {
+        "base": 429.0,
+        "checked": "2026-11-16"
+      }
+    },
+    "vtech-vm4263": {
+      "price": {
+        "base": 59.99,
+        "checked": "2026-11-16"
+      }
+    },
+    "weenect-xt": {
+      "price": {
+        "base": 44.99,
+        "checked": "2026-11-16"
+      }
+    }
+  }
+}

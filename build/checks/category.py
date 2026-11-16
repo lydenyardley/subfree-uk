@@ -245,7 +245,10 @@ def record_problems(pages):
                 problems.append(f"{row['id']}: has no row on the page to read its offer from")
                 continue
             markup = block.group(0)
-            if f'data-price="{row["price"]}"' not in markup:
+            # An Amazon-only winner is the one row that must not print a
+            # figure, so its data-price is empty rather than the offer's number.
+            shown_price = "" if row.get("price_check") else row["price"]
+            if f'data-price="{shown_price}"' not in markup:
                 problems.append(
                     f"{row['id']}: the table does not show the price the offers pick"
                 )

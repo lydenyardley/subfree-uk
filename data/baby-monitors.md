@@ -7,7 +7,7 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 | VTech VM4263 | No subscription | [£59.99](https://www.mamasandpapas.com/products/vtech-vm4263-3-5inch-monitor-679102700) | 7 | £59.99 | — | A parent unit-only monitor on a budget | Local only: no phone viewing or recording, and it cannot take a second camera. |
 | Philips Avent SCD881/05 | No subscription | [£109.99](https://www.currys.co.uk/products/philips-avent-avent-scd88105-video-baby-monitor-coral-cream-10289086.html) | 7 | £109.99 | — | A private local monitor with a bigger screen | A 2.8-inch screen, no app or recording, and Currys is the only UK shop found with the /05 in stock. |
 | eufy Baby Monitor C10 | No subscription | [£114.99](https://www.eufy.com/uk/products/e6310221) | 7 | £114.99 | — | A local screen with a card slot for recording | The microSD card is not included, the camera is mains-only, and remote viewing needs the app. |
-| Philips Avent Connected SCD951/26 | No subscription | [£157.99](https://www.amazon.co.uk/Philips-Connected-Screentime-SCD951-26/dp/B0DSLN78G2?tag=subfreeuk-21) | 6 | £157.99 | — | A parent unit at home and an app when you are out | Remote viewing needs Wi-Fi and an account, the parent unit pairs only with the camera in the box, and nothing is recorded. |
+| Philips Avent Connected SCD951/26 | No subscription | [£213.99](https://www.amazon.co.uk/Philips-Connected-Screentime-SCD951-26/dp/B0DSLN78G2?tag=subfreeuk-21) | 6 | £213.99 | — | A parent unit at home and an app when you are out | Remote viewing needs Wi-Fi and an account, the parent unit pairs only with the camera in the box, and nothing is recorded. |
 | Nanit Pro with wall mount | Free tier, extras cost extra | [£299.00](https://nanituk.co.uk/products/nanit-pro-camera) | 3 | £299.00 | £659.00 | Sleep trends and breathing motion, if you will pay for the extras | No parent screen, everything runs through the app and Nanit's servers, and history and sleep analytics need a plan. |
 | Owlet Dream Sock | No subscription | [£299.99](https://owletbabycare.co.uk/products/dream-sock-pulse-oximeter-pediatric) | 4 | £299.99 | — | Pulse and oxygen readings for a sleeping baby | No video, the sock has to be worn, live readings need Wi-Fi, and Owlet360 is not sold in the UK. |
 
@@ -16,7 +16,7 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 ### VTech VM4263
 - **Best for:** A parent unit-only monitor on a budget
 - **Main catch:** Local only: no phone viewing or recording, and it cannot take a second camera.
-- **Price:** £59.99 (Mamas & Papas sale (was £69.99); Argos £70)
+- **Price:** £59.99 (Mamas & Papas sale (was £69.99); Argos £70, checked 16 November 2026)
 - **3-year cost, no plan:** £59.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Where video goes:** Nowhere. The camera talks only to the parent unit
@@ -30,7 +30,7 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 ### Philips Avent SCD881/05
 - **Best for:** A private local monitor with a bigger screen
 - **Main catch:** A 2.8-inch screen, no app or recording, and Currys is the only UK shop found with the /05 in stock.
-- **Price:** £109.99 (Currys, Coral Cream; the /26 is the same monitor with an EU plug)
+- **Price:** £109.99 (Currys, Coral Cream; the /26 is the same monitor with an EU plug, checked 16 November 2026)
 - **3-year cost, no plan:** £109.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Where video goes:** Nowhere. A private 2.4 GHz link to the parent unit
@@ -44,8 +44,8 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 ### Philips Avent Connected SCD951/26
 - **Best for:** A parent unit at home and an app when you are out
 - **Main catch:** Remote viewing needs Wi-Fi and an account, the parent unit pairs only with the camera in the box, and nothing is recorded.
-- **Price:** £157.99 (Amazon UK; Currys £213.99; Philips £219.99)
-- **3-year cost, no plan:** £157.99
+- **Price:** £213.99 (Amazon UK; Currys £213.99; Philips £219.99, checked 16 November 2026)
+- **3-year cost, no plan:** £213.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Where video goes:** Nowhere. Live video only, on the parent unit or in the app
 - **Free:** 4.3-inch colour screen, infrared night vision; alerts: Sound, motion and temperature alerts; movement sensing: None
@@ -58,7 +58,7 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 ### eufy Baby Monitor C10
 - **Best for:** A local screen with a card slot for recording
 - **Main catch:** The microSD card is not included, the camera is mains-only, and remote viewing needs the app.
-- **Price:** £114.99 (eufy UK)
+- **Price:** £114.99 (eufy UK, checked 16 November 2026)
 - **3-year cost, no plan:** £114.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Where video goes:** A microSD card in the camera, up to 128 GB, or the local parent unit
@@ -72,7 +72,7 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 ### Nanit Pro with wall mount
 - **Best for:** Sleep trends and breathing motion, if you will pay for the extras
 - **Main catch:** No parent screen, everything runs through the app and Nanit's servers, and history and sleep analytics need a plan.
-- **Price:** £299.00 (Nanit UK, Pro with wall mount)
+- **Price:** £299.00 (Nanit UK, Pro with wall mount, checked 16 November 2026)
 - **3-year cost, no plan:** £299.00
 - **3-year cost, with plan:** £299.00 + 36 × £10.00 (Nanit Memories) = £659.00
 - **Where video goes:** Nanit's cloud; the camera has no local storage
@@ -86,7 +86,7 @@ Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qua
 ### Owlet Dream Sock
 - **Best for:** Pulse and oxygen readings for a sleeping baby
 - **Main catch:** No video, the sock has to be worn, live readings need Wi-Fi, and Owlet360 is not sold in the UK.
-- **Price:** £299.99 (Owlet UK)
+- **Price:** £299.99 (Owlet UK, checked 16 November 2026)
 - **3-year cost, no plan:** £299.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Where video goes:** Owlet's cloud for the app; the base station holds the alert

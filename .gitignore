@@ -14,6 +14,7 @@ env/
 *.token
 # local workspace state
 .freebuff/
+build/price-refresh.log
 # OS/editor
 .DS_Store
 Thumbs.db

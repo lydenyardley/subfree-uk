@@ -7,11 +7,11 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 | Amazfit Helio Ring | No subscription | [£149.90](https://uk.amazfit.com/products/amazfit-helio-ring) | 6 | £149.90 | — | The cheapest smart ring, with no subscription for the basics | Only three sizes, and Aura's advanced sleep coaching is a paid extra. |
 | Samsung Galaxy Ring | No subscription | [£150.97](https://www.currys.co.uk/products/samsung-galaxy-ring-titanium-gold-size-14-10277185.html) | 6 | £150.97 | — | Samsung phone owners: no subscription and the deepest Samsung Health integration | Android only, with no iPhone support, and no Home Assistant route. |
 | RingConn Gen 2 | No subscription | [£259.00](https://www.argos.co.uk/product/7614640) | 6 | £259.00 | — | The best value RingConn: 12 days, sleep-apnea insights and no subscription | No vibration alerts, no Home Assistant, and Gen 3 adds more sleep and vascular detail. |
-| Ultrahuman Ring AIR | No subscription | [£329.00](https://www.argos.co.uk/product/4165068) | 6 | £329.00 | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
 | Ultrahuman Ring PRO | No subscription | [£429.00](https://www.ultrahuman.com/gb/ring-pro/buy) | 6 | £429.00 | — | The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data | AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is undocumented. |
 | Oura Ring 4 | Scores only without a plan | [£244.00](https://www.argos.co.uk/product/7727465) | 2 | £244.00 | £459.64 | The most detailed sleep and recovery data, if you will pay monthly | Without the £5.99 monthly membership, only three daily scores work. |
 | Oura Ring 5 | Scores only without a plan | [£399.00](https://www.argos.co.uk/product/8566340) | 2 | £399.00 | £614.64 | The current Oura, if the newest sensors are worth the membership to you | Only three daily scores work without the £5.99 membership, it costs more than the Ring 4, and Oura's sizing differs from its other rings. |
 | RingConn Gen 2 Air | No subscription | [Check price](https://www.amazon.co.uk/dp/B0DWK4QQ7H?tag=subfreeuk-21) | 5 | Check price | — | A RingConn without the sleep-apnea, vascular or vibration extras | No sleep-apnea insights, no vibration, and no Home Assistant. |
+| Ultrahuman Ring AIR | No subscription | [Check price](https://www.amazon.co.uk/dp/B0H3B3GL17?tag=subfreeuk-21) | 6 | Check price | — | Home Assistant tinkerers: the data is free, and a HACS integration pulls it in | No SpO2 reading, and the Home Assistant route is a community cloud integration. |
 | RingConn Gen 3 | No subscription | [Check price](https://www.amazon.co.uk/dp/B0GVSGY854?tag=subfreeuk-21) | 6 | Check price | — | The best all-round ring: 14 days, no subscription and the deepest sleep data | No Home Assistant integration, and it costs £50 more than the Gen 2. |
 
 ## Detail
@@ -47,8 +47,8 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 ### Ultrahuman Ring AIR
 - **Best for:** Home Assistant tinkerers: the data is free, and a HACS integration pulls it in
 - **Main catch:** No SpO2 reading, and the Home Assistant route is a community cloud integration.
-- **Price:** £329.00 (Argos, Aster Black, size 9)
-- **3-year cost, no subscription:** £329.00
+- **Price:** Check price (Amazon UK, as listed)
+- **3-year cost, no subscription:** Check price
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Ultrahuman's cloud. The app holds the history and shows it on the phone.
 - **Free:** live heart rate: Yes, in the app.; wellness alerts: Yes, recovery and movement nudges.; sleep and recovery insights: Free: sleep stages, HRV, skin temperature, stress, recovery and cycle insights.
@@ -61,7 +61,7 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 ### Ultrahuman Ring PRO
 - **Best for:** The most capable Ultrahuman: a 15-day ring and a charger that stores a year of data
 - **Main catch:** AFib detection is a £49/year add-on, it costs £100 more than the Ring AIR, and Home Assistant support for the PRO is undocumented.
-- **Price:** £429.00 (Ultrahuman UK, Bionic Gold with sizing kit)
+- **Price:** £429.00 (Ultrahuman UK, Bionic Gold with sizing kit, checked 16 November 2026)
 - **3-year cost, no subscription:** £429.00
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Ultrahuman's cloud, plus up to 250 days on the ring and a year in the PRO charger.
@@ -89,7 +89,7 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 ### RingConn Gen 2 Air
 - **Best for:** A RingConn without the sleep-apnea, vascular or vibration extras
 - **Main catch:** No sleep-apnea insights, no vibration, and no Home Assistant.
-- **Price:** Check price (Amazon UK)
+- **Price:** Check price (Amazon UK, checked 16 November 2026)
 - **3-year cost, no subscription:** Check price
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** RingConn's cloud. The app holds the history and shows it on the phone.
@@ -103,7 +103,7 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 ### RingConn Gen 3
 - **Best for:** The best all-round ring: 14 days, no subscription and the deepest sleep data
 - **Main catch:** No Home Assistant integration, and it costs £50 more than the Gen 2.
-- **Price:** Check price (Amazon UK)
+- **Price:** Check price (Amazon UK, checked 16 November 2026)
 - **3-year cost, no subscription:** Check price
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** RingConn's cloud. The app holds the history and shows it on the phone.
@@ -131,7 +131,7 @@ Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from 
 ### Amazfit Helio Ring
 - **Best for:** The cheapest smart ring, with no subscription for the basics
 - **Main catch:** Only three sizes, and Aura's advanced sleep coaching is a paid extra.
-- **Price:** £149.90 (Amazfit UK sale price, RRP £269)
+- **Price:** £149.90 (Amazfit UK sale price, RRP £269, checked 16 November 2026)
 - **3-year cost, no subscription:** £149.90
 - **3-year cost, with membership:** No membership offered or needed
 - **Where the data lives:** Zepp's cloud. The phone app holds the history.

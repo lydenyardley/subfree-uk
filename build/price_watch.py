@@ -8,7 +8,12 @@ because some retailers block Chromium's browser fingerprint. The weekly
 workflow opts out of that retry because the runner's network is blocked before
 the browser matters. Google's consent interstitial is rejected before the
 product is read. A changed price, a bot wall, a dead page and a page whose
-price cannot be identified are all reported; none is written back to `rows.py`.
+price cannot be identified are all reported.
+
+With `--apply`, a clean read is written to `build/price_ledger.json`; a changed
+price is written only after a second read returns the same figure. The ledger
+is applied over `rows.py` at build time, so the authored source and
+configuration stay hand-written and a stale ledger entry fails by name.
 
 The comparison is against the recorded figure, not against a scraped figure
 from last week. That keeps the report meaningful after a human edits the data:
@@ -42,6 +47,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from catalog import CATEGORIES
+from ledger import Reading, write as write_ledger
 
 import rows
 
@@ -109,7 +115,7 @@ CSS_BY_HOST: dict[str, tuple[str, ...]] = {
     "www.aqara-shop.co.uk": (".product-price", ".price"),
     "www.amazon.co.uk": (
         "#corePrice_feature_div .a-price .a-offscreen",
-        ".a-price .a-offscreen",
+        "#tp_price_block_total_price_ww .a-offscreen",
     ),
     "www.chesterdigitalsupplies.co.uk": (".product-price", ".price"),
     "www.ertech.co.uk": (".product-price", ".price"),
@@ -189,6 +195,8 @@ class Want:
     source_name: str
     url: str
     shop: str = ""
+    configuration: str = ""
+    base: float = 0.0
 
     @property
     def label(self) -> str:
@@ -403,25 +411,29 @@ def wants() -> list[Want]:
         cat = categories.get(category)
         if cat is None:
             continue
-        source = str(row["price_src"])
-        name, url = rows.S[source]
-        signature = (str(row["id"]), source, "price", float(row["price"]))
-        if signature not in seen:
-            seen.add(signature)
-            out.append(
-                Want(
-                    row_id=str(row["id"]),
-                    category=category,
-                    brand=str(row["brand"]),
-                    model=str(row["model"]),
-                    kind="price",
-                    expected=float(row["price"]),
-                    source=source,
-                    source_name=str(name),
-                    url=str(url),
+        offered = row.get("offers") or ()
+        if not offered:
+            source = str(row["price_src"])
+            name, url = rows.S[source]
+            signature = (str(row["id"]), source, "price", float(row["price"]))
+            if signature not in seen:
+                seen.add(signature)
+                out.append(
+                    Want(
+                        row_id=str(row["id"]),
+                        category=category,
+                        brand=str(row["brand"]),
+                        model=str(row["model"]),
+                        kind="price",
+                        expected=float(row["price"]),
+                        source=source,
+                        source_name=str(name),
+                        url=str(url),
+                        base=rows.PRICE_LEDGER.base_for(str(row["id"]), "price")
+                        or float(row["price"]),
+                    )
                 )
-            )
-        for offer in row.get("offers") or ():
+        for offer in offered:
             offer_source = str(offer["src"])
             offer_name, offer_url = rows.S[offer_source]
             signature = (
@@ -445,6 +457,11 @@ def wants() -> list[Want]:
                     source_name=str(offer_name),
                     url=str(offer_url),
                     shop=str(offer["shop"]),
+                    configuration=str(offer.get("note", "")),
+                    base=rows.PRICE_LEDGER.base_for(
+                        str(row["id"]), "offer", offer_source
+                    )
+                    or float(offer["price"]),
                 )
             )
     return out
@@ -511,6 +528,26 @@ def card_matches(want: Want, adapter: Adapter, card: str) -> bool:
     terms = [normalise(part) for part in match.split("|") if part.strip()]
     haystack = normalise(card)
     return any(term and term in haystack for term in terms)
+
+
+def configuration_matches(want: Want, text: str) -> bool:
+    """Whether a CSS page names the colour and size the offer records.
+
+    A shop that sells one ring in ten sizes can show a different size on a
+    generic URL. The offer's note is the configuration its price was recorded
+    for, so the page has to name at least its colour and, where present, its
+    size before a CSS price can be written. `as listed` and notes with no
+    concrete terms are not a configuration claim.
+    """
+    note = want.configuration.strip()
+    if not note or normalise(note) == "as listed":
+        return True
+    haystack = normalise(text)
+    first = normalise(re.split(r"[,;]", note, maxsplit=1)[0])
+    if first and first not in haystack:
+        return False
+    size = re.search(r"\bsize\s+(\d+)\b", note, re.IGNORECASE)
+    return size is None or re.search(rf"\b{size.group(1)}\b", haystack) is not None
 
 
 async def dismiss_google_consent(
@@ -678,6 +715,16 @@ async def probe_site(
                         )
                     )
                     continue
+                if not configuration_matches(want, text):
+                    observations.append(
+                        Observation(
+                            want=want,
+                            status=UNREADABLE,
+                            detail="the page does not name the recorded configuration",
+                            method="CSS",
+                        )
+                    )
+                    continue
                 observations.append(
                     Observation(
                         want=want,
@@ -732,11 +779,74 @@ def group_by_source(items: Sequence[Want]) -> list[tuple[str, list[Want]]]:
     return list(grouped.items())
 
 
+def observation_key(item: Observation) -> tuple[str, str, str]:
+    return (item.want.row_id, item.want.source, item.want.kind)
+
+
+async def confirm_changes(
+    playwright: Any,
+    changed: Sequence[Observation],
+    args: argparse.Namespace,
+) -> set[tuple[str, str, str]]:
+    """Read every changed page once more and keep only matching figures.
+
+    A second context catches a price drawn from a transient state, an A/B page
+    or a selector that matched a neighbouring product. A page read only by the
+    Firefox fallback is confirmed in Firefox; everything else is confirmed in
+    Chromium.
+    """
+    if not changed:
+        return set()
+    primary = {observation_key(item): item.observed for item in changed}
+    confirmed: set[tuple[str, str, str]] = set()
+    semaphore = asyncio.Semaphore(max(1, min(args.concurrency, 8)))
+
+    async def read_with(browser_type: Any, items: Sequence[Observation]) -> None:
+        if not items:
+            return
+        browser = await browser_type.launch(headless=not args.headed)
+        try:
+            groups = group_by_source([item.want for item in items])
+            results = await asyncio.gather(
+                *(
+                    probe_site(browser, source, site_wants, semaphore, args.timeout)
+                    for source, site_wants in groups
+                )
+            )
+            for again in (item for group in results for item in group):
+                key = observation_key(again)
+                first = primary.get(key)
+                if (
+                    first is not None
+                    and again.status == READ
+                    and again.observed is not None
+                    and abs(again.observed - first) < 0.005
+                ):
+                    confirmed.add(key)
+        finally:
+            await browser.close()
+
+    await read_with(playwright.chromium, changed)
+    firefox = [
+        item
+        for item in changed
+        if "(Firefox)" in item.method and observation_key(item) not in confirmed
+    ]
+    await read_with(playwright.firefox, firefox)
+    return confirmed
+
+
 def escape(value: str) -> str:
     return value.replace("|", "\\|").replace("\n", " ")
 
 
-def report(observations: Sequence[Observation], checked_at: datetime) -> str:
+def report(
+    observations: Sequence[Observation],
+    checked_at: datetime,
+    applied: int | None = None,
+    skipped: int = 0,
+    stock_skipped: int = 0,
+) -> str:
     order = {cat["slug"]: index for index, cat in enumerate(CATEGORIES)}
     observations = sorted(
         observations,
@@ -761,7 +871,22 @@ def report(observations: Sequence[Observation], checked_at: datetime) -> str:
         f"{plural(len(categories_checked), 'category', 'categories')} on "
         f"{checked_at.day} {checked_at:%B %Y} at {checked_at:%H:%M} UTC.",
         f"{len(read)} read, {len(changed)} changed, and "
-        f"{len(unreadable)} could not be read. Prices were not edited.",
+        f"{len(unreadable)} could not be read. "
+        + (
+            "Prices were not edited."
+            if applied is None
+            else f"{applied} checked records were written to the price ledger."
+            + (
+                f" {plural(skipped, 'changed price')} did not confirm and stayed unchanged."
+                if skipped
+                else ""
+            )
+            + (
+                f" {plural(stock_skipped, 'out-of-stock read')} kept the recorded figure."
+                if stock_skipped
+                else ""
+            )
+        ),
         "",
         "### Coverage",
         "",
@@ -817,8 +942,14 @@ def report(observations: Sequence[Observation], checked_at: datetime) -> str:
         lines.append("Every recorded price was readable.")
     lines += [
         "",
-        "A changed price is a report, not an edit. Check the shop's page, stock "
-        "and configuration before changing `rows.py`.",
+        (
+            "A changed price is a report, not an edit. Check the shop's page, stock "
+            "and configuration before changing `rows.py`."
+            if applied is None
+            else "A clean read was written to `build/price_ledger.json`. A changed "
+            "price that did not read the same twice stayed out, and a stale ledger "
+            "base fails the build by name."
+        ),
     ]
     return "\n".join(lines) + "\n"
 
@@ -854,6 +985,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         action="store_true",
         help="skip the local Firefox retry for blocked pages",
     )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="write clean reads to build/price_ledger.json after a confirming read",
+    )
     return parser.parse_args(argv)
 
 
@@ -866,6 +1002,14 @@ async def run(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 2
+
+    if args.apply and rows.PRICE_LEDGER_PROBLEMS:
+        print(
+            "The price ledger needs attention:\n  "
+            + "\n  ".join(rows.PRICE_LEDGER_PROBLEMS),
+            file=sys.stderr,
+        )
+        return 1
 
     selected = wants()
     if args.source:
@@ -881,6 +1025,7 @@ async def run(args: argparse.Namespace) -> int:
     groups = group_by_source(selected)
     semaphore = asyncio.Semaphore(max(1, min(args.concurrency, 8)))
     started = datetime.now(timezone.utc)
+    confirmed: set[tuple[str, str, str]] = set()
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=not args.headed)
         try:
@@ -918,8 +1063,60 @@ async def run(args: argparse.Namespace) -> int:
                 if fallback_is_better(by_source[source], result):
                     by_source[source] = mark_fallback(result)
 
+        if args.apply:
+            changed = [
+                item
+                for group in by_source.values()
+                for item in group
+                if item.changed
+            ]
+            confirmed = await confirm_changes(playwright, changed, args)
+
     observations = [item for group in by_source.values() for item in group]
-    print(report(observations, started))
+    applied: int | None = None
+    skipped = 0
+    stock_skipped = 0
+    if args.apply:
+        readings: list[Reading] = []
+        for item in observations:
+            if item.status != READ or item.observed is None:
+                continue
+            if any(
+                word in item.detail.lower()
+                for word in ("outofstock", "out of stock", "soldout", "sold out")
+            ):
+                stock_skipped += 1
+                continue
+            if item.changed and observation_key(item) not in confirmed:
+                skipped += 1
+                continue
+            readings.append(
+                Reading(
+                    row_id=item.want.row_id,
+                    kind=item.want.kind,
+                    source=item.want.source,
+                    base=item.want.base,
+                    price=item.observed,
+                )
+            )
+        updated, written = rows.PRICE_LEDGER.record(
+            readings, started.date().isoformat()
+        )
+        if written:
+            write_ledger(
+                updated,
+                updated=started.isoformat(timespec="seconds"),
+            )
+        applied = len(readings)
+    print(
+        report(
+            observations,
+            started,
+            applied=applied,
+            skipped=skipped,
+            stock_skipped=stock_skipped,
+        )
+    )
     return 0
 
 

@@ -31,7 +31,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### PAWVA X01+
 - **Best for:** The cheapest way to get GPS tracking with no monthly fee
 - **Main catch:** PAWVA's pages disagree on the SIM term: five years in its bundle FAQ, ten on the X01+ page.
-- **Price:** £77.99 (PAWVA UK)
+- **Price:** £77.99 (PAWVA UK, checked 16 November 2026)
 - **3-year cost, no plan:** £77.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Battery:** Up to 5 days with 10-minute Smart Interval updates
@@ -45,7 +45,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### Tractive DOG 6
 - **Best for:** The fastest live updates, if you will pay for a plan
 - **Main catch:** Nothing works without a plan, Basic covers one country, and the 14-day battery needs Power Saving Zones.
-- **Price:** £59.00 (Tractive UK)
+- **Price:** £59.00 (Tractive UK, checked 16 November 2026)
 - **3-year cost, no plan:** £59.00 (but it does not track without a plan)
 - **3-year cost, with plan:** £59.00 + 36 × £13.50 (Tractive Basic, monthly) = £545.00
 - **Battery:** Up to 14 days with Power Saving Zones; up to 6 days without
@@ -59,7 +59,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### Tractive CAT 6 Mini
 - **Best for:** The best cat tracker if you will pay for a plan
 - **Main catch:** Nothing works without a plan, and the 7-day battery falls to 4 days without Power Saving Zones.
-- **Price:** £59.00 (Tractive UK)
+- **Price:** £59.00 (Tractive UK, checked 16 November 2026)
 - **3-year cost, no plan:** £59.00 (but it does not track without a plan)
 - **3-year cost, with plan:** £59.00 + 36 × £13.50 (Tractive Basic, monthly) = £545.00
 - **Battery:** Up to 7 days with Power Saving Zones; up to 4 days without
@@ -73,7 +73,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### Weenect XT
 - **Best for:** The fastest live updates and the longest plan history
 - **Main catch:** A plan is required, the charger is not included, and at 54 g it is the heaviest tracker here.
-- **Price:** £44.99 (Weenect UK)
+- **Price:** £44.99 (Weenect UK, checked 16 November 2026)
 - **3-year cost, no plan:** £44.99 (but it does not track without a plan)
 - **3-year cost, with plan:** £44.99 + 36 × £13.00 (Weenect monthly) = £512.99
 - **Battery:** Up to 3 weeks with power-saving areas; about 7 days of continuous tracking
@@ -87,7 +87,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### Pawfit Pawfit 3
 - **Best for:** A cheaper plan for a dog or a larger cat
 - **Main catch:** A plan is required, Basic keeps only 24 hours of history, and the 5-second updates are FIND mode only.
-- **Price:** £54.99 (Amazon UK, list price; Pawfit's own sale was £46.74)
+- **Price:** £54.99 (Amazon UK, list price; Pawfit's own sale was £46.74, checked 16 November 2026)
 - **3-year cost, no plan:** £54.99 (but it does not track without a plan)
 - **3-year cost, with plan:** £54.99 + 36 × £9.99 (Pawfit Basic, monthly) = £414.63
 - **Battery:** Up to 8 days
@@ -101,7 +101,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### Apple AirTag (2nd generation)
 - **Best for:** A cat that stays close to other people's phones
 - **Main catch:** Not a GPS tracker: it only reports when a nearby Find My device hears it, needs an iPhone, and has no history or safe zones.
-- **Price:** £29.00 (Apple UK, one pack)
+- **Price:** £29.00 (Apple UK, one pack, checked 16 November 2026)
 - **3-year cost, no plan:** £29.00
 - **3-year cost, with plan:** No subscription offered or needed
 - **Battery:** More than a year on a replaceable CR2032 battery
