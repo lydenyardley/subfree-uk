@@ -8,14 +8,14 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 | Aqara Video Doorbell G4 | Yes | [£69.00](https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/) | 6 | £95.99 | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
 | EZVIZ EP3x Pro | Yes | [£99.99](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) | 6 | £99.99 | £279.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
 | TP-Link Tapo D235L | Yes | [£77.99](https://uk.store.tapo.com/products/tapo-d235l-tapo-video-doorbell-camera) | 5 | £104.98 | £185.63 | A cheaper 2K Tapo with a wider view and eight months of battery | The microSD card is extra, and Home Assistant has no route to the live video. |
+| Reolink Video Doorbell WiFi | Yes | [£82.49](https://store.reolink.com/gb/video-doorbells/) | 7 | £109.48 | £247.37 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
 | TP-Link Tapo D235 | Yes | [£83.19](https://uk.store.tapo.com/products/video-doorbell-wired-and-battery-tapo-d235) | 5 | £110.18 | £190.83 | An easy battery doorbell that can be hardwired for 24/7 recording | The microSD card is extra, and Home Assistant has no route to the live video. |
 | eufy Video Doorbell C31 | Yes | [£89.99](https://www.eufy.com/uk/products/t8223311) | 6 | £116.98 | £233.63 | A cheap eufy with 24/7 recording, if you can hardwire it | 24/7 recording and pre-roll only work hardwired (16-24V, 30VA) with your existing chime bypassed; the microSD card is sold separately. |
 | Reolink Video Doorbell (Battery) | Yes | [£119.99](https://www.argos.co.uk/product/7623301) | 7 | £119.99 | £270.11 | Battery install with 5 GHz Wi-Fi and no fees | Footage sits on a card in the doorbell itself unless you add a Home Hub. |
-| Reolink Battery Video Doorbell (2nd Gen) | Yes | [£95.19](https://reolink.com/gb/product/reolink-video-doorbell-2nd-gen/) | 6 | £122.18 | £245.31 | A battery doorbell with a head-to-toe 2K view and no fees | The microSD card is not in the box, and without doorbell wiring the battery comes off to charge. |
 | Reolink Video Doorbell PoE | Yes | [£99.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £126.98 | — | The most reliable, fully local setup, if you can run an Ethernet cable | Needs an Ethernet cable to the door and a PoE switch or injector. |
-| Reolink Video Doorbell WiFi | Yes | [£109.99](https://store.reolink.com/gb/video-doorbells/) | 7 | £136.98 | £274.87 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
 | Aqara Doorbell Camera Hub G410 Select | Yes | [£129.98](https://www.aqara-shop.co.uk/product/aqara-doorbell-camera-hub-g410-select/) | 6 | £156.97 | — | Apple Home or Matter households that want a doorbell and a hub in one | The chime hub holds the card, which is not included, and no power supply is in the box. |
 | EZVIZ DB2 Pro Kit | Yes | [£137.99](https://www.ertech.co.uk/product/db2-pro/) | 5 | £164.98 | £317.63 | Flats and rentals: no wiring, and footage stays indoors in the chime | 2.4 GHz Wi-Fi only, and the card is sold separately. |
+| Reolink Battery Video Doorbell (2nd Gen) | Yes | [£139.99](https://reolink.com/gb/product/reolink-video-doorbell-2nd-gen/) | 6 | £166.98 | £290.11 | A battery doorbell with a head-to-toe 2K view and no fees | The microSD card is not in the box, and without doorbell wiring the battery comes off to charge. |
 | eufy Video Doorbell E340 | Yes | [£169.99](https://www.eufy.com/uk/products/T8214311) | 7 | £169.99 | £313.63 | Busy doorsteps with lots of parcels: a second camera looks straight down | Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022. |
 | Arlo Essential Wireless Video Doorbell FHD | Only with extra kit | [£49.99](https://www.arlo.com/en_gb/doorbells/arlo-fhd-wireless-video-doorbell) | 3 | £175.97 | £337.63 | The cheapest Arlo doorbell, if you already run Arlo kit | Records nothing without a £7.99/month plan or a hub costing about £110, and it is only 1080p. |
 | Arlo Essential Video Doorbell 2K (2nd gen) | Only with extra kit | [£69.99](https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell) | 3 | £195.97 | £357.63 | People who already own Arlo cameras | Recording needs a £7.99/month plan or a separate hub costing about £110. |
@@ -192,9 +192,9 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Reolink Video Doorbell WiFi
 - **Best for:** Homes with existing doorbell wiring, plus Home Assistant or NVR users
 - **Main catch:** Needs doorbell transformer wiring, and the microSD card is sold separately.
-- **Price:** £109.99 (Reolink UK store)
-- **3-year cost, no plan:** £109.99 + £26.99 (SanDisk 64 GB microSD card) = £136.98
-- **3-year cost, with plan:** £109.99 + 36 × £4.58 (Reolink Cloud Upgraded single-device) = £274.87
+- **Price:** £82.49 (Reolink UK store, checked 16 November 2026)
+- **3-year cost, no plan:** £82.49 + £26.99 (SanDisk 64 GB microSD card) = £109.48
+- **3-year cost, with plan:** £82.49 + 36 × £4.58 (Reolink Cloud Upgraded single-device) = £247.37
 - **Storage:** microSD (up to 256 GB) and/or a Reolink NVR; RTSP/ONVIF
 - **Free:** live view yes; alerts yes; smart detection: Free: person detection
 - **History without plan:** Yes, motion-triggered or 24/7 recording to card or NVR
@@ -234,9 +234,9 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Reolink Battery Video Doorbell (2nd Gen)
 - **Best for:** A battery doorbell with a head-to-toe 2K view and no fees
 - **Main catch:** The microSD card is not in the box, and without doorbell wiring the battery comes off to charge.
-- **Price:** £95.19 (Reolink UK store (was £139.99), checked 16 November 2026)
-- **3-year cost, no plan:** £95.19 + £26.99 (SanDisk 64 GB microSD card) = £122.18
-- **3-year cost, with plan:** £95.19 + 36 × £4.17 (Reolink Cloud Standard (up to 5 cameras)) = £245.31
+- **Price:** £139.99 (Reolink UK store, checked 16 November 2026)
+- **3-year cost, no plan:** £139.99 + £26.99 (SanDisk 64 GB microSD card) = £166.98
+- **3-year cost, with plan:** £139.99 + 36 × £4.17 (Reolink Cloud Standard (up to 5 cameras)) = £290.11
 - **Storage:** microSD (up to 512 GB) in the doorbell, or a Home Hub or NVR; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle, animal and package detection on the device
 - **History without plan:** Yes, motion clips on the card, Home Hub or NVR

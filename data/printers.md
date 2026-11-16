@@ -4,10 +4,10 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 
 | Printer | Retail ink? | Price | Score /8 | 3 yrs, retail ink | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
-| Canon PIXMA G3590 | Yes | [£189.99](https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/) | 8 | £189.99 | — | A cheaper tank that still covers three years of ink | Slower than the Epson at 11/6 ipm, with the same 100-sheet tray. |
 | Brother DCP-J1200W | Yes | [£40.00](https://www.ryman.co.uk/brother-dcp-j1200w-3-in-1-wireless-inkjet-printer-1) | 6 | £220.00 | £201.64 | The cheapest way into a 3-in-1, while the clearance lasts | The £40 is a clearance on a printer Brother no longer prices, and retail LC424 ink costs £180 over three years. |
 | Canon PIXMA TS6550i | Yes | [£49.99](https://www.canon.co.uk/store/pixma-print-plan-printers/) | 7 | £415.93 | £211.63 | A cheap printer with the cheapest plan route | The £49.99 is a sale price, and the starter cartridges hold about 180 pages each. |
 | Canon PIXMA G3570 | Yes | [£229.99](https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/) | 7 | £229.99 | — | A heavy household that can live without automatic duplex | Older than the G3590, and two-sided printing is manual rather than automatic. |
+| Canon PIXMA G3590 | Yes | [£249.99](https://www.canon.co.uk/store/canon-pixma-g3590-3-in-1-refillable-megatank-inkjet-printer/6706C008/) | 8 | £249.99 | — | A cheaper tank that still covers three years of ink | Slower than the Epson at 11/6 ipm, with the same 100-sheet tray. |
 | Brother DCP-J1310DW | Yes | [£132.23](https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw) | 7 | £409.69 | £293.87 | A current Brother whose cartridges print 500 pages each | The starter cartridges run out after about 200 pages, and retail LC521 ink costs £277 over three years. |
 | Epson EcoTank ET-2951 | Yes | [£319.99](https://www.epson.co.uk/en_GB/products/printers/inkjet/consumer/ecotank-et-2951-a4-multifunction-wi-fi-ink-tank-printer,-with-up-to-3-years-of-ink-included/p/52035) | 8 | £319.99 | — | A busy household that wants the ink paid for up front | The dearest printer here, and the paper tray holds only 100 sheets. |
 | HP Envy 6530e | Original ink only | [£89.99](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) | 4 | £637.34 | £323.63 | A light household that will take the ink plan | Retail ink is the dearest here, HP+ needs an account, and the printer is set to original HP ink. |
@@ -32,8 +32,8 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 ### Canon PIXMA G3590
 - **Best for:** A cheaper tank that still covers three years of ink
 - **Main catch:** Slower than the Epson at 11/6 ipm, with the same 100-sheet tray.
-- **Price:** £189.99 (Canon UK store sale (was £249.99))
-- **3-year cost, retail ink:** £189.99
+- **Price:** £249.99 (Canon UK store, checked 16 November 2026)
+- **3-year cost, retail ink:** £249.99
 - **3-year cost, with plan:** No ink plan offered or needed
 - **Ink in the box:** Four GI-51 bottles in the box: 6,000 black and 7,700 colour pages
 - **Included:** 11 ipm mono, 6 ipm colour (ISO); double-sided: Automatic; scan and copy: Yes, flatbed scan and copy

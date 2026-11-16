@@ -6,17 +6,17 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 |---|---|---|---|---|---|---|---|
 | Aqara Camera G100 Select | Yes | [£36.98](https://www.aqara-shop.co.uk/product/aqara-camera-g100-select/) | 6 | £63.97 | — | A shed or a back door watched cheaply | The card is extra, the power adapter is not in the box, and the better detection needs a subscription. |
 | Aqara Camera E1 | Yes | [£55.99](https://www.aqara-shop.co.uk/product/aqara-camera-e1/) | 6 | £82.98 | — | The cheapest way to keep footage without a plan | The card and the power supply are both extra. |
+| Reolink RLC-820A | Yes | [£63.99](https://store.reolink.com/gb/) | 7 | £90.98 | — | A wired install on a budget: 4K for £64, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
 | eufy Indoor Cam E30 | Yes | [£69.99](https://www.anker.com/uk/products/t8417221) | 6 | £96.98 | — | A room, a pet or a nanny cam: 4K and on-device AI | The card is extra, and the camera only joins 2.4 GHz Wi-Fi. |
-| Reolink RLC-820A | Yes | [£79.99](https://store.reolink.com/gb/) | 7 | £106.98 | — | A wired install on a budget: 4K for £80, with nothing held back | Needs a PoE switch or injector, an Ethernet run to the camera, and a card. |
+| Reolink E1 Outdoor Pro | Yes | [£90.99](https://store.reolink.com/gb/) | 7 | £117.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
+| Reolink Argus PT Ultra | Yes | [£97.99](https://store.reolink.com/gb/) | 7 | £124.98 | — | A garden corner on a budget: 4K pan and tilt for £98, with nothing held back | The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year. |
 | Blink Outdoor 4 | Only with extra kit | [£69.99](https://www.amazon.co.uk/blink-camera-outdoor-4/dp/B0DHLTMW3X?tag=subfreeuk-21) | 2 | £125.97 | £159.99 | The cheapest way into Amazon's cameras, if you catch a deal | Records nothing until you add a Sync Module 2 and a USB stick, and live view stops at 5 minutes. |
 | TP-Link Tapo C660 KIT | Yes | [£109.99](https://uk.store.tapo.com/products/tapo-c660-kit-4k-clarity-solar-powered-pan-tilt-battery-security-camera-kit) | 5 | £136.98 | £217.63 | A sunny wall with no socket: 4K, solar and a card slot | Not on Home Assistant's supported Tapo camera list, and the card is extra. |
-| Reolink Argus PT Ultra | Yes | [£118.99](https://store.reolink.com/gb/) | 7 | £145.98 | — | A garden corner on a budget: 4K pan and tilt for £119, with nothing held back | The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year. |
 | Aqara Camera Hub G3 | Yes | [£119.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g3/) | 6 | £146.98 | — | A hallway that also needs a Zigbee hub | The card is extra, and HomeKit Secure Video records at 1080p. |
-| Reolink E1 Outdoor Pro | Yes | [£129.99](https://store.reolink.com/gb/) | 7 | £156.98 | — | A wide garden: 355° pan, 3× optical zoom and no fees | Mains power at the camera, it is only IP65, and the card is extra. |
+| Reolink Argus 4 Pro | Yes | [£135.99](https://reolink.com/gb/product/argus-4-pro/) | 7 | £162.98 | — | A wide, dark driveway: 180° from one camera, with no fees | The card is extra, and the 180° panorama runs at 15fps rather than 25fps. |
 | Reolink Altas PT Ultra | Yes | [£139.99](https://reolink.com/gb/product/altas-pt-ultra/) | 7 | £166.98 | — | A gate or yard watched all day: 4K pan-tilt with 96 hours of continuous recording | The card is extra, and continuous recording empties the battery in about four days without sun. |
 | Aqara Camera Hub G350 Select | Yes | [£139.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g350-select/) | 6 | £166.98 | — | A room with a lot to cover: 4K wide plus a 2.5K zoom lens on a 360° mount | Indoor only, and the card is extra. |
 | Aqara Camera Hub G5 Pro (Wi-Fi 32GB) | Yes | [£169.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g5-pro-wi-fi-32gb/) | 7 | £169.99 | — | A local hub camera: 2.6K, 32 GB on board, and Zigbee, Thread and Matter built in | Only 2.6K, and the 32 GB cannot be expanded without a NAS. |
-| Reolink Argus 4 Pro | Yes | [£144.49](https://store.reolink.com/gb/) | 7 | £171.48 | — | A wide, dark driveway: 180° from one camera, with no fees | The card is extra, and the 180° panorama runs at 15fps rather than 25fps. |
 | eufy SoloCam S340 | Yes | [£179.00](https://www.anker.com/uk/products/t81703w1) | 7 | £179.00 | — | A garden corner with sun: 360° pan and 8 GB on board | 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on. |
 | TP-Link Tapo C675D KIT | Yes | [£176.79](https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit) | 5 | £203.78 | £284.43 | Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom | It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra. |
 | Ring Outdoor Camera Plus (plug-in) | No | [£39.99](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | £39.99 | £219.63 | Ring's live view and alerts for £40, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
@@ -27,10 +27,10 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ## Detail
 
 ### Reolink RLC-820A
-- **Best for:** A wired install on a budget: 4K for £80, with nothing held back
+- **Best for:** A wired install on a budget: 4K for £64, with nothing held back
 - **Main catch:** Needs a PoE switch or injector, an Ethernet run to the camera, and a card.
-- **Price:** £79.99 (Reolink UK store)
-- **3-year cost, no plan:** £79.99 + £26.99 (SanDisk 64 GB microSD card) = £106.98
+- **Price:** £63.99 (Reolink UK store, checked 16 November 2026)
+- **3-year cost, no plan:** £63.99 + £26.99 (SanDisk 64 GB microSD card) = £90.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), a Reolink NVR, or FTP; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -43,8 +43,8 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Reolink Argus 4 Pro
 - **Best for:** A wide, dark driveway: 180° from one camera, with no fees
 - **Main catch:** The card is extra, and the 180° panorama runs at 15fps rather than 25fps.
-- **Price:** £144.49 (Reolink UK store, 1 camera with a Solar Panel 2)
-- **3-year cost, no plan:** £144.49 + £26.99 (SanDisk 64 GB microSD card) = £171.48
+- **Price:** £135.99 (Reolink UK: Argus 4 Pro, 1 camera with a Solar Panel 2, checked 16 November 2026)
+- **3-year cost, no plan:** £135.99 + £26.99 (SanDisk 64 GB microSD card) = £162.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB) or a Reolink Home Hub; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -52,13 +52,13 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 - **Paywalled:** Nothing. Reolink Cloud is optional
 - **Plans:** None needed. Reolink records to a microSD card or Home Hub; Reolink Cloud is optional
 - **Home Assistant:** Official, fully local integration. Battery cameras wake on a PIR event, so some entities update on a schedule.
-- **Sources:** [Reolink UK store](https://store.reolink.com/gb/) · [Reolink UK: Argus 4 Pro](https://reolink.com/gb/product/argus-4-pro/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
+- **Sources:** [Reolink UK: Argus 4 Pro](https://reolink.com/gb/product/argus-4-pro/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Reolink E1 Outdoor Pro
 - **Best for:** A wide garden: 355° pan, 3× optical zoom and no fees
 - **Main catch:** Mains power at the camera, it is only IP65, and the card is extra.
-- **Price:** £129.99 (Reolink UK store)
-- **3-year cost, no plan:** £129.99 + £26.99 (SanDisk 64 GB microSD card) = £156.98
+- **Price:** £90.99 (Reolink UK store, checked 16 November 2026)
+- **3-year cost, no plan:** £90.99 + £26.99 (SanDisk 64 GB microSD card) = £117.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB), a Reolink NVR, a Home Hub, or FTP/NAS; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
@@ -83,10 +83,10 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 - **Sources:** [Reolink UK: Altas PT Ultra](https://reolink.com/gb/product/altas-pt-ultra/) · [Home Assistant: Reolink](https://www.home-assistant.io/integrations/reolink/) · [Argos: SanDisk High Endurance 64 GB](https://www.argos.co.uk/product/2656586)
 
 ### Reolink Argus PT Ultra
-- **Best for:** A garden corner on a budget: 4K pan and tilt for £119, with nothing held back
+- **Best for:** A garden corner on a budget: 4K pan and tilt for £98, with nothing held back
 - **Main catch:** The card is extra, and the 3W solar panel has to keep a pan-tilt head charged all year.
-- **Price:** £118.99 (Reolink UK store, 1 camera with a Solar Panel (was £139.99))
-- **3-year cost, no plan:** £118.99 + £26.99 (SanDisk 64 GB microSD card) = £145.98
+- **Price:** £97.99 (Reolink UK store, 1 camera with a Solar Panel (was £139.99), checked 16 November 2026)
+- **3-year cost, no plan:** £97.99 + £26.99 (SanDisk 64 GB microSD card) = £124.98
 - **3-year cost, with plan:** No plan needed: the free route keeps the recording
 - **Storage:** microSD (up to 512 GB) or a Reolink Home Hub; card not included
 - **Free:** live view yes; alerts yes; smart detection: Free: person, vehicle and animal detection on the device
