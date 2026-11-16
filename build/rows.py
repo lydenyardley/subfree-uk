@@ -200,7 +200,6 @@ S = {
  "canon_g3570": ("Canon UK: PIXMA G3570", "https://www.canon.co.uk/store/canon-pixma-g3570-wireless-colour-3-in-1-refillable-megatank-printer-black/5805C008/"),
  "canon_g3570_spec": ("Canon UK: PIXMA G3570 specifications", "https://www.canon.co.uk/printers/pixma-g3570-series/specifications/"),
  "canon_ts6550i": ("Canon UK: PIXMA TS6550i", "https://www.canon.co.uk/store/canon-pixma-ts6550i-wireless-colour-3-in-1-inkjet-photo-printer/7179C008/"),
- "canon_ts6550i_price": ("Canon UK: PIXMA Print Plan printers", "https://www.canon.co.uk/store/pixma-print-plan-printers/"),
  "canon_ts6550i_xl": ("Canon UK: PG-595XL + CL-586XL value pack", "https://www.canon.co.uk/store/canon-pg-595xl-cl-586xl-high-yield-ink-cartridges-photo-paper-value-pack/7170C004/"),
  "canon_print_plan": ("Canon UK: PIXMA Print Plan", "https://www.canon.co.uk/printer-ink-subscription/pixma-print-plan"),
  "brother_j1310dw": ("Brother UK: DCP-J1310DW", "https://store.brother.co.uk/devices/inkjet/dcpj/dcpj1310dw"),
@@ -211,6 +210,7 @@ S = {
  "ryman_j1200w": ("Ryman: DCP-J1200W clearance", "https://www.ryman.co.uk/brother-dcp-j1200w-3-in-1-wireless-inkjet-printer-1"),
  "hp_envy6530e": ("HP UK: Envy 6530e", "https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687"),
  "hp_envy6520e": ("HP UK store: Envy printers", "https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy"),
+ "amz_hp6520e": ("Amazon UK: HP Envy 6520e", "https://www.amazon.co.uk/HP-Printer-Wireless-Automatic-Printing/dp/B0DYZWYQW2"),
  "hp_308pack": ("HP UK: HP+ terms and 308 ink", "https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687"),
  "hp_instantink": ("HP Instant Ink UK", "https://instantink.hpconnected.com/uk/en/l/"),
  # Pet trackers: the vendor's own page carries the model and its price; the
@@ -430,15 +430,15 @@ dict(cat="printers", id="canon-pixma-g3570", brand="Canon", model="PIXMA G3570",
  score=dict(rec=2,storage=1,live=1,alerts=0,ai=1,ha=2),
  src=["canon_g3570","canon_g3570_spec"],
  rec_src="canon_g3570", history_src="canon_g3570", ha_src="canon_g3570", plan_src="canon_g3570", unverified=""),
-# Canon's cartridge sibling. The £49.99 is the current Canon sale, and the
+# Canon's cartridge sibling. The £89.99 is Canon's current price, and the
 # plan route is cheaper than retail because six 300-page XL packs cost
 # £365.94 while 36 months of the 100-page plan cost £161.64.
 dict(cat="printers", id="canon-pixma-ts6550i", brand="Canon", model="PIXMA TS6550i", rec="yes", power=["cart"], ha=2,
- price=49.99, price_note="Canon UK store sale (was £89.99)", price_src="canon_ts6550i_price",
+ price=89.99, price_note="Canon UK store, checked 16 November 2026", price_src="canon_ts6550i", checked_iso="2026-11-16",
  extra=365.94, extra_note="+ 6 PG-595XL/CL-586XL packs (300 pages each)", extra_src="canon_ts6550i_xl", free_records=True,
  sub=4.49, sub_name="PIXMA Print Plan 100",
  best="A cheap printer with the cheapest plan route",
- catch="The £49.99 is a sale price, and the starter cartridges hold about 180 pages each.",
+ catch="The starter cartridges hold about 180 pages each.",
  storage="Starter cartridges: about 180 black and 180 colour pages",
  live="15 ipm mono, 10 ipm colour (ISO)", alerts="Automatic",
  ai="Yes, flatbed scan and copy",
@@ -448,7 +448,7 @@ dict(cat="printers", id="canon-pixma-ts6550i", brand="Canon", model="PIXMA TS655
  ha_text="No account needed. The Canon PRINT app is optional.",
  wifi="Wi-Fi and USB",
  score=dict(rec=2,storage=0,live=1,alerts=1,ai=1,ha=2),
- src=["canon_ts6550i","canon_ts6550i_price","canon_ts6550i_xl","canon_print_plan"],
+ src=["canon_ts6550i","canon_ts6550i_xl","canon_print_plan"],
  rec_src="canon_ts6550i", history_src="canon_ts6550i", ha_src="canon_ts6550i", plan_src="canon_print_plan", unverified=""),
 dict(cat="printers", id="brother-dcp-j1310dw", brand="Brother", model="DCP-J1310DW", rec="yes", power=["cart"], ha=2,
  price=132.23, price_note="Brother UK store", price_src="brother_j1310dw",
@@ -505,14 +505,14 @@ dict(cat="printers", id="hp-envy-6530e", brand="HP", model="Envy 6530e", rec="br
  score=dict(rec=1,storage=0,live=1,alerts=1,ai=1,ha=0),
  src=["hp_envy6530e","hp_instantink"],
  rec_src="hp_envy6530e", history_src="hp_envy6530e", ha_src="hp_envy6530e", plan_src="hp_instantink",        nosub_say="36 months of HP 308 black/tri-colour packs at 100 pages a month, 50 mono and 50 colour.", unverified=""),
-# HP's previous Envy, still listed on HP's UK store. It takes the same 308 packs
+# HP's previous Envy, still sold through Amazon UK. It takes the same 308 packs
 # as the 6530e, so the three-year sum is the same ink at a dearer printer.
 dict(cat="printers", id="hp-envy-6520e", brand="HP", model="Envy 6520e", rec="brief", power=["cart"], ha=0,
- price=97.90, price_note="HP UK (was £106)", price_src="hp_envy6520e",
+ price=115.63, price_note="Amazon UK, in stock, checked 16 November 2026", price_src="amz_hp6520e", checked_iso="2026-11-16",
  extra=547.35, extra_note="+ 15 HP 308 black/tri-colour packs", extra_src="hp_308pack", free_records=True,
  sub=6.49, sub_name="HP Instant Ink 100 pages",
  best="A household that wants automatic duplex and will take the plan",
- catch="Costs £26 more than the 6530e at HP's prices, and retail 308 ink is the dearest route here.",
+ catch="Costs £26 more than the 6530e, and retail 308 ink is the dearest route here.",
  storage="Setup cartridges only: about 120 black and 75 colour pages",
  live="10 ppm mono, 7 ppm colour (ISO)", alerts="Automatic",
  ai="Yes, flatbed scan and copy",
@@ -522,7 +522,7 @@ dict(cat="printers", id="hp-envy-6520e", brand="HP", model="Envy 6520e", rec="br
  ha_text="An HP account is required. HP+ activation at setup ties the printer to HP's service.",
  wifi="Wi-Fi, Wi-Fi Direct and USB",
  score=dict(rec=1,storage=0,live=1,alerts=1,ai=1,ha=0),
- src=["hp_envy6520e","hp_308pack","hp_instantink"],
+ src=["hp_envy6520e","amz_hp6520e","hp_308pack","hp_instantink"],
  rec_src="hp_envy6520e", history_src="hp_308pack", ha_src="hp_envy6520e", plan_src="hp_instantink",
  nosub_say="36 months of HP 308 black/tri-colour packs at 100 pages a month, 50 mono and 50 colour.", unverified=""),
 dict(cat="doorbells", id="ring", brand="Ring", model="Battery Video Doorbell 2K", rec="no", power=["battery","wired"], ha=0,
@@ -1471,7 +1471,7 @@ dict(cat="rings", id="amazfit-helio", brand="Amazfit", model="Helio Ring", rec="
 # no GPS at all. The monthly plan is the basis of the with-plan sum, so a yearly
 # plan that is cheaper is named in the method rather than quietly used.
 dict(cat="pet-trackers", id="pitpat-gps", brand="PitPat", model="Dog GPS Tracker", rec="yes", power=["included"], ha=1,
- price=149.00, price_note="PitPat UK", price_src="pitpat_product",
+ price=99.00, price_note="PitPat UK, Black Friday sale (was £149.00), checked 16 November 2026", price_src="pitpat_product", checked_iso="2026-11-16",
  extra=0, extra_note="", free_records=True, sub=None, sub_name="No PitPat plan",
  best="A dog owner who wants tracking and saved walks without any monthly fee",
  catch="The dearest tracker here, it has no geofencing, and the optional LIFE plan adds Video Vet and loss replacement.",

@@ -6,7 +6,7 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 |---|---|---|---|---|---|---|---|
 | Apple AirTag (2nd generation) | No subscription, Bluetooth only | [£29.00](https://www.apple.com/uk/shop/buy-airtag/airtag/1-pack) | 3 | £29.00 | — | A cat that stays close to other people's phones | Not a GPS tracker: it only reports when a nearby Find My device hears it, needs an iPhone, and has no history or safe zones. |
 | PAWVA X01+ | No subscription | [£77.99](https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound) | 6 | £77.99 | — | The cheapest way to get GPS tracking with no monthly fee | PAWVA's pages disagree on the SIM term: five years in its bundle FAQ, ten on the X01+ page. |
-| PitPat Dog GPS Tracker | No subscription | [£149.00](https://www.pitpat.com/gps-tracker) | 6 | £149.00 | — | A dog owner who wants tracking and saved walks without any monthly fee | The dearest tracker here, it has no geofencing, and the optional LIFE plan adds Video Vet and loss replacement. |
+| PitPat Dog GPS Tracker | No subscription | [£99.00](https://www.pitpat.com/gps-tracker) | 6 | £99.00 | — | A dog owner who wants tracking and saved walks without any monthly fee | The dearest tracker here, it has no geofencing, and the optional LIFE plan adds Video Vet and loss replacement. |
 | Pawfit Pawfit 3 | Subscription required | [£54.99](https://www.amazon.co.uk/Pawfit-Activity-Included-Embedded-Waterproof/dp/B082F7J7LW?tag=subfreeuk-21) | 3 | £54.99 | £414.63 | A cheaper plan for a dog or a larger cat | A plan is required, Basic keeps only 24 hours of history, and the 5-second updates are FIND mode only. |
 | Weenect XT | Subscription required | [£44.99](https://www.weenect.com/uk/en/gps-dog-tracker/weenect-xt) | 2 | £44.99 | £512.99 | The fastest live updates and the longest plan history | A plan is required, the charger is not included, and at 54 g it is the heaviest tracker here. |
 | Tractive DOG 6 | Subscription required | [£59.00](https://tractive.com/en/pd/gps-tracker-dog?shopCountry=GB) | 2 | £59.00 | £545.00 | The fastest live updates, if you will pay for a plan | Nothing works without a plan, Basic covers one country, and the 14-day battery needs Power Saving Zones. |
@@ -17,8 +17,8 @@ Last checked 9 November 2026. 7 trackers. As an Amazon Associate I earn from qua
 ### PitPat Dog GPS Tracker
 - **Best for:** A dog owner who wants tracking and saved walks without any monthly fee
 - **Main catch:** The dearest tracker here, it has no geofencing, and the optional LIFE plan adds Video Vet and loss replacement.
-- **Price:** £149.00 (PitPat UK)
-- **3-year cost, no plan:** £149.00
+- **Price:** £99.00 (PitPat UK, Black Friday sale (was £149.00), checked 16 November 2026)
+- **3-year cost, no plan:** £99.00
 - **3-year cost, with plan:** No subscription offered or needed
 - **Battery:** PitPat's specification says up to 6 weeks; its product page says several days
 - **Free:** live updates: About every 10 seconds once live tracking is started; safe zones: None. PitPat says it does not offer geofencing; history: Walks are saved in the app without LIFE; PitPat's own comparison ticks saved walks for tracker-only and LIFE
