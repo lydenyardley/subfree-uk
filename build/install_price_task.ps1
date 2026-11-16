@@ -8,8 +8,12 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $TaskName = "SubFree UK price refresh"
 $Script = Join-Path $Root "build\price_refresh.ps1"
+$PowerShell = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
+if (-not (Test-Path $PowerShell)) {
+    $PowerShell = "powershell.exe"
+}
 $Action = New-ScheduledTaskAction `
-    -Execute "powershell.exe" `
+    -Execute $PowerShell `
     -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$Script`"" `
     -WorkingDirectory $Root
 $Trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek $Day -At $Time
