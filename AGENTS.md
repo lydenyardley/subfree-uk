@@ -170,6 +170,9 @@ fails the run.
 
 ## Change checks
 
+- Before any HTML, CSS or client-side JavaScript change, run
+  `npx modern-web-guidance@latest search "<task>"` and follow the guide
+  it returns.
 - The page's CSS and JavaScript are `build/page.css` and `build/page.js`. They
   are emitted as `assets/page.css` and `assets/page.js`, linked with a content
   version in the URL, not inlined. A change there needs a matching assertion in
