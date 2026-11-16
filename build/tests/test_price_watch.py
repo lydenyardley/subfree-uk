@@ -30,7 +30,10 @@ from price_watch import (
     card_matches,
     card_price,
     choose_product,
+    fallback_is_better,
     first_price,
+    mark_fallback,
+    needs_fallback,
     parse_money,
     read_css,
     read_jsonld,
@@ -192,6 +195,18 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
             [cards[1]],
         )
         self.assertEqual(card_price(cards[1]), 82.49)
+
+    def test_a_blocked_page_retries_in_the_fallback_browser(self) -> None:
+        blocked = Observation(want=make_want(), status=BLOCKED, detail="HTTP 403")
+        read = Observation(
+            want=make_want(), status=READ, observed=239.99, method="JSON-LD"
+        )
+        self.assertTrue(needs_fallback([blocked]))
+        self.assertFalse(needs_fallback([read]))
+        self.assertTrue(fallback_is_better([blocked], [read]))
+        self.assertFalse(fallback_is_better([read], [read]))
+        self.assertEqual(mark_fallback([read])[0].method, "JSON-LD (Firefox)")
+        self.assertEqual(mark_fallback([blocked])[0].method, "")
 
     def test_listing_card_needs_the_exact_model(self) -> None:
         hp = make_want(

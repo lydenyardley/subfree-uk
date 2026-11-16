@@ -3,8 +3,10 @@
 
 The weekly workflow runs this on Monday. It opens each source in Chromium,
 reads the product's JSON-LD offer first, then falls back to the source's CSS
-selectors. A changed price, a bot wall, a dead page and a page whose price
-cannot be identified are all reported; none is written back to `rows.py`.
+selectors. Pages Chromium cannot read are retried in Firefox, because some
+retailers block Chromium's browser fingerprint. A changed price, a bot wall,
+a dead page and a page whose price cannot be identified are all reported;
+none is written back to `rows.py`.
 
 The comparison is against the recorded figure, not against a scraped figure
 from last week. That keeps the report meaningful after a human edits the data:
@@ -28,7 +30,7 @@ import asyncio
 import json
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
@@ -48,6 +50,7 @@ DEAD = "dead"
 ERROR = "error"
 UNREADABLE = "unreadable"
 AMBIGUOUS = "ambiguous"
+FALLBACK_STATUSES = {BLOCKED, UNREADABLE, AMBIGUOUS, ERROR}
 
 # The pages that list more than one product. A JSON-LD product must be matched
 # by name there; a single CSS price on the page could belong to a neighbour. A
@@ -74,7 +77,6 @@ LISTING_CSS: dict[str, tuple[str, ...]] = {
 ROW_MATCH: dict[str, dict[str, str]] = {
     "reo_gb_home": {
         "reo-rlc820a": "RLC-820A",
-        "reo-argus4": "Argus 4 Pro",
         "reo-e1out": "E1 Outdoor Pro",
         "reo-arguspt": "Argus PT Ultra 4K Color Night Vision",
     },
@@ -525,13 +527,15 @@ async def probe_site(
     async with semaphore:
         context = None
         try:
-            context = await browser.new_context(
-                locale="en-GB",
-                timezone_id="Europe/London",
-                user_agent=USER_AGENT,
-                viewport={"width": 1366, "height": 900},
-                extra_http_headers={"Accept-Language": "en-GB,en;q=0.9"},
-            )
+            options: dict[str, Any] = {
+                "locale": "en-GB",
+                "timezone_id": "Europe/London",
+                "viewport": {"width": 1366, "height": 900},
+                "extra_http_headers": {"Accept-Language": "en-GB,en;q=0.9"},
+            }
+            if getattr(browser.browser_type, "name", "") != "firefox":
+                options["user_agent"] = USER_AGENT
+            context = await browser.new_context(**options)
             page = await context.new_page()
 
             async def block_assets(route: Any) -> None:
@@ -682,6 +686,30 @@ async def probe_site(
                 await context.close()
 
 
+def needs_fallback(observations: Sequence[Observation]) -> bool:
+    """Whether another browser might turn this page into a price."""
+    return any(item.status in FALLBACK_STATUSES for item in observations)
+
+
+def fallback_is_better(
+    primary: Sequence[Observation], fallback: Sequence[Observation]
+) -> bool:
+    """Use the fallback only when it reads more of the same page."""
+    primary_reads = sum(item.status == READ for item in primary)
+    fallback_reads = sum(item.status == READ for item in fallback)
+    return fallback_reads > primary_reads
+
+
+def mark_fallback(items: Sequence[Observation]) -> list[Observation]:
+    """Name the browser behind a read that only the fallback could get."""
+    return [
+        replace(item, method=f"{item.method} (Firefox)")
+        if item.status == READ
+        else item
+        for item in items
+    ]
+
+
 def group_by_source(items: Sequence[Want]) -> list[tuple[str, list[Want]]]:
     grouped: dict[str, list[Want]] = {}
     for want in items:
@@ -798,7 +826,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--headed",
         action="store_true",
-        help="run Chromium with a window; under xvfb this passes some 403 bot walls",
+        help="run the browsers with a window; under xvfb this passes some 403 bot walls",
     )
     parser.add_argument(
         "--timeout",
@@ -836,7 +864,7 @@ async def run(args: argparse.Namespace) -> int:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=not args.headed)
         try:
-            results = await asyncio.gather(
+            primary = await asyncio.gather(
                 *(
                     probe_site(browser, source, site_wants, semaphore, args.timeout)
                     for source, site_wants in groups
@@ -845,7 +873,30 @@ async def run(args: argparse.Namespace) -> int:
         finally:
             await browser.close()
 
-    observations = [item for group in results for item in group]
+        by_source = {
+            source: result for (source, _), result in zip(groups, primary)
+        }
+        retry = [
+            (source, site_wants)
+            for (source, site_wants), result in zip(groups, primary)
+            if needs_fallback(result)
+        ]
+        if retry:
+            browser = await playwright.firefox.launch(headless=not args.headed)
+            try:
+                fallback = await asyncio.gather(
+                    *(
+                        probe_site(browser, source, site_wants, semaphore, args.timeout)
+                        for source, site_wants in retry
+                    )
+                )
+            finally:
+                await browser.close()
+            for (source, _), result in zip(retry, fallback):
+                if fallback_is_better(by_source[source], result):
+                    by_source[source] = mark_fallback(result)
+
+    observations = [item for group in by_source.values() for item in group]
     print(report(observations, started))
     return 0
 
