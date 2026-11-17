@@ -20,7 +20,7 @@ a second renderer.
 
 A "no subscription" pet tracker is one of three things, and the row's `power`
 says which. `included` means the data comes with the hardware for its life
-(PitPat). `fixed` means a prepaid term that will expire (PAWVA's five-year
+(PitPat). `fixed` means a prepaid term that will expire (PAWVA's 10-year
 SIM). `tag` means there is no GPS at all (AirTag). `plan` means the tracker
 does nothing until a subscription starts (Tractive, Weenect, Pawfit). The
 no-plan figure is the price plus any holder; the with-plan figure is the
@@ -52,7 +52,10 @@ The outline's figures were drafts and several did not survive the read:
 - PitPat is £149, not £99. Saved walks are free; LIFE adds Video Vet and loss
   replacement, so the row does not claim walks are paywalled.
 - PAWVA's X01+ ships with a five-year SIM. The ten-year claim is the X02's,
-  so the X01+ row carries five.
+  so the X01+ row carries five. Corrected on 17 November 2026: PAWVA's own
+  X01+ page now reads "10-year connectivity included", and the PackTracker
+  bundle that carried the five-year FAQ now renders as the X05's page, so
+  the row carries ten.
 - The Philips SCD951 is £157.99 on Amazon, not at Currys, which lists
   £213.99. The row cites the page its price is on.
 - The eufy C10 is £114.99 from eufy for the full kit. The £99 Amazon listing
