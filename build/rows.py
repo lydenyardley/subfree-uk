@@ -213,7 +213,7 @@ S = {
  "hp_envy6520e": ("HP UK store: Envy printers", "https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy"),
  "amz_hp6520e": ("Amazon UK: HP Envy 6520e", "https://www.amazon.co.uk/HP-Printer-Wireless-Automatic-Printing/dp/B0DYZWYQW2"),
  "hp_308pack": ("HP UK: HP+ terms and 308 ink", "https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687"),
- "hp_instantink": ("HP Instant Ink UK", "https://instantink.hpconnected.com/uk/en/l/"),
+ "hp_instantink": ("HP UK: Instant Ink plans", "https://www.hp.com/gb-en/subscriptions/instant-ink/plans.html"),
  # Pet trackers: the vendor's own page carries the model and its price; the
  # support pages carry the data term, the plan and the app requirements.
  "pitpat_product": ("PitPat UK: GPS dog tracker", "https://www.pitpat.com/gps-tracker"),

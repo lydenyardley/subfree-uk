@@ -1,6 +1,6 @@
 # UK printers that work without an ink subscription
 
-Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qualifying purchases.
+Last checked 17 November 2026. 8 printers. As an Amazon Associate I earn from qualifying purchases.
 
 | Printer | Retail ink? | Price | Score /8 | 3 yrs, retail ink | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
@@ -111,7 +111,7 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 - **With an ink plan:** Nothing. Instant Ink is optional
 - **Ink plans:** Instant Ink £6.49/month for 100 pages; 50 pages £4.49, 300 pages £13.49
 - **Account needed:** An HP account is required. HP+ activation at setup ties the printer to HP's service.
-- **Sources:** [HP UK: Envy 6530e](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) · [HP Instant Ink UK](https://instantink.hpconnected.com/uk/en/l/)
+- **Sources:** [HP UK: Envy 6530e](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) · [HP UK: Instant Ink plans](https://www.hp.com/gb-en/subscriptions/instant-ink/plans.html)
 
 ### HP Envy 6520e
 - **Best for:** A household that wants automatic duplex and will take the plan
@@ -125,7 +125,7 @@ Last checked 5 November 2026. 8 printers. As an Amazon Associate I earn from qua
 - **With an ink plan:** Nothing. Instant Ink is optional
 - **Ink plans:** Instant Ink £6.49/month for 100 pages; 50 pages £4.49, 300 pages £13.49
 - **Account needed:** An HP account is required. HP+ activation at setup ties the printer to HP's service.
-- **Sources:** [HP UK store: Envy printers](https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy) · [Amazon UK: HP Envy 6520e](https://www.amazon.co.uk/HP-Printer-Wireless-Automatic-Printing/dp/B0DYZWYQW2?tag=subfreeuk-21) · [HP UK: HP+ terms and 308 ink](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) · [HP Instant Ink UK](https://instantink.hpconnected.com/uk/en/l/)
+- **Sources:** [HP UK store: Envy printers](https://www.hp.com/gb-en/shop/listings/printers?subbrand=hp-envy) · [Amazon UK: HP Envy 6520e](https://www.amazon.co.uk/HP-Printer-Wireless-Automatic-Printing/dp/B0DYZWYQW2?tag=subfreeuk-21) · [HP UK: HP+ terms and 308 ink](https://www.hp.com/gb-en/shop/products/printers/hp-envy-6530e-all-in-one-printer-714p1b-687) · [HP UK: Instant Ink plans](https://www.hp.com/gb-en/subscriptions/instant-ink/plans.html)
 
 ## How the 3-year costs are worked out
 - Retail ink: printer price + 36 months of original cartridges at 100 pages a month (50 mono, 50 colour), from the maker's UK cartridge prices and ISO yields. A tank is priced at its price alone, because the bottles in the box cover the period.

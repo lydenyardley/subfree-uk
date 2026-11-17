@@ -1117,7 +1117,7 @@ PRINTERS = {
     "noun": "printer",
     "nouns": "printers",
     "nav": "Printers",
-    "checked_iso": "2026-11-05",
+    "checked_iso": "2026-11-17",
 
     # The model each brand sells now, as of the date above. HP's Envy is the
     # newest Envy all-in-one; Brother's J1310DW is the current small inkjet;
