@@ -5,7 +5,6 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 | Doorbell | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
 | TP-Link Tapo TD21 | Yes | [£44.19](https://uk.store.tapo.com/products/battery-video-doorbell-2k-3mp-colour-night-vision-tapo-td21) | 5 | £71.18 | £151.83 | The tightest budget | Basic, and the microSD card sits in the doorbell, so a thief takes the footage with it. |
-| Aqara Video Doorbell G4 | Yes | [£69.00](https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/) | 6 | £95.99 | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
 | EZVIZ EP3x Pro | Yes | [£99.99](https://www.chesterdigitalsupplies.co.uk/ezviz-ep3x-pro) | 6 | £99.99 | £279.63 | Two cameras on a budget, with storage built in | Expert Reviews found its motion detection unreliable and the app confusing. |
 | TP-Link Tapo D235L | Yes | [£77.99](https://uk.store.tapo.com/products/tapo-d235l-tapo-video-doorbell-camera) | 5 | £104.98 | £185.63 | A cheaper 2K Tapo with a wider view and eight months of battery | The microSD card is extra, and Home Assistant has no route to the live video. |
 | Reolink Video Doorbell WiFi | Yes | [£82.49](https://store.reolink.com/gb/video-doorbells/) | 7 | £109.48 | £247.37 | Homes with existing doorbell wiring, plus Home Assistant or NVR users | Needs doorbell transformer wiring, and the microSD card is sold separately. |
@@ -19,19 +18,20 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 | eufy Video Doorbell E340 | Yes | [£169.99](https://www.eufy.com/uk/products/T8214311) | 7 | £169.99 | £313.63 | Busy doorsteps with lots of parcels: a second camera looks straight down | Expensive, Home Assistant support is unofficial, and eufy had a cloud-privacy scandal in 2022. |
 | Arlo Essential Wireless Video Doorbell FHD | Only with extra kit | [£49.99](https://www.arlo.com/en_gb/doorbells/arlo-fhd-wireless-video-doorbell) | 3 | £175.97 | £337.63 | The cheapest Arlo doorbell, if you already run Arlo kit | Records nothing without a £7.99/month plan or a hub costing about £110, and it is only 1080p. |
 | Arlo Essential Video Doorbell 2K (2nd gen) | Only with extra kit | [£69.99](https://www.arlo.com/en_gb/doorbells/arlo-2k-wireless-video-doorbell) | 3 | £195.97 | £357.63 | People who already own Arlo cameras | Recording needs a £7.99/month plan or a separate hub costing about £110. |
-| Ring Wired Video Doorbell 2K | No | [£29.99](https://en-uk.ring.com/products/wired-doorbell-2nd-gen) | 2 | £29.99 | £209.63 | The cheapest way into Ring if you already have doorbell wiring | Saves no video at all unless you pay £4.99 a month, and it is sold out at Ring's UK store. |
 | Ring Battery Video Doorbell 2K | No | [£39.99](https://en-uk.ring.com/products/battery-doorbell-2nd-gen) | 2 | £39.99 | £219.63 | Alexa households happy to pay the monthly plan | Saves no video at all unless you pay £4.99 a month. |
-| TP-Link Tapo Doorbell Pro (D260) | Yes | [£219.99](https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell) | 5 | £246.98 | £327.63 | Tapo households that want 4K and radar detection with no plan | The dearest battery doorbell here, the card is extra, and Home Assistant has no route to the live video. |
 | Ring Battery Video Doorbell 2K Plus | No | [£69.99](https://en-uk.ring.com/products/battery-doorbell-plus-2nd-gen) | 2 | £69.99 | £249.63 | A Ring battery doorbell with a head-to-toe 2K view and a battery you can swap | Saves no video at all unless you pay £4.99 a month, and it costs £70 more than the 2K. |
 | Ring Wired Video Doorbell 2K Plus | No | [£79.99](https://en-uk.ring.com/products/wired-video-doorbell-plus) | 2 | £79.99 | £259.63 | A wired Ring with radar motion and a head-to-toe 2K view | Saves no video at all unless you pay £4.99 a month, and there is no battery option. |
 | eufy Video Doorbell S4 | Yes | [£269.99](https://www.anker.com/uk/products/e82153f1) | 7 | £269.99 | £413.63 | A busy doorstep where a tall visitor and a low parcel must both fit | The dearest doorbell here, it needs your existing wiring, and Home Assistant support is unofficial. |
 | Ring Wired Video Doorbell 4K Pro | No | [£129.99](https://en-uk.ring.com/products/wired-video-doorbell-pro-3-gen) | 2 | £129.99 | £309.63 | Ring households replacing an existing wired bell | Saves no video at all unless you pay £4.99 a month, and there is no battery option. |
 | Hikvision DS-KB6003-WIP | Yes | [£295.00](https://eaglesecuritysolutions.co.uk/p/door-entry-systems/wireless-intercoms/hikvision-ds-kb6003-wip-video-doorbell-fully-installed/) | 5 | £321.99 | — | Only worth it if an installer is fitting a Hikvision system anyway | Discontinued by Hikvision, and the only UK listing we found is a fitted install at £295. |
-| Ring Battery Video Doorbell 4K Pro | No | [£219.99](https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen) | 2 | £219.99 | £399.63 | Ring households that want the sharpest battery doorbell | Saves no video at all unless you pay £4.99 a month, and Ring publishes no battery-life figure. |
 | Google Nest Doorbell (battery) | Only briefly (3 hrs) | [£179.99](https://store.google.com/gb/product/nest_doorbell_battery?hl=en-GB) | 4 | £179.99 | £467.99 | Google Home households who want polished smart alerts | Only 3 hours of free history. Anything longer is £8 a month. |
 | Ring Wired Video Doorbell 4K Elite | No | [£449.99](https://en-uk.ring.com/products/wired-doorbell-elite-2nd-gen) | 2 | £449.99 | £629.63 | Gated entries and new builds that can run an Ethernet cable to the door | Saves no video at all unless you pay £4.99 a month, and it needs PoE+ from a switch or injector. |
 | Blink Battery Doorbell 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0G62K1Y6C?tag=subfreeuk-21) | 2 | Check price | Check price | The cheapest way into Amazon's ecosystem, if you catch a deal | Saves nothing without a £40 Sync Module 2 and a USB stick, and live view cuts off after 5 minutes. |
+| Aqara Video Doorbell G4 | Yes | [Check price](https://www.easygates.co.uk/product/aqara-smart-video-doorbell-g4/) | 6 | Check price | — | Free face recognition, Android or iPhone | Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly. |
 | Blink Video Doorbell (2nd Gen) | Only with extra kit | [Check price](https://coolcuration.com/blink-video-doorbell-review) | 2 | Check price | Check price | The older 1440p Blink, if you find one in stock | Saves nothing without a £40 Sync Module 2 and a USB stick, and Amazon UK's new stock has sold out. |
+| Ring Wired Video Doorbell 2K | No | [Check price](https://en-uk.ring.com/products/wired-doorbell-2nd-gen) | 2 | Check price | Check price | The cheapest way into Ring if you already have doorbell wiring | Saves no video at all unless you pay £4.99 a month, and it is sold out at Ring's UK store. |
+| TP-Link Tapo Doorbell Pro (D260) | Yes | [Check price](https://uk.store.tapo.com/products/tapo-doorbell-pro-tapo-d260-4k-video-doorbell) | 5 | Check price | Check price | Tapo households that want 4K and radar detection with no plan | The dearest battery doorbell here, the card is extra, and Home Assistant has no route to the live video. |
+| Ring Battery Video Doorbell 4K Pro | No | [Check price](https://en-uk.ring.com/products/battery-doorbell-pro-2nd-gen) | 2 | Check price | Check price | Ring households that want the sharpest battery doorbell | Saves no video at all unless you pay £4.99 a month, and Ring publishes no battery-life figure. |
 
 ## Detail
 
@@ -66,9 +66,9 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Ring Battery Video Doorbell 4K Pro
 - **Best for:** Ring households that want the sharpest battery doorbell
 - **Main catch:** Saves no video at all unless you pay £4.99 a month, and Ring publishes no battery-life figure.
-- **Price:** £219.99 (Ring UK)
-- **3-year cost, no plan:** £219.99 (but no recordings)
-- **3-year cost, with plan:** £219.99 + 36 × £4.99 (Ring Solo) = £399.63
+- **Price:** Check price (Ring UK, checked 17 November 2026)
+- **3-year cost, no plan:** Check price (but no recordings)
+- **3-year cost, with plan:** Check price + 36 × £4.99 (Ring Solo)
 - **Storage:** None. No on-device or hub storage.
 - **Free:** live view yes; alerts yes, motion and button-press alerts; smart detection: Paid (person, package and vehicle alerts on Ring's plans page)
 - **History without plan:** None
@@ -80,9 +80,9 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Ring Wired Video Doorbell 2K
 - **Best for:** The cheapest way into Ring if you already have doorbell wiring
 - **Main catch:** Saves no video at all unless you pay £4.99 a month, and it is sold out at Ring's UK store.
-- **Price:** £29.99 (Ring UK, sold out at the check, 16 November 2026)
-- **3-year cost, no plan:** £29.99 (but no recordings)
-- **3-year cost, with plan:** £29.99 + 36 × £4.99 (Ring Solo) = £209.63
+- **Price:** Check price (Ring UK, sold out at the check, 17 November 2026)
+- **3-year cost, no plan:** Check price (but no recordings)
+- **3-year cost, with plan:** Check price + 36 × £4.99 (Ring Solo)
 - **Storage:** None. No on-device or hub storage.
 - **Free:** live view yes; alerts yes, motion and button-press alerts; smart detection: Paid (person, package and vehicle alerts on Ring's plans page)
 - **History without plan:** None
@@ -290,9 +290,9 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### TP-Link Tapo Doorbell Pro (D260)
 - **Best for:** Tapo households that want 4K and radar detection with no plan
 - **Main catch:** The dearest battery doorbell here, the card is extra, and Home Assistant has no route to the live video.
-- **Price:** £219.99 (Tapo UK, sold out at the check)
-- **3-year cost, no plan:** £219.99 + £26.99 (SanDisk 64 GB microSD card) = £246.98
-- **3-year cost, with plan:** £219.99 + 36 × £2.99 (Tapo Care) = £327.63
+- **Price:** Check price (Tapo UK, sold out at the check, checked 17 November 2026)
+- **3-year cost, no plan:** Check price + £26.99 (SanDisk 64 GB microSD card)
+- **3-year cost, with plan:** Check price + 36 × £2.99 (Tapo Care)
 - **Storage:** microSD (up to 512 GB) in the doorbell itself
 - **Free:** live view yes; alerts yes; smart detection: Free: person, animal, vehicle, package and face detection, plus radar
 - **History without plan:** Yes, on the card; 24/7 only when hardwired
@@ -332,8 +332,8 @@ Last checked 2 November 2026. 28 doorbells. As an Amazon Associate I earn from q
 ### Aqara Video Doorbell G4
 - **Best for:** Free face recognition, Android or iPhone
 - **Main catch:** Runs on AA batteries unless wired, and setting it up in Home Assistant is fiddly.
-- **Price:** £69.00 (EasyGates, UK retailer (RRP £119))
-- **3-year cost, no plan:** £69.00 + £26.99 (SanDisk 64 GB microSD card) = £95.99
+- **Price:** Check price (EasyGates, UK retailer (RRP £119), checked 17 November 2026)
+- **3-year cost, no plan:** Check price + £26.99 (SanDisk 64 GB microSD card)
 - **3-year cost, with plan:** No subscription offered or needed
 - **Storage:** microSD (up to 512 GB) in the indoor chime
 - **Free:** live view yes; alerts yes; smart detection: Free: face recognition on the device

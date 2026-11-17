@@ -19,10 +19,10 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 | Aqara Camera Hub G5 Pro (Wi-Fi 32GB) | Yes | [£169.99](https://www.aqara-shop.co.uk/product/aqara-camera-hub-g5-pro-wi-fi-32gb/) | 7 | £169.99 | — | A local hub camera: 2.6K, 32 GB on board, and Zigbee, Thread and Matter built in | Only 2.6K, and the 32 GB cannot be expanded without a NAS. |
 | eufy SoloCam S340 | Yes | [£179.00](https://www.anker.com/uk/products/t81703w1) | 7 | £179.00 | — | A garden corner with sun: 360° pan and 8 GB on board | 8 GB is all you get without a HomeBase, and Home Assistant needs a community add-on. |
 | TP-Link Tapo C675D KIT | Yes | [£176.79](https://uk.store.tapo.com/products/tapo-c675d-kit-4k-solar-powered-dual-lens-pan-tilt-security-camera-kit) | 5 | £203.78 | £284.43 | Two views from one camera: a 169° wide lens and a 4K pan-tilt zoom | It has no RTSP or ONVIF, so Home Assistant cannot pull the stream, and the card is extra. |
-| Ring Outdoor Camera Plus (plug-in) | No | [£39.99](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | £39.99 | £219.63 | Ring's live view and alerts for £40, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
 | Ring Outdoor Camera 4K Pro (plug-in) | No | [£119.99](https://en-uk.ring.com/products/stick-up-cam-pro-plug-in) | 2 | £119.99 | £299.63 | People already paying for Ring and Alexa | Saves no video at all without the £4.99-a-month plan. |
 | Blink Outdoor 2K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/blink-outdoor-camera-2k-/dp/B0F964Q9Y8?tag=subfreeuk-21) | 2 | Check price | Check price | A 2K picture from Amazon's cameras, if you will add the module anyway | Records nothing until you add a Sync Module 2 and a USB stick, and Blink's two-year battery figure is at 1080p. |
 | Blink Mini 4K+ | Only with extra kit | [Check price](https://www.amazon.co.uk/dp/B0GWSJV4H5?tag=subfreeuk-21) | 2 | Check price | Check price | Blink's sharpest picture, for a socket near a window or door | Records nothing until you add a Sync Module 2 and a USB stick, outdoor use needs a separate adapter, and live view stops at 5 minutes. |
+| Ring Outdoor Camera Plus (plug-in) | No | [Check price](https://en-uk.ring.com/products/outdoor-cam-plus-plugin) | 2 | Check price | Check price | Ring's live view and alerts for £40, if you never want the footage | Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K. |
 
 ## Detail
 
@@ -239,9 +239,9 @@ Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qua
 ### Ring Outdoor Camera Plus (plug-in)
 - **Best for:** Ring's live view and alerts for £40, if you never want the footage
 - **Main catch:** Saves no video at all without the £4.99-a-month plan, and the picture is 2K rather than 4K.
-- **Price:** £39.99 (Ring UK, sold out at the check, 16 November 2026)
-- **3-year cost, no plan:** £39.99 (but no recordings)
-- **3-year cost, with plan:** £39.99 + 36 × £4.99 (Ring Solo) = £219.63
+- **Price:** Check price (Ring UK, sold out at the check, 17 November 2026)
+- **3-year cost, no plan:** Check price (but no recordings)
+- **3-year cost, with plan:** Check price + 36 × £4.99 (Ring Solo)
 - **Storage:** None. Recording is cloud-only.
 - **Free:** live view yes; alerts yes; smart detection: Paid (person, package and vehicle alerts on Ring's plans)
 - **History without plan:** None

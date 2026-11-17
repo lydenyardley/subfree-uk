@@ -158,21 +158,25 @@ class FixtureTests(unittest.IsolatedAsyncioTestCase):
         ])
         self.assertEqual(products[0].availability, "https://schema.org/OutOfStock")
 
-    def test_stock_changes_belong_to_offers(self) -> None:
+    def test_stock_changes_belong_to_every_reading(self) -> None:
         offer = Observation(
             want=make_want(kind="offer", shop="Argos"),
             status=READ, observed=239.99, available=True,
         )
         self.assertTrue(offer.changed)
         price = Observation(
-            want=make_want(), status=READ, observed=239.99, available=True
+            want=make_want(in_stock=False), status=READ, observed=239.99,
+            available=True,
         )
-        self.assertFalse(price.changed)
+        self.assertTrue(price.changed)
         unknown = Observation(
             want=make_want(kind="offer", shop="Argos", in_stock=False),
             status=READ, observed=239.99, available=None,
         )
         self.assertFalse(unknown.changed)
+
+    def test_a_review_price_is_not_a_live_probe(self) -> None:
+        self.assertNotIn("cc_blink_gen2", {want.source for want in wants()})
 
     def test_every_recorded_figure_has_an_adapter(self) -> None:
         for want in wants():

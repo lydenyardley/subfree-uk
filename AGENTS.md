@@ -184,9 +184,11 @@ Chromium and the Firefox fallback, re-reads every changed page, and writes only
 an unchanged second reading to `build/price_ledger.json`. Stock comes from
 JSON-LD when the page publishes it, and from the per-host scoped rules in
 `STOCK_BY_HOST` for Amazon, Argos and Currys. The second read must match both
-the price and the stock state. An out-of-stock product read stays out; an
-out-of-stock offer is recorded with `in_stock: false` so the page can skip its
-old price. Unconfirmed changes stay out. `--coverage` compares every wanted
+the price and the stock state. An out-of-stock product read is recorded with
+`in_stock: false` and sets the row to `Check price`; an out-of-stock offer is
+recorded the same way so the page can skip its old price. A review page used
+only as the last-price citation is not probed. Unconfirmed changes stay out.
+`--coverage` compares every wanted
 price and offer with its own ledger check date and exits 1 when any entry is
 missing or stale.
 `build/price_refresh.py` runs that probe, checks coverage,

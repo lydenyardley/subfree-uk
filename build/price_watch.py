@@ -79,6 +79,9 @@ LISTING_SOURCES = {
     "reo_store",
 }
 
+# The Blink Gen 2 last price is a review citation, not a live shop page.
+PRICE_WATCH_SKIP = {"cc_blink_gen2"}
+
 # Product cards on pages whose offers are not in JSON-LD. The card text holds
 # the product name and the current and crossed-out prices in that order.
 LISTING_CSS: dict[str, tuple[str, ...]] = {
@@ -305,8 +308,7 @@ class Observation:
             return False
         price_moved = abs(self.observed - self.want.expected) >= 0.005
         stock_moved = (
-            self.want.kind == "offer"
-            and self.available is not None
+            self.available is not None
             and self.available != self.want.in_stock
         )
         return price_moved or stock_moved
@@ -679,6 +681,8 @@ def wants() -> list[Want]:
         offered = row.get("offers") or ()
         if not offered:
             source = str(row["price_src"])
+            if source in PRICE_WATCH_SKIP:
+                continue
             name, url = rows.S[source]
             signature = (str(row["id"]), source, "price", float(row["price"]))
             if signature not in seen:
@@ -696,6 +700,7 @@ def wants() -> list[Want]:
                         url=str(url),
                         base=rows.PRICE_LEDGER.base_for(str(row["id"]), "price")
                         or float(row["price"]),
+                        in_stock=rows.PRICE_LEDGER.price_stock_for(str(row["id"])),
                     )
                 )
         for offer in offered:
@@ -1125,7 +1130,7 @@ def report(
     checked_at: datetime,
     applied: int | None = None,
     skipped: int = 0,
-    stock_skipped: int = 0,
+    out_of_stock: int = 0,
 ) -> str:
     order = {cat["slug"]: index for index, cat in enumerate(CATEGORIES)}
     observations = sorted(
@@ -1162,8 +1167,8 @@ def report(
                 else ""
             )
             + (
-                f" {plural(stock_skipped, 'out-of-stock product read')} kept the recorded figure."
-                if stock_skipped
+                f" {plural(out_of_stock, 'out-of-stock read')} seen."
+                if out_of_stock
                 else ""
             )
         ),
@@ -1373,15 +1378,14 @@ async def run(args: argparse.Namespace) -> int:
     observations = [item for group in by_source.values() for item in group]
     applied: int | None = None
     skipped = 0
-    stock_skipped = 0
+    out_of_stock = 0
     if args.apply:
         readings: list[Reading] = []
         for item in observations:
             if item.status != READ or item.observed is None:
                 continue
-            if item.available is False and item.want.kind != "offer":
-                stock_skipped += 1
-                continue
+            if item.available is False:
+                out_of_stock += 1
             if item.changed and observation_key(item) not in confirmed:
                 skipped += 1
                 continue
@@ -1392,7 +1396,7 @@ async def run(args: argparse.Namespace) -> int:
                     source=item.want.source,
                     base=item.want.base,
                     price=item.observed,
-                    in_stock=item.available if item.want.kind == "offer" else None,
+                    in_stock=item.available,
                 )
             )
         updated, written = rows.PRICE_LEDGER.record(
@@ -1410,7 +1414,7 @@ async def run(args: argparse.Namespace) -> int:
             started,
             applied=applied,
             skipped=skipped,
-            stock_skipped=stock_skipped,
+            out_of_stock=out_of_stock,
         )
     )
     return 0

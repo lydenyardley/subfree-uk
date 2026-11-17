@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-16T18:54:18+00:00",
+  "updated": "2026-11-17T08:52:20+00:00",
   "rows": {
     "amazfit-helio": {
       "price": {
@@ -36,6 +36,13 @@
       "price": {
         "base": 139.99,
         "checked": "2026-11-16"
+      }
+    },
+    "aqara-g4": {
+      "price": {
+        "base": 69.0,
+        "checked": "2026-11-17",
+        "in_stock": false
       }
     },
     "aqara-g410": {
@@ -99,6 +106,13 @@
       "price": {
         "base": 132.23,
         "checked": "2026-11-16"
+      }
+    },
+    "canon-pixma-g3570": {
+      "price": {
+        "base": 229.99,
+        "checked": "2026-11-17",
+        "in_stock": false
       }
     },
     "canon-pixma-g3590": {
@@ -361,16 +375,37 @@
         "checked": "2026-11-16"
       }
     },
+    "ring-4kpro": {
+      "price": {
+        "base": 219.99,
+        "checked": "2026-11-17",
+        "in_stock": false
+      }
+    },
     "ring-elite": {
       "price": {
         "base": 449.99,
         "checked": "2026-11-16"
       }
     },
+    "ring-outplus": {
+      "price": {
+        "base": 39.99,
+        "checked": "2026-11-17",
+        "in_stock": false
+      }
+    },
     "ring-outpro": {
       "price": {
         "base": 119.99,
         "checked": "2026-11-16"
+      }
+    },
+    "ring-w2k": {
+      "price": {
+        "base": 29.99,
+        "checked": "2026-11-17",
+        "in_stock": false
       }
     },
     "ring-w2kplus": {
@@ -423,6 +458,13 @@
       "price": {
         "base": 77.99,
         "checked": "2026-11-16"
+      }
+    },
+    "tapo-d260": {
+      "price": {
+        "base": 219.99,
+        "checked": "2026-11-17",
+        "in_stock": false
       }
     },
     "tapo-td21": {

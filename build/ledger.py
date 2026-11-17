@@ -14,7 +14,8 @@ The file is written by `price_watch.py --apply`, not by hand. Its shape is:
       "updated": "2026-11-16T18:00:00+00:00",
       "rows": {
         "epson-et-2951": {
-          "price": {"base": 319.99, "price": 299.99, "checked": "2026-11-16"}
+          "price": {"base": 319.99, "price": 299.99, "checked": "2026-11-16",
+                    "in_stock": false}
         },
         "oura-ring-4": {
           "offers": {
@@ -25,8 +26,9 @@ The file is written by `price_watch.py --apply`, not by hand. Its shape is:
     }
 
 `price` is omitted when the observation matches the authored value; the check
-date is still recorded. A row with offers has no row price, because its offers
-are the price.
+date is still recorded. A row whose price is out of stock keeps its price and
+sets `in_stock: false`, so the page can show `Check price`. A row with offers
+has no row price, because its offers are the price.
 """
 
 from __future__ import annotations
@@ -113,6 +115,11 @@ class Ledger:
         offer = (entry.offers or {}).get(source)
         return offer.in_stock if offer else None
 
+    def price_stock_for(self, row_id: str) -> bool | None:
+        """The last stock reading for a single-seller row's price."""
+        entry = self.rows.get(row_id)
+        return entry.price.in_stock if entry and entry.price else None
+
     def record(
         self, readings: Iterable["Reading"], checked: str
     ) -> tuple["Ledger", int]:
@@ -128,29 +135,23 @@ class Ledger:
         for reading in readings:
             entry = rows.get(reading.row_id, RowEntry())
             observed = None if abs(reading.price - reading.base) < 0.005 else reading.price
-            if reading.kind == "offer":
-                offers = dict(entry.offers or {})
-                before = offers.get(reading.source)
-                stock = reading.in_stock
-                if stock is None and before is not None:
-                    stock = before.in_stock
-                price = PriceEntry(
-                    base=reading.base,
-                    price=observed,
-                    checked=checked,
-                    in_stock=stock,
-                )
+            offers = dict(entry.offers or {}) if reading.kind == "offer" else None
+            before = offers.get(reading.source) if offers is not None else entry.price
+            stock = reading.in_stock
+            if stock is None and before is not None:
+                stock = before.in_stock
+            price = PriceEntry(
+                base=reading.base,
+                price=observed,
+                checked=checked,
+                in_stock=stock,
+            )
+            if offers is not None:
                 offers[reading.source] = price
                 rows[reading.row_id] = RowEntry(
                     price=entry.price, offers=offers or None
                 )
             else:
-                before = entry.price
-                price = PriceEntry(
-                    base=reading.base,
-                    price=observed,
-                    checked=checked,
-                )
                 rows[reading.row_id] = RowEntry(price=price, offers=entry.offers)
             if before != price:
                 written += 1
@@ -343,6 +344,8 @@ def apply_to_rows(
             continue
         if entry.price.price is not None:
             row["price"] = entry.price.price
+        if entry.price.in_stock is False:
+            row["price_check"] = True
         row["checked_iso"] = entry.price.checked
         row["price_note"] = note_with_date(
             str(row["price_note"]), entry.price.checked

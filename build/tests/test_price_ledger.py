@@ -183,14 +183,43 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(entry.checked, "2026-11-17")
         self.assertEqual(written, 1)
 
-    def test_a_price_read_carries_no_stock(self) -> None:
+    def test_a_price_read_carries_its_stock(self) -> None:
         ledger, _ = Ledger(rows={}, updated="").record(
             [Reading("epson-et-2951", "price", "epson_et2951", 319.99, 299.99,
-                     in_stock=True)],
+                     in_stock=False)],
             "2026-11-16",
         )
         assert ledger.rows["epson-et-2951"].price is not None
-        self.assertIsNone(ledger.rows["epson-et-2951"].price.in_stock)
+        self.assertIs(ledger.rows["epson-et-2951"].price.in_stock, False)
+
+    def test_an_unknown_price_stock_keeps_the_known_state(self) -> None:
+        first, _ = Ledger(rows={}, updated="").record(
+            [Reading("epson-et-2951", "price", "epson_et2951", 319.99, 299.99,
+                     in_stock=False)],
+            "2026-11-16",
+        )
+        again, written = first.record(
+            [Reading("epson-et-2951", "price", "epson_et2951", 319.99, 299.99)],
+            "2026-11-17",
+        )
+        assert again.rows["epson-et-2951"].price is not None
+        self.assertIs(again.rows["epson-et-2951"].price.in_stock, False)
+        self.assertEqual(again.rows["epson-et-2951"].price.checked, "2026-11-17")
+        self.assertEqual(written, 1)
+
+    def test_an_out_of_stock_price_sets_check_price(self) -> None:
+        row = price_row()
+        ledger = Ledger(
+            rows={"epson-et-2951": RowEntry(price=PriceEntry(
+                319.99, None, "2026-11-16", in_stock=False,
+            ))},
+            updated="",
+        )
+        problems = apply_to_rows(
+            ledger, [row], {"epson_et2951": ("Epson", "https://e")}
+        )
+        self.assertEqual(problems, [])
+        self.assertIs(row["price_check"], True)
 
     def test_an_offer_keeps_its_siblings(self) -> None:
         first, _ = Ledger(rows={}, updated="").record(

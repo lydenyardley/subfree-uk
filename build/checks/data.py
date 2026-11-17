@@ -212,7 +212,7 @@ def slider_problems(rows, pages):
     problems = []
     for cat in CATEGORIES:
         table = cat["rows"]
-        prices = [row["price"] for row in table]
+        prices = [row["price"] for row in table if not row.get("price_check")]
         if not prices:
             problems.append(f"{cat['slug']}: no prices to put on the slider")
             continue
