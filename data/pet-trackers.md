@@ -6,7 +6,7 @@ Last checked 9 November 2026. 8 trackers. As an Amazon Associate I earn from qua
 |---|---|---|---|---|---|---|---|
 | Apple AirTag (2nd generation) | No subscription, Bluetooth only | [£29.00](https://www.apple.com/uk/shop/buy-airtag/airtag/1-pack) | 3 | £29.00 | — | A cat that stays close to other people's phones | Not a GPS tracker: it only reports when a nearby Find My device hears it, needs an iPhone, and has no history or safe zones. |
 | PAWVA X01+ | No subscription | [£77.99](https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound) | 6 | £77.99 | — | The cheapest way to get GPS tracking with no monthly fee | Ten years of connectivity is PAWVA's own promise, and the 2G fallback behind it closes by 2033. |
-| PAWVA X05 | No subscription | [£84.99](https://www.pawva.co.uk/product-page/pawva-x05-gps-dog-tracker) | 6 | £84.99 | — | A walker or kennel tracking several dogs on one app | Lifetime connectivity is PAWVA's own promise, and the word is footnoted with an asterisk the page never explains. |
+| PAWVA X05 | No subscription | [£84.99](https://www.pawva.co.uk/product-page/pawva-x05-gps-dog-tracker) | 6 | £84.99 | — | A walker or kennel tracking several dogs on one app | The X05 page promises no recurring costs ever; PAWVA's warranty puts the Lifetime SIM at ten years from activation. |
 | PitPat Dog GPS Tracker | No subscription | [£99.00](https://www.pitpat.com/gps-tracker) | 6 | £99.00 | — | A dog owner who wants tracking and saved walks without any monthly fee | The dearest tracker here, it has no geofencing, and the optional LIFE plan adds Video Vet and loss replacement. |
 | Pawfit Pawfit 3 | Subscription required | [£54.99](https://www.amazon.co.uk/Pawfit-Activity-Included-Embedded-Waterproof/dp/B082F7J7LW?tag=subfreeuk-21) | 3 | £54.99 | £414.63 | A cheaper plan for a dog or a larger cat | A plan is required, Basic keeps only 24 hours of history, and the 5-second updates are FIND mode only. |
 | Weenect XT | Subscription required | [£44.99](https://www.weenect.com/uk/en/gps-dog-tracker/weenect-xt) | 2 | £44.99 | £512.99 | The fastest live updates and the longest plan history | A plan is required, the charger is not included, and at 54 g it is the heaviest tracker here. |
@@ -45,18 +45,17 @@ Last checked 9 November 2026. 8 trackers. As an Amazon Associate I earn from qua
 
 ### PAWVA X05
 - **Best for:** A walker or kennel tracking several dogs on one app
-- **Main catch:** Lifetime connectivity is PAWVA's own promise, and the word is footnoted with an asterisk the page never explains.
+- **Main catch:** The X05 page promises no recurring costs ever; PAWVA's warranty puts the Lifetime SIM at ten years from activation.
 - **Price:** £84.99 (PAWVA UK, checked 17 November 2026)
 - **3-year cost, no plan:** £84.99
 - **3-year cost, with plan:** No subscription offered or needed
 - **Battery:** Up to 10 days on standby, with a 2-hour recharge
 - **Free:** live updates: As often as once a second; once a minute by default during activity; safe zones: Geofencing and low-battery alerts included; history: Historical routes in the app, with no retention period published
-- **Without a plan:** Location, routes and alerts with no plan, for the SIM's term
-- **Behind the plan:** Nothing for tracking; the length of the SIM's term is the promise to watch
-- **Plans:** None needed. The X05 page says a Lifetime SIM is included, with no monthly fees
+- **Without a plan:** Location, routes and alerts with no plan, for the SIM's ten years
+- **Behind the plan:** Nothing for tracking; PAWVA's warranty puts the SIM's life at ten years from activation
+- **Plans:** None needed. The X05 page says a Lifetime SIM is included, and PAWVA's warranty defines that as ten years from activation
 - **Cat fit:** Sold for dogs. PAWVA's 40 g X05 carries no cat claim.
-- **Not yet verified:** The PackTracker bundle that sold this tracker said a prepaid five-year SIM; the X05 page now promises a Lifetime SIM, footnoted with an asterisk it never explains, so only PAWVA's terms page can settle the term
-- **Sources:** [PAWVA X05](https://www.pawva.co.uk/product-page/pawva-x05-gps-dog-tracker)
+- **Sources:** [PAWVA X05](https://www.pawva.co.uk/product-page/pawva-x05-gps-dog-tracker) · [PAWVA: warranty and the SIM's term](https://www.pawva.co.uk/warranty)
 
 ### Tractive DOG 6
 - **Best for:** The fastest live updates, if you will pay for a plan
