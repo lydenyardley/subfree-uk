@@ -630,7 +630,7 @@ CAMERAS = {
     "noun": "security camera",
     "nouns": "security cameras",
     "nav": "Cameras",
-    "checked_iso": "2026-11-05",
+    "checked_iso": "2026-11-17",
 
     # Each brand's newest model in this category, read from the vendor's own UK
     # store. Where a brand sells more than one newest model, the entry names the
@@ -803,7 +803,7 @@ RINGS = {
     "noun": "smart ring",
     "nouns": "smart rings",
     "nav": "Smart rings",
-    "checked_iso": "2026-11-05",
+    "checked_iso": "2026-11-17",
 
     # The model each brand is selling now, as of the date above. A brand in the
     # table with no entry here fails `category records`, so a lineup cannot be
@@ -1731,7 +1731,7 @@ BABY_MONITORS = {
     "noun": "baby monitor",
     "nouns": "baby monitors",
     "nav": "Baby monitors",
-    "checked_iso": "2026-11-09",
+    "checked_iso": "2026-11-17",
 
     "current": {
         "VTech": "vtech-vm4263",

@@ -1,6 +1,6 @@
 # UK security cameras without a subscription
 
-Last checked 5 November 2026. 19 cameras. As an Amazon Associate I earn from qualifying purchases.
+Last checked 17 November 2026. 19 cameras. As an Amazon Associate I earn from qualifying purchases.
 
 | Camera | Records free? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|

@@ -1,6 +1,6 @@
 # UK baby monitors that work without a subscription
 
-Last checked 9 November 2026. 6 monitors. As an Amazon Associate I earn from qualifying purchases.
+Last checked 17 November 2026. 6 monitors. As an Amazon Associate I earn from qualifying purchases.
 
 | Monitor | Subscription? | Price | Score /8 | 3 yrs, no plan | 3 yrs, with plan | Best for | Main catch |
 |---|---|---|---|---|---|---|---|

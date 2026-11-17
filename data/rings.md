@@ -1,6 +1,6 @@
 # UK smart rings that work without a subscription
 
-Last checked 5 November 2026. 9 smart rings. As an Amazon Associate I earn from qualifying purchases.
+Last checked 17 November 2026. 9 smart rings. As an Amazon Associate I earn from qualifying purchases.
 
 | Smart ring | Subscription? | Price | Score /8 | 3 yrs, no subscription | 3 yrs, with membership | Best for | Main catch |
 |---|---|---|---|---|---|---|---|
