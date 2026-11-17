@@ -62,10 +62,12 @@ The outline's figures were drafts and several did not survive the read:
   Closed on 17 November 2026: PAWVA's warranty, section 4, calls the
   Lifetime* SIM valid for ten years from activation, and its asterisk sends
   buyers to a newer PAWVA device after that, so the X05 row carries ten and
-  the unverified note is gone. The five-year line was live all along, on the
-  superseded X01's setup guide at /x-01 ("Prepaid for up to 5 years of
-  data"). The bundle page itself has no Wayback or archive.today capture, so
-  what it said is still unread.
+  the unverified note is gone. The X01+ row cites the same warranty for its
+  ten years, so both rows rest the term on one page rather than on a product
+  page's promise. The five-year line was live all along, on the superseded
+  X01's setup guide at /x-01 ("Prepaid for up to 5 years of data"). The
+  bundle page itself has no Wayback or archive.today capture, so what it
+  said is still unread.
 - The Philips SCD951 is £157.99 on Amazon, not at Currys, which lists
   £213.99. The row cites the page its price is on.
 - The eufy C10 is £114.99 from eufy for the full kit. The £99 Amazon listing
