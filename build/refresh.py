@@ -11,8 +11,9 @@ wall. What this can do is say which categories are a week past their check and
 list the pages behind every figure, so the job arrives as links rather than as
 archaeology.
 
-Exit status is 1 when any category is a week or more past its checked date,
-which is the run that opens the issue.
+Exit status is 1 when any category is a week or more past its checked date, or
+when any wanted price or offer is missing from the ledger or older than the
+coverage window. That is the run that opens the issue.
 
     python build/refresh.py
     python build/refresh.py --list          # one page per line, for a diff
@@ -24,6 +25,7 @@ from datetime import date, datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from catalog import CATEGORIES
+from price_watch import coverage, coverage_lines, wants
 
 import rows
 
@@ -49,6 +51,7 @@ def pages(cat):
 def main():
     flat = "--list" in sys.argv[1:]
     late = []
+    cov = coverage(wants(), rows.PRICE_LEDGER)
     if rows.PRICE_LEDGER.updated:
         seen = datetime.fromisoformat(rows.PRICE_LEDGER.updated).date()
         ledger_age = (date.today() - seen).days
@@ -62,6 +65,24 @@ def main():
         where = f"last updated {seen.day} {seen:%B %Y}" if seen else "has never been written"
         print(f"### Price ledger, {where}, {ledger_age} days ago\n")
         print("Run `python build/price_refresh.py` on the local machine.\n")
+    if flat:
+        print(
+            f"coverage\t{cov.fresh_count}/{cov.total}\t"
+            f"{cov.stale_count} stale\t{cov.missing_count} missing"
+        )
+        for entry in cov.entries:
+            if entry.fresh:
+                continue
+            age = "-" if entry.age is None else f"{entry.age}d"
+            state = "missing" if entry.checked is None else "stale"
+            print(
+                f"{state}\t{entry.want.category}\t{entry.want.label}\t"
+                f"{entry.checked or '-'}\t{age}"
+            )
+    else:
+        print("\n".join(coverage_lines(cov)) + "\n")
+    if not cov.healthy:
+        late.append("coverage")
     for cat in CATEGORIES:
         checked = date.fromisoformat(cat["checked_iso"])
         age = (date.today() - checked).days

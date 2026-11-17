@@ -19,15 +19,21 @@ The comparison is against the recorded figure, not against a scraped figure
 from last week. That keeps the report meaningful after a human edits the data:
 the next run compares the live page with what the page now publishes.
 
+With `--coverage`, it compares every wanted price and offer with its ledger
+check date. The weekly report and local refresh both use that check, so a run
+that read only part of the list cannot pass as healthy.
+
     python build/price_watch.py
     python build/price_watch.py --category printers
     python build/price_watch.py --source epson_et2951
     python build/price_watch.py --concurrency 2
+    python build/price_watch.py --coverage
     xvfb-run -a python build/price_watch.py --headed
 
 Exit status is 0 when a report was produced, even when prices changed or pages
-were unreadable. A browser that cannot start, or a crash while assembling the
-report, exits non-zero.
+were unreadable. `--coverage` exits 1 when any wanted entry is missing or
+older than `COVERAGE_DAYS`. A browser that cannot start, or a crash while
+assembling the report, exits non-zero.
 """
 
 from __future__ import annotations
@@ -38,7 +44,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 from urllib.parse import urlparse
@@ -47,7 +53,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from catalog import CATEGORIES
-from ledger import Reading, write as write_ledger
+from ledger import Ledger, Reading, write as write_ledger
 
 import rows
 
@@ -59,6 +65,10 @@ ERROR = "error"
 UNREADABLE = "unreadable"
 AMBIGUOUS = "ambiguous"
 FALLBACK_STATUSES = {BLOCKED, UNREADABLE, AMBIGUOUS, ERROR}
+
+# A weekly probe that misses a source leaves that entry's ledger date behind.
+# Seven days is one missed run, not a tolerance for an old price.
+COVERAGE_DAYS = 7
 
 # The pages that list more than one product. A JSON-LD product must be matched
 # by name there; a single CSS price on the page could belong to a neighbour. A
@@ -302,6 +312,59 @@ class Observation:
         return price_moved or stock_moved
 
 
+@dataclass(frozen=True)
+class CoverageEntry:
+    """One wanted figure and the day its ledger entry was last checked."""
+
+    want: Want
+    checked: str | None
+    age: int | None
+    fresh: bool
+
+
+@dataclass(frozen=True)
+class Coverage:
+    """Every wanted figure, measured against the ledger's own check dates."""
+
+    entries: tuple[CoverageEntry, ...]
+    days: int
+
+    @property
+    def total(self) -> int:
+        return len(self.entries)
+
+    @property
+    def fresh_count(self) -> int:
+        return sum(entry.fresh for entry in self.entries)
+
+    @property
+    def stale_count(self) -> int:
+        return sum(
+            entry.checked is not None and not entry.fresh
+            for entry in self.entries
+        )
+
+    @property
+    def missing_count(self) -> int:
+        return sum(entry.checked is None for entry in self.entries)
+
+    @property
+    def healthy(self) -> bool:
+        return all(entry.fresh for entry in self.entries)
+
+    def summary(self) -> str:
+        if not self.total:
+            return "No wanted prices or offers."
+        percent = round(100 * self.fresh_count / self.total)
+        text = (
+            f"{self.fresh_count} of {self.total} wanted prices and offers "
+            f"were checked within {self.days} days ({percent}%)."
+        )
+        if not self.healthy:
+            text += f" {self.stale_count} stale and {self.missing_count} missing."
+        return text
+
+
 def money(value: float) -> str:
     return f"£{value:,.2f}"
 
@@ -532,6 +595,75 @@ def adapter_for(want: Want) -> Adapter:
         css=CSS_BY_HOST.get(host, DEFAULT_CSS),
         stock=STOCK_BY_HOST.get(host),
     )
+
+
+def coverage(
+    wanted: Sequence[Want],
+    ledger: Ledger,
+    day: date | None = None,
+    max_age: int = COVERAGE_DAYS,
+) -> Coverage:
+    """Every wanted figure's ledger check date, without reading a vendor page."""
+    today = day or date.today()
+    entries = []
+    for want in wanted:
+        record = ledger.rows.get(want.row_id)
+        observed = None
+        if record is not None:
+            observed = (
+                (record.offers or {}).get(want.source)
+                if want.kind == "offer"
+                else record.price
+            )
+        checked = observed.checked if observed is not None else None
+        age = None
+        if checked:
+            try:
+                age = (today - date.fromisoformat(checked)).days
+            except ValueError:
+                age = None
+        entries.append(
+            CoverageEntry(
+                want=want,
+                checked=checked,
+                age=age,
+                fresh=age is not None and 0 <= age <= max_age,
+            )
+        )
+    return Coverage(entries=tuple(entries), days=max_age)
+
+
+def coverage_lines(cov: Coverage) -> list[str]:
+    """The coverage block the weekly issue and local refresh both print."""
+    names = {str(cat["slug"]): str(cat["nouns"]).title() for cat in CATEGORIES}
+    order = {str(cat["slug"]): index for index, cat in enumerate(CATEGORIES)}
+    lines = ["### Ledger coverage", "", cov.summary(), ""]
+    stale = [entry for entry in cov.entries if not entry.fresh]
+    if not stale:
+        lines.append("Every wanted price and offer has a recent ledger check.")
+        return lines
+    lines += [
+        "| Category | Item | Source | Last checked | Age |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for entry in sorted(
+        stale,
+        key=lambda item: (
+            order.get(item.want.category, 99),
+            item.want.brand,
+            item.want.model,
+            item.want.kind,
+            item.want.shop,
+        ),
+    ):
+        age = "-" if entry.age is None else f"{entry.age}d"
+        lines.append(
+            f"| {escape(names.get(entry.want.category, entry.want.category))} | "
+            f"{escape(entry.want.label)} | "
+            f"[{escape(entry.want.source_name)}]({entry.want.url}) | "
+            f"{escape(entry.checked or 'never')} | {age} |"
+        )
+    return lines
 
 
 def wants() -> list[Want]:
@@ -1139,10 +1271,27 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         action="store_true",
         help="write clean reads to build/price_ledger.json after a confirming read",
     )
+    parser.add_argument(
+        "--coverage",
+        action="store_true",
+        help="report every wanted entry whose ledger check is missing or stale",
+    )
     return parser.parse_args(argv)
 
 
 async def run(args: argparse.Namespace) -> int:
+    if getattr(args, "coverage", False):
+        if rows.PRICE_LEDGER_PROBLEMS:
+            print(
+                "The price ledger needs attention:\n  "
+                + "\n  ".join(rows.PRICE_LEDGER_PROBLEMS),
+                file=sys.stderr,
+            )
+            return 2
+        cov = coverage(wants(), rows.PRICE_LEDGER)
+        print("\n".join(coverage_lines(cov)))
+        return 0 if cov.healthy else 1
+
     try:
         from playwright.async_api import async_playwright
     except ImportError:

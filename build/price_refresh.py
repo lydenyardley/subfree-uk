@@ -13,6 +13,8 @@ stops the run before a commit exists.
 
 The scheduled task calls this with no arguments. It pulls with `--ff-only`
 first, commits only when the tree changed, and pushes the commit on success.
+A partial ledger coverage exits 10 after the successful part is committed and
+pushed, so a blind source cannot make the run look healthy.
 """
 
 from __future__ import annotations
@@ -93,6 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--concurrency", type=int, default=4)
     args = parser.parse_args(argv)
+    coverage_ok = True
 
     dirty = git_output("status", "--porcelain")
     started_clean = not dirty
@@ -117,6 +120,20 @@ def main(argv: list[str] | None = None) -> int:
         park_changes(started_clean)
         return 4
 
+    coverage_result = run(
+        [str(PYTHON), "build/price_watch.py", "--coverage"],
+        check=False,
+    )
+    if coverage_result.stdout.strip():
+        say(coverage_result.stdout.strip())
+    if coverage_result.stderr.strip():
+        say(coverage_result.stderr.strip())
+    coverage_ok = coverage_result.returncode == 0
+    if coverage_result.returncode not in (0, 1):
+        say("The coverage check failed; the run is not healthy.")
+        park_changes(started_clean)
+        return 10
+
     if not checked([str(PYTHON), "build/build.py"]):
         park_changes(started_clean)
         return 5
@@ -134,6 +151,9 @@ def main(argv: list[str] | None = None) -> int:
                 say("A local commit is waiting; the push failed and needs attention.")
                 return 9
             say(f"Pushed {ahead} pending commit(s).")
+        if not coverage_ok:
+            say("Ledger coverage is partial; the run is not healthy.")
+            return 10
         return 0
 
     say("Changed files:")
@@ -149,12 +169,18 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.no_push:
         say("Committed locally; --no-push left it unpushed.")
+        if not coverage_ok:
+            say("Ledger coverage is partial; the run is not healthy.")
+            return 10
         return 0
 
     if not checked(["git", "push"]):
         say("The commit is local; the push failed and needs attention.")
         return 9
     say("Price refresh committed and pushed.")
+    if not coverage_ok:
+        say("Ledger coverage is partial; the run is not healthy.")
+        return 10
     return 0
 
 

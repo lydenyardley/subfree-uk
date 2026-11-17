@@ -70,6 +70,7 @@ python build/shots2.py           # optional: screenshots at 1280/1000/900/820/39
 python build/check.py --fast     # the browser-free static checks, about a second
 python build/check.py            # rebuilds, then runs the full audit; exits 1 on any issue
 python build/price_watch.py      # reads every recorded price and offer; reports, never edits
+python build/price_watch.py --coverage   # ledger freshness for every wanted price and offer
 python -m unittest discover -s build/tests -v   # price watch fixtures, no vendor network
 python build/links.py            # sweeps every external citation; dead or server errors exit 1
 ```

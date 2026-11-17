@@ -169,12 +169,15 @@ matches fails the build instead of being silently overridden.
 
 `build/refresh.py` is the weekly nudge. It prints every page behind a row's
 price and plan, grouped by category, and exits non-zero once a category is seven
-days past its check; `.github/workflows/refresh.yml` runs it every Monday and
-files the list as an issue, adding to the one already open. The hosted runner
-still reports only, because it cannot see a price a page draws in the browser.
-The same job adds the `lineup_feed.py` report, then runs `build/links.py` over
-every category page: blocked pages are listed and pass, while a dead page or
-server error fails the run.
+days past its check, or when any wanted price or offer is missing from the
+ledger or older than `COVERAGE_DAYS` (7). Each wanted entry is checked against
+its own ledger date, so a partial blind run cannot hide behind a fresh global
+`updated` date. `.github/workflows/refresh.yml` runs it every Monday and files
+the list as an issue, adding to the one already open. The hosted runner still
+reports only, because it cannot see a price a page draws in the browser. The
+same job adds the `lineup_feed.py` report, then runs `build/links.py` over every
+category page: blocked pages are listed and pass, while a dead page or server
+error fails the run.
 
 `build/price_watch.py --apply` is the local writer. It reads every source with
 Chromium and the Firefox fallback, re-reads every changed page, and writes only
@@ -183,9 +186,13 @@ JSON-LD when the page publishes it, and from the per-host scoped rules in
 `STOCK_BY_HOST` for Amazon, Argos and Currys. The second read must match both
 the price and the stock state. An out-of-stock product read stays out; an
 out-of-stock offer is recorded with `in_stock: false` so the page can skip its
-old price. Unconfirmed changes stay out.
-`build/price_refresh.py` runs that probe,
+old price. Unconfirmed changes stay out. `--coverage` compares every wanted
+price and offer with its own ledger check date and exits 1 when any entry is
+missing or stale.
+`build/price_refresh.py` runs that probe, checks coverage,
 rebuilds, runs the full audit, then commits and pushes only from a clean tree.
+A partial coverage run commits and pushes the valid readings, then exits 10 so
+the scheduled task cannot record a blind source as a clean run.
 `build/install_price_task.ps1` registers it as a weekly Windows task.
 
 ## Change checks
