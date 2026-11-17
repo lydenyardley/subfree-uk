@@ -11,7 +11,8 @@ holds the last browser-read price and check date for each row or offer;
 photos and `IMAGE_SOURCES.md`, are generated from those rows.
 Run `python build/check.py --fast` before every commit. `.githooks/pre-commit`
 runs the same checks once the hooks are enabled; the steps are under Change
-checks. Run the full `python build/check.py` before pushing.
+checks. `.githooks/pre-push` runs the full `python build/check.py` before a
+push leaves the machine.
 
 ## Categories
 
@@ -214,8 +215,9 @@ the scheduled task cannot record a blind source as a clean run.
   comma-separated list of name fragments); `--list` prints them. `--fast` runs
   only the browser-free static checks, and it is what `.githooks/pre-commit`
   runs. A normal run also starts Firefox for the structural audit.
-- Enable both hooks once per clone with `git config core.hooksPath .githooks`.
-  The pre-commit hook refuses a stale generated file before the commit exists.
+- Enable all three hooks once per clone with `git config core.hooksPath .githooks`.
+  The pre-commit hook refuses a stale generated file before the commit exists,
+  and the pre-push hook refuses a push the full audit fails.
 - The checks take their fixtures from the data by property (`shortlist()`,
   `family()`, `cheapest()`, `lead_ids()`) and their columns, names and counts
   from the category record, so a new row or a new category does not mean editing

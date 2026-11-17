@@ -60,8 +60,8 @@ so an old cached page can still load them.
 
 - The pre-commit hook runs `python build/check.py --fast`, the 22 browser-free
   checks, and refuses a commit when the generator has changed a committed file.
-  Enable it once per clone with the hook command below. Run the full
-  `python build/check.py` before pushing. It recomputes every figure in the CSV
+  Enable it once per clone with the hook command below. The pre-push hook runs
+  the full `python build/check.py`, which recomputes every figure in the CSV
   from `ROWS`, type-checks `build/` with mypy, and then runs the accessibility,
   anchor, image, target-size, type-floor, phone-layout, compare and
   differences-only, shareable-shortlist, jump-announcement, the
@@ -77,7 +77,7 @@ so an old cached page can still load them.
 - Keep commits small and logical, one concern each.
 - Enable the hooks once per clone. The message hook runs the same rules as the
   push, so a bad subject fails while it is still one edit away; the pre-commit
-  hook runs the fast gate:
+  hook runs the fast gate, and the pre-push hook runs the full audit:
 
   ```bash
   git config core.hooksPath .githooks
