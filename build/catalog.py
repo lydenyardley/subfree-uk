@@ -1426,9 +1426,9 @@ PET_TRACKERS = {
         ),
         "PAWVA": (
             None,
-            "PAWVA's product page sells the X01+ and the X02 as current "
-            "models for different buyers, not as generations, so there is no "
-            "earlier PAWVA tracker to price",
+            "PAWVA's product page sells the X01+, the X02, the X05 and the "
+            "X12 side by side for different buyers, not as generations, so "
+            "there is no earlier PAWVA tracker to price",
             True,
         ),
         "Tractive": (

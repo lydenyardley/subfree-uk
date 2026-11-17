@@ -55,7 +55,10 @@ The outline's figures were drafts and several did not survive the read:
   so the X01+ row carries five. Corrected on 17 November 2026: PAWVA's own
   X01+ page now reads "10-year connectivity included", and the PackTracker
   bundle that carried the five-year FAQ now renders as the X05's page, so
-  the row carries ten.
+  the row carries ten. The X05 has its own row now, priced at £84.99 from
+  that page. The bundle's five-year line lives there as the open fact it
+  became: the page promises a Lifetime SIM under an asterisk nothing
+  defines, so the term is recorded as unverified rather than dropped.
 - The Philips SCD951 is £157.99 on Amazon, not at Currys, which lists
   £213.99. The row cites the page its price is on.
 - The eufy C10 is £114.99 from eufy for the full kit. The £99 Amazon listing

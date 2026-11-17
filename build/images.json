@@ -319,6 +319,11 @@
   "page": "https://www.pawva.co.uk/product-page/pawva-x01-gps-dog-tracker-with-light-sound",
   "cropped": false
  },
+ "pawva-x05": {
+  "src": "https://static.wixstatic.com/media/9a0c24_80d3f0267dde4df7ab88092c5e2433a0~mv2.jpg/v1/fit/w_500,h_500,q_90/file.jpg",
+  "page": "https://www.pawva.co.uk/product-page/pawva-x05-gps-dog-tracker",
+  "cropped": false
+ },
  "tractive-dog-6": {
   "src": "https://assets.tractive.com/assets/image/shop-frontend/product/trdog6bk/tractive-dog-6-black.png",
   "page": "https://tractive.com/en/pd/gps-tracker-dog?shopCountry=GB",
