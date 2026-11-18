@@ -644,6 +644,51 @@ def row_model_problems():
     return problems
 
 
+def _fixture_reads_snapshot(ctx):
+    return ctx.snapshot
+
+
+def _fixture_through_helper(ctx):
+    return _fixture_reads_snapshot(ctx)
+
+
+def registry_guard_problems():
+    """`registry()` refuses a report-phase check that reads the page.
+
+    The real `registry()` must refuse a fixture that reads `ctx.snapshot`,
+    directly and one helper away. Both fixtures sit at module scope, where
+    `page_reads()` can follow the helper a check calls.
+    """
+    from . import data, registry
+
+    problems = []
+    cases = (
+        (_fixture_reads_snapshot, "directly"),
+        (_fixture_through_helper, "through a helper"),
+    )
+    original = data.CHECKS
+    try:
+        for run, how in cases:
+            data.CHECKS = [
+                registry.Check("fixture", "report", 1000, "a fixture check", run)
+            ]
+            try:
+                registry.registry()
+            except ValueError as error:
+                if "snapshot" not in str(error):
+                    problems.append(
+                        f"a report check that reads the snapshot {how} was refused "
+                        f"without naming it: {error}"
+                    )
+            else:
+                problems.append(
+                    f"a report check that reads the snapshot {how} was accepted"
+                )
+    finally:
+        data.CHECKS = original
+    return problems
+
+
 CHECKS = [
     Check(
         "rebuild", "static", 0, "rebuild reproduces the committed pages",
@@ -712,5 +757,10 @@ CHECKS = [
         "row model", "static", 100,
         "a malformed row and a malformed lineup fail by field and by brand",
         lambda ctx: row_model_problems(),
+    ),
+    Check(
+        "registry guard", "static", 101,
+        "a report-phase check that reads the page is refused, directly and through a helper",
+        lambda ctx: registry_guard_problems(),
     ),
 ]

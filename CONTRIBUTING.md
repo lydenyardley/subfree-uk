@@ -58,7 +58,7 @@ so an old cached page can still load them.
 
 ## Before committing
 
-- The pre-commit hook runs `python build/check.py --fast`, the 22 browser-free
+- The pre-commit hook runs `python build/check.py --fast`, the 23 browser-free
   checks, and refuses a commit when the generator has changed a committed file.
   Enable it once per clone with the hook command below. The pre-push hook runs
   the full `python build/check.py`, which recomputes every figure in the CSV

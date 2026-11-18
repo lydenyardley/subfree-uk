@@ -22,8 +22,10 @@ scripts differed by 33 lines.
   `structure`, `behaviour`, `compare`, `accessibility`, `performance`,
   `browsers`). Each registers named checks with a phase and an order, and
   `registry()` refuses a duplicate name or order, and a report-phase check that
-  reaches the page the report phase no longer has. `build/check.py` keeps the
-  runner, `--only` and `--list`.
+  reaches the page the report phase no longer has. `registry guard` proves that
+  refusal on every run, handing the real `registry()` a fixture check that reads
+  the page directly and one helper away. `build/check.py` keeps the runner,
+  `--only` and `--list`.
 - `.github/workflows/commits.yml` checks the range a push to `main` brings as
   well as a pull request, with a floor at the commit that last touched the
   workflow, so history the rule never saw is not re-litigated.
