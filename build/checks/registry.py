@@ -52,20 +52,27 @@ def page_reads(target, seen=None):
     """The page-backed names a callable reaches, through the helpers it calls.
 
     `co_names` holds the attributes and globals a body mentions, so a local
-    variable is not mistaken for the context's `page`. Lambdas and
-    comprehensions inside the body are code constants, and a helper it names is
-    walked the same way, so a check cannot hide a page read one call away.
+    variable is not mistaken for the context's `page`. `co_freevars` holds what a
+    body borrows from the scope around it, and a closure cell is walked too, so a
+    check built by a factory cannot hide a read behind a captured helper or page.
+    Lambdas and comprehensions inside the body are code constants and read the
+    same way.
     """
     code = target if isinstance(target, CodeType) else getattr(target, "__code__", None)
     seen = set() if seen is None else seen
     if code is None or code in seen:
         return set()
     seen.add(code)
-    names = set(code.co_names)
+    names = set(code.co_names) | set(code.co_freevars)
     if not isinstance(target, CodeType):
         globals_ = getattr(target, "__globals__", {})
         for name in names & globals_.keys():
             names |= page_reads(globals_[name], seen)
+        for cell in getattr(target, "__closure__", None) or ():
+            try:
+                names |= page_reads(cell.cell_contents, seen)
+            except ValueError:
+                continue
     for const in code.co_consts:
         if isinstance(const, CodeType):
             names |= page_reads(const, seen)

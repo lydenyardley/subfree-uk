@@ -652,37 +652,62 @@ def _fixture_through_helper(ctx):
     return _fixture_reads_snapshot(ctx)
 
 
+def _fixture_through_closure():
+    read = _fixture_reads_snapshot
+
+    def run(ctx):
+        return read(ctx)
+
+    return run
+
+
+_fixture_closed_over = _fixture_through_closure()
+
+
+def _fixture_over_page(page):
+    def run(ctx):
+        return page.title()
+
+    return run
+
+
+_fixture_page_closed_over = _fixture_over_page(object())
+
+
 def registry_guard_problems():
     """`registry()` refuses a report-phase check that reads the page.
 
-    The real `registry()` must refuse a fixture that reads `ctx.snapshot`,
-    directly and one helper away. Both fixtures sit at module scope, where
-    `page_reads()` can follow the helper a check calls.
+    A check must be refused whether it reads `ctx.snapshot` directly, calls a
+    module-level helper that does, closes over that helper, or closes over the
+    page itself. The last route shows only in the body's free variables, because
+    the page it closes over is not code to walk, so the stand-in is never called.
     """
     from . import data, registry
 
     problems = []
     cases = (
-        (_fixture_reads_snapshot, "directly"),
-        (_fixture_through_helper, "through a helper"),
+        (_fixture_reads_snapshot, "snapshot", "directly"),
+        (_fixture_through_helper, "snapshot", "through a helper"),
+        (_fixture_closed_over, "snapshot", "through a closed-over helper"),
+        (_fixture_page_closed_over, "page", "through a closed-over page"),
     )
     original = data.CHECKS
     try:
-        for run, how in cases:
+        for run, name, how in cases:
             data.CHECKS = [
                 registry.Check("fixture", "report", 1000, "a fixture check", run)
             ]
             try:
                 registry.registry()
             except ValueError as error:
-                if "snapshot" not in str(error):
+                if f"cannot read {name}" not in str(error):
                     problems.append(
-                        f"a report check that reads the snapshot {how} was refused "
+                        f"a report check that reaches {name} {how} was refused "
                         f"without naming it: {error}"
                     )
             else:
                 problems.append(
-                    f"a report check that reads the snapshot {how} was accepted"
+                    f"a report check that reaches {name} {how} was accepted"
                 )
     finally:
         data.CHECKS = original
@@ -760,7 +785,8 @@ CHECKS = [
     ),
     Check(
         "registry guard", "static", 101,
-        "a report-phase check that reads the page is refused, directly and through a helper",
+        "a report-phase check that reaches the page directly, through a helper "
+        "or through a closure is refused",
         lambda ctx: registry_guard_problems(),
     ),
 ]
