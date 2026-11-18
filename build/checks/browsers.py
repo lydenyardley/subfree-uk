@@ -201,8 +201,11 @@ CHECKS = [
         "console errors", "report", 82, "no console or page errors",
         console_errors,
     ),
+    # The links come from the rendered page, so this check needs one. Asking
+    # for the snapshot in the report phase read a closed browser, which a full
+    # run hid behind the cache an earlier phase had already filled.
     Check(
-        "external links", "report", 83,
+        "external links", "desktop", 83,
         lambda ctx: f"requested {len(set(ctx.snapshot['externals']))} external links",
         external_links,
     ),

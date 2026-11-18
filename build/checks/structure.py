@@ -363,10 +363,25 @@ def price_cells(data):
         else []
     )
 
-def zoom_images(data, lightbox):
-    if data["zoomGlyphs"] == lightbox["buttons"] and lightbox["buttons"]:
-        return []
-    return [f"{lightbox['buttons']} photo buttons but {data['zoomGlyphs']} zoom glyphs"]
+def zoom_images(page):
+    # One read of the live page. Counting buttons from a cached snapshot and
+    # glyphs from the live page compared two moments, and the comparison gains
+    # a photo column between checks, so the two could disagree with the DOM
+    # correct.
+    counts = page.evaluate(
+        """() => {
+            const buttons = [...document.querySelectorAll('.zoom')];
+            return {
+                buttons: buttons.length,
+                bare: buttons.filter((b) => !b.querySelector('.zi')).length,
+            };
+        }"""
+    )
+    if not counts["buttons"]:
+        return ["no photo buttons found"]
+    if counts["bare"]:
+        return [f"{counts['bare']} of {counts['buttons']} photo buttons have no zoom glyph"]
+    return []
 
 def contact_routes(data):
     if data["contactLinks"] >= 2:
@@ -916,7 +931,7 @@ CHECKS = [
     ),
     Check(
         "photo zoom", "compare", 58, "every photo shows a zoom glyph",
-        lambda ctx: zoom_images(ctx.snapshot, ctx.lightbox),
+        lambda ctx: zoom_images(ctx.page),
     ),
     Check(
         "contact route", "compare", 59, "contact route linked in the header and the method",

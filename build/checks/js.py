@@ -64,7 +64,6 @@ AUDIT_JS = r"""() => {
     })(),
     tags: all("#tbl tbody .vtag").map(text),
     priceFootnotes: all(".c-price .fn").length,
-    zoomGlyphs: all(".zoom .zi").length,
     icon: document.querySelector('link[rel="icon"]')
       ? document.querySelector('link[rel="icon"]').getAttribute("href") : "",
     canonical: document.querySelector('link[rel="canonical"]')
